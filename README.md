@@ -18,6 +18,11 @@ MWPA provides the acquisition of scientific observational data, an easy-to-use u
 This includes the backend for data collection, the frontend and a mobile phone app for snycronization.
 The recorded ones relate to mammals and their observations.
 The aim is to record the observations cleanly and quickly. For this purpose, the old data is processed again and imported.
+<h1 align="center">
+
+[![collect data](https://m-e-e-r.de/wp-content/uploads/2021/01/2017-1022_Fabian-Datenaufnahme-Gomera-300x200.jpg)](https://m-e-e-r.de/)
+
+</h1>
 
 You can also access the dev chatroom on our [Gitter Channel](https://gitter.im/Mammals-watchig-process-analyse/Main).
 
@@ -25,15 +30,19 @@ You can also access the dev chatroom on our [Gitter Channel](https://gitter.im/M
 
 When I started my trip with the M.e.e.r e.V. association, I got to know the scientific work on La Gomera. It was overwhelmed to get so close to the marine mammals (adventure). I recognized the value of this work. The association M.e.e.r e.V. has dedicated itself to the promotion of environmental protection, science and education, in particular the protection of the cetaceans (whales and dolphins) and their marine habitat as well as the research of the cetaceans off La Gomera (Canary Islands). Working with the people was wonderful and important. I was asked whether we could do something and because of the old software for collecting the data. After a long time passed by the pandemic, we finally got back to the topic. I would like to take on this task on a voluntary basis to the best of my ability and time. :)
 
-[![M.e.e.r e.V.](https://m-e-e-r.de/wp-content/uploads/2019/01/MEER-Logo.svg)](https://m-e-e-r.de/en/)
+<h1 align="center">
+
+[![M.e.e.r e.V.](https://m-e-e-r.de/wp-content/uploads/2019/01/MEER-Logo.svg)](https://m-e-e-r.de/)
+
+</h1>
 
 ## Help the project
 
-- help the association [M.e.e.r e.V.](https://m-e-e-r.de/en/)
+- help the association [M.e.e.r e.V.](https://m-e-e-r.de/)
 - you can program, you have ideas, then help us here, foke us and improve the code :) or write to us, we like to listen.
 - how can you still help? 
   - [Buy us a coffee](https://www.buymeacoffee.com/mwpa)
-  - Donate (see on [M.e.e.r e.V.](https://m-e-e-r.de/en/) page)
+  - Donate (see on [M.e.e.r e.V.](https://m-e-e-r.de/) page)
   - Donate crypto coins (Networks: ETH, BSC, Polygon) ```0x0bF915d5fbD65e42bd2DeD3d056752938F7174a7```
 
 ## About MWPA
@@ -88,7 +97,7 @@ Start express server: ```node dist/main.js --config=/opt/app/config.json```
 
 ### Docker & Docker-Compose
 
-First edit the ```config.json``` then start docker container with docker-compse:
+First edit the ```config.json``` then start docker container with docker-compose:
 ```docker-compose up``` or as service ```docker-compose up -d```. The default server port is ```3000``` you can change it in ```docker-compose.yml```.
 The MariaDB database is in a volume, so the image and the container can be exchanged at any time. MariaDB listen on ```127.0.0.1:3306``` use DBeaver with SSH connection and you can see or edit the database.
 
@@ -101,7 +110,7 @@ NOTE: I recommend setting the express server behind an nginx proxy with a lets e
 - DBeaver
 
 ## Project supervisor
-* Christina Sommer by [M.e.e.r e.V.](https://m-e-e-r.de/en/)
+* Christina Sommer by [M.e.e.r e.V.](https://m-e-e-r.de/)
 * Stefan Werfling by [Pegenau GmbH & Co. KG](https://www.pegenau.de/)
 
 ## License
