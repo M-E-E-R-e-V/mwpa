@@ -1,0 +1,54 @@
+version: '3.1'
+
+services:
+  mariadb:
+    image: mariadb/server:10.3
+    container_name: nwpa_mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 'test'
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: 'nwpa'
+    volumes:
+      - nwpaMariadbData:/var/lib/mysql
+    ports:
+      - 127.0.0.1:3306:3306
+    networks:
+      nwpaNet:
+        ipv4_address: 10.122.0.2
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "50"
+
+  nwpa:
+    image: nwpa/nwpa:1.0
+    build:
+      context: .
+    restart: always
+    container_name: nwpa_server
+    volumes:
+      - ./config.json:/opt/app/config.json
+    ports:
+      - 3000:3000
+    networks:
+      nwpaNet:
+        ipv4_address: 10.122.0.3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "50"
+    depends_on:
+      - mariadb
+
+volumes:
+  nwpaMariadbData:
+    driver: local
+
+networks:
+  nwpaNet:
+    driver: bridge
+    ipam:
+      config:
+        -  subnet: 10.122.0.0/16
