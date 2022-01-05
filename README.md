@@ -7,7 +7,9 @@
 MWPA
 
 </h1>
-<p align="center">Mammals watchig process analyse</p>
+
+<p align="center">Mammal watching. Processing. Analysing.</p>
+<p align="center">Processing and analysing data gathered by mammal watching.</p>
 <div align="center">
 
 [![Gitter](https://badges.gitter.im/Mammals-watchig-process-analyse/Main.svg)](https://gitter.im/Mammals-watchig-process-analyse/Main?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
