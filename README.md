@@ -73,8 +73,6 @@ The backend will exchange the data with the frontend via a rest-json API. The mo
 #### Database Schema
 > [MWPA Database Schema on dbdiagram.io](https://dbdiagram.io/d/5dfa98f1edf08a25543f3bcc)
 
-<iframe width="560" height="315" src='https://dbdiagram.io/embed/5dfa98f1edf08a25543f3bcc'> </iframe>
-
 ### About Frontend
 
 - User login
