@@ -70,6 +70,11 @@ The backend will exchange the data with the frontend via a rest-json API. The mo
 - Express Server
 - MariaDB
 
+#### Database Schema
+> [MWPA Database Schema on dbdiagram.io](https://dbdiagram.io/d/5dfa98f1edf08a25543f3bcc)
+
+<iframe width="560" height="315" src='https://dbdiagram.io/embed/5dfa98f1edf08a25543f3bcc'> </iframe>
+
 ### About Frontend
 
 - User login
@@ -93,14 +98,21 @@ The backend will exchange the data with the frontend via a rest-json API. The mo
 
 First clone and go to folder and install all package: 
 
-```npm install```
+> npm install
 
-Start express server: ```node dist/main.js --config=/opt/app/config.json```
+Start express server: 
+
+> node dist/main.js --config=/opt/app/config.json
 
 ### Docker & Docker-Compose
 
 First edit the ```config.json``` then start docker container with docker-compose:
-```docker-compose up``` or as service ```docker-compose up -d```. The default server port is ```3000``` you can change it in ```docker-compose.yml```.
+> docker-compose up 
+
+or as service 
+> docker-compose up -d
+ 
+The default server port is ```3000``` you can change it in ```docker-compose.yml```.
 The MariaDB database is in a volume, so the image and the container can be exchanged at any time. MariaDB listen on ```127.0.0.1:3306``` use DBeaver with SSH connection and you can see or edit the database.
 
 
