@@ -45,7 +45,8 @@ When I started my trip with the M.e.e.r e.V. association, I got to know the scie
 - how can you still help? 
   - [Buy us a coffee](https://www.buymeacoffee.com/mwpa)
   - Donate (see on [M.e.e.r e.V.](https://m-e-e-r.de/) page)
-  - Donate crypto coins (Networks: ETH, BSC, Polygon) ```0x0bF915d5fbD65e42bd2DeD3d056752938F7174a7```
+  - Donate crypto coins
+    - for Networks: [ETH](https://ethereum.org/en/), [BSC](https://www.binance.com/en), [Polygon](https://polygon.technology/): ```0x0bF915d5fbD65e42bd2DeD3d056752938F7174a7```
 
 ## About MWPA
 MWPA is an NodeJs backend application for data collection and with frontend web application for easy-to-use. 
@@ -66,9 +67,9 @@ The backend will exchange the data with the frontend via a rest-json API. The mo
 
 #### Dependencies
 
-- NodeJS
-- Express Server
-- MariaDB
+- [NodeJS](https://nodejs.org/en/)
+- [Express Server](https://expressjs.com/)
+- [MariaDB](https://mariadb.org/)
 
 #### Database Schema
 > [MWPA Database Schema on dbdiagram.io](https://dbdiagram.io/d/5dfa98f1edf08a25543f3bcc)
@@ -82,8 +83,8 @@ The backend will exchange the data with the frontend via a rest-json API. The mo
 #### Dependencies
 
 - [AdminLTE](https://github.com/ColorlibHQ/AdminLTE)
-- JQuery
-- Bootstraps
+- [JQuery](https://jquery.com/)
+- [Bootstraps](https://getbootstrap.com/)
 
 ### About Mobile App
 
@@ -118,8 +119,8 @@ NOTE: I recommend setting the express server behind an nginx proxy with a lets e
 
 ### Dev-Tools
 
-- PhpStorm
-- DBeaver
+- [PhpStorm](https://www.jetbrains.com/phpstorm/)
+- [DBeaver](https://dbeaver.io/)
 
 ## Project supervisor
 * Christina Sommer by [M.e.e.r e.V.](https://m-e-e-r.de/)
