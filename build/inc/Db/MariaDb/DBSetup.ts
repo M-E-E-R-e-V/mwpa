@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import {Group as GroupDB} from './Entity/Group';
 import {User as UserDB} from './Entity/User';
 import {MariaDbHelper} from './MariaDbHelper';
 
@@ -18,15 +19,25 @@ export class DBSetup {
         const userCount = await userRepository.count();
 
         if (userCount === 0) {
-            const newUser = new UserDB();
+            const nGroup = new GroupDB();
+            nGroup.role = 'admin';
+            nGroup.description = 'Administrator group';
+            nGroup.organization_id = 0;
 
-            newUser.username = 'nwpaadmin';
-            newUser.email = 'admin@nwpa.org';
-            newUser.password = await bcrypt.hash('changeMyPassword', 10);
-            newUser.disable = false;
-            newUser.isAdmin = true;
+            // save group to db
+            const adminGroup = await MariaDbHelper.getConnection().manager.save(nGroup);
 
-            await MariaDbHelper.getConnection().manager.save(newUser);
+            const nUser = new UserDB();
+
+            nUser.username = 'nwpaadmin';
+            nUser.main_groupid = adminGroup.id;
+            nUser.email = 'admin@nwpa.org';
+            nUser.password = await bcrypt.hash('changeMyPassword', 10);
+            nUser.disable = false;
+            nUser.isAdmin = true;
+
+            // save user to db
+            await MariaDbHelper.getConnection().manager.save(nUser);
 
             console.log('Admin user create for first init.');
         }

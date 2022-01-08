@@ -7,7 +7,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 'test'
       MYSQL_ROOT_HOST: '%'
-      MYSQL_DATABASE: 'nwpa'
+      MYSQL_DATABASE: 'mwpa'
     volumes:
       - nwpaMariadbData:/var/lib/mysql
     ports:
