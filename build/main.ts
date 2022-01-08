@@ -7,11 +7,16 @@ import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
 // @ts-ignore
 import {Config} from './inc/Config/Config';
+import {DBSetup} from './inc/Db/MariaDb/DBSetup';
+import {Group as GroupDB} from './inc/Db/MariaDb/Entity/Group';
+import {Organization as OrganizationDB} from './inc/Db/MariaDb/Entity/Organization';
+import {User as UserDB} from './inc/Db/MariaDb/Entity/User';
+import {UserGroups as UserGroupsDB} from './inc/Db/MariaDb/Entity/UserGroups';
 import {MariaDbHelper} from './inc/Db/MariaDb/MariaDbHelper';
 import {Server} from './inc/Server/Server';
 
 /**
- *
+ * main application
  */
 (async(): Promise<void> => {
     const argv = minimist(process.argv.slice(2));
@@ -54,6 +59,10 @@ import {Server} from './inc/Server/Server';
             // 'ccc',
             database: tconfig.db.mysql.database,
             entities: [
+                UserDB,
+                OrganizationDB,
+                GroupDB,
+                UserGroupsDB
             ],
             migrations: [
             ],
@@ -119,5 +128,10 @@ import {Server} from './inc/Server/Server';
         publicDir: public_dir
     });
 
+    // listen, start express server
     mServer.listen();
+
+    // db setup first init
+    await DBSetup.firstInit();
+
 })();

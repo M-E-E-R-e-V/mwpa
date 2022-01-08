@@ -52,7 +52,7 @@ When I started my trip with the M.e.e.r e.V. association, I got to know the scie
 MWPA is an NodeJs backend application for data collection and with frontend web application for easy-to-use. 
 The backend will exchange the data with the frontend via a rest-json API. The mobile app can synchronize the data via another rest-json API with the backend.
 
-### About Backend 
+### 1. About Backend 
 
 - User administration
 - Data properties management (specifications, management, ... and much more)
@@ -71,10 +71,13 @@ The backend will exchange the data with the frontend via a rest-json API. The mo
 - [Express Server](https://expressjs.com/)
 - [MariaDB](https://mariadb.org/)
 
-#### Database Schema
-> [MWPA Database Schema on dbdiagram.io](https://dbdiagram.io/d/5dfa98f1edf08a25543f3bcc)
+#### Database documentation
+> [MWPA Database documentation on dbdiagram.io](https://dbdiagram.io/d/5dfa98f1edf08a25543f3bcc)
 
-### About Frontend
+#### API documentation
+> [MWPA API documentation on stoplight.io](https://swe.stoplight.io/docs/mwpa/)
+
+### 2. About Frontend
 
 - User login
 - Adminsitration
@@ -86,7 +89,7 @@ The backend will exchange the data with the frontend via a rest-json API. The mo
 - [JQuery](https://jquery.com/)
 - [Bootstraps](https://getbootstrap.com/)
 
-### About Mobile App
+### 3. About Mobile App
 
 - Collecting data (also Offline)
 - Sync to backend
