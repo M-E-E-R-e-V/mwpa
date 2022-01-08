@@ -11,11 +11,18 @@ export class User extends BaseEntity {
     id: number;
 
     @Index()
-    @Column()
+    @Column({
+        type: 'varchar',
+        length: 128
+    })
         // @ts-ignore
-    name: string;
+    username: string;
 
-    @Column()
+    @Column({
+        type: 'varchar',
+        length: 255,
+        default: ''
+    })
         // @ts-ignore
     full_name: string;
 
@@ -24,16 +31,31 @@ export class User extends BaseEntity {
     password: string;
 
     @Index()
-    @Column()
+    @Column({
+        type: 'varchar',
+        length: 255,
+        default: ''
+    })
         // @ts-ignore
     email: string;
 
+    @Index()
     @Column()
         // @ts-ignore
-    groupid: number;
+    main_groupid: number;
 
-    @Column()
+    @Index()
+    @Column({
+        type: 'boolean'
+    })
         // @ts-ignore
-    isAdmin: number;
+    isAdmin: boolean;
+
+    @Index()
+    @Column({
+        type: 'boolean'
+    })
+        // @ts-ignore
+    disable: boolean;
 
 }
