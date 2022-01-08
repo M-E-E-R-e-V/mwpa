@@ -1,0 +1,15 @@
+{
+  "db": {
+    "mysql": {
+      "host": "127.0.0.1",
+      "port": 3306,
+      "username": "root",
+      "password": "test",
+      "database": "mwpa"
+    },
+    "httpserver": {
+      "port": 3000,
+      "publicdir": "public"
+    }
+  }
+}
