@@ -5,6 +5,7 @@ import * as path from 'path';
 import session from 'express-session';
 import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
+import {Im2020} from './app/Import/Im2020';
 // @ts-ignore
 import {Config} from './inc/Config/Config';
 import {DBSetup} from './inc/Db/MariaDb/DBSetup';
@@ -21,9 +22,14 @@ import {Server} from './inc/Server/Server';
 (async(): Promise<void> => {
     const argv = minimist(process.argv.slice(2));
     let configfile = path.join(__dirname, '/config.json');
+    let importfile: string|null = null;
 
     if (argv.config) {
         configfile = argv.config;
+    }
+
+    if (argv.import) {
+        importfile = argv.import;
     }
 
     try {
@@ -69,10 +75,41 @@ import {Server} from './inc/Server/Server';
             migrationsRun: true,
             synchronize: true
         });
+
+        // db setup first init
+        await DBSetup.firstInit();
     } catch (error) {
         console.log('Error while connecting to the database', error);
         return;
     }
+
+    // import file for db ----------------------------------------------------------------------------------------------
+
+    if (importfile !== null) {
+        try {
+            if (!fs.existsSync(importfile)) {
+                console.log(`Importfile not found: ${importfile}, exit.`);
+                return;
+            }
+
+            const importer = new Im2020(importfile);
+            const imported = await importer.import();
+
+            if (imported) {
+                console.log(`Import is success: ${importfile}, exit.`);
+            } else {
+                console.log(`Import faild: ${importfile}, exit.`);
+            }
+
+            return;
+        } catch (err) {
+            console.log(`Importfile is not load: ${importfile}, exit.`);
+            console.error(err);
+            return;
+        }
+    }
+
+    // start server ----------------------------------------------------------------------------------------------------
 
     let aport = 3000;
     let public_dir = '';
@@ -130,8 +167,5 @@ import {Server} from './inc/Server/Server';
 
     // listen, start express server
     mServer.listen();
-
-    // db setup first init
-    await DBSetup.firstInit();
 
 })();
