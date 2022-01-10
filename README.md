@@ -65,6 +65,17 @@ The backend will exchange the data with the frontend via a rest-json API. The mo
 
 - IM2020: Import file 2020 is a prepared file with fixed columns. The import can only be carried out once with this file.
 
+#### Commandline arguments
+See the example for starting the express server.
+
+```--config```
+  
+  - Path to config file
+
+```--import```
+  
+  - Path to IM2020 import file
+
 #### Dependencies
 
 - [NodeJS](https://nodejs.org/en/)
@@ -88,6 +99,15 @@ The backend will exchange the data with the frontend via a rest-json API. The mo
 - [AdminLTE](https://github.com/ColorlibHQ/AdminLTE)
 - [JQuery](https://jquery.com/)
 - [Bootstraps](https://getbootstrap.com/)
+
+#### Screenshots
+<table>
+  <tr>
+    <td> 
+      <img src="doc/screenshots/login.png" alt="1" width="360px" >
+    </td>
+  </tr>
+</table>
 
 ### 3. About Mobile App
 
