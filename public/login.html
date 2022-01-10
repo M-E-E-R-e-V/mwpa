@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="css/adminlte.min.css">
+
+  <!-- jQuery -->
+  <script src="plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <script data-main="dist/login" src="node_modules/requirejs/require.js"></script>
+<body class="hold-transition login-page">
+
+<div style="z-index: 10;bottom: 0;left: 0;position: fixed;right: 0;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Calque_1" x="0px"
+       y="0px" viewBox="0 0 1300 550" style="enable-background:new 0 0 1300 550;" xml:space="preserve">
+  <style type="text/css">
+    .st1{opacity:0.6;fill:#0C3157;enable-background:new;}
+  </style>
+
+    <path class="st1" d="M 0 250 C 600 450 650 100 1300 250 L 1300 550 L 0 550 L 0 250">
+      <animate
+        attributeName="d"
+        dur="5s"
+        begin="1s"
+        values="M 0 250 C 600 450 650 100 1300 250 L 1300 550 L 0 550 L 0 250;
+                  M 0 250 C 600 100 650 450 1300 250 L 1300 550 L 0 550 L 0 250;
+          M 0 250 C 600 450 650 100 1300 250 L 1300 550 L 0 550 L 0 250"
+        repeatCount="indefinite"
+      />
+    </path>
+
+    <path class="st1" d="M 0 250 C 600 100 650 450 1300 250 L 1300 550 L 0 550 L 0 250">
+      <animate
+        attributeName="d"
+        dur="5s"
+        values="M 0 250 C 600 100 650 450 1300 250 L 1300 550 L 0 550 L 0 250;
+                  M 0 250 C 600 450 650 100 1300 250 L 1300 550 L 0 550 L 0 250;
+          M 0 250 C 600 100 650 450 1300 250 L 1300 550 L 0 550 L 0 250"
+        repeatCount="indefinite"
+      />
+    </path>
+
+    <path class="st1" d="M 0 250 C 950 350 950 150 1300 250 L 1300 550 L 0 550 L 0 250">
+      <animate
+        attributeName="d"
+        dur="5s"
+        begin="2s"
+        values="M 0 250 C 950 350 950 150 1300 250 L 1300 550 L 0 550 L 0 250;
+                  M 0 250 C 350 150 350 350 1300 250 L 1300 550 L 0 550 L 0 250;
+          M 0 250 C 950 350 950 150 1300 250 L 1300 550 L 0 550 L 0 250"
+        repeatCount="indefinite"
+      />
+    </path>
+
+    <path class="st1" d="M 0 250 C 350 150 350 350 1300 250 L 1300 550 L 0 550 L 0 250">
+      <animate
+        attributeName="d"
+        dur="5s"
+        values="M 0 250 C 350 150 350 350 1300 250 L 1300 550 L 0 550 L 0 250;
+                  M 0 250 C 950 350 950 150 1300 250 L 1300 550 L 0 550 L 0 250;
+          M 0 250 C 350 150 350 350 1300 250 L 1300 550 L 0 550 L 0 250"
+        repeatCount="indefinite"
+      />
+    </path>
+
+  </svg>
+</div>
+
+<div class="login-box" style="z-index: 30;">
+  <!-- /.login-logo -->
+  <div class="card card-outline card-primary">
+    <div class="card-header text-center">
+      <img src="img/whale-ico.png" /><br>
+      <span class="h1" id="login_title"></span>
+    </div>
+    <div class="card-body">
+      <p class="login-box-msg">Sign in to start your session</p>
+
+      <form method="post">
+        <div class="input-group mb-3">
+          <input type="email" class="form-control" placeholder="Email" id="input_email">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" placeholder="Password" id="input_password">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-8">
+          </div>
+          <!-- /.col -->
+          <div class="col-4">
+            <button type="button" class="btn btn-primary btn-block" id="btnsignin">Sign In</button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+    </div>
+    <!-- /.card-body -->
+  </div>
+  <!-- /.card -->
+</div>
+<!-- /.login-box -->
+
+<div style="z-index: 20;bottom: 0;left: 0;position: fixed;right: 0;">
+<footer class="main-footer" style="margin-left:0;">
+  <strong>Mammal watching. Processing. Analysing. - Project MWPA 2022 <a href="https://github.com/stefanwerfling/mwpa" target="_blank">on Github</a>.</strong>
+  &nbsp; A project of the  <a href="https://m-e-e-r.de/" target="_blank">M.e.e.r e.V.</a> association
+  <div class="float-right d-none d-sm-inline-block">
+    <b>Version</b> 1.0.0
+  </div>
+</footer>
+</div>
+
+</body>
+</html>
