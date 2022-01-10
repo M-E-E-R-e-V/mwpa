@@ -6,10 +6,10 @@
       "username": "root",
       "password": "test",
       "database": "mwpa"
-    },
-    "httpserver": {
-      "port": 3000,
-      "publicdir": "public"
     }
+  },
+  "httpserver": {
+    "port": 3000,
+    "publicdir": "public"
   }
 }
