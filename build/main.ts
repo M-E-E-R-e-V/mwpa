@@ -11,9 +11,12 @@ import {Config} from './inc/Config/Config';
 import {DBSetup} from './inc/Db/MariaDb/DBSetup';
 import {Group as GroupDB} from './inc/Db/MariaDb/Entity/Group';
 import {Organization as OrganizationDB} from './inc/Db/MariaDb/Entity/Organization';
+import {Species} from './inc/Db/MariaDb/Entity/Species';
 import {User as UserDB} from './inc/Db/MariaDb/Entity/User';
 import {UserGroups as UserGroupsDB} from './inc/Db/MariaDb/Entity/UserGroups';
+import {Vehicle} from './inc/Db/MariaDb/Entity/Vehicle';
 import {MariaDbHelper} from './inc/Db/MariaDb/MariaDbHelper';
+import {Logger} from './inc/Logger/Logger';
 import {Server} from './inc/Server/Server';
 
 /**
@@ -50,6 +53,14 @@ import {Server} from './inc/Server/Server';
         return;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+
+    if (tconfig.logging) {
+        Logger.DEBUG_LOGGING = tconfig.logging.debugging;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
     try {
         // MariaDb -----------------------------------------------------------------------------------------------------
         await MariaDbHelper.init({
@@ -68,7 +79,9 @@ import {Server} from './inc/Server/Server';
                 UserDB,
                 OrganizationDB,
                 GroupDB,
-                UserGroupsDB
+                UserGroupsDB,
+                Species,
+                Vehicle
             ],
             migrations: [
             ],
@@ -140,6 +153,8 @@ import {Server} from './inc/Server/Server';
             }
         }
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     const mServer = new Server({
         port: aport,

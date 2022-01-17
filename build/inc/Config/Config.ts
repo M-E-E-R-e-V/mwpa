@@ -5,6 +5,9 @@ import path from 'path';
  * ConfigOptions
  */
 interface ConfigOptions {
+    logging?: {
+        debugging: boolean;
+    };
     db: {
         mysql: {
             host: string;
