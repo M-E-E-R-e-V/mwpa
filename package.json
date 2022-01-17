@@ -30,7 +30,7 @@
     "eslint": "^7.23.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "http-proxy-middleware": "^1.1.0",
-    "npm": "^6.14.15",
+    "npm": "^7.20.6",
     "tslint": "^6.1.3",
     "typescript": "^4.2.3"
   },
@@ -44,10 +44,9 @@
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "got": "^11.8.2",
-    "http-mitm-proxy": "^0.9.0",
     "minimist": "^1.2.5",
     "mysql": "^2.18.1",
-    "read-excel-file": "^5.2.25",
+    "node-xlsx": "^0.21.0",
     "routing-controllers": "^0.9.0",
     "tough-cookie": "^2.3.4",
     "typeorm": "^0.2.32"
