@@ -9,12 +9,16 @@ import {Im2020} from './app/Import/Im2020';
 // @ts-ignore
 import {Config} from './inc/Config/Config';
 import {DBSetup} from './inc/Db/MariaDb/DBSetup';
+import {EncounterCategories as EncounterCategoriesDB} from './inc/Db/MariaDb/Entity/EncounterCategories';
 import {Group as GroupDB} from './inc/Db/MariaDb/Entity/Group';
 import {Organization as OrganizationDB} from './inc/Db/MariaDb/Entity/Organization';
-import {Species} from './inc/Db/MariaDb/Entity/Species';
+import {Sighting as SightingDB} from './inc/Db/MariaDb/Entity/Sighting';
+import {SightingTour as SightingTourDB} from './inc/Db/MariaDb/Entity/SightingTour';
+import {Species as SpeciesDB} from './inc/Db/MariaDb/Entity/Species';
 import {User as UserDB} from './inc/Db/MariaDb/Entity/User';
 import {UserGroups as UserGroupsDB} from './inc/Db/MariaDb/Entity/UserGroups';
-import {Vehicle} from './inc/Db/MariaDb/Entity/Vehicle';
+import {Vehicle as VehicleDB} from './inc/Db/MariaDb/Entity/Vehicle';
+import {VehicleDriver as VehicleDriverDB} from './inc/Db/MariaDb/Entity/VehicleDriver';
 import {MariaDbHelper} from './inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from './inc/Logger/Logger';
 import {Server} from './inc/Server/Server';
@@ -80,8 +84,12 @@ import {Server} from './inc/Server/Server';
                 OrganizationDB,
                 GroupDB,
                 UserGroupsDB,
-                Species,
-                Vehicle
+                SpeciesDB,
+                VehicleDB,
+                VehicleDriverDB,
+                SightingTourDB,
+                SightingDB,
+                EncounterCategoriesDB
             ],
             migrations: [
             ],

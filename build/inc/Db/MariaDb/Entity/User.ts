@@ -40,20 +40,24 @@ export class User extends BaseEntity {
     email: string;
 
     @Index()
-    @Column()
+    @Column({
+        default: 0
+    })
         // @ts-ignore
     main_groupid: number;
 
     @Index()
     @Column({
-        type: 'boolean'
+        type: 'boolean',
+        default: false
     })
         // @ts-ignore
     isAdmin: boolean;
 
     @Index()
     @Column({
-        type: 'boolean'
+        type: 'boolean',
+        default: true
     })
         // @ts-ignore
     disable: boolean;
