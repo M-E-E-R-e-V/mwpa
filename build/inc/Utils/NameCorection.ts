@@ -8,17 +8,19 @@ export class NameCorection {
      * @param name
      */
     public static renameUpperChars(name: string): string {
-        const tname = name.toLowerCase();
-        const parts = tname.split(' ');
-
         let newName = '';
 
-        for (const apart of parts) {
-            if (newName.length > 0) {
-                newName += ' ';
-            }
+        if (name && (name.length >= 2)) {
+            const tname = name.toLowerCase();
+            const parts = tname.split(' ');
 
-            newName += apart.charAt(0).toUpperCase() + apart.slice(1);
+            for (const apart of parts) {
+                if (newName.length > 0) {
+                    newName += ' ';
+                }
+
+                newName += apart.charAt(0).toUpperCase() + apart.slice(1);
+            }
         }
 
         return newName;
