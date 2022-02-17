@@ -6,6 +6,7 @@ import session from 'express-session';
 import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
 import {Im2020} from './app/Import/Im2020';
+import {CalcAutoFill022022} from './app/Utils/CalcAutoFill022022';
 // @ts-ignore
 import {Config} from './inc/Config/Config';
 import {DBSetup} from './inc/Db/MariaDb/DBSetup';
@@ -30,6 +31,7 @@ import {Server} from './inc/Server/Server';
     const argv = minimist(process.argv.slice(2));
     let configfile = path.join(__dirname, '/config.json');
     let importfile: string|null = null;
+    let calcfile: string|null = null;
 
     if (argv.config) {
         configfile = argv.config;
@@ -37,6 +39,10 @@ import {Server} from './inc/Server/Server';
 
     if (argv.import) {
         importfile = argv.import;
+    }
+
+    if (argv.calc) {
+        calcfile = argv.calc;
     }
 
     try {
@@ -125,6 +131,26 @@ import {Server} from './inc/Server/Server';
             return;
         } catch (err) {
             console.log(`Importfile is not load: ${importfile}, exit.`);
+            console.error(err);
+            return;
+        }
+    }
+
+    // calc file -------------------------------------------------------------------------------------------------------
+
+    if (calcfile !== null) {
+        try {
+            if (!fs.existsSync(calcfile)) {
+                console.log(`CalcFile not found: ${calcfile}, exit.`);
+                return;
+            }
+
+            const calcAutoFill = new CalcAutoFill022022(calcfile, `${calcfile}.new.xlsx`);
+            await calcAutoFill.calc();
+
+            return;
+        } catch (err) {
+            console.log(`CalcFile is not load: ${importfile}, exit.`);
             console.error(err);
             return;
         }

@@ -365,7 +365,7 @@ export class Im2020 {
         // sighting ----------------------------------------------------------------------------------------------------
 
         const dateTour = new Date(row.DATE);
-        const dateTourStr = `${dateTour.getFullYear()}-${dateTour.getMonth()}-${dateTour.getDay()}`;
+        const dateTourStr = `${dateTour.getFullYear()}-${dateTour.getMonth()}-${dateTour.getDate()}`;
         const timeTour = new Date(row.TIME);
         const timeTourStr = `${timeTour.getHours()}:${timeTour.getMinutes()}`;
         const strBoat = row.Boat;
