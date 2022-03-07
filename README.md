@@ -13,6 +13,8 @@ MWPA
 <div align="center">
 
 [![Gitter](https://badges.gitter.im/Mammals-watchig-process-analyse/Main.svg)](https://gitter.im/Mammals-watchig-process-analyse/Main?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/stefanwerfling/mwpa)](https://lgtm.com/projects/g/stefanwerfling/mwpa)
+[![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/stefanwerfling/mwpa)](https://lgtm.com/projects/g/stefanwerfling/mwpa)
 
 </div>
 
