@@ -1,4 +1,4 @@
-import {Body, JsonController, Post, Session} from 'routing-controllers';
+import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
 import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from '../../inc/Logger/Logger';
@@ -22,10 +22,30 @@ export type LoginResponse = {
 };
 
 /**
+ * LoginIsLoginResponse
+ */
+export type LoginIsLoginResponse = {
+    status: boolean;
+};
+
+/**
  * Login
  */
 @JsonController()
 export class Login {
+
+    /**
+     * islogin
+     * @param session
+     */
+    @Get('/json/islogin')
+    public islogin(@Session() session: any): LoginIsLoginResponse {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            return {status: true};
+        }
+
+        return {status: false};
+    }
 
     /**
      * login

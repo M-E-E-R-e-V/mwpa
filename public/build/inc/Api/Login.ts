@@ -1,6 +1,13 @@
 import {NetFetch} from '../Net/NetFetch';
 
 /**
+ * IsLogin
+ */
+export type IsLogin = {
+    status: boolean;
+};
+
+/**
  * Login
  */
 export class Login {
@@ -22,6 +29,19 @@ export class Login {
             }
 
             throw new Error(response.error);
+        }
+
+        return false;
+    }
+
+    /**
+     * isLogin
+     */
+    public static async isLogin(): Promise<boolean> {
+        const resulte = await NetFetch.getData('/json/islogin') as IsLogin;
+
+        if (resulte.status) {
+            return true;
         }
 
         return false;
