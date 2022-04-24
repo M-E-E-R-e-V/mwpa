@@ -64,7 +64,7 @@ export class Sighting extends BasePage {
         new Th(trhead, 'Date');
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Boat');
+        new Th(trhead, 'Vehicle<br>Driver');
 
         // eslint-disable-next-line no-new
         new Th(trhead, 'Species');
@@ -93,6 +93,8 @@ export class Sighting extends BasePage {
         const onLoadList = async(): Promise<void> => {
             card.showLoading();
 
+            // species -------------------------------------------------------------------------------------------------
+
             const species = await SpeciesAPI.getList();
             const mspecies = new Map<number, SpeciesEntry>();
 
@@ -102,7 +104,7 @@ export class Sighting extends BasePage {
                 }
             }
 
-            // -----------------------------------------------------
+            // encounters ----------------------------------------------------------------------------------------------
 
             const encates = await EncounterCategoriesAPI.getList();
             const mencates = new Map<number, EncounterCategorieEntry>();
@@ -113,7 +115,11 @@ export class Sighting extends BasePage {
                 }
             }
 
-            // -----------------------------------------------------
+            // vehicles ------------------------------------------------------------------------------------------------
+
+            // drivers -------------------------------------------------------------------------------------------------
+
+            // sightings -----------------------------------------------------------------------------------------------
 
             const sightings = await SightingsAPI.getList();
 
@@ -140,13 +146,13 @@ export class Sighting extends BasePage {
                     // eslint-disable-next-line no-new
                     new Td(trbody, entry.id);
 
-                    const date = moment(entry.sigthing_datetime * 1000);
+                    const date = moment(new Date(entry.sigthing_datetime * 1000));
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, date.format('LLLL'));
+                    new Td(trbody, date.format('YYYY.MM.DD HH:mm'));
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${entry.vehicle_id}`);
+                    new Td(trbody, `${entry.vehicle_id}<br>`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${specieName}`);
@@ -178,11 +184,14 @@ export class Sighting extends BasePage {
                     new Td(trbody, '');
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `N: ${entry.location_gps_n} <br>E: ${entry.location_gps_e}`);
+                    new Td(trbody, `N: ${entry.location_gps_n} <br>W: ${entry.location_gps_w}`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${encounterCategorieName}`);
 
+                    // other species
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, '');
                 }
             }
 

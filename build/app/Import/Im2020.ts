@@ -1,5 +1,6 @@
 import xlsx from 'node-xlsx';
 import * as bcrypt from 'bcrypt';
+import moment from 'moment';
 import {EncounterCategories as EncounterCategoriesDB} from '../../inc/Db/MariaDb/Entity/EncounterCategories';
 import {Group as GroupDB} from '../../inc/Db/MariaDb/Entity/Group';
 import {Organization as OrganizationDB} from '../../inc/Db/MariaDb/Entity/Organization';
@@ -8,6 +9,7 @@ import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/Sighti
 import {Species as SpeciesDB} from '../../inc/Db/MariaDb/Entity/Species';
 import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
 import {Vehicle as VehicleDB} from '../../inc/Db/MariaDb/Entity/Vehicle';
+import {VehicleDriver as VehicleDriverDB} from '../../inc/Db/MariaDb/Entity/VehicleDriver';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DateHelper} from '../../inc/Utils/DateHelper';
 import {NameCorection} from '../../inc/Utils/NameCorection';
@@ -62,7 +64,9 @@ export class Im2020 {
 
         // parse excel file --------------------------------------------------------------------------------------------
 
-        const workSheets = xlsx.parse(this._xlsxFile, {cellDates: true});
+        const workSheets = xlsx.parse(this._xlsxFile, {
+            cellDates: true
+        });
 
         if (!workSheets) {
             return false;
@@ -300,6 +304,79 @@ export class Im2020 {
     }
 
     /**
+     * _importVehicleDriver
+     * import vehicle driver
+     * @param drivername
+     * @protected
+     */
+    protected async _importVehicleDriver(drivername: string): Promise<number> {
+        if (!this._organization) {
+            throw new Error('none oranization found, import user can not create');
+        }
+
+        const tdriverName = NameCorection.renameUpperChars(drivername);
+        let driverId = 0;
+
+        if (tdriverName) {
+            const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
+            const groupRepository = MariaDbHelper.getConnection().getRepository(GroupDB);
+
+            let driverGroup = await groupRepository.findOne({
+                where: {
+                    role: 'driver'
+                }
+            });
+
+            if (!driverGroup) {
+                driverGroup = new GroupDB();
+                driverGroup.role = 'driver';
+                driverGroup.organization_id = this._organization.id;
+                driverGroup.description = 'Driver NWPA';
+
+                driverGroup = await MariaDbHelper.getConnection().manager.save(driverGroup);
+            }
+
+            let driverUser = await userRepository.findOne({
+                where: {
+                    username: tdriverName
+                }
+            });
+
+            if (!driverUser) {
+                driverUser = new UserDB();
+                driverUser.username = tdriverName;
+                driverUser.full_name = tdriverName;
+                driverUser.email = 'driverr@mwpa.org';
+                driverUser.password = '';
+                driverUser.main_groupid = driverGroup.id;
+
+                driverUser = await MariaDbHelper.getConnection().manager.save(driverUser);
+            }
+
+            const vdriverRepository = MariaDbHelper.getConnection().getRepository(VehicleDriverDB);
+
+            let driverData = await vdriverRepository.findOne({
+                where: {
+                    user_id: driverUser.id
+                }
+            });
+
+
+            if (!driverData) {
+                driverData = new VehicleDriverDB();
+                driverData.user_id = driverUser.id;
+                driverData.description = 'Importer';
+
+                driverData = await MariaDbHelper.getConnection().manager.save(driverData);
+            }
+
+            driverId = driverData.id;
+        }
+
+        return driverId;
+    }
+
+    /**
      * _importEncounterCategorie
      * @param encounterCategorieName
      * @protected
@@ -337,12 +414,17 @@ export class Im2020 {
         // vehicle -----------------------------------------------------------------------------------------------------
         const vehicleId = await this._importVehicle(row.Boat);
 
+        // import vehicle driver ---------------------------------------------------------------------------------------
+        const vehicleDriverId = await this._importVehicleDriver(row.Skipper);
+
+        // sighting tour -----------------------------------------------------------------------------------------------
         let sightingTour = new SightingTourDB();
 
         sightingTour.create_datetime = DateHelper.getCurrentDbTime();
         sightingTour.organization_id = this._organization?.id!!;
         sightingTour.creater_id = this._createUser?.id!!;
         sightingTour.vehicle_id = vehicleId;
+        sightingTour.vehicle_driver_id = vehicleDriverId;
 
         sightingTour = await MariaDbHelper.getConnection().manager.save(sightingTour);
 
@@ -364,9 +446,20 @@ export class Im2020 {
 
         // sighting ----------------------------------------------------------------------------------------------------
 
-        const dateTour = new Date(row.DATE);
+        let valueDate: any = row.DATE;
+        let valueTime: any = row.TIME;
+
+        if (typeof valueDate === 'string') {
+            valueDate = moment(valueDate, 'DD:MM:YYYY').toDate();
+        }
+
+        if (typeof valueTime === 'string') {
+            valueTime = moment(valueTime, 'HH:mm').toDate();
+        }
+
+        const dateTour = new Date(valueDate);
         const dateTourStr = `${dateTour.getFullYear()}-${dateTour.getMonth()}-${dateTour.getDate()}`;
-        const timeTour = new Date(row.TIME);
+        const timeTour = new Date(valueTime);
         const timeTourStr = `${timeTour.getHours()}:${timeTour.getMinutes()}`;
         const strBoat = row.Boat;
         const species = row.SPECIES;
@@ -409,10 +502,11 @@ export class Im2020 {
         sighting.sigthing_datetime = dateTourTimeNumber;
         sighting.species_id = speciesId;
         sighting.location_gps_n = row.POSITION_N;
-        sighting.location_gps_e = row.POSITION_W;
+        sighting.location_gps_w = row.POSITION_W;
         sighting.individual_count = parseInt(row.GROUP_SIZE, 10) || 0;
         sighting.encounter_categorie_id = encounterCategorieId;
         sighting.notes = row.Notes;
+        sighting.exist_images = (parseInt(row.k_Photo, 10) || 0) === -1;
 
         sighting = await MariaDbHelper.getConnection().manager.save(sighting);
 

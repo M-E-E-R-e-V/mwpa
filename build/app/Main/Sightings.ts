@@ -32,7 +32,7 @@ export type SightingsEntry = {
     location_lat: number;
     location_lon: number;
     location_gps_n: string;
-    location_gps_e: string;
+    location_gps_w: string;
     notes: string;
     tour_start_date: number;
     tour_end_date: number;
@@ -104,7 +104,7 @@ export class Sightings {
                         location_lat: entry.sighting_location_lat,
                         location_lon: entry.sighting_location_lon,
                         location_gps_n: entry.sighting_location_gps_n,
-                        location_gps_e: entry.sighting_location_gps_e,
+                        location_gps_w: entry.sighting_location_gps_w,
                         notes: entry.sighting_notes,
                         tour_start_date: entry.sighting_tour_start_date,
                         tour_end_date: entry.sighting_tour_end_date,

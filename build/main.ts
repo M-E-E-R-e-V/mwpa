@@ -15,6 +15,7 @@ import {CalcAutoFill022022} from './app/Utils/CalcAutoFill022022';
 // @ts-ignore
 import {Config} from './inc/Config/Config';
 import {DBSetup} from './inc/Db/MariaDb/DBSetup';
+import {BehaviouralStates as BehaviouralStatesDB} from './inc/Db/MariaDb/Entity/BehaviouralStates';
 import {EncounterCategories as EncounterCategoriesDB} from './inc/Db/MariaDb/Entity/EncounterCategories';
 import {Group as GroupDB} from './inc/Db/MariaDb/Entity/Group';
 import {Organization as OrganizationDB} from './inc/Db/MariaDb/Entity/Organization';
@@ -100,7 +101,8 @@ import {Server} from './inc/Server/Server';
                 VehicleDriverDB,
                 SightingTourDB,
                 SightingDB,
-                EncounterCategoriesDB
+                EncounterCategoriesDB,
+                BehaviouralStatesDB
             ],
             migrations: [
             ],
