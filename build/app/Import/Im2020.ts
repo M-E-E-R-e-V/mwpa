@@ -487,9 +487,13 @@ export class Im2020 {
             sighting.hash = thash;
         }
 
-        const dateTourTime = new Date(dateTour);
-        dateTour.setHours(timeTour.getHours());
-        dateTour.setMinutes(timeTour.getMinutes());
+        const dateTourTime = new Date(
+            dateTour.getFullYear(),
+            dateTour.getMonth(),
+            dateTour.getDate(),
+            timeTour.getHours(),
+            timeTour.getMinutes()
+        );
 
         let dateTourTimeNumber = dateTourTime.getTime() / 1000;
 
