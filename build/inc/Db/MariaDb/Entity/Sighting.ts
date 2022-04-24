@@ -189,7 +189,7 @@ export class Sighting extends BaseEntity {
         default: ''
     })
         // @ts-ignore
-    location_gps_e: string;
+    location_gps_w: string;
 
     /**
      * notes

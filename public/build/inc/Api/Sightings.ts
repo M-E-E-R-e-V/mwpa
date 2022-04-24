@@ -29,7 +29,7 @@ export type SightingsEntry = {
     location_lat: number;
     location_lon: number;
     location_gps_n: string;
-    location_gps_e: string;
+    location_gps_w: string;
     notes: string;
     tour_start_date: number;
     tour_end_date: number;
