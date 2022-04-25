@@ -1,10 +1,13 @@
 import moment from 'moment';
+import {Driver as DriverAPI, DriverEntry} from '../Api/Driver';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
-import {Sightings as SightingsAPI} from '../Api/Sightings';
+import {Sightings as SightingsAPI, SightingsEntry} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
+import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {Card} from '../PageComponents/Content/Card/Card';
 import {ContentCol12} from '../PageComponents/Content/ContentCol12';
 import {ContentRow} from '../PageComponents/Content/ContentRow';
+import {Button} from '../PageComponents/Content/Form/Button';
 import {Table} from '../PageComponents/Content/Table/Table';
 import {Td} from '../PageComponents/Content/Table/Td';
 import {Th} from '../PageComponents/Content/Table/Th';
@@ -57,8 +60,9 @@ export class Sighting extends BasePage {
 
         const table = new Table(card.getElement());
         const trhead = new Tr(table.getThead());
+
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Id');
+        new Th(trhead, 'Id<br>TourId');
 
         // eslint-disable-next-line no-new
         new Th(trhead, 'Date');
@@ -86,6 +90,9 @@ export class Sighting extends BasePage {
 
         // eslint-disable-next-line no-new
         new Th(trhead, 'Other species');
+
+        // eslint-disable-next-line no-new
+        new Th(trhead, '');
 
         /**
          * onLoadList
@@ -117,18 +124,35 @@ export class Sighting extends BasePage {
 
             // vehicles ------------------------------------------------------------------------------------------------
 
+            const vehicles = await VehicleAPI.getList();
+            const mvehicles = new Map<number, VehicleEntry>();
+
+            if (vehicles) {
+                for (const tvehicle of vehicles) {
+                    mvehicles.set(tvehicle.id, tvehicle);
+                }
+            }
+
             // drivers -------------------------------------------------------------------------------------------------
+
+            const drivers = await DriverAPI.getList();
+            const mdrivers = new Map<number, DriverEntry>();
+
+            if (drivers) {
+                for (const tdriver of drivers) {
+                    mdrivers.set(tdriver.id, tdriver);
+                }
+            }
 
             // sightings -----------------------------------------------------------------------------------------------
 
-            const sightings = await SightingsAPI.getList();
-
-            if (sightings) {
-                card.setTitle(`Sighting (${sightings.count})`);
-
-                for (const entry of sightings.list) {
+            const onLoadsightings = async(sightings: SightingsEntry[]): Promise<void> => {
+                for (const entry of sightings) {
                     let encounterCategorieName = '';
                     let specieName = '';
+                    let vehicleName = '';
+                    let vehicleDriverName = '';
+
                     const specie = mspecies.get(entry.species_id);
 
                     if (specie) {
@@ -141,10 +165,24 @@ export class Sighting extends BasePage {
                         encounterCategorieName = encCate.name;
                     }
 
+                    const vehicle = mvehicles.get(entry.vehicle_id);
+
+                    if (vehicle) {
+                        vehicleName = vehicle.name;
+                    }
+
+                    const driver = mdrivers.get(entry.vehicle_driver_id);
+
+                    if (driver) {
+                        vehicleDriverName = driver.name;
+                    }
+
+                    // table -------------------------------------------------------------------------------------------
+
                     const trbody = new Tr(table.getTbody());
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, entry.id);
+                    new Td(trbody, `#${entry.id}<br>#${entry.sighting_tour_id}`);
 
                     const date = moment(new Date(entry.sigthing_datetime * 1000));
 
@@ -152,7 +190,7 @@ export class Sighting extends BasePage {
                     new Td(trbody, date.format('YYYY.MM.DD HH:mm'));
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${entry.vehicle_id}<br>`);
+                    new Td(trbody, `${vehicleName}<br>${vehicleDriverName}`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${specieName}`);
@@ -184,7 +222,7 @@ export class Sighting extends BasePage {
                     new Td(trbody, '');
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `N: ${entry.location_gps_n} <br>W: ${entry.location_gps_w}`);
+                    new Td(trbody, `<dl class="row"><dt class="col-sm-1"><i class="fas fa-map-marker-alt mr-1"></i></dt><dd class="col-sm-5">N: ${entry.location_gps_n} <br>W: ${entry.location_gps_w}</dd></dl>`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${encounterCategorieName}`);
@@ -192,7 +230,69 @@ export class Sighting extends BasePage {
                     // other species
                     // eslint-disable-next-line no-new
                     new Td(trbody, '');
+
+                    // action
+                    const actionTd = new Td(trbody, '');
+
+                    const editBtn = new Button(actionTd.getElement());
+                    editBtn.getElement().append('<i class="fa fa-edit"></i>');
+                    editBtn.setOnClickFn((): void => {
+                        alert('TODO');
+                    });
                 }
+            };
+
+            let offset = 0;
+            const limit = 20;
+
+            const sightings = await SightingsAPI.getList({
+                limit,
+                offset
+            });
+
+            if (sightings) {
+                card.setTitle(`Sighting (${sightings.count})`);
+
+                await onLoadsightings(sightings.list);
+
+                jQuery(window).on('scroll', async() => {
+                    const h = jQuery(window).height()!;
+                    const sh = jQuery(window).scrollTop()!;
+
+                    /*
+                     *
+                     * if (sh > h) {
+                     *     table.getThead().css({
+                     *         'position': 'fixed',
+                     *         'top': 0,
+                     *         'z-index': 9000,
+                     *         'background': 'white',
+                     *         'width': table.getThead().width()
+                     *     });
+                     * } else {
+                     *     table.getThead().css({
+                     *         'position': '',
+                     *         'top': '',
+                     *         'z-index': '',
+                     *         'background': '',
+                     *         'width': ''
+                     *     });
+                     * }
+                     */
+
+                    if (sh >= h - 5) {
+                        offset += limit;
+
+                        const tsightings = await SightingsAPI.getList({
+                            limit,
+                            offset
+                        });
+
+                        if (tsightings) {
+                            await onLoadsightings(tsightings.list);
+                        }
+                    }
+                });
             }
 
             card.hideLoading();

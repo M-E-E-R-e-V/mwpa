@@ -6,7 +6,8 @@ import {NavbarLinkButton} from './inc/PageComponents/Navbar/NavbarLinkButton';
 import {NavbarLinkFullsize} from './inc/PageComponents/Navbar/NavbarLinkFullsize';
 import {SidebarMenuItem} from './inc/PageComponents/Sidebar/SidebarMenuItem';
 import {BasePage} from './inc/Pages/BasePage';
-import {Sighting} from './inc/Pages/Sighting';
+import {Sighting as SightingPage} from './inc/Pages/Sighting';
+import {Tours as ToursPage} from './inc/Pages/Tours';
 import {UtilAvatarGenerator} from './inc/Utils/UtilAvatarGenerator';
 import {UtilColor} from './inc/Utils/UtilColor';
 
@@ -69,11 +70,19 @@ import {UtilColor} from './inc/Utils/UtilColor';
         // sidemenu ------------------------------------------------------------------------------------------------
         const sidemenuList = [
             {
+                title: 'Tours',
+                icon: 'fa-solid fa-flag',
+                name: 'tours',
+                onClick: (): void => {
+                    loadPage(new ToursPage());
+                }
+            },
+            {
                 title: 'Sighting',
-                icon: 'fa-tachometer-alt',
+                icon: 'fa-solid fa-binoculars',
                 name: 'sighting',
                 onClick: (): void => {
-                    loadPage(new Sighting());
+                    loadPage(new SightingPage());
                 }
             }
         ];
@@ -124,5 +133,6 @@ import {UtilColor} from './inc/Utils/UtilColor';
         globalPage = page;
     };
 
-    await loadPage(new Sighting());
+    // default page
+    await loadPage(new SightingPage());
 })();

@@ -24,6 +24,8 @@ export class SightingEditModal extends ModalDialog {
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
 
+        // const groupDateTime = new FormGroup(bodyCard, 'Datetime');
+
         const groupSpecie = new FormGroup(bodyCard, 'Specie');
         this._specieSelect = new SelectBottemBorderOnly2(groupSpecie.getElement());
 
