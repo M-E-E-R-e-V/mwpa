@@ -5,6 +5,8 @@ import {NetFetch} from '../Net/NetFetch';
  */
 export type SightingsFilter = {
     year?: number;
+    limit?: number;
+    offset?: number;
 };
 
 /**
@@ -34,6 +36,7 @@ export type SightingsEntry = {
     tour_start_date: number;
     tour_end_date: number;
     vehicle_id: number;
+    vehicle_driver_id: number;
 };
 
 /**
@@ -43,7 +46,6 @@ export type SightingsResponse = {
     status: string;
     error?: string;
     filter?: SightingsFilter;
-    index: number;
     offset: number;
     count: number;
     list: SightingsEntry[];
@@ -57,8 +59,14 @@ export class Sightings {
     /**
      * getList
      */
-    public static async getList(): Promise<SightingsResponse|null> {
-        const response = await NetFetch.postData('/json/sightings/list', {});
+    public static async getList(filter?: SightingsFilter): Promise<SightingsResponse|null> {
+        let data = {};
+
+        if (filter) {
+            data = filter;
+        }
+
+        const response = await NetFetch.postData('/json/sightings/list', data);
 
         if (response) {
             if (response.status === 'ok') {

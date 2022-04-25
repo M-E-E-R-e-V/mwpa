@@ -6,11 +6,13 @@ import session from 'express-session';
 import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
 import {Im2020} from './app/Import/Im2020';
+import {Driver} from './app/Main/Driver';
 import {EncounterCategories} from './app/Main/EncounterCategories';
 import {Login} from './app/Main/Login';
 import {Sightings} from './app/Main/Sightings';
 import {Species} from './app/Main/Species';
 import {User} from './app/Main/User';
+import {Vehicle} from './app/Main/Vehicle';
 import {CalcAutoFill022022} from './app/Utils/CalcAutoFill022022';
 // @ts-ignore
 import {Config} from './inc/Config/Config';
@@ -221,7 +223,9 @@ import {Server} from './inc/Server/Server';
             User,
             Sightings,
             Species,
-            EncounterCategories
+            EncounterCategories,
+            Vehicle,
+            Driver
         ],
         publicDir: public_dir
     });

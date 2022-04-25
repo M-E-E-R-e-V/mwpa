@@ -8,6 +8,8 @@ import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
  */
 export type SightingsFilter = {
     year?: number;
+    limit?: number;
+    offset?: number;
 };
 
 /**
@@ -37,6 +39,7 @@ export type SightingsEntry = {
     tour_start_date: number;
     tour_end_date: number;
     vehicle_id: number;
+    vehicle_driver_id: number;
 };
 
 /**
@@ -46,7 +49,6 @@ export type SightingsResponse = {
     status: string;
     error?: string;
     filter?: SightingsFilter;
-    index: number;
     offset: number;
     count: number;
     list: SightingsEntry[];
@@ -70,9 +72,13 @@ export class Sightings {
     ): Promise<SightingsResponse> {
         let status = 'ok';
         let errormsg = '';
+        let count = 0;
         const rlist: SightingsEntry[] = [];
 
         if ((session.user !== undefined) && session.user.isLogin) {
+            count = await MariaDbHelper.getConnection()
+            .getRepository(SightingDB).count();
+
             const sightings = await MariaDbHelper.getConnection()
             .getRepository(SightingDB)
             .createQueryBuilder('sighting')
@@ -80,7 +86,10 @@ export class Sightings {
                 SightingTourDB,
                 'sighting_tour',
                 'sighting.sighting_tour_id = sighting_tour.id'
-            ).orderBy('sighting.sigthing_datetime', 'DESC')
+            )
+            .orderBy('sighting.sigthing_datetime', 'DESC')
+            .limit(filter.limit)
+            .offset(filter.offset)
             .getRawMany();
 
             if (sightings) {
@@ -108,7 +117,8 @@ export class Sightings {
                         notes: entry.sighting_notes,
                         tour_start_date: entry.sighting_tour_start_date,
                         tour_end_date: entry.sighting_tour_end_date,
-                        vehicle_id: entry.sighting_tour_vehicle_id
+                        vehicle_id: entry.sighting_tour_vehicle_id,
+                        vehicle_driver_id: entry.sighting_tour_vehicle_driver_id
                     });
                 }
             }
@@ -121,9 +131,8 @@ export class Sightings {
             status,
             error: errormsg,
             filter,
-            count: rlist.length,
-            index: 0,
-            offset: 0,
+            count,
+            offset: filter.offset ? filter.offset : 0,
             list: rlist
         };
     }

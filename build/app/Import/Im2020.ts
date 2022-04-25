@@ -119,20 +119,28 @@ export class Im2020 {
 
             // collect to date -> boat -> X entry ----------------------------------------------------------------------
 
-            const dateTour = new Date(rowObj.DATE);
-            const timeTour = new Date(rowObj.TIME);
+            const dateTourTime = this._convertColsToDateTime(rowObj.DATE, rowObj.TIME);
+
             const strBoat = rowObj.Boat;
             let dayTour = 1;
 
-            if (timeTour.getHours() === 14) {
-                if (timeTour.getMinutes() > 30) {
+            if (dateTourTime.getHours() === 14) {
+                if (dateTourTime.getMinutes() > 30) {
                     dayTour = 2;
                 }
-            } else if (timeTour.getHours() > 14) {
+            } else if (dateTourTime.getHours() > 14) {
                 dayTour = 2;
             }
 
-            const strDate = `${dateTour.getFullYear()}-${dateTour.getMonth()}-${dateTour.getDay()} ${dayTour}`;
+            const sortDate = new Date(
+                dateTourTime.getFullYear(),
+                dateTourTime.getMonth(),
+                dateTourTime.getDate(),
+                0,
+                0
+            );
+
+            const strDate = `${sortDate.getTime()}} ${dayTour}`;
 
             let boatMap = new Map();
 
@@ -153,8 +161,9 @@ export class Im2020 {
         }
 
         // import sorted list by index for sighting --------------------------------------------------------------------
+        const tsortedTours = new Map([...sortedTours].sort());
 
-        for (const [, boatMap] of sortedTours) {
+        for (const [, boatMap] of tsortedTours) {
             for (const [, list] of boatMap) {
                 let tourId: number | null = null;
                 const rowList = list as Im2020KeyValueObject[];
@@ -426,9 +435,148 @@ export class Im2020 {
         sightingTour.vehicle_id = vehicleId;
         sightingTour.vehicle_driver_id = vehicleDriverId;
 
+        // calc start and end date -------------------------------------------------------------------------------------
+
+        const dateTourTime = this._convertColsToDateTime(row.DATE, row.TIME);
+        const Wednesday = 3;
+        const isDst = DateHelper.isDstObserved(dateTourTime);
+
+        let startTime: Date|null = null;
+        let endTime: Date|null = null;
+
+        if (dateTourTime.getDay() === Wednesday) {
+            if ((dateTourTime.getHours() >= 11) && (dateTourTime.getHours() <= 15)) {
+                startTime = new Date(
+                    dateTourTime.getFullYear(),
+                    dateTourTime.getMonth(),
+                    dateTourTime.getDate(),
+                    11,
+                    0
+                );
+            }
+        } else if (dateTourTime.getHours() <= 13) {
+            startTime = new Date(
+                dateTourTime.getFullYear(),
+                dateTourTime.getMonth(),
+                dateTourTime.getDate(),
+                9,
+                30
+            );
+        } else if (isDst) {
+            if ((dateTourTime.getHours() > 15) || ((dateTourTime.getHours() === 15) && (dateTourTime.getMinutes() >= 30))) {
+                startTime = new Date(
+                    dateTourTime.getFullYear(),
+                    dateTourTime.getMonth(),
+                    dateTourTime.getDate(),
+                    15,
+                    30
+                );
+            }
+        } else if (dateTourTime.getHours() >= 15) {
+            startTime = new Date(
+                dateTourTime.getFullYear(),
+                dateTourTime.getMonth(),
+                dateTourTime.getDate(),
+                15,
+                0
+            );
+        }
+
+        if (dateTourTime.getDay() === Wednesday) {
+            if ((dateTourTime.getHours() >= 11) && (dateTourTime.getHours() <= 15)) {
+                endTime = new Date(
+                    dateTourTime.getFullYear(),
+                    dateTourTime.getMonth(),
+                    dateTourTime.getDate(),
+                    15,
+                    0
+                );
+            }
+        } else if (dateTourTime.getHours() <= 13) {
+            endTime = new Date(
+                dateTourTime.getFullYear(),
+                dateTourTime.getMonth(),
+                dateTourTime.getDate(),
+                13,
+                0
+            );
+        } else if (isDst) {
+            endTime = new Date(
+                dateTourTime.getFullYear(),
+                dateTourTime.getMonth(),
+                dateTourTime.getDate(),
+                19,
+                0
+            );
+        } else if (dateTourTime.getHours() >= 15) {
+            endTime = new Date(
+                dateTourTime.getFullYear(),
+                dateTourTime.getMonth(),
+                dateTourTime.getDate(),
+                18,
+                30
+            );
+        }
+
+        // -------------------------------------------------------------------------------------------------------------
+
+        let startDateTourTimeNumber = 0;
+        let endDateTourTimeNumber = 0;
+
+        if (startTime) {
+            startDateTourTimeNumber = startTime.getTime() / 1000;
+
+            if (Number.isNaN(startDateTourTimeNumber)) {
+                startDateTourTimeNumber = 0;
+            }
+        }
+
+        if (endTime) {
+            endDateTourTimeNumber = endTime.getTime() / 1000;
+
+            if (Number.isNaN(endDateTourTimeNumber)) {
+                endDateTourTimeNumber = 0;
+            }
+        }
+
+        sightingTour.start_date = startDateTourTimeNumber;
+        sightingTour.end_date = endDateTourTimeNumber;
+
         sightingTour = await MariaDbHelper.getConnection().manager.save(sightingTour);
 
         return sightingTour.id;
+    }
+
+    /**
+     * _convertColsToDateTime
+     * @param date
+     * @param time
+     * @protected
+     */
+    protected _convertColsToDateTime(date: any, time: any): Date {
+        let valueDate: any = date;
+        let valueTime: any = time;
+
+        if (typeof valueDate === 'string') {
+            valueDate = moment(valueDate, 'DD:MM:YYYY').toDate();
+        }
+
+        if (typeof valueTime === 'string') {
+            valueTime = moment(valueTime, 'HH:mm').toDate();
+        }
+
+        const dateTour = new Date(valueDate);
+        const timeTour = new Date(valueTime);
+
+        const dateTourTime = new Date(
+            dateTour.getFullYear(),
+            dateTour.getMonth(),
+            dateTour.getDate(),
+            timeTour.getHours(),
+            timeTour.getMinutes()
+        );
+
+        return dateTourTime;
     }
 
     /**
@@ -446,21 +594,10 @@ export class Im2020 {
 
         // sighting ----------------------------------------------------------------------------------------------------
 
-        let valueDate: any = row.DATE;
-        let valueTime: any = row.TIME;
+        const dateTourTime = this._convertColsToDateTime(row.DATE, row.TIME);
 
-        if (typeof valueDate === 'string') {
-            valueDate = moment(valueDate, 'DD:MM:YYYY').toDate();
-        }
-
-        if (typeof valueTime === 'string') {
-            valueTime = moment(valueTime, 'HH:mm').toDate();
-        }
-
-        const dateTour = new Date(valueDate);
-        const dateTourStr = `${dateTour.getFullYear()}-${dateTour.getMonth()}-${dateTour.getDate()}`;
-        const timeTour = new Date(valueTime);
-        const timeTourStr = `${timeTour.getHours()}:${timeTour.getMinutes()}`;
+        const dateTourStr = `${dateTourTime.getFullYear()}-${dateTourTime.getMonth()}-${dateTourTime.getDate()}`;
+        const timeTourStr = `${dateTourTime.getHours()}:${dateTourTime.getMinutes()}`;
         const strBoat = row.Boat;
         const species = row.SPECIES;
 
@@ -486,14 +623,6 @@ export class Im2020 {
             sighting.creater_id = this._createUser?.id!!;
             sighting.hash = thash;
         }
-
-        const dateTourTime = new Date(
-            dateTour.getFullYear(),
-            dateTour.getMonth(),
-            dateTour.getDate(),
-            timeTour.getHours(),
-            timeTour.getMinutes()
-        );
 
         let dateTourTimeNumber = dateTourTime.getTime() / 1000;
 

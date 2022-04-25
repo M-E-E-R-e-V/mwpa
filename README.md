@@ -15,7 +15,8 @@ MWPA
 [![Gitter](https://badges.gitter.im/Mammals-watchig-process-analyse/Main.svg)](https://gitter.im/Mammals-watchig-process-analyse/Main?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/stefanwerfling/mwpa)](https://lgtm.com/projects/g/stefanwerfling/mwpa)
 [![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/stefanwerfling/mwpa)](https://lgtm.com/projects/g/stefanwerfling/mwpa)
-
+[![License: GPL v3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Liberapay](https://img.shields.io/liberapay/patrons/StefanWerf.svg?logo=liberapay)](https://liberapay.com/StefanWerf/donate)
 </div>
 
 MWPA provides the acquisition of scientific observational data, an easy-to-use user interface for viewing, confirming and reviewing the data.
