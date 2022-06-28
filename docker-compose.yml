@@ -21,26 +21,26 @@ services:
         max-size: "500k"
         max-file: "50"
 
-  nwpa:
-    image: nwpa/nwpa:1.0
-    build:
-      context: .
-    restart: always
-    container_name: nwpa_server
-    volumes:
-      - ./config.json:/opt/app/config.json
-    ports:
-      - 3000:3000
-    networks:
-      nwpaNet:
-        ipv4_address: 10.122.0.3
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "500k"
-        max-file: "50"
-    depends_on:
-      - mariadb
+#  nwpa:
+#    image: nwpa/nwpa:1.0
+#    build:
+#      context: .
+#    restart: always
+#    container_name: nwpa_server
+#    volumes:
+#      - ./config.json:/opt/app/config.json
+#    ports:
+#      - 3000:3000
+#    networks:
+#      nwpaNet:
+#        ipv4_address: 10.122.0.3
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "500k"
+#        max-file: "50"
+#    depends_on:
+#      - mariadb
 
 volumes:
   nwpaMariadbData:

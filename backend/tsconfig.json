@@ -4,7 +4,7 @@
     "module": "commonjs",
     "strict": true,
     "baseUrl": "./",
-    "outDir": "dist",
+    "outDir": "../dist",
     "sourceMap": true,
     "removeComments": true,
     "experimentalDecorators": true,
@@ -21,9 +21,9 @@
     ]
   },
   "include": [
-    "./build/**/*.ts"
+    "./backend/build/**/*.ts"
   ],
   "exclude": [
-    "./build/public/build"
+    "./backend/build/public/build"
   ]
 }
