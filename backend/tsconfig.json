@@ -4,11 +4,11 @@
     "module": "commonjs",
     "strict": true,
     "baseUrl": "./",
-    "outDir": "../dist",
+    "outDir": "dist",
     "sourceMap": true,
     "removeComments": true,
     "experimentalDecorators": true,
-    "target": "es6",
+    "target": "ES6",
     "emitDecoratorMetadata": true,
     "moduleResolution": "node",
     "importHelpers": true,
@@ -21,9 +21,6 @@
     ]
   },
   "include": [
-    "./backend/build/**/*.ts"
+    "./src/**/*.ts"
   ],
-  "exclude": [
-    "./backend/build/public/build"
-  ]
 }
