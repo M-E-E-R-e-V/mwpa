@@ -12,7 +12,7 @@ WORKDIR /opt/app
 COPY dist/ ./dist
 COPY node_modules/ ./node_modules
 
-COPY package.json ./package.json
+COPY backend/package.json ./package.json
 
 RUN npm install
 
