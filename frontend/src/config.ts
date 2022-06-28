@@ -1,5 +1,6 @@
 class RequireJS {
 
+    // @ts-ignore
     private _r: any = window.require;
 
     public config(config: any): void {
@@ -16,6 +17,6 @@ const rjs = new RequireJS();
 
 rjs.config({
     paths: {
-        moment: '../plugins/moment/moment.min'
+        moment: '../assets/plugins/moment/moment.min',
     }
 });
