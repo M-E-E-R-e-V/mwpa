@@ -1,0 +1,6 @@
+[submodule "frontend/node_modules/bambooo/bambooo"]
+	path = frontend/node_modules/bambooo/bambooo
+	url = https://github.com/stefanwerfling/bambooo.git
+[submodule "frontend/node_modules/bambooo"]
+	path = frontend/node_modules/bambooo
+	url = https://github.com/stefanwerfling/bambooo.git
