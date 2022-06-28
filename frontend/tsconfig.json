@@ -11,16 +11,19 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "../public/dist",
+    "outDir": "dist",
     "sourceMap": true,
     "strict": true,
     "target": "ES2016"
   },
   "exclude": [
-    "../public/node_modules",
+    "node_modules",
     "**/*.d.ts"
   ],
-  "include": [
-    "**/*"
+  "files": [
+    "./src/index.ts",
+    "./src/login.ts",
+    "./src/config.ts",
+    "./src/service-worker.ts"
   ]
 }
