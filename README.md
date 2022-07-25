@@ -33,21 +33,21 @@ You can also access the dev chatroom on our [Gitter Channel](https://gitter.im/M
 
 ## Motivation
 
-When I started my trip with the M.e.e.r e.V. association, I got to know the scientific work on La Gomera. It was overwhelmed to get so close to the marine mammals (adventure). I recognized the value of this work. The association M.e.e.r e.V. has dedicated itself to the promotion of environmental protection, science and education, in particular the protection of the cetaceans (whales and dolphins) and their marine habitat as well as the research of the cetaceans off La Gomera (Canary Islands). Working with the people was wonderful and important. I was asked whether we could do something and because of the old software for collecting the data. After a long time passed by the pandemic, we finally got back to the topic. I would like to take on this task on a voluntary basis to the best of my ability and time. :)
+When I started my trip with the M.E.E.R e.V. association, I got to know the scientific work on La Gomera. It was overwhelmed to get so close to the marine mammals (adventure). I recognized the value of this work. The association M.E.E.R e.V. has dedicated itself to the promotion of environmental protection, science and education, in particular the protection of the cetaceans (whales and dolphins) and their marine habitat as well as the research of the cetaceans off La Gomera (Canary Islands). Working with the people was wonderful and important. I was asked whether we could do something and because of the old software for collecting the data. After a long time passed by the pandemic, we finally got back to the topic. I would like to take on this task on a voluntary basis to the best of my ability and time. :)
 
 <h1 align="center">
 
-[![M.e.e.r e.V.](https://m-e-e-r.de/wp-content/uploads/2019/01/MEER-Logo.svg)](https://m-e-e-r.de/)
+[![M.E.E.R e.V.](https://m-e-e-r.de/wp-content/uploads/2019/01/MEER-Logo.svg)](https://m-e-e-r.de/)
 
 </h1>
 
 ## Help the project
 
-- help the association [M.e.e.r e.V.](https://m-e-e-r.de/)
+- help the association [M.E.E.R e.V.](https://m-e-e-r.de/)
 - you can program, you have ideas, then help us here, foke us and improve the code :) or write to us, we like to listen.
 - how can you still help? 
   - [Buy us a coffee](https://www.buymeacoffee.com/mwpa)
-  - Donate (see on [M.e.e.r e.V.](https://m-e-e-r.de/) page)
+  - Donate (see on [M.E.E.R e.V.](https://m-e-e-r.de/) page)
   - Donate crypto coins
     - for Networks: [ETH](https://ethereum.org/en/), [BSC](https://www.binance.com/en), [Polygon](https://polygon.technology/): ```0x0bF915d5fbD65e42bd2DeD3d056752938F7174a7```
 
@@ -149,7 +149,7 @@ NOTE: I recommend setting the express server behind an nginx proxy with a lets e
 - [DBeaver](https://dbeaver.io/)
 
 ## Project supervisor
-* Christina Sommer by [M.e.e.r e.V.](https://m-e-e-r.de/)
+* Christina Sommer by [M.E.E.R e.V.](https://m-e-e-r.de/)
 * Stefan Werfling by [Pegenau GmbH & Co. KG](https://www.pegenau.de/)
 
 ## License
