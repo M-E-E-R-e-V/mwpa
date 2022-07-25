@@ -2,7 +2,7 @@
 
 <h1 align="center">
 
-![MWPA](https://m-e-e-r.de/wp-content/uploads/2019/01/whale-ico.png)
+![MWPA](doc/public/whale-ico.png)
 
 MWPA
 
@@ -25,7 +25,7 @@ The recorded ones relate to mammals and their observations.
 The aim is to record the observations cleanly and quickly. For this purpose, the old data is processed again and imported.
 <h1 align="center">
 
-[![collect data](https://m-e-e-r.de/wp-content/uploads/2021/01/2017-1022_Fabian-Datenaufnahme-Gomera-300x200.jpg)](https://m-e-e-r.de/)
+[![collect data](doc/public/2017-1022_Fabian-Datenaufnahme-Gomera-300x200.jpg)](https://m-e-e-r.de/)
 
 </h1>
 
@@ -37,7 +37,7 @@ When I started my trip with the M.E.E.R e.V. association, I got to know the scie
 
 <h1 align="center">
 
-[![M.E.E.R e.V.](https://m-e-e-r.de/wp-content/uploads/2019/01/MEER-Logo.svg)](https://m-e-e-r.de/)
+[![M.E.E.R e.V.](doc/public/MEER-Logo.svg)](https://m-e-e-r.de/)
 
 </h1>
 
