@@ -9,8 +9,9 @@ RUN mkdir -p /opt/app/node_modules
 
 WORKDIR /opt/app
 
-COPY dist/ ./dist
-COPY node_modules/ ./node_modules
+COPY backend/dist/ ./dist
+COPY backend/node_modules/ ./node_modules
+COPY frontend/ ./node_modules
 
 COPY backend/package.json ./package.json
 

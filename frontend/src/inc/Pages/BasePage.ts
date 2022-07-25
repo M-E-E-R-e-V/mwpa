@@ -10,7 +10,7 @@ type loadPageFn = (apage: BasePage) => void;
 export class BasePage {
 
     private TITLE: string = 'MWPA';
-    private LOGO: string = 'img/whale-ico.png';
+    private LOGO: string = 'images/whale-ico.png';
 
     protected _wrapper = new Wrapper();
 
