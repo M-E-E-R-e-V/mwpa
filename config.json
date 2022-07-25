@@ -13,6 +13,6 @@
   },
   "httpserver": {
     "port": 3000,
-    "publicdir": "public"
+    "publicdir": "../frontend"
   }
 }
