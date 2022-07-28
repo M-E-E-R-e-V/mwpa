@@ -1,4 +1,5 @@
-import {LangDefine} from './Lang/LangDefine';
+import {Lang_DE} from '../langs/Lang_DE';
+import {LangDefine} from './Bambooo/Lang/LangDefine';
 import {Lang_EN} from '../langs/Lang_EN';
 
 /**
@@ -17,6 +18,7 @@ export class Lang {
      */
     public static init(): void {
         Lang.addStore(new Lang_EN());
+        Lang.addStore(new Lang_DE());
     }
 
     /**
@@ -58,6 +60,14 @@ export class Lang {
     }
 
     /**
+     * setCurrentLang
+     * @param alang
+     */
+    public setCurrentLang(alang: LangDefine): void {
+        this._lang = alang;
+    }
+
+    /**
      * l
      * @param content
      */
@@ -79,6 +89,18 @@ export class Lang {
         return content;
     }
 
+    /**
+     * lAll
+     */
+    public lAll(): void {
+        jQuery('body').find('[lang="1"]').each((_index, element) => {
+            const attrLangValue = jQuery(element).attr('lang-value');
+
+            if(attrLangValue) {
+                jQuery(element).empty().append(this.l(attrLangValue));
+            }
+        });
+    }
 }
 
 // init

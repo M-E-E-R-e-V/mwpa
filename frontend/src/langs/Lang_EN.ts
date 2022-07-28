@@ -1,14 +1,39 @@
-import {LangDefine} from '../inc/Lang/LangDefine';
+import {LangDefine} from '../inc/Bambooo/Lang/LangDefine';
 
 /**
  * Lang_EN
  */
 export class Lang_EN implements LangDefine {
 
+    /**
+     * lang content
+     * @private
+     */
     private _content: {[index: string]: string;} = {
         title: 'MWPA',
         login_title: '<b>MWPA</b>'
     };
+
+    /**
+     * getLangCode
+     */
+    public getLangCode(): string {
+        return 'en';
+    }
+
+    /**
+     * getLangTitle
+     */
+    public getLangTitle(): string {
+        return 'English';
+    }
+
+    /**
+     * getCountryCode
+     */
+    public getCountryCode(): string {
+        return 'us';
+    }
 
     /**
      * l

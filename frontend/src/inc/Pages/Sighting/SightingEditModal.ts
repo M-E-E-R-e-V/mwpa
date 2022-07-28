@@ -1,10 +1,9 @@
 import {EncounterCategories as EncounterCategoriesAPI} from '../../Api/EncounterCategories';
 import {Species as SpeciesAPI} from '../../Api/Species';
-import {FormGroup} from '../../PageComponents/Content/Form/FormGroup';
-import {InputBottemBorderOnly2, InputType} from '../../PageComponents/Content/Form/InputBottemBorderOnly2';
-import {SelectBottemBorderOnly2, SelectOption} from '../../PageComponents/Content/Form/SelectBottemBorderOnly2';
-import {Element} from '../../PageComponents/Element';
-import {ModalDialog, ModalDialogType} from '../../PageComponents/Modal/ModalDialog';
+import {FormGroup} from '../../Bambooo/Content/Form/FormGroup';
+import {InputBottemBorderOnly2, InputType} from '../../Bambooo/Content/Form/InputBottemBorderOnly2';
+import {SelectBottemBorderOnly2, SelectOption} from '../../Bambooo/Content/Form/SelectBottemBorderOnly2';
+import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
 
 /**
  * SightingEditModal

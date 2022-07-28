@@ -1,16 +1,15 @@
 import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
 
 /**
- * TourEditModal
+ * SpeciesEditModal
  */
-export class TourEditModal extends ModalDialog {
+export class SpeciesEditModal extends ModalDialog {
 
     /**
      * constructor
      * @param elementObject
      */
     public constructor(elementObject: Element) {
-        super(elementObject, 'tourmodaldialog', ModalDialogType.large);
+        super(elementObject, 'speciesmodaldialog', ModalDialogType.large);
     }
-
 }

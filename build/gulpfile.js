@@ -6,7 +6,7 @@ const GetGoogleFonts = require('get-google-fonts');
  * for frontend to assets
  */
 gulp.task('copy-data', async function() {
-    var downloadGoogleFont = async function() {
+    const downloadGoogleFont = async function() {
         const ggf = new GetGoogleFonts({
             outputDir: '../frontend/assets/css/fonts',
         });
