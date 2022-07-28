@@ -31,6 +31,28 @@ The aim is to record the observations cleanly and quickly. For this purpose, the
 
 You can also access the dev chatroom on our [Gitter Channel](https://gitter.im/Mammals-watchig-process-analyse/Main).
 
+# Index
+
+1. [Motivation](#motivation)
+2. [Help the project](#help-the-project)
+3. [About MWPA](#about_mwpa)
+   * 3.1 [About Backend ](#1-about-backend)
+     * 3.1.2 [Importer Verions](#importer-verions)
+     * 3.1.2 [Commandline arguments](#commandline-arguments)
+     * 3.1.3 [Backend dependencies](#backend-dependencies)
+     * 3.1.4 [Database documentation](#database-documentation)
+   * 3.2 [About Frontend](#2-about-frontend)
+     * 3.2.1 [Frontend dependencies](#frontend-dependencies)
+     * 3.2.2 [Screenshots](#screenshots)
+   * 3.3 [About Mobile App](#3-about-mobile-app)
+4. [Getting Started](#getting-started)
+   * 4.1 [Install by npm](#install-by-npm)
+   * 4.2 [Docker & Docker-Compose](#docker--docker-compose)
+   * 4.3 [First start](#first-start)
+   * 4.4 [Dev-Tools](#dev-tools)
+5. [Project supervisor](#project-supervisor)
+6. [License](#license)
+
 ## Motivation
 
 When I started my trip with the M.E.E.R e.V. association, I got to know the scientific work on La Gomera. It was overwhelmed to get so close to the marine mammals (adventure). I recognized the value of this work. The association M.E.E.R e.V. has dedicated itself to the promotion of environmental protection, science and education, in particular the protection of the cetaceans (whales and dolphins) and their marine habitat as well as the research of the cetaceans off La Gomera (Canary Islands). Working with the people was wonderful and important. I was asked whether we could do something and because of the old software for collecting the data. After a long time passed by the pandemic, we finally got back to the topic. I would like to take on this task on a voluntary basis to the best of my ability and time. :)
@@ -79,7 +101,7 @@ See the example for starting the express server.
   
   - Path to IM2020 import file
 
-#### Dependencies
+#### Backend dependencies
 
 - [NodeJS](https://nodejs.org/en/)
 - [Express Server](https://expressjs.com/)
@@ -97,7 +119,7 @@ See the example for starting the express server.
 - Adminsitration
 - Lists viewing/Filtering/Data editing
 
-#### Dependencies
+#### Frontend dependencies
 
 - [AdminLTE](https://github.com/ColorlibHQ/AdminLTE)
 - [JQuery](https://jquery.com/)
@@ -117,10 +139,11 @@ See the example for starting the express server.
 - Collecting data (also Offline)
 - Sync to backend
 
+[More can read here](https://github.com/M-E-E-R-e-V/mwpa-app)
+
 ## Getting Started
 
 ### Install by npm
-
 First clone and go to folder and install all package: 
 
 > npm install
@@ -130,7 +153,6 @@ Start express server:
 > node dist/main.js --config=/opt/app/config.json
 
 ### Docker & Docker-Compose
-
 First edit the ```config.json``` then start docker container with docker-compose:
 > docker-compose up 
 
@@ -142,6 +164,12 @@ The MariaDB database is in a volume, so the image and the container can be excha
 
 
 NOTE: I recommend setting the express server behind an nginx proxy with a lets encrypt certificate. See [Nginx Proxy Manager](https://nginxproxymanager.com/). I strongly recommend that you pay attention to the safety, do not place unnecessary entrances to the outside.
+
+### First start
+
+After the first start, the database is created. A standard user is stored for this purpose, the password must be changed for this user:
+* Username: ```admin@nwpa.org```
+  * Password: ```changeMyPassword```
 
 ### Dev-Tools
 
