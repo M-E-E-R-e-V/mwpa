@@ -4,15 +4,17 @@ import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} 
 import {Sightings as SightingsAPI, SightingsEntry} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
-import {Card} from '../PageComponents/Content/Card/Card';
-import {ContentCol12} from '../PageComponents/Content/ContentCol12';
-import {ContentRow} from '../PageComponents/Content/ContentRow';
-import {Button} from '../PageComponents/Content/Form/Button';
-import {Table} from '../PageComponents/Content/Table/Table';
-import {Td} from '../PageComponents/Content/Table/Td';
-import {Th} from '../PageComponents/Content/Table/Th';
-import {Tr} from '../PageComponents/Content/Table/Tr';
-import {LeftNavbarLink} from '../PageComponents/Navbar/LeftNavbarLink';
+import {ColumnContent} from '../Bambooo/ColumnContent';
+import {Card} from '../Bambooo/Content/Card/Card';
+import {ContentCol12} from '../Bambooo/Content/ContentCol12';
+import {ContentRow} from '../Bambooo/Content/ContentRow';
+import {Button} from '../Bambooo/Content/Form/Button';
+import {Table} from '../Bambooo/Content/Table/Table';
+import {Td} from '../Bambooo/Content/Table/Td';
+import {Th} from '../Bambooo/Content/Table/Th';
+import {Tr} from '../Bambooo/Content/Table/Tr';
+import {LangText} from '../Bambooo/Lang/LangText';
+import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
 import {BasePage} from './BasePage';
 import {SightingEditModal} from './Sighting/SightingEditModal';
 
@@ -20,6 +22,12 @@ import {SightingEditModal} from './Sighting/SightingEditModal';
  * Sighting
  */
 export class Sighting extends BasePage {
+
+    /**
+     * page name
+     * @protected
+     */
+    protected _name: string = 'sighting';
 
     /**
      * sighting dialog
@@ -36,14 +44,14 @@ export class Sighting extends BasePage {
         // sighting modal ----------------------------------------------------------------------------------------------
 
         this._sightingDialog = new SightingEditModal(
-            this._wrapper.getContentWrapper().getContent()
+            this._wrapper.getContentWrapper().getContent().getElement()
         );
 
         // Navbar Left -------------------------------------------------------------------------------------------------
 
         // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add sighting', () => {
-            this._sightingDialog.setTitle('Add new sighting');
+        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), new LangText('Add sighting'), () => {
+            this._sightingDialog.setTitle(new LangText('Add new sighting'));
             this._sightingDialog.show();
             return false;
         });
@@ -56,40 +64,46 @@ export class Sighting extends BasePage {
         const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
         const card = new Card(new ContentCol12(row1));
 
-        card.setTitle('Sighting');
+        card.setTitle(new LangText('Sighting'));
 
         const table = new Table(card.getElement());
         const trhead = new Tr(table.getThead());
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Id<br>TourId');
+        new Th(trhead, new ColumnContent([
+            new LangText('Id'),
+            new LangText('TourId'),
+        ]));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Date');
+        new Th(trhead, new LangText('Date'));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Vehicle<br>Driver');
+        new Th(trhead, new ColumnContent([
+            new LangText('Vehicle'),
+            new LangText('Driver')
+        ]));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Species');
+        new Th(trhead, new LangText('Species'));
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Group-Size');
+        new Th(trhead, new LangText('Group-Size'));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Time start');
+        new Th(trhead, new LangText('Time begin'));
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Time stop');
+        new Th(trhead, new LangText('Time end'));
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Duration');
+        new Th(trhead, new LangText('Duration'));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Location');
+        new Th(trhead, new LangText('Location'));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Encounter');
+        new Th(trhead, new LangText('Encounter'));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Other species');
+        new Th(trhead, new LangText('Other species'));
 
         // eslint-disable-next-line no-new
         new Th(trhead, '');

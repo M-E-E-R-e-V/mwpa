@@ -1,5 +1,4 @@
-import {Element} from '../../PageComponents/Element';
-import {ModalDialog, ModalDialogType} from '../../PageComponents/Modal/ModalDialog';
+import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
 
 /**
  * TourEditModal

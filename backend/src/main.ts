@@ -1,7 +1,7 @@
 import * as bodyParser from 'body-parser';
 import * as fs from 'fs';
 import minimist from 'minimist';
-import * as path from 'path';
+import * as Path from 'path';
 import session from 'express-session';
 import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
@@ -37,7 +37,7 @@ import {Server} from './inc/Server/Server';
  */
 (async(): Promise<void> => {
     const argv = minimist(process.argv.slice(2));
-    let configfile = path.join(__dirname, '/config.json');
+    let configfile = Path.join(__dirname, '/config.json');
     let importfile: string|null = null;
     let calcfile: string|null = null;
 

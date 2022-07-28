@@ -1,7 +1,6 @@
-import {LeftNavbarPushmenu} from '../PageComponents/Navbar/LeftNavbarPushmenu';
-import {Wrapper} from '../PageComponents/Wrapper';
+import {LeftNavbarPushmenu} from '../Bambooo/Navbar/LeftNavbarPushmenu';
+import {Wrapper} from '../Bambooo/Wrapper';
 
-// eslint-disable-next-line no-use-before-define
 type loadPageFn = (apage: BasePage) => void;
 
 /**
@@ -9,13 +8,34 @@ type loadPageFn = (apage: BasePage) => void;
  */
 export class BasePage {
 
+    /**
+     * const Title
+     * @private
+     */
     private TITLE: string = 'MWPA';
+
+    /**
+     * const logo
+     * @private
+     */
     private LOGO: string = 'images/whale-ico.png';
 
+    /**
+     * Wrapper
+     * @protected
+     */
     protected _wrapper = new Wrapper();
 
+    /**
+     * page name
+     * @protected
+     */
     protected _name: string = 'base';
 
+    /**
+     * load page function
+     * @protected
+     */
     protected _loadPageFn: loadPageFn | null = null;
 
     /**
