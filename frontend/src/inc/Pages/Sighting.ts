@@ -8,13 +8,14 @@ import {ColumnContent} from '../Bambooo/ColumnContent';
 import {Card} from '../Bambooo/Content/Card/Card';
 import {ContentCol12} from '../Bambooo/Content/ContentCol12';
 import {ContentRow} from '../Bambooo/Content/ContentRow';
-import {Button} from '../Bambooo/Content/Form/Button';
+import {Button, ButtonType} from '../Bambooo/Content/Form/Button';
 import {Table} from '../Bambooo/Content/Table/Table';
 import {Td} from '../Bambooo/Content/Table/Td';
 import {Th} from '../Bambooo/Content/Table/Th';
 import {Tr} from '../Bambooo/Content/Table/Tr';
 import {LangText} from '../Bambooo/Lang/LangText';
 import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
+import {Lang} from '../Lang';
 import {BasePage} from './BasePage';
 import {SightingEditModal} from './Sighting/SightingEditModal';
 
@@ -248,7 +249,7 @@ export class Sighting extends BasePage {
                     // action
                     const actionTd = new Td(trbody, '');
 
-                    const editBtn = new Button(actionTd.getElement());
+                    const editBtn = new Button(actionTd.getElement(),  ButtonType.borderless);
                     editBtn.getElement().append('<i class="fa fa-edit"></i>');
                     editBtn.setOnClickFn((): void => {
                         alert('TODO');
@@ -310,6 +311,7 @@ export class Sighting extends BasePage {
             }
 
             card.hideLoading();
+            Lang.i().lAll();
         };
 
 

@@ -6,15 +6,15 @@ import session from 'express-session';
 import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
 import {Im2020} from './app/Import/Im2020';
-import {Driver} from './app/Main/Driver';
-import {EncounterCategories} from './app/Main/EncounterCategories';
-import {Login} from './app/Main/Login';
-import {Sightings} from './app/Main/Sightings';
-import {Species} from './app/Main/Species';
-import {User} from './app/Main/User';
-import {Vehicle} from './app/Main/Vehicle';
+import {Driver as DriverMainController} from './app/Main/Driver';
+import {EncounterCategories as EncounterCategoriesMainController} from './app/Main/EncounterCategories';
+import {Login as LoginMainController} from './app/Main/Login';
+import {Login as LoginMobileController} from './app/Mobile/Login';
+import {Sightings as SightingsMainController} from './app/Main/Sightings';
+import {Species as SpeciesMainController} from './app/Main/Species';
+import {User as UserMainController} from './app/Main/User';
+import {Vehicle as VehicleMainController} from './app/Main/Vehicle';
 import {CalcAutoFill022022} from './app/Utils/CalcAutoFill022022';
-// @ts-ignore
 import {Config} from './inc/Config/Config';
 import {DBSetup} from './inc/Db/MariaDb/DBSetup';
 import {BehaviouralStates as BehaviouralStatesDB} from './inc/Db/MariaDb/Entity/BehaviouralStates';
@@ -219,13 +219,17 @@ import {Server} from './inc/Server/Server';
         ],
         routes: [],
         controllers: [
-            Login,
-            User,
-            Sightings,
-            Species,
-            EncounterCategories,
-            Vehicle,
-            Driver
+            // main ----------------------------------------------------------------------------------------------------
+            LoginMainController,
+            UserMainController,
+            SightingsMainController,
+            SpeciesMainController,
+            EncounterCategoriesMainController,
+            VehicleMainController,
+            DriverMainController,
+
+            // mobile --------------------------------------------------------------------------------------------------
+            LoginMobileController
         ],
         publicDir: public_dir
     });

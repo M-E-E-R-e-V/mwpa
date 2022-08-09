@@ -22,6 +22,21 @@ export class Lang {
     }
 
     /**
+     * setStoreLangSelect
+     * @param lang
+     */
+    public static setStoreLangSelect(lang: string): void {
+        localStorage.setItem('nwpa_lang', lang);
+    }
+
+    /**
+     * getStoreLangSelect
+     */
+    public static getStoreLangSelect(): string|null {
+        return localStorage.getItem('nwpa_lang');
+    }
+
+    /**
      * addStore
      * @param alang
      */

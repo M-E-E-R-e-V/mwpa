@@ -1,6 +1,8 @@
-import {Get, JsonController, Session} from 'routing-controllers';
+import {Get, JsonController, Post, Session} from 'routing-controllers';
 import {Species as SpeciesDB} from '../../inc/Db/MariaDb/Entity/Species';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
+import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
+import {StatusCodes} from '../../inc/Routes/StatusCodes';
 
 /**
  * SpeciesEntry
@@ -13,9 +15,7 @@ export type SpeciesEntry = {
 /**
  * SpeciesListResponse
  */
-export type SpeciesListResponse = {
-    status: string;
-    error?: string;
+export type SpeciesListResponse = DefaultReturn & {
     list: SpeciesEntry[];
 };
 
@@ -31,11 +31,9 @@ export class Species {
      */
     @Get('/json/species/list')
     public async getList(@Session() session: any): Promise<SpeciesListResponse> {
-        let status = 'ok';
-        let errormsg = '';
-        const list: SpeciesEntry[] = [];
-
         if ((session.user !== undefined) && session.user.isLogin) {
+            const list: SpeciesEntry[] = [];
+
             const speciesRepository = MariaDbHelper.getConnection().getRepository(SpeciesDB);
             const species = await speciesRepository.find();
 
@@ -45,15 +43,32 @@ export class Species {
                     name: specie.name
                 });
             }
-        } else {
-            status = 'error';
-            errormsg = 'Please login first!';
+
+            return {
+                statusCode: StatusCodes.OK,
+                list
+            };
         }
 
         return {
-            status,
-            error: errormsg,
-            list
+            statusCode: StatusCodes.UNAUTHORIZED,
+            list: []
+        };
+    }
+
+    /**
+     * save
+     * @param session
+     * @param request
+     */
+    @Post('/json/species/save')
+    public async save(@Session() session: any, @Body() request: SpeciesEntry): Promise<DefaultReturn> {
+        if ((session.user !== undefined) && session.user.isLogin && session.user.isAdmin) {
+
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
         };
     }
 
