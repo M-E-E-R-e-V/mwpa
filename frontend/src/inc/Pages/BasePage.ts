@@ -1,7 +1,15 @@
 import {LeftNavbarPushmenu} from '../Bambooo/Navbar/LeftNavbarPushmenu';
 import {Wrapper} from '../Bambooo/Wrapper';
 
+/**
+ * loadPageFn
+ */
 type loadPageFn = (apage: BasePage) => void;
+
+/**
+ * onLoadTable
+ */
+export type onLoadTable = () => void;
 
 /**
  * BasePage
@@ -39,6 +47,18 @@ export class BasePage {
     protected _loadPageFn: loadPageFn | null = null;
 
     /**
+     * on load table
+     * @protected
+     */
+    protected _onLoadTable: onLoadTable|null = null;
+
+    /**
+     * toast
+     * @protected
+     */
+    protected _toast: any;
+
+    /**
      * constructor
      */
     public constructor() {
@@ -54,6 +74,14 @@ export class BasePage {
 
         mainSidebar.getLogo().setTitle(this.TITLE);
         mainSidebar.getLogo().setImage(this.LOGO);
+
+        // @ts-ignore
+        this._toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
     }
 
     /**

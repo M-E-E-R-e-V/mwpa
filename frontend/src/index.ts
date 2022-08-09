@@ -87,6 +87,7 @@ type SideMenuEntry = {
         const langNavbarLink = new NavbarLinkLanguage(rightNavbar);
 
         const changeLang: ChangeLangClickFn = (lang): void => {
+            Lang.setStoreLangSelect(lang.getCountryCode());
             Lang.i().setCurrentLang(lang);
             Lang.i().lAll();
         };
@@ -96,7 +97,13 @@ type SideMenuEntry = {
         // germany
         langNavbarLink.addLang(new Lang_DE(), changeLang);
 
-        langNavbarLink.setActiv('us');
+        const userSelectLang = Lang.getStoreLangSelect();
+
+        if (userSelectLang) {
+            langNavbarLink.setActiv(userSelectLang, true);
+        } else {
+            langNavbarLink.setActiv('us', true);
+        }
 
         // eslint-disable-next-line no-new
         new NavbarLinkFullsize(rightNavbar);
