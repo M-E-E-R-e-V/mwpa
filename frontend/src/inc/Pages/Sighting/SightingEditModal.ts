@@ -10,6 +10,10 @@ import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
  */
 export class SightingEditModal extends ModalDialog {
 
+    /**
+     * specie select
+     * @protected
+     */
     protected _specieSelect: SelectBottemBorderOnly2;
     protected _inputGroupSize: InputBottemBorderOnly2;
     protected _encounterSelect: SelectBottemBorderOnly2;

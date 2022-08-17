@@ -1,4 +1,7 @@
-import {StatusCodes} from './StatusCodes';
+/**
+ * DefaultReturn
+ */
+import {StatusCodes} from '../Status/StatusCodes';
 
 /**
  * DefaultReturn

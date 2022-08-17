@@ -1,6 +1,8 @@
 import {Get, JsonController, Session} from 'routing-controllers';
 import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
+import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
+import {StatusCodes} from '../../inc/Routes/StatusCodes';
 
 /**
  * UserData
@@ -23,10 +25,12 @@ export type UserInfo = {
 /**
  * UserInfoResponse
  */
-export type UserInfoResponse = {
-    status: string;
-    msg?: string;
+export type UserInfoResponse = DefaultReturn & {
     data?: UserInfo;
+};
+
+export type UserListResponse = DefaultReturn & {
+
 };
 
 /**
@@ -52,7 +56,7 @@ export class User {
 
             if (user) {
                 return {
-                    status: 'ok',
+                    statusCode: StatusCodes.OK,
                     data: {
                         islogin: true,
                         user: {
@@ -67,10 +71,27 @@ export class User {
         }
 
         return {
-            status: 'ok',
+            statusCode: StatusCodes.OK,
             data: {
                 islogin: false
             }
+        };
+    }
+
+    @Get('/json/user/list')
+    public async getList(@Session() session: any): Promise<UserListResponse> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            if (!session.user.isAdmin) {
+                return {
+                    statusCode: StatusCodes.FORBIDDEN
+                };
+            }
+
+
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
         };
     }
 
