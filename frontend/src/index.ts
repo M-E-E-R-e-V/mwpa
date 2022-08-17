@@ -8,11 +8,12 @@ import {ChangeLangClickFn, NavbarLinkLanguage} from './inc/Bambooo/Navbar/Navbar
 import {SidebarMenuItem} from './inc/Bambooo/Sidebar/SidebarMenuItem';
 import {SidebarMenuTree} from './inc/Bambooo/Sidebar/SidebarMenuTree';
 import {Lang} from './inc/Lang';
-import {Admin} from './inc/Pages/Admin';
+import {Admin as AdminPage} from './inc/Pages/Admin';
 import {BasePage} from './inc/Pages/BasePage';
 import {Sighting as SightingPage} from './inc/Pages/Sighting';
-import {Species} from './inc/Pages/Species';
+import {Species as SpeciesPage} from './inc/Pages/Species';
 import {Tours as ToursPage} from './inc/Pages/Tours';
+import {Users as UsersPage} from './inc/Pages/Users';
 import {UtilAvatarGenerator} from './inc/Utils/UtilAvatarGenerator';
 import {UtilColor} from './inc/Utils/UtilColor';
 import {Lang_DE} from './langs/Lang_DE';
@@ -146,15 +147,47 @@ type SideMenuEntry = {
                     icon: 'fa-cogs',
                     name: 'admin',
                     onClick: (): void => {
-                        loadPage(new Admin());
+                        loadPage(new AdminPage());
                     },
                     items: [
+                        {
+                            title: 'Users',
+                            icon: 'fa-solid fa-users',
+                            name: 'admin-users',
+                            onClick: (): void => {
+                                loadPage(new UsersPage());
+                            }
+                        },
+                        {
+                            title: 'User Groups',
+                            icon: 'fa-solid fa-tags',
+                            name: 'admin-user-groups',
+                            onClick: (): void => {
+                                //loadPage(new Species());
+                            }
+                        },
                         {
                             title: 'Species',
                             icon: 'fa-solid fa-paw',
                             name: 'admin-species',
                             onClick: (): void => {
-                                loadPage(new Species());
+                                loadPage(new SpeciesPage());
+                            }
+                        },
+                        {
+                            title: 'Vehicle',
+                            icon: 'fa-solid fa-ship',
+                            name: 'admin-vehicle',
+                            onClick: (): void => {
+                                //loadPage(new Species());
+                            }
+                        },
+                        {
+                            title: 'Encounters',
+                            icon: 'fa-solid fa-hand-paper-o',
+                            name: 'admin-vehicle',
+                            onClick: (): void => {
+                                //loadPage(new Species());
                             }
                         }
                     ]

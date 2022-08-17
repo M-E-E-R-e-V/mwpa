@@ -26,7 +26,8 @@ export class Lang_DE implements LangDefine {
         'Duration': 'Dauer',
         'Location': 'Ort',
         'Encounter': 'Begegnen',
-        'Other species': 'Andere Spezies'
+        'Other species': 'Andere Spezies',
+        'Add Specie': 'Spezie hinzufügen'
     };
 
     /**

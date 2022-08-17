@@ -79,6 +79,7 @@ export class Login {
             if (bresult) {
                 session.user.userid = user.id;
                 session.user.isLogin = true;
+                session.user.isAdmin = user.isAdmin;
 
                 Logger.log(`Login success by session: ${session.id}`);
 
