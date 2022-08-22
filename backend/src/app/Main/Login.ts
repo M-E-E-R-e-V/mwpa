@@ -61,7 +61,8 @@ export class Login {
 
         const user = await userRepository.findOne({
             where: {
-                email: login.email
+                email: login.email,
+                disable: false
             }
         });
 
