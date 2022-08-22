@@ -29,9 +29,9 @@ export class DBSetup {
 
             const nUser = new UserDB();
 
-            nUser.username = 'nwpaadmin';
+            nUser.username = 'mwpaadmin';
             nUser.main_groupid = adminGroup.id;
-            nUser.email = 'admin@nwpa.org';
+            nUser.email = 'admin@mwpa.org';
             nUser.password = await bcrypt.hash('changeMyPassword', 10);
             nUser.disable = false;
             nUser.isAdmin = true;

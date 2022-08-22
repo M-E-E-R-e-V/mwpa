@@ -4,7 +4,7 @@
   },
   "db": {
     "mysql": {
-      "host": "127.0.0.1",
+      "host": "10.122.0.2",
       "port": 3306,
       "username": "root",
       "password": "test",
@@ -13,6 +13,6 @@
   },
   "httpserver": {
     "port": 3000,
-    "publicdir": "../frontend"
+    "publicdir": "frontend"
   }
 }

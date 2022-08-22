@@ -11,7 +11,7 @@ WORKDIR /opt/app
 
 COPY backend/dist/ ./dist
 COPY backend/node_modules/ ./node_modules
-COPY frontend/ ./node_modules
+COPY frontend/ ./frontend
 
 COPY backend/package.json ./package.json
 
