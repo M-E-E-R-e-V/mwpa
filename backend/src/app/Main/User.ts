@@ -5,9 +5,9 @@ import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 
 /**
- * UserData
+ * UserInfoData
  */
-export type UserData = {
+export type UserInfoData = {
     id: number;
     username: string;
     email: string;
@@ -19,7 +19,7 @@ export type UserData = {
  */
 export type UserInfo = {
     islogin: boolean;
-    user?: UserData;
+    user?: UserInfoData;
 };
 
 /**
@@ -29,8 +29,21 @@ export type UserInfoResponse = DefaultReturn & {
     data?: UserInfo;
 };
 
-export type UserListResponse = DefaultReturn & {
+/**
+ * UserData
+ */
+export type UserData = UserInfoData & {
+    full_name: string;
+    main_groupid: number;
+    password?: string;
+    disable: boolean;
+};
 
+/**
+ * UserListResponse
+ */
+export type UserListResponse = DefaultReturn & {
+    list?: UserData[];
 };
 
 /**
@@ -78,6 +91,10 @@ export class User {
         };
     }
 
+    /**
+     * getList
+     * @param session
+     */
     @Get('/json/user/list')
     public async getList(@Session() session: any): Promise<UserListResponse> {
         if ((session.user !== undefined) && session.user.isLogin) {
@@ -87,7 +104,27 @@ export class User {
                 };
             }
 
+            const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
+            const users = await userRepository.find();
+            const list: UserData[] = [];
 
+            for (const user of users) {
+                list.push({
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    isAdmin: user.isAdmin,
+                    full_name: user.full_name,
+                    main_groupid: user.main_groupid,
+                    password: '',
+                    disable: user.disable
+                });
+            }
+
+            return {
+                statusCode: StatusCodes.OK,
+                list
+            };
         }
 
         return {

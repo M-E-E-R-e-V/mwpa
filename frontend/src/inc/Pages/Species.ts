@@ -138,14 +138,15 @@ export class Species extends BasePage {
      */
     public async loadContent(): Promise<void> {
         this._onLoadTable = async(): Promise<void> => {
-            const species = await SpeciesAPI.getList();
-
             this._wrapper.getContentWrapper().getContent().empty();
 
             const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
             const card = new Card(new ContentCol12(row1));
 
             card.setTitle(new LangText('Species'));
+            card.showLoading();
+
+            const species = await SpeciesAPI.getList();
 
             const table = new Table(card.getElement());
             const trhead = new Tr(table.getThead());
@@ -160,8 +161,6 @@ export class Species extends BasePage {
             new Th(trhead, '');
 
             if (species) {
-                card.showLoading();
-
                 for (const specie of species) {
                     const trbody = new Tr(table.getTbody());
 
