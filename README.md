@@ -46,10 +46,7 @@ You can also access the dev chatroom on our [Gitter Channel](https://gitter.im/M
      * 3.2.2 [Screenshots](#screenshots)
    * 3.3 [About Mobile App](#3-about-mobile-app)
 4. [Getting Started](#getting-started)
-   * 4.1 [Install by npm](#install-by-npm)
-   * 4.2 [Docker & Docker-Compose](#docker--docker-compose)
-   * 4.3 [First start](#first-start)
-   * 4.4 [Dev-Tools](#dev-tools)
+   * Wiki --> [more here](https://github.com/M-E-E-R-e-V/mwpa/wiki)
 5. [Project supervisor](#project-supervisor)
 6. [License](#license)
 
@@ -143,38 +140,7 @@ See the example for starting the express server.
 
 ## Getting Started
 
-### Install by npm
-First clone and go to folder and install all package: 
-
-> npm install
-
-Start express server: 
-
-> node dist/main.js --config=/opt/app/config.json
-
-### Docker & Docker-Compose
-First edit the ```config.json``` then start docker container with docker-compose:
-> docker-compose up 
-
-or as service 
-> docker-compose up -d
- 
-The default server port is ```3000``` you can change it in ```docker-compose.yml```.
-The MariaDB database is in a volume, so the image and the container can be exchanged at any time. MariaDB listen on ```127.0.0.1:3306``` use DBeaver with SSH connection and you can see or edit the database.
-
-
-NOTE: I recommend setting the express server behind an nginx proxy with a lets encrypt certificate. See [Nginx Proxy Manager](https://nginxproxymanager.com/). I strongly recommend that you pay attention to the safety, do not place unnecessary entrances to the outside.
-
-### First start
-
-After the first start, the database is created. A standard user is stored for this purpose, the password must be changed for this user:
-* Username: ```admin@nwpa.org```
-  * Password: ```changeMyPassword```
-
-### Dev-Tools
-
-- [PhpStorm](https://www.jetbrains.com/phpstorm/)
-- [DBeaver](https://dbeaver.io/)
+[All information for the installation and configuration can be found in the MWPA wiki.](https://github.com/M-E-E-R-e-V/mwpa/wiki)
 
 ## Project supervisor
 * Christina Sommer by [M.E.E.R e.V.](https://m-e-e-r.de/)

@@ -1,9 +1,12 @@
 import {NetFetch} from '../Net/NetFetch';
+import {UnauthorizedError} from './Error/UnauthorizedError';
+import {StatusCodes} from './Status/StatusCodes';
+import {DefaultReturn} from './Types/DefaultReturn';
 
 /**
- * UserData
+ * UserInfoData
  */
-export type UserData = {
+export type UserInfoData = {
     id: number;
     username: string;
     email: string;
@@ -15,7 +18,24 @@ export type UserData = {
  */
 export type UserInfo = {
     islogin: boolean;
-    user?: UserData;
+    user?: UserInfoData;
+};
+
+/**
+ * UserData
+ */
+export type UserData = UserInfoData & {
+    full_name: string;
+    main_groupid: number;
+    password?: string;
+    disable: boolean;
+};
+
+/**
+ * UserListResponse
+ */
+export type UserListResponse = DefaultReturn & {
+    list?: UserData[];
 };
 
 /**
@@ -29,15 +49,41 @@ export class User {
     public static async getUserInfo(): Promise<UserInfo | null> {
         const result = await NetFetch.getData('/json/user/info');
 
-        if (result) {
-            if (result.status === 'ok') {
-                return result.data as UserInfo;
-            }
+        if (result && result.statusCode) {
+            switch(result.statusCode) {
+                case StatusCodes.OK:
+                    return result.data as UserInfo;
 
-            console.log(result.error);
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
         }
 
         return null;
     }
 
+    /**
+     * getUserList
+     */
+    public static async getUserList(): Promise<UserData[] | null> {
+        const result = await NetFetch.getData('/json/user/list');
+
+        if (result && result.statusCode) {
+            const tresult = result as UserListResponse;
+
+            switch(result.statusCode) {
+                case StatusCodes.OK:
+                    if (tresult.list) {
+                        return tresult.list;
+                    }
+
+                    throw new Error('Userlist is empty return!');
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return null;
+    }
 }
