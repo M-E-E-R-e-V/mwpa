@@ -57,6 +57,20 @@ export class Login {
         @Body() login: LoginRequest,
         @Session() session: any
     ): Promise<LoginResponse> {
+        if (login.email === '') {
+            return {
+                success: false,
+                error: 'Email is empty!'
+            };
+        }
+
+        if (login.password === '') {
+            return {
+                success: false,
+                error: 'Password is empty!'
+            };
+        }
+
         const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
 
         const user = await userRepository.findOne({
