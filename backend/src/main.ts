@@ -13,6 +13,7 @@ import {Login as LoginMobileController} from './app/Mobile/Login';
 import {Sightings as SightingsMainController} from './app/Main/Sightings';
 import {Species as SpeciesMainController} from './app/Main/Species';
 import {User as UserMainController} from './app/Main/User';
+import {User as UserMobileController} from './app/Mobile/User';
 import {Vehicle as VehicleMainController} from './app/Main/Vehicle';
 import {CalcAutoFill022022} from './app/Utils/CalcAutoFill022022';
 import {Config} from './inc/Config/Config';
@@ -229,7 +230,8 @@ import {Server} from './inc/Server/Server';
             DriverMainController,
 
             // mobile --------------------------------------------------------------------------------------------------
-            LoginMobileController
+            LoginMobileController,
+            UserMobileController
         ],
         publicDir: public_dir
     });

@@ -22,13 +22,14 @@ services:
         max-file: "50"
 
   mwpa:
-    image: mwpa/mwpa:1.0
+    image: mwpa/mwpa:1.0.1
     build:
       context: .
     restart: always
     container_name: mwpa_server
     volumes:
       - ./config.json:/opt/app/config.json
+      - ./imports:/opt/app/imports
     ports:
       - 3000:3000
     networks:
