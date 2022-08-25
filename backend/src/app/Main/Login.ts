@@ -83,6 +83,7 @@ export class Login {
         const userData: SessionUserData = {
             isLogin: false,
             isAdmin: false,
+            isMobileLogin: false,
             userid: 0
         };
 

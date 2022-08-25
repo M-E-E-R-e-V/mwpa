@@ -12,6 +12,13 @@ export class Species extends BaseEntity {
 
     @Index()
     @Column({
+        default: 0
+    })
+    // @ts-ignore
+    ott_id: number;
+
+    @Index()
+    @Column({
         type: 'varchar',
         length: 255
     })
