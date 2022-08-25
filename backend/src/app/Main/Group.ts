@@ -9,7 +9,9 @@ import {StatusCodes} from '../../inc/Routes/StatusCodes';
  */
 export type GroupEntry = {
     id: number;
-    name: string;
+    role: string;
+    organization_id: number;
+    description: string;
 };
 
 /**
@@ -40,7 +42,9 @@ export class Group {
             for (const group of groups) {
                 list.push({
                     id: group.id,
-                    name: group.description
+                    role: group.role,
+                    organization_id: group.organization_id,
+                    description: group.description
                 });
             }
 

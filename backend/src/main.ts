@@ -29,6 +29,7 @@ import {User as UserDB} from './inc/Db/MariaDb/Entity/User';
 import {UserGroups as UserGroupsDB} from './inc/Db/MariaDb/Entity/UserGroups';
 import {Vehicle as VehicleDB} from './inc/Db/MariaDb/Entity/Vehicle';
 import {VehicleDriver as VehicleDriverDB} from './inc/Db/MariaDb/Entity/VehicleDriver';
+import {Devices as DevicesDB} from './inc/Db/MariaDb/Entity/Devices';
 import {MariaDbHelper} from './inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from './inc/Logger/Logger';
 import {Server} from './inc/Server/Server';
@@ -92,7 +93,7 @@ import {Server} from './inc/Server/Server';
             username: tconfig.db.mysql.username,
             // 'test',
             password: tconfig.db.mysql.password,
-            // 'ccc',
+            // 'mwpa',
             database: tconfig.db.mysql.database,
             entities: [
                 UserDB,
@@ -105,7 +106,8 @@ import {Server} from './inc/Server/Server';
                 SightingTourDB,
                 SightingDB,
                 EncounterCategoriesDB,
-                BehaviouralStatesDB
+                BehaviouralStatesDB,
+                DevicesDB
             ],
             migrations: [
             ],
