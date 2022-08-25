@@ -87,7 +87,8 @@ export class Login extends MainLogin {
                 const devicesRepository = MariaDbHelper.getConnection().getRepository(DevicesDB);
                 const tdevice = await devicesRepository.findOne({
                     where: {
-                        identity: login.deviceIdentity
+                        identity: login.deviceIdentity,
+                        user_id: user.id
                     }
                 });
 
@@ -101,6 +102,7 @@ export class Login extends MainLogin {
                     myDevice = new DevicesDB();
                     myDevice.identity = login.deviceIdentity;
                     myDevice.create_datetime = DateHelper.getCurrentDbTime();
+                    myDevice.user_id = user.id;
                 }
 
                 myDevice.update_datetime = DateHelper.getCurrentDbTime();

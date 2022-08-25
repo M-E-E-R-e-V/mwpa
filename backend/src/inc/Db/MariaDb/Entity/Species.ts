@@ -10,6 +10,7 @@ export class Species extends BaseEntity {
         // @ts-ignore
     id: number;
 
+    // https://github.com/OpenTreeOfLife/germinator/wiki/TNRS-API-v3
     @Index()
     @Column({
         default: 0
