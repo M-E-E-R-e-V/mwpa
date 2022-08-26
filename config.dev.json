@@ -1,0 +1,18 @@
+{
+  "logging": {
+    "debugging": true
+  },
+  "db": {
+    "mysql": {
+      "host": "10.122.0.2",
+      "port": 3306,
+      "username": "root",
+      "password": "test",
+      "database": "mwpa"
+    }
+  },
+  "httpserver": {
+    "port": 3000,
+    "publicdir": "../frontend"
+  }
+}
