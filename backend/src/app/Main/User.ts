@@ -1,4 +1,5 @@
-import {Get, JsonController, Session} from 'routing-controllers';
+import * as bcrypt from 'bcrypt';
+import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
 import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
@@ -124,6 +125,64 @@ export class User {
             return {
                 statusCode: StatusCodes.OK,
                 list
+            };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
+    }
+
+    /**
+     * save
+     * @param session
+     * @param request
+     */
+    @Post('/json/user/save')
+    public async save(@Session() session: any, @Body() request: UserData): Promise<DefaultReturn> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            if (!session.user.isAdmin) {
+                return {
+                    statusCode: StatusCodes.FORBIDDEN
+                };
+            }
+
+            const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
+
+            let auser: UserDB|null = null;
+
+            if (request.id !== 0) {
+                const tuser = await userRepository.findOne({
+                    where: {
+                        id: request.id
+                    }
+                });
+
+                if (tuser) {
+                    auser = tuser;
+                }
+            }
+
+            if (auser === null) {
+                auser = new UserDB();
+            }
+
+            auser.username = request.username;
+            auser.full_name = request.full_name;
+            auser.email = request.email;
+
+            if (request.password !== '') {
+                auser.password = await bcrypt.hash(request.password!, 10);
+            }
+
+            auser.main_groupid = request.main_groupid;
+            auser.isAdmin = request.isAdmin;
+            auser.disable = request.disable;
+
+            await MariaDbHelper.getConnection().manager.save(auser);
+
+            return {
+                statusCode: StatusCodes.OK
             };
         }
 

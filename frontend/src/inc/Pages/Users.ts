@@ -1,4 +1,5 @@
-import {User as UserAPI} from '../Api/User';
+import {Group as GroupAPI} from '../Api/Group';
+import {User as UserAPI, UserData} from '../Api/User';
 import {ColumnContent} from '../Bambooo/ColumnContent';
 import {Card} from '../Bambooo/Content/Card/Card';
 import {ContentCol12} from '../Bambooo/Content/ContentCol12';
@@ -14,6 +15,7 @@ import {LangText} from '../Bambooo/Lang/LangText';
 import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
 import {Lang} from '../Lang';
 import {BasePage} from './BasePage';
+import {UsersEditModal} from './Users/UsersEditModal';
 
 /**
  * Users
@@ -27,16 +29,79 @@ export class Users extends BasePage {
     protected _name: string = 'admin-users';
 
     /**
+     * users dialog
+     * @protected
+     */
+    protected _usersDialog: UsersEditModal;
+
+    /**
      * constructor
      */
     public constructor() {
         super();
 
+        // dialogs modal -----------------------------------------------------------------------------------------------
+
+        this._usersDialog = new UsersEditModal(
+            this._wrapper.getContentWrapper().getContent().getElement()
+        );
+
         // Navbar Left -------------------------------------------------------------------------------------------------
 
         // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add User', () => {
+        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add User', async() => {
+            const groups = await GroupAPI.getGroupList();
+
+            this._usersDialog.resetValues();
+            this._usersDialog.setTitle('Add User');
+
+            if (groups) {
+                this._usersDialog.setMainGroupList(groups);
+            }
+
+            this._usersDialog.show();
             return false;
+        });
+
+        // users dialog save -------------------------------------------------------------------------------------------
+
+        this._usersDialog.setOnSave(async(): Promise<void> => {
+            let tid = this._usersDialog.getId();
+
+            if (tid === null) {
+                tid = 0;
+            }
+
+            try {
+                const aUser: UserData = {
+                    id: tid,
+                    username: this._usersDialog.getUsername(),
+                    full_name: this._usersDialog.getFullname(),
+                    email: this._usersDialog.getEMail(),
+                    password: this._usersDialog.getPassword(),
+                    main_groupid: this._usersDialog.getMainGroup(),
+                    isAdmin: this._usersDialog.getIsAdmin(),
+                    disable: this._usersDialog.getIsDisabled()
+                };
+
+                if (await UserAPI.save(aUser)) {
+                    this._usersDialog.hide();
+
+                    if (this._onLoadTable) {
+                        this._onLoadTable();
+                    }
+
+                    this._toast.fire({
+                        icon: 'success',
+                        title: 'User save success.'
+                    });
+                }
+            } catch ({message}) {
+                this._toast.fire({
+                    icon: 'error',
+                    title: message
+                });
+            }
         });
     }
 
@@ -54,6 +119,7 @@ export class Users extends BasePage {
             card.showLoading();
 
             const users = await UserAPI.getUserList();
+            const groups = await GroupAPI.getGroupList();
 
             const table = new Table(card.getElement());
             const trhead = new Tr(table.getThead());
@@ -95,8 +161,18 @@ export class Users extends BasePage {
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${user.email}`);
 
+                    let groupName = 'Unknow';
+
+                    if (groups) {
+                        for (const agroup of groups) {
+                            if (agroup.id == user.main_groupid) {
+                                groupName = agroup.description;
+                            }
+                        }
+                    }
+
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${user.main_groupid}`);
+                    new Td(trbody, `${groupName}`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, new LangText(user.disable ? 'Yes' : 'No'));
@@ -114,7 +190,22 @@ export class Users extends BasePage {
                     btnMenu.addMenuItem(
                         'Edit',
                         (): void => {
+                            this._usersDialog.resetValues();
+                            this._usersDialog.setTitle('Edit User');
+                            this._usersDialog.setId(user.id);
+                            this._usersDialog.setUsername(user.username);
+                            this._usersDialog.setFullname(user.full_name);
+                            this._usersDialog.setEMail(user.email);
 
+                            if (groups) {
+                                this._usersDialog.setMainGroupList(groups);
+                            }
+
+                            this._usersDialog.setMainGroup(user.main_groupid);
+                            this._usersDialog.setIsAdmin(user.isAdmin);
+                            this._usersDialog.setIsDisabled(user.disable);
+
+                            this._usersDialog.show();
                         },
                         IconFa.edit);
                 }
