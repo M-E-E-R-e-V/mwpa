@@ -86,4 +86,24 @@ export class User {
 
         return null;
     }
+
+    /**
+     * save
+     * @param user
+     */
+    public static async save(user: UserData): Promise<boolean> {
+        const result = await NetFetch.postData('/json/user/save', user);
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return true;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return false;
+    }
 }

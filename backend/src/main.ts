@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import {Im2020} from './app/Import/Im2020';
 import {Driver as DriverMainController} from './app/Main/Driver';
 import {EncounterCategories as EncounterCategoriesMainController} from './app/Main/EncounterCategories';
+import {Group as GroupMainController} from './app/Main/Group';
 import {Login as LoginMainController} from './app/Main/Login';
 import {Login as LoginMobileController} from './app/Mobile/Login';
 import {Sightings as SightingsMainController} from './app/Main/Sightings';
@@ -230,6 +231,7 @@ import {Server} from './inc/Server/Server';
             EncounterCategoriesMainController,
             VehicleMainController,
             DriverMainController,
+            GroupMainController,
 
             // mobile --------------------------------------------------------------------------------------------------
             LoginMobileController,
