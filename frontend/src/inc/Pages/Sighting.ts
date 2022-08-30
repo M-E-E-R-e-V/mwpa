@@ -6,7 +6,7 @@ import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {ColumnContent} from '../Bambooo/ColumnContent';
 import {Card} from '../Bambooo/Content/Card/Card';
-import {ContentCol12} from '../Bambooo/Content/ContentCol12';
+import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
 import {ContentRow} from '../Bambooo/Content/ContentRow';
 import {Button, ButtonType} from '../Bambooo/Content/Form/Button';
 import {Table} from '../Bambooo/Content/Table/Table';
@@ -63,7 +63,7 @@ export class Sighting extends BasePage {
      */
     public async loadContent(): Promise<void> {
         const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol12(row1));
+        const card = new Card(new ContentCol(row1, ContentColSize.col12));
 
         card.setTitle(new LangText('Sighting'));
 

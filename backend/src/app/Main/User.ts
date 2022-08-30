@@ -11,6 +11,7 @@ import {StatusCodes} from '../../inc/Routes/StatusCodes';
 export type UserInfoData = {
     id: number;
     username: string;
+    fullname: string;
     email: string;
     isAdmin: boolean;
 };
@@ -34,7 +35,6 @@ export type UserInfoResponse = DefaultReturn & {
  * UserData
  */
 export type UserData = UserInfoData & {
-    full_name: string;
     main_groupid: number;
     password?: string;
     disable: boolean;
@@ -76,6 +76,7 @@ export class User {
                         user: {
                             id: user.id,
                             username: user.username,
+                            fullname: user.full_name,
                             email: user.email,
                             isAdmin: user.isAdmin
                         }
@@ -113,9 +114,9 @@ export class User {
                 list.push({
                     id: user.id,
                     username: user.username,
+                    fullname: user.full_name,
                     email: user.email,
                     isAdmin: user.isAdmin,
-                    full_name: user.full_name,
                     main_groupid: user.main_groupid,
                     password: '',
                     disable: user.disable
@@ -168,7 +169,7 @@ export class User {
             }
 
             auser.username = request.username;
-            auser.full_name = request.full_name;
+            auser.full_name = request.fullname;
             auser.email = request.email;
 
             if (request.password !== '') {
