@@ -107,8 +107,6 @@ See the example for starting the express server.
 #### Database documentation
 > [MWPA Database documentation on dbdiagram.io](https://dbdiagram.io/d/5dfa98f1edf08a25543f3bcc)
 
-<iframe width="560" height="315" src='https://dbdiagram.io/embed/5dfa98f1edf08a25543f3bcc'> </iframe>
-
 #### API documentation
 > [MWPA API documentation on stoplight.io](https://swe.stoplight.io/docs/mwpa/)
 
