@@ -1,6 +1,6 @@
 import './config';
 import {Login} from './inc/Api/Login';
-import {User} from './inc/Api/User';
+import {User as UserAPI} from './inc/Api/User';
 import {LangText} from './inc/Bambooo/Lang/LangText';
 import {NavbarLinkButton} from './inc/Bambooo/Navbar/NavbarLinkButton';
 import {NavbarLinkFullsize} from './inc/Bambooo/Navbar/NavbarLinkFullsize';
@@ -10,12 +10,14 @@ import {SidebarMenuTree} from './inc/Bambooo/Sidebar/SidebarMenuTree';
 import {Lang} from './inc/Lang';
 import {Admin as AdminPage} from './inc/Pages/Admin';
 import {BasePage} from './inc/Pages/BasePage';
+import {Profil} from './inc/Pages/Profil';
 import {Sighting as SightingPage} from './inc/Pages/Sighting';
 import {Species as SpeciesPage} from './inc/Pages/Species';
 import {Tours as ToursPage} from './inc/Pages/Tours';
 import {Users as UsersPage} from './inc/Pages/Users';
 import {UtilAvatarGenerator} from './inc/Utils/UtilAvatarGenerator';
 import {UtilColor} from './inc/Utils/UtilColor';
+import {UtilShorname} from './inc/Utils/UtilShorname';
 import {Lang_DE} from './langs/Lang_DE';
 import {Lang_EN} from './langs/Lang_EN';
 
@@ -64,20 +66,28 @@ type SideMenuEntry = {
             window.location.replace('/login.html');
         }
 
-        const currentuser = await User.getUserInfo();
+        const currentuser = await UserAPI.getUserInfo();
 
         if (currentuser) {
             const up = page.getWrapper().getMainSidebar().getSidebar().getUserPanel();
 
-            up.setImage(
-                UtilAvatarGenerator.generateAvatar(
-                    currentuser.user?.username!,
-                    'white',
-                    UtilColor.getColor(currentuser.user?.username!)
-                )
-            );
+            if (currentuser.user) {
+                const user = currentuser.user;
 
-            up.setUsername(currentuser.user?.username!);
+                up.setImage(
+                    UtilAvatarGenerator.generateAvatar(
+                        UtilShorname.getShortname(user.fullname),
+                        'white',
+                        UtilColor.getColor(user.username)
+                    )
+                );
+
+                up.setUsername(user.fullname);
+            }
+
+            up.setOnClickFn(() => {
+                loadPage(new Profil());
+            });
         }
 
         // right navbar --------------------------------------------------------------------------------------------

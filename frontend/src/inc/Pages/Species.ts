@@ -1,7 +1,7 @@
 import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species';
 import {ButtonClass} from '../Bambooo/Content/Button/ButtonDefault';
 import {Card} from '../Bambooo/Content/Card/Card';
-import {ContentCol12} from '../Bambooo/Content/ContentCol12';
+import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
 import {ContentRow} from '../Bambooo/Content/ContentRow';
 import {DialogConfirm} from '../Bambooo/Content/Dialog/DialogConfirm';
 import {ButtonType} from '../Bambooo/Content/Form/Button';
@@ -141,7 +141,7 @@ export class Species extends BasePage {
             this._wrapper.getContentWrapper().getContent().empty();
 
             const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-            const card = new Card(new ContentCol12(row1));
+            const card = new Card(new ContentCol(row1, ContentColSize.col12));
 
             card.setTitle(new LangText('Species'));
             card.showLoading();

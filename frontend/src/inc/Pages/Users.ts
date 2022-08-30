@@ -2,7 +2,7 @@ import {Group as GroupAPI} from '../Api/Group';
 import {User as UserAPI, UserData} from '../Api/User';
 import {ColumnContent} from '../Bambooo/ColumnContent';
 import {Card} from '../Bambooo/Content/Card/Card';
-import {ContentCol12} from '../Bambooo/Content/ContentCol12';
+import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
 import {ContentRow} from '../Bambooo/Content/ContentRow';
 import {ButtonType} from '../Bambooo/Content/Form/Button';
 import {ButtonMenu} from '../Bambooo/Content/Form/ButtonMenu';
@@ -76,7 +76,7 @@ export class Users extends BasePage {
                 const aUser: UserData = {
                     id: tid,
                     username: this._usersDialog.getUsername(),
-                    full_name: this._usersDialog.getFullname(),
+                    fullname: this._usersDialog.getFullname(),
                     email: this._usersDialog.getEMail(),
                     password: this._usersDialog.getPassword(),
                     main_groupid: this._usersDialog.getMainGroup(),
@@ -113,7 +113,7 @@ export class Users extends BasePage {
             this._wrapper.getContentWrapper().getContent().empty();
 
             const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-            const card = new Card(new ContentCol12(row1));
+            const card = new Card(new ContentCol(row1, ContentColSize.col12));
 
             card.setTitle(new LangText('Users'));
             card.showLoading();
@@ -155,7 +155,7 @@ export class Users extends BasePage {
                     // eslint-disable-next-line no-new
                     new Td(trbody, new ColumnContent([
                         `${user.username}`,
-                        `${user.full_name}`
+                        `${user.fullname}`
                     ]));
 
                     // eslint-disable-next-line no-new
@@ -194,7 +194,7 @@ export class Users extends BasePage {
                             this._usersDialog.setTitle('Edit User');
                             this._usersDialog.setId(user.id);
                             this._usersDialog.setUsername(user.username);
-                            this._usersDialog.setFullname(user.full_name);
+                            this._usersDialog.setFullname(user.fullname);
                             this._usersDialog.setEMail(user.email);
 
                             if (groups) {

@@ -9,6 +9,7 @@ import {DefaultReturn} from './Types/DefaultReturn';
 export type UserInfoData = {
     id: number;
     username: string;
+    fullname: string;
     email: string;
     isAdmin: boolean;
 };
@@ -25,7 +26,6 @@ export type UserInfo = {
  * UserData
  */
 export type UserData = UserInfoData & {
-    full_name: string;
     main_groupid: number;
     password?: string;
     disable: boolean;

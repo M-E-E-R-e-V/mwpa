@@ -1,5 +1,5 @@
 import {Card} from '../Bambooo/Content/Card/Card';
-import {ContentCol12} from '../Bambooo/Content/ContentCol12';
+import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
 import {ContentRow} from '../Bambooo/Content/ContentRow';
 import {Table} from '../Bambooo/Content/Table/Table';
 import {Th} from '../Bambooo/Content/Table/Th';
@@ -52,7 +52,7 @@ export class Tours extends BasePage {
      */
     public async loadContent(): Promise<void> {
         const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol12(row1));
+        const card = new Card(new ContentCol(row1, ContentColSize.col12));
 
         card.setTitle('Tours');
 
