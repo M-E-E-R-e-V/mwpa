@@ -16,6 +16,9 @@ import {Species as SpeciesMainController} from './app/Main/Species';
 import {User as UserMainController} from './app/Main/User';
 import {User as UserMobileController} from './app/Mobile/User';
 import {Vehicle as VehicleMainController} from './app/Main/Vehicle';
+import {Vehicle as VehicleMobileController} from './app/Mobile/Vehicle';
+import {VehicleDriver as VehicleDriverMainController} from './app/Main/VehicleDriver';
+import {VehicleDriver as VehicleDriverMobileController} from './app/Mobile/VehicleDriver';
 import {CalcAutoFill022022} from './app/Utils/CalcAutoFill022022';
 import {Config} from './inc/Config/Config';
 import {DBSetup} from './inc/Db/MariaDb/DBSetup';
@@ -230,12 +233,15 @@ import {Server} from './inc/Server/Server';
             SpeciesMainController,
             EncounterCategoriesMainController,
             VehicleMainController,
+            VehicleDriverMainController,
             DriverMainController,
             GroupMainController,
 
             // mobile --------------------------------------------------------------------------------------------------
             LoginMobileController,
-            UserMobileController
+            UserMobileController,
+            VehicleMobileController,
+            VehicleDriverMobileController
         ],
         publicDir: public_dir
     });
