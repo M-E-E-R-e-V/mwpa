@@ -22,9 +22,9 @@ services:
         max-file: "50"
 
   mwpa:
-    image: mwpa/mwpa:1.0.3
+    image: mwpa/mwpa:1.0.4
     build:
-      context: .
+     context: .
     restart: always
     container_name: mwpa_server
     volumes:
