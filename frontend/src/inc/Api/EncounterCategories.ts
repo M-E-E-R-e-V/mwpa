@@ -1,4 +1,7 @@
 import {NetFetch} from '../Net/NetFetch';
+import {UnauthorizedError} from './Error/UnauthorizedError';
+import {StatusCodes} from './Status/StatusCodes';
+import {DefaultReturn} from './Types/DefaultReturn';
 
 /**
  * EncounterCategorieEntry
@@ -11,9 +14,7 @@ export type EncounterCategorieEntry = {
 /**
  * EncounterCategoriesResponse
  */
-export type EncounterCategoriesResponse = {
-    status: string;
-    error?: string;
+export type EncounterCategoriesResponse = DefaultReturn & {
     list: EncounterCategorieEntry[];
 };
 
@@ -28,11 +29,14 @@ export class EncounterCategories {
     public static async getList(): Promise<null|EncounterCategorieEntry[]> {
         const result = await NetFetch.getData('/json/encountercategories/list');
 
-        if (result) {
-            const response = result as EncounterCategoriesResponse;
+        if (result && result.statusCode) {
+            switch(result.statusCode) {
+                case StatusCodes.OK:
+                    const response = result as EncounterCategoriesResponse;
+                    return response.list;
 
-            if (response.status === 'ok') {
-                return response.list;
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
             }
         }
 

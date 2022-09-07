@@ -1,4 +1,7 @@
 import {NetFetch} from '../Net/NetFetch';
+import {UnauthorizedError} from './Error/UnauthorizedError';
+import {StatusCodes} from './Status/StatusCodes';
+import {DefaultReturn} from './Types/DefaultReturn';
 
 /**
  * VehicleEntry
@@ -11,9 +14,7 @@ export type VehicleEntry = {
 /**
  * VehicleListResponse
  */
-export type VehicleListResponse = {
-    status: string;
-    error?: string;
+export type VehicleListResponse = DefaultReturn & {
     list: VehicleEntry[];
 };
 
@@ -28,11 +29,14 @@ export class Vehicle {
     public static async getList(): Promise<null|VehicleEntry[]> {
         const result = await NetFetch.getData('/json/vehicle/list');
 
-        if (result) {
-            const response = result as VehicleListResponse;
+        if (result && result.statusCode) {
+            switch(result.statusCode) {
+                case StatusCodes.OK:
+                    const response = result as VehicleListResponse;
+                    return response.list;
 
-            if (response.status === 'ok') {
-                return response.list;
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
             }
         }
 

@@ -6,8 +6,10 @@ import session from 'express-session';
 import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
 import {Im2020} from './app/Import/Im2020';
-import {Driver as DriverMainController} from './app/Main/Driver';
+import {BehaviouralStates as BehaviouralStatesMainController} from './app/Main/BehaviouralStates';
+import {BehaviouralStates as BehaviouralStatesMobileController} from './app/Mobile/BehaviouralStates';
 import {EncounterCategories as EncounterCategoriesMainController} from './app/Main/EncounterCategories';
+import {EncounterCategories as EncounterCategoriesMobileController} from './app/Mobile/EncounterCategories';
 import {Group as GroupMainController} from './app/Main/Group';
 import {Login as LoginMainController} from './app/Main/Login';
 import {Login as LoginMobileController} from './app/Mobile/Login';
@@ -234,14 +236,16 @@ import {Server} from './inc/Server/Server';
             EncounterCategoriesMainController,
             VehicleMainController,
             VehicleDriverMainController,
-            DriverMainController,
             GroupMainController,
+            BehaviouralStatesMainController,
 
             // mobile --------------------------------------------------------------------------------------------------
             LoginMobileController,
             UserMobileController,
             VehicleMobileController,
-            VehicleDriverMobileController
+            VehicleDriverMobileController,
+            EncounterCategoriesMobileController,
+            BehaviouralStatesMobileController
         ],
         publicDir: public_dir
     });

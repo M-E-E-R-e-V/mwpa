@@ -1,6 +1,8 @@
 import {Get, JsonController, Session} from 'routing-controllers';
 import {EncounterCategories as EncounterCategoriesDB} from '../../inc/Db/MariaDb/Entity/EncounterCategories';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
+import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
+import {StatusCodes} from '../../inc/Routes/StatusCodes';
 
 /**
  * EncounterCategorieEntry
@@ -13,9 +15,7 @@ export type EncounterCategorieEntry = {
 /**
  * EncounterCategoriesResponse
  */
-export type EncounterCategoriesResponse = {
-    status: string;
-    error?: string;
+export type EncounterCategoriesResponse = DefaultReturn & {
     list: EncounterCategorieEntry[];
 };
 
@@ -31,11 +31,9 @@ export class EncounterCategories {
      */
     @Get('/json/encountercategories/list')
     public async getList(@Session() session: any): Promise<EncounterCategoriesResponse> {
-        let status = 'ok';
-        let errormsg = '';
-        const list: EncounterCategorieEntry[] = [];
-
         if ((session.user !== undefined) && session.user.isLogin) {
+            const list: EncounterCategorieEntry[] = [];
+
             const enCatRepository = MariaDbHelper.getConnection().getRepository(EncounterCategoriesDB);
             const cates = await enCatRepository.find();
 
@@ -45,15 +43,16 @@ export class EncounterCategories {
                     name: cat.name
                 });
             }
-        } else {
-            status = 'error';
-            errormsg = 'Please login first!';
+
+            return {
+                statusCode: StatusCodes.OK,
+                list
+            };
         }
 
         return {
-            status,
-            error: errormsg,
-            list
+            statusCode: StatusCodes.UNAUTHORIZED,
+            list: []
         };
     }
 

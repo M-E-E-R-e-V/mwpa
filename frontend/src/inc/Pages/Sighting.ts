@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {Driver as DriverAPI, DriverEntry} from '../Api/Driver';
+import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Sightings as SightingsAPI, SightingsEntry} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
@@ -150,8 +150,8 @@ export class Sighting extends BasePage {
 
             // drivers -------------------------------------------------------------------------------------------------
 
-            const drivers = await DriverAPI.getList();
-            const mdrivers = new Map<number, DriverEntry>();
+            const drivers = await VehicleDriverAPI.getList();
+            const mdrivers = new Map<number, VehicleDriverEntry>();
 
             if (drivers) {
                 for (const tdriver of drivers) {
@@ -189,7 +189,7 @@ export class Sighting extends BasePage {
                     const driver = mdrivers.get(entry.vehicle_driver_id);
 
                     if (driver) {
-                        vehicleDriverName = driver.name;
+                        vehicleDriverName = driver.user.name;
                     }
 
                     // table -------------------------------------------------------------------------------------------
