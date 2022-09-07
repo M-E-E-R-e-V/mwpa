@@ -53,10 +53,10 @@ export class VehicleDriver {
             if (drivers) {
                 for (const driver of drivers) {
                     list.push({
-                        id: driver.id,
-                        description: driver.description,
+                        id: driver.vehicle_driver_id,
+                        description: driver.vehicle_driver_description,
                         user: {
-                            user_id: driver.user_id,
+                            user_id: driver.vehicle_driver_user_id,
                             name: driver.user_full_name
                         }
                     });
