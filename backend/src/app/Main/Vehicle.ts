@@ -1,6 +1,8 @@
 import {Get, JsonController, Session} from 'routing-controllers';
 import {Vehicle as VehicleDB} from '../../inc/Db/MariaDb/Entity/Vehicle';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
+import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
+import {StatusCodes} from '../../inc/Routes/StatusCodes';
 
 /**
  * VehicleEntry
@@ -13,9 +15,7 @@ export type VehicleEntry = {
 /**
  * VehicleListResponse
  */
-export type VehicleListResponse = {
-    status: string;
-    error?: string;
+export type VehicleListResponse = DefaultReturn & {
     list: VehicleEntry[];
 };
 
@@ -31,11 +31,9 @@ export class Vehicle {
      */
     @Get('/json/vehicle/list')
     public async getList(@Session() session: any): Promise<VehicleListResponse> {
-        let status = 'ok';
-        let errormsg = '';
-        const list: VehicleEntry[] = [];
-
         if ((session.user !== undefined) && session.user.isLogin) {
+            const list: VehicleEntry[] = [];
+
             const vehicleRepository = MariaDbHelper.getConnection().getRepository(VehicleDB);
             const vehicles = await vehicleRepository.find();
 
@@ -45,15 +43,16 @@ export class Vehicle {
                     name: avehicle.description
                 });
             }
-        } else {
-            status = 'error';
-            errormsg = 'Please login first!';
+
+            return {
+                statusCode: StatusCodes.OK,
+                list
+            };
         }
 
         return {
-            status,
-            error: errormsg,
-            list
+            statusCode: StatusCodes.UNAUTHORIZED,
+            list: []
         };
     }
 

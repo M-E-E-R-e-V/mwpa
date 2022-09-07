@@ -1,4 +1,5 @@
 import {Get, JsonController, Session} from 'routing-controllers';
+import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
@@ -9,8 +10,11 @@ import {VehicleDriver as VehicleDriverDB} from '../../inc/Db/MariaDb/Entity/Vehi
  */
 export type VehicleDriverEntry = {
     id: number;
-    user_id: number;
     description: string;
+    user: {
+        user_id: number;
+        name: string;
+    };
 };
 
 /**
@@ -35,15 +39,28 @@ export class VehicleDriver {
         if ((session.user !== undefined) && session.user.isLogin) {
             const list: VehicleDriverEntry[] = [];
 
-            const vehicleDriverRepository = MariaDbHelper.getConnection().getRepository(VehicleDriverDB);
-            const vehicleDrivers = await vehicleDriverRepository.find();
+            const drivers = await MariaDbHelper.getConnection()
+            .getRepository(VehicleDriverDB)
+            .createQueryBuilder('vehicle_driver')
+            .leftJoinAndSelect(
+                UserDB,
+                'user',
+                'vehicle_driver.user_id = user.id'
+            )
+            .getRawMany();
 
-            for (const vehicleDriver of vehicleDrivers) {
-                list.push({
-                    id: vehicleDriver.id,
-                    user_id: vehicleDriver.user_id,
-                    description: vehicleDriver.description
-                });
+
+            if (drivers) {
+                for (const driver of drivers) {
+                    list.push({
+                        id: driver.id,
+                        description: driver.description,
+                        user: {
+                            user_id: driver.user_id,
+                            name: driver.user_full_name
+                        }
+                    });
+                }
             }
 
             return {

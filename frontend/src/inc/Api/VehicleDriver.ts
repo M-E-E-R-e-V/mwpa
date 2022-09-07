@@ -4,35 +4,39 @@ import {StatusCodes} from './Status/StatusCodes';
 import {DefaultReturn} from './Types/DefaultReturn';
 
 /**
- * EncounterCategorieEntry
+ * VehicleDriverEntry
  */
-export type EncounterCategorieEntry = {
+export type VehicleDriverEntry = {
     id: number;
-    name: string;
+    description: string;
+    user: {
+        user_id: number;
+        name: string;
+    };
 };
 
 /**
- * EncounterCategoriesResponse
+ * VehicleDriverListResponse
  */
-export type EncounterCategoriesResponse = DefaultReturn & {
-    list: EncounterCategorieEntry[];
+export type VehicleDriverListResponse = DefaultReturn & {
+    list: VehicleDriverEntry[];
 };
 
 /**
- * EncounterCategories
+ * Driver
  */
-export class EncounterCategories {
+export class VehicleDriver {
 
     /**
      * getList
      */
-    public static async getList(): Promise<null|EncounterCategorieEntry[]> {
-        const result = await NetFetch.getData('/json/encountercategories/list');
+    public static async getList(): Promise<null|VehicleDriverEntry[]> {
+        const result = await NetFetch.getData('/json/vehicledriver/list');
 
         if (result && result.statusCode) {
             switch(result.statusCode) {
                 case StatusCodes.OK:
-                    const response = result as EncounterCategoriesResponse;
+                    const response = result as VehicleDriverListResponse;
                     return response.list;
 
                 case StatusCodes.UNAUTHORIZED:
@@ -42,5 +46,4 @@ export class EncounterCategories {
 
         return null;
     }
-
 }
