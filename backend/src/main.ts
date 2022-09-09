@@ -15,6 +15,7 @@ import {Login as LoginMainController} from './app/Main/Login';
 import {Login as LoginMobileController} from './app/Mobile/Login';
 import {Sightings as SightingsMainController} from './app/Main/Sightings';
 import {Species as SpeciesMainController} from './app/Main/Species';
+import {Species as SpeciesMobileController} from './app/Mobile/Species';
 import {User as UserMainController} from './app/Main/User';
 import {User as UserMobileController} from './app/Mobile/User';
 import {Vehicle as VehicleMainController} from './app/Main/Vehicle';
@@ -245,7 +246,8 @@ import {Server} from './inc/Server/Server';
             VehicleMobileController,
             VehicleDriverMobileController,
             EncounterCategoriesMobileController,
-            BehaviouralStatesMobileController
+            BehaviouralStatesMobileController,
+            SpeciesMobileController
         ],
         publicDir: public_dir
     });
