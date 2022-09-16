@@ -26,4 +26,10 @@ export class Species extends BaseEntity {
         // @ts-ignore
     name: string;
 
+    @Column({
+        default: false
+    })
+        // @ts-ignore
+    isdeleted: boolean;
+
 }

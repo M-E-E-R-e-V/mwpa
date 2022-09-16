@@ -11,6 +11,7 @@ import {StatusCodes} from '../../inc/Routes/StatusCodes';
 export type SpeciesEntry = {
     id: number;
     name: string;
+    isdeleted: boolean;
 };
 
 /**
@@ -56,7 +57,8 @@ export class Species {
             for (const specie of species) {
                 list.push({
                     id: specie.id,
-                    name: specie.name
+                    name: specie.name,
+                    isdeleted: specie.isdeleted
                 });
             }
 

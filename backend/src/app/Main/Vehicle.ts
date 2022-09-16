@@ -10,6 +10,7 @@ import {StatusCodes} from '../../inc/Routes/StatusCodes';
 export type VehicleEntry = {
     id: number;
     name: string;
+    isdeleted: boolean;
 };
 
 /**
@@ -40,7 +41,8 @@ export class Vehicle {
             for (const avehicle of vehicles) {
                 list.push({
                     id: avehicle.id,
-                    name: avehicle.description
+                    name: avehicle.description,
+                    isdeleted: avehicle.isdeleted
                 });
             }
 

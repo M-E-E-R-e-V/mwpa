@@ -11,6 +11,7 @@ import {VehicleDriver as VehicleDriverDB} from '../../inc/Db/MariaDb/Entity/Vehi
 export type VehicleDriverEntry = {
     id: number;
     description: string;
+    isdeleted: boolean;
     user: {
         user_id: number;
         name: string;
@@ -55,6 +56,7 @@ export class VehicleDriver {
                     list.push({
                         id: driver.vehicle_driver_id,
                         description: driver.vehicle_driver_description,
+                        isdeleted: driver.vehicle_driver_isdeleted,
                         user: {
                             user_id: driver.vehicle_driver_user_id,
                             name: driver.user_full_name
