@@ -32,4 +32,10 @@ export class EncounterCategories extends BaseEntity {
         // @ts-ignore
     description: string;
 
+    @Column({
+        default: false
+    })
+        // @ts-ignore
+    isdeleted: boolean;
+
 }

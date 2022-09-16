@@ -23,4 +23,10 @@ export class Vehicle extends BaseEntity {
         // @ts-ignore
     organization_id: number;
 
+    @Column({
+        default: false
+    })
+        // @ts-ignore
+    isdeleted: boolean;
+
 }

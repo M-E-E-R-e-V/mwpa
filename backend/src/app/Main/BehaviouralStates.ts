@@ -11,6 +11,7 @@ export type BehaviouralStateEntry = {
     id: number;
     name: string;
     description: string;
+    isdeleted: boolean;
 };
 
 /**
@@ -42,7 +43,8 @@ export class BehaviouralStates {
                 list.push({
                     id: behState.id,
                     name: behState.name,
-                    description: behState.description
+                    description: behState.description,
+                    isdeleted: behState.isdeleted
                 });
             }
 
