@@ -1,7 +1,9 @@
 import {Body, JsonController, Post, Session} from 'routing-controllers';
 import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
-import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/SightingTour';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
+import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
+import {StatusCodes} from '../../inc/Routes/StatusCodes';
+import {TypeSighting} from '../../inc/Types/TypeSighting';
 
 /**
  * SightingsFilter
@@ -15,43 +17,28 @@ export type SightingsFilter = {
 /**
  * SightingsEntry
  */
-export type SightingsEntry = {
+export type SightingsEntry = TypeSighting & {
     id: number;
     creater_id: number;
     create_datetime: number;
     update_datetime: number;
-    sighting_tour_id: number;
-    sigthing_datetime: number;
-    sighting_schema_id: number;
-    species_id: number;
-    individual_count: number;
-    behavioural_states_id: number;
-    observer: string;
-    other_vehicle_count: number;
-    direction_id: number;
-    swell_id: number;
-    encounter_categorie_id: number;
-    location_lat: number;
-    location_lon: number;
-    location_gps_n: string;
-    location_gps_w: string;
-    notes: string;
-    tour_start_date: number;
-    tour_end_date: number;
-    vehicle_id: number;
-    vehicle_driver_id: number;
+    device_id: number;
+    tour_id: number;
+    tour_fid: string;
+    hash: string;
+    hash_import_count: number;
+    source_import_file: string;
+    organization_id: number;
 };
 
 /**
  * SightingsResponse
  */
-export type SightingsResponse = {
-    status: string;
-    error?: string;
+export type SightingsResponse = DefaultReturn & {
     filter?: SightingsFilter;
-    offset: number;
-    count: number;
-    list: SightingsEntry[];
+    offset?: number;
+    count?: number;
+    list?: SightingsEntry[];
 };
 
 /**
@@ -66,74 +53,72 @@ export class Sightings {
      * @param session
      */
     @Post('/json/sightings/list')
-    public async getList(
-        @Body() filter: SightingsFilter,
-        @Session() session: any
-    ): Promise<SightingsResponse> {
-        let status = 'ok';
-        let errormsg = '';
-        let count = 0;
-        const rlist: SightingsEntry[] = [];
-
+    public async getList(@Body() filter: SightingsFilter, @Session() session: any): Promise<SightingsResponse> {
         if ((session.user !== undefined) && session.user.isLogin) {
-            count = await MariaDbHelper.getConnection()
-            .getRepository(SightingDB).count();
+            const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
 
-            const sightings = await MariaDbHelper.getConnection()
-            .getRepository(SightingDB)
-            .createQueryBuilder('sighting')
-            .leftJoinAndSelect(
-                SightingTourDB,
-                'sighting_tour',
-                'sighting.sighting_tour_id = sighting_tour.id'
-            )
-            .orderBy('sighting.sigthing_datetime', 'DESC')
-            .limit(filter.limit)
-            .offset(filter.offset)
-            .getRawMany();
+            const list: SightingsEntry[] = [];
+            const count = await sightingRepository.count();
+            const dblist = await sightingRepository.find({
+                skip: filter.offset,
+                take: filter.limit
+            });
 
-            if (sightings) {
-                for (const entry of sightings) {
-                    rlist.push({
-                        id: entry.sighting_id,
-                        creater_id: entry.sighting_creater_id,
-                        create_datetime: entry.sighting_create_datetime,
-                        update_datetime: entry.sighting_update_datetime,
-                        sighting_tour_id: entry.sighting_sighting_tour_id,
-                        sigthing_datetime: entry.sighting_sigthing_datetime,
-                        sighting_schema_id: entry.sighting_sighting_schema_id,
-                        species_id: entry.sighting_species_id,
-                        individual_count: entry.sighting_individual_count,
-                        behavioural_states_id: entry.sighting_behavioural_states_id,
-                        observer: entry.sighting_observer,
-                        other_vehicle_count: entry.sighting_other_vehicle_count,
-                        direction_id: entry.sighting_direction_id,
-                        swell_id: entry.sighting_swell_id,
-                        encounter_categorie_id: entry.sighting_encounter_categorie_id,
-                        location_lat: entry.sighting_location_lat,
-                        location_lon: entry.sighting_location_lon,
-                        location_gps_n: entry.sighting_location_gps_n,
-                        location_gps_w: entry.sighting_location_gps_w,
-                        notes: entry.sighting_notes,
-                        tour_start_date: entry.sighting_tour_start_date,
-                        tour_end_date: entry.sighting_tour_end_date,
-                        vehicle_id: entry.sighting_tour_vehicle_id,
-                        vehicle_driver_id: entry.sighting_tour_vehicle_driver_id
-                    });
-                }
+            for (const entry of dblist) {
+                list.push({
+                    id: entry.id,
+                    unid: entry.unid,
+                    creater_id: entry.creater_id,
+                    create_datetime: entry.create_datetime,
+                    update_datetime: entry.update_datetime,
+                    device_id: entry.device_id,
+                    vehicle_id: entry.vehicle_id,
+                    vehicle_driver_id: entry.vehicle_driver_id,
+                    beaufort_wind: entry.beaufort_wind,
+                    date: entry.date,
+                    tour_id: entry.tour_id,
+                    tour_fid: entry.tour_fid,
+                    tour_start: entry.tour_start,
+                    tour_end: entry.tour_end,
+                    duration_from: entry.duration_from,
+                    duration_until: entry.duration_until,
+                    location_begin: entry.location_begin,
+                    location_end: entry.location_end,
+                    photo_taken: entry.photo_taken,
+                    distance_coast: entry.distance_coast,
+                    distance_coast_estimation_gps: entry.distance_coast_estimation_gps,
+                    species_id: entry.species_id,
+                    species_count: entry.species_count,
+                    juveniles: entry.juveniles,
+                    calves: entry.calves,
+                    newborns: entry.newborns,
+                    behaviours: entry.behaviours,
+                    subgroups: entry.subgroups,
+                    reaction_id: entry.reaction_id,
+                    freq_behaviour: entry.freq_behaviour,
+                    recognizable_animals: entry.recognizable_animals,
+                    other_species: entry.other_species,
+                    other: entry.other,
+                    other_vehicle: entry.other_vehicle,
+                    note: entry.note,
+                    hash: entry.hash,
+                    hash_import_count: entry.hash_import_count,
+                    source_import_file: entry.source_import_file,
+                    organization_id: entry.organization_id
+                });
             }
-        } else {
-            status = 'error';
-            errormsg = 'Please login!';
+
+            return {
+                statusCode: StatusCodes.OK,
+                filter,
+                count,
+                offset: filter.offset ? filter.offset : 0,
+                list
+            };
         }
 
         return {
-            status,
-            error: errormsg,
-            filter,
-            count,
-            offset: filter.offset ? filter.offset : 0,
-            list: rlist
+            statusCode: StatusCodes.UNAUTHORIZED
         };
     }
 

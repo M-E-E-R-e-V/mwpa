@@ -24,18 +24,20 @@ export class Organization extends BaseEntity {
     location: string;
 
     @Column({
-        type: 'float',
-        default: 0
+        type: 'varchar',
+        length: '255',
+        default: ''
     })
         // @ts-ignore
-    lat: number;
+    lat: string;
 
     @Column({
-        type: 'float',
-        default: 0
+        type: 'varchar',
+        length: '255',
+        default: ''
     })
         // @ts-ignore
-    lon: number;
+    lon: string;
 
     @Column({
         type: 'text',

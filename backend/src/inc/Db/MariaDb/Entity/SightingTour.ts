@@ -14,6 +14,11 @@ export class SightingTour extends BaseEntity {
         // @ts-ignore
     id: number;
 
+    @Index()
+    @Column()
+        // @ts-ignore
+    tour_fid: string;
+
     /**
      * user create this entry
      */
@@ -43,51 +48,75 @@ export class SightingTour extends BaseEntity {
     update_datetime: number;
 
     /**
-     * start datetime, when the tour begin
+     * vehicle id
      */
     @Index()
-    @Column({
-        default: 0
-    })
+    @Column()
         // @ts-ignore
-    start_date: number;
+    vehicle_id: number;
 
     /**
-     * end datetime, when the tour stopt
+     * vehicle driver
      */
     @Index()
-    @Column({
-        default: 0
-    })
-        // @ts-ignore
-    end_date: number;
-
-    /**
-     * driver id of vehicle (optional)
-     */
-    @Index()
-    @Column({
-        default: 0
-    })
+    @Column()
         // @ts-ignore
     vehicle_driver_id: number;
 
     /**
-     * vehicle id (optional)
+     * beaufort wind
      */
     @Index()
     @Column({
         default: 0
     })
         // @ts-ignore
-    vehicle_id: number;
+    beaufort_wind: number;
+
+    /**
+     * date
+     */
+    @Column()
+        // @ts-ignore
+    date: string;
+
+    @Column()
+        // @ts-ignore
+    tour_start: string;
+
+    @Column()
+        // @ts-ignore
+    tour_end: string;
 
     /**
      * tour by organization
      */
     @Index()
-    @Column()
+    @Column({
+        default: 0
+    })
         // @ts-ignore
     organization_id: number;
+
+    /**
+     * open = 1,
+     * close = 2
+     */
+    @Index()
+    @Column({
+        default: 0
+    })
+        // @ts-ignore
+    status: number;
+
+    /**
+     * json list with person names of the boat
+     * that can't be a user
+     */
+    @Column({
+        default: ''
+    })
+        // @ts-ignore
+    record_by_persons: string;
 
 }
