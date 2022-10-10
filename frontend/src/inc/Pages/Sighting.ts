@@ -16,6 +16,7 @@ import {Tr} from '../Bambooo/Content/Table/Tr';
 import {LangText} from '../Bambooo/Lang/LangText';
 import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
 import {Lang} from '../Lang';
+import {UtilLocation} from '../Utils/UtilLocation';
 import {BasePage} from './BasePage';
 import {SightingEditModal} from './Sighting/SightingEditModal';
 
@@ -91,9 +92,8 @@ export class Sighting extends BasePage {
         new Th(trhead, new LangText('Group-Size'));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Time begin'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Time end'));
+        new Th(trhead, new LangText('Time begin-end'));
+
         // eslint-disable-next-line no-new
         new Th(trhead, new LangText('Duration'));
 
@@ -168,25 +168,25 @@ export class Sighting extends BasePage {
                     let vehicleName = '';
                     let vehicleDriverName = '';
 
-                    const specie = mspecies.get(entry.species_id);
+                    const specie = mspecies.get(entry.species_id!);
 
                     if (specie) {
                         specieName = specie.name;
                     }
 
-                    const encCate = mencates.get(entry.encounter_categorie_id);
+                    // const encCate = mencates.get(entry.encounter_categorie_id);
 
-                    if (encCate) {
-                        encounterCategorieName = encCate.name;
-                    }
+                    // if (encCate) {
+                       // encounterCategorieName = encCate.name;
+                    // }
 
-                    const vehicle = mvehicles.get(entry.vehicle_id);
+                    const vehicle = mvehicles.get(entry.vehicle_id!);
 
                     if (vehicle) {
                         vehicleName = vehicle.name;
                     }
 
-                    const driver = mdrivers.get(entry.vehicle_driver_id);
+                    const driver = mdrivers.get(entry.vehicle_driver_id!);
 
                     if (driver) {
                         vehicleDriverName = driver.user.name;
@@ -197,12 +197,12 @@ export class Sighting extends BasePage {
                     const trbody = new Tr(table.getTbody());
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `#${entry.id}<br>#${entry.sighting_tour_id}`);
+                    new Td(trbody, `#${entry.id}<br>#${entry.tour_id}`);
 
-                    const date = moment(new Date(entry.sigthing_datetime * 1000));
+                    const date = moment(entry.date);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, date.format('YYYY.MM.DD HH:mm'));
+                    new Td(trbody, date.format('YYYY.MM.DD'));
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${vehicleName}<br>${vehicleDriverName}`);
@@ -211,33 +211,31 @@ export class Sighting extends BasePage {
                     new Td(trbody, `${specieName}`);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${entry.individual_count}`);
+                    new Td(trbody, `${entry.species_count}`);
 
-                    if (entry.tour_start_date === 0) {
-                        // eslint-disable-next-line no-new
-                        new Td(trbody, 'Empty');
-                    } else {
-                        const time_start = moment(entry.tour_start_date * 1000);
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, `${entry.tour_start} - ${entry.tour_end}`);
 
-                        // eslint-disable-next-line no-new
-                        new Td(trbody, time_start.format('HH:mm'));
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, `${entry.duration_from} - ${entry.duration_until}`);
+
+                    try {
+                        const location = JSON.parse(entry.location_begin!);
+                        const begin_lat = UtilLocation.ddToDm(location.latitude, true);
+                        const begin_lon = UtilLocation.ddToDm(location.longitude, false);
+
+                        const beginLatStr = `${begin_lat.direction}: ${begin_lat.degree}º ${begin_lat.minute.toFixed(3)}`;
+                        const beginLonStr = `${begin_lon.direction}: ${begin_lon.degree}º ${begin_lon.minute.toFixed(3)}`;
+
+                        new Td(trbody, `<dl class="row"><dt class="col-sm-1"><i class="fas fa-map-marker-alt mr-1"></i></dt><dd class="col-sm-5">${beginLatStr}<br>${beginLonStr}</dd></dl>`);
                     }
-
-                    if (entry.tour_end_date === 0) {
-                        // eslint-disable-next-line no-new
-                        new Td(trbody, 'Empty');
-                    } else {
-                        const time_end = moment(entry.tour_end_date * 1000);
-
-                        // eslint-disable-next-line no-new
-                        new Td(trbody, time_end.format('HH:mm'));
+                    catch (e) {
+                        console.log(e);
+                        new Td(trbody, '?');
                     }
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, '');
-
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `<dl class="row"><dt class="col-sm-1"><i class="fas fa-map-marker-alt mr-1"></i></dt><dd class="col-sm-5">N: ${entry.location_gps_n} <br>W: ${entry.location_gps_w}</dd></dl>`);
+                    //
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${encounterCategorieName}`);

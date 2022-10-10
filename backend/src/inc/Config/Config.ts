@@ -27,6 +27,8 @@ interface ConfigOptions {
         };
     };
 
+    datadir?: string;
+
     rootconfigpath?: string;
     rootconfigname?: string;
 }
@@ -35,6 +37,27 @@ interface ConfigOptions {
  * Config
  */
 export class Config {
+
+    /**
+     * global config
+     * @private
+     */
+    private static _config: ConfigOptions|null = null;
+
+    /**
+     * set
+     * @param config
+     */
+    public static set(config: ConfigOptions): void {
+        this._config = config;
+    }
+
+    /**
+     * get
+     */
+    public static get(): ConfigOptions|null {
+        return this._config;
+    }
 
     /**
      * load

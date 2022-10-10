@@ -520,27 +520,11 @@ export class Im2020 {
 
         // -------------------------------------------------------------------------------------------------------------
 
-        let startDateTourTimeNumber = 0;
-        let endDateTourTimeNumber = 0;
+        const tdate = moment(startTime);
 
-        if (startTime) {
-            startDateTourTimeNumber = startTime.getTime() / 1000;
-
-            if (Number.isNaN(startDateTourTimeNumber)) {
-                startDateTourTimeNumber = 0;
-            }
-        }
-
-        if (endTime) {
-            endDateTourTimeNumber = endTime.getTime() / 1000;
-
-            if (Number.isNaN(endDateTourTimeNumber)) {
-                endDateTourTimeNumber = 0;
-            }
-        }
-
-        sightingTour.start_date = startDateTourTimeNumber;
-        sightingTour.end_date = endDateTourTimeNumber;
+        sightingTour.date = tdate.toString();
+        sightingTour.tour_start = `${startTime?.getHours()}:${startTime?.getMinutes()}`;
+        sightingTour.tour_end = `${endTime?.getHours()}:${endTime?.getMinutes()}`;
 
         sightingTour = await MariaDbHelper.getConnection().manager.save(sightingTour);
 
@@ -590,6 +574,7 @@ export class Im2020 {
         const speciesId = await this._importSpecies(row.SPECIES);
 
         // encounter categorie -----------------------------------------------------------------------------------------
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const encounterCategorieId = await this._importEncounterCategorie(row.Encounter_Category);
 
         // sighting ----------------------------------------------------------------------------------------------------
@@ -624,22 +609,21 @@ export class Im2020 {
             sighting.hash = thash;
         }
 
-        let dateTourTimeNumber = dateTourTime.getTime() / 1000;
-
-        if (Number.isNaN(dateTourTimeNumber)) {
-            dateTourTimeNumber = 0;
-        }
+        const tdate = moment(dateTourTime);
 
         sighting.update_datetime = currentDateTime;
-        sighting.sighting_tour_id = sightingTourId;
-        sighting.sigthing_datetime = dateTourTimeNumber;
+        sighting.tour_id = sightingTourId;
+        sighting.date = tdate.toString();
         sighting.species_id = speciesId;
-        sighting.location_gps_n = row.POSITION_N;
-        sighting.location_gps_w = row.POSITION_W;
-        sighting.individual_count = parseInt(row.GROUP_SIZE, 10) || 0;
-        sighting.encounter_categorie_id = encounterCategorieId;
-        sighting.notes = row.Notes;
-        sighting.exist_images = (parseInt(row.k_Photo, 10) || 0) === -1;
+
+        /*
+         * sighting.location_gps_n = row.POSITION_N;
+         * sighting.location_gps_w = row.POSITION_W;
+         * sighting.individual_count = parseInt(row.GROUP_SIZE, 10) || 0;
+         * sighting.encounter_categorie_id = encounterCategorieId;
+         * sighting.notes = row.Notes;
+         * sighting.exist_images = (parseInt(row.k_Photo, 10) || 0) === -1;
+         */
 
         sighting = await MariaDbHelper.getConnection().manager.save(sighting);
 

@@ -6,12 +6,14 @@ import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm
 @Entity({name: 'sighting'})
 export class Sighting extends BaseEntity {
 
-    /**
-     * id for sighting tour
-     */
     @PrimaryGeneratedColumn()
         // @ts-ignore
     id: number;
+
+    @Index()
+    @Column()
+        // @ts-ignore
+    unid: string;
 
     /**
      * user create this entry
@@ -41,6 +43,46 @@ export class Sighting extends BaseEntity {
         // @ts-ignore
     update_datetime: number;
 
+    @Index()
+    @Column({
+        default: 0
+    })
+        // @ts-ignore
+    device_id: number;
+
+    /**
+     * vehicle id
+     */
+    @Index()
+    @Column()
+        // @ts-ignore
+    vehicle_id: number;
+
+    /**
+     * vehicle driver
+     */
+    @Index()
+    @Column()
+        // @ts-ignore
+    vehicle_driver_id: number;
+
+    /**
+     * beaufort wind
+     */
+    @Index()
+    @Column({
+        default: 0
+    })
+        // @ts-ignore
+    beaufort_wind: number;
+
+    /**
+     * date
+     */
+    @Column()
+        // @ts-ignore
+    date: string;
+
     /**
      * sighting tour id
      */
@@ -49,27 +91,52 @@ export class Sighting extends BaseEntity {
         default: 0
     })
         // @ts-ignore
-    sighting_tour_id: number;
+    tour_id: number;
 
-    /**
-     * sigthing datetime (day and time)
-     */
     @Index()
+    @Column()
+        // @ts-ignore
+    tour_fid: string;
+
+    @Column()
+        // @ts-ignore
+    tour_start: string;
+
+    @Column()
+        // @ts-ignore
+    tour_end: string;
+
+    @Column()
+        // @ts-ignore
+    duration_from: string;
+
+    @Column()
+        // @ts-ignore
+    duration_until: string;
+
+    @Column()
+        // @ts-ignore
+    location_begin: string;
+
+    @Column()
+        // @ts-ignore
+    location_end: string;
+
     @Column({
         default: 0
     })
         // @ts-ignore
-    sigthing_datetime: number;
+    photo_taken: number;
 
-    /**
-     * sighting schema id
-     */
-    @Index()
+    @Column()
+        // @ts-ignore
+    distance_coast: string;
+
     @Column({
         default: 0
     })
         // @ts-ignore
-    sighting_schema_id: number;
+    distance_coast_estimation_gps: number;
 
     /**
      * species id
@@ -82,135 +149,85 @@ export class Sighting extends BaseEntity {
     species_id: number;
 
     /**
-     * individual count
+     * species count
      */
     @Index()
     @Column({
         default: 0
     })
         // @ts-ignore
-    individual_count: number;
+    species_count: number;
 
-    /**
-     * behavioural states id
-     */
-    @Index()
     @Column({
         default: 0
     })
         // @ts-ignore
-    behavioural_states_id: number;
+    juveniles: number;
 
-    /**
-     * observer
-     */
-    @Index()
+    @Column({
+        default: 0
+    })
+        // @ts-ignore
+    calves: number;
+
+    @Column({
+        default: 0
+    })
+        // @ts-ignore
+    newborns: number;
+
     @Column({
         default: ''
     })
         // @ts-ignore
-    observer: string;
+    behaviours: string;
 
-    /**
-     * other vehicle count
-     */
-    @Index()
     @Column({
         default: 0
     })
         // @ts-ignore
-    other_vehicle_count: number;
+    subgroups: number;
 
-    /**
-     * direction of vehicle
-     */
     @Index()
-    @Column({
-        default: 0
-    })
+    @Column()
         // @ts-ignore
-    direction_id: number;
+    reaction_id: number;
 
-    /**
-     * swell id
-     */
-    @Index()
-    @Column({
-        default: 0
-    })
-        // @ts-ignore
-    swell_id: number;
-
-    /**
-     * encounter categorie id
-     */
-    @Index()
-    @Column({
-        default: 0
-    })
-        // @ts-ignore
-    encounter_categorie_id: number;
-
-    /**
-     * location latitude
-     */
-    @Index()
-    @Column({
-        default: 0.0,
-        type: 'float'
-    })
-        // @ts-ignore
-    location_lat: number;
-
-    /**
-     * location longitude
-     */
-    @Index()
-    @Column({
-        default: 0.0,
-        type: 'float'
-    })
-        // @ts-ignore
-    location_lon: number;
-
-    /**
-     * location gps coordinates n
-     */
     @Column({
         default: ''
     })
         // @ts-ignore
-    location_gps_n: string;
+    freq_behaviour: string;
 
-    /**
-     * location gps coordinates
-     */
     @Column({
         default: ''
     })
         // @ts-ignore
-    location_gps_w: string;
+    recognizable_animals: string;
 
-    /**
-     * notes
-     */
     @Column({
-        type: 'text',
         default: ''
     })
         // @ts-ignore
-    notes: string;
+    other_species: string;
 
-    /**
-     * exist images
-     */
-    @Index()
     @Column({
-        type: 'int',
-        default: false
+        default: ''
     })
         // @ts-ignore
-    exist_images: boolean;
+    other: string;
+
+    @Column({
+        default: ''
+    })
+        // @ts-ignore
+    other_vehicle: string;
+
+    @Column({
+        default: ''
+    })
+        // @ts-ignore
+    note: string;
 
     @Index()
     @Column({
@@ -232,5 +249,15 @@ export class Sighting extends BaseEntity {
     })
         // @ts-ignore
     source_import_file: string;
+
+    /**
+     * sighting by organization
+     */
+    @Index()
+    @Column({
+        default: 0
+    })
+        // @ts-ignore
+    organization_id: number;
 
 }
