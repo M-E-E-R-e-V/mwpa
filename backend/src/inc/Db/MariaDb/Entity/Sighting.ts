@@ -114,11 +114,15 @@ export class Sighting extends BaseEntity {
         // @ts-ignore
     duration_until: string;
 
-    @Column()
+    @Column({
+        type: 'text'
+    })
         // @ts-ignore
     location_begin: string;
 
-    @Column()
+    @Column({
+        type: 'text'
+    })
         // @ts-ignore
     location_end: string;
 
@@ -194,36 +198,42 @@ export class Sighting extends BaseEntity {
     reaction_id: number;
 
     @Column({
+        type: 'text',
         default: ''
     })
         // @ts-ignore
     freq_behaviour: string;
 
     @Column({
+        type: 'text',
         default: ''
     })
         // @ts-ignore
     recognizable_animals: string;
 
     @Column({
+        type: 'text',
         default: ''
     })
         // @ts-ignore
     other_species: string;
 
     @Column({
+        type: 'text',
         default: ''
     })
         // @ts-ignore
     other: string;
 
     @Column({
+        type: 'text',
         default: ''
     })
         // @ts-ignore
     other_vehicle: string;
 
     @Column({
+        type: 'text',
         default: ''
     })
         // @ts-ignore

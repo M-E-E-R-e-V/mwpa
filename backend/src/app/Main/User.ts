@@ -1,5 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
+import {Group as GroupDB} from '../../inc/Db/MariaDb/Entity/Group';
+import {Organization as OrganizationDB} from '../../inc/Db/MariaDb/Entity/Organization';
 import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
@@ -17,11 +19,29 @@ export type UserInfoData = {
 };
 
 /**
+ * UserInfoGroup
+ */
+export type UserInfoGroup = {
+    name: string;
+    id: number;
+};
+
+/**
+ * UserInfoOrg
+ */
+export type UserInfoOrg = {
+    name: string;
+    id: number;
+};
+
+/**
  * UserInfo
  */
 export type UserInfo = {
     islogin: boolean;
     user?: UserInfoData;
+    group?: UserInfoGroup;
+    organization?: UserInfoOrg;
 };
 
 /**
@@ -61,6 +81,8 @@ export class User {
     public async getUserInfo(@Session() session: any): Promise<UserInfoResponse> {
         if ((session.user !== undefined) && session.user.isLogin) {
             const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
+            const groupRepository = MariaDbHelper.getConnection().getRepository(GroupDB);
+            const orgRepository = MariaDbHelper.getConnection().getRepository(OrganizationDB);
 
             const user = await userRepository.findOne({
                 where: {
@@ -69,6 +91,18 @@ export class User {
             });
 
             if (user) {
+                const mainGroup = await groupRepository.findOne({
+                    where: {
+                        id: user.main_groupid
+                    }
+                });
+
+                const org = await orgRepository.findOne({
+                    where: {
+                        id: mainGroup?.organization_id!
+                    }
+                });
+
                 return {
                     statusCode: StatusCodes.OK,
                     data: {
@@ -79,6 +113,14 @@ export class User {
                             fullname: user.full_name,
                             email: user.email,
                             isAdmin: user.isAdmin
+                        },
+                        group: {
+                            id: mainGroup?.id!,
+                            name: mainGroup?.description!
+                        },
+                        organization: {
+                            id: org?.id!,
+                            name: org?.description!
                         }
                     }
                 };

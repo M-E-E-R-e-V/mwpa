@@ -41,7 +41,6 @@ export class Profil extends BasePage {
         const row2 = new ContentRow(this._wrapper);
 
         const colProfile = new ContentCol(row2, ContentColSize.colMd3);
-        // @ts-ignore
         const colForm = new ContentCol(row2, ContentColSize.colMd9);
 
         // profile
@@ -59,7 +58,7 @@ export class Profil extends BasePage {
         this._onLoadTable = async(): Promise<void> => {
             const currentuser = await UserAPI.getUserInfo();
 
-            const mProfileElement = cardProfile.getMainElement();
+            const mProfileElement = cardProfile.getElement();
             const imageText = new Text(mProfileElement, TextAlignment.center);
             new Image(
                 imageText,
@@ -75,6 +74,10 @@ export class Profil extends BasePage {
             imageText.getElement().append(`<h3 class="profile-username text-center">${currentuser!.user!.fullname}</h3>`);
             const ptext = new PText(imageText, PTextType.muted, TextAlignment.center);
             ptext.addValue(`${currentuser!.user!.username}`);
+
+            const ulElement = jQuery('<ul class="list-group list-group-unbordered mb-3"></ul>').appendTo(mProfileElement);
+            jQuery(`<li class="list-group-item"><b>Main-Group</b> <a class="float-right">${currentuser!.group!.name}</a></li>`).appendTo(ulElement);
+            jQuery(`<li class="list-group-item"><b>Organization</b> <a class="float-right">${currentuser!.organization!.name}</a></li>`).appendTo(ulElement);
 
             Lang.i().lAll();
         };
