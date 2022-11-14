@@ -60,6 +60,9 @@ export class Sightings {
             const list: SightingsEntry[] = [];
             const count = await sightingRepository.count();
             const dblist = await sightingRepository.find({
+                order: {
+                    id: 'DESC'
+                },
                 skip: filter.offset,
                 take: filter.limit
             });

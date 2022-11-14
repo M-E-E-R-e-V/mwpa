@@ -15,11 +15,29 @@ export type UserInfoData = {
 };
 
 /**
+ * UserInfoGroup
+ */
+export type UserInfoGroup = {
+    name: string;
+    id: number;
+};
+
+/**
+ * UserInfoOrg
+ */
+export type UserInfoOrg = {
+    name: string;
+    id: number;
+};
+
+/**
  * UserInfo
  */
 export type UserInfo = {
     islogin: boolean;
     user?: UserInfoData;
+    group?: UserInfoGroup;
+    organization?: UserInfoOrg;
 };
 
 /**

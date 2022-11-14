@@ -10,6 +10,7 @@ import {SidebarMenuTree} from './inc/Bambooo/Sidebar/SidebarMenuTree';
 import {Lang} from './inc/Lang';
 import {Admin as AdminPage} from './inc/Pages/Admin';
 import {BasePage} from './inc/Pages/BasePage';
+import {Group as GroupPage} from './inc/Pages/Group';
 import {Profil} from './inc/Pages/Profil';
 import {Sighting as SightingPage} from './inc/Pages/Sighting';
 import {Species as SpeciesPage} from './inc/Pages/Species';
@@ -173,7 +174,7 @@ type SideMenuEntry = {
                             icon: 'fa-solid fa-tags',
                             name: 'admin-user-groups',
                             onClick: (): void => {
-                                //loadPage(new Species());
+                                loadPage(new GroupPage());
                             }
                         },
                         {

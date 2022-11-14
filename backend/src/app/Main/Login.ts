@@ -24,6 +24,13 @@ export type LoginResponse = {
 };
 
 /**
+ * LogoutResponse
+ */
+export type LogoutResponse = {
+    success: boolean;
+};
+
+/**
  * LoginIsLoginResponse
  */
 export type LoginIsLoginResponse = {
@@ -56,8 +63,8 @@ export class Login {
      */
     @Post('/json/login')
     public async login(
-        @Body() login: LoginRequest,
-        @Session() session: any
+        @Session() session: any,
+        @Body() login: LoginRequest
     ): Promise<LoginResponse> {
         if (login.email === '') {
             return {
@@ -166,6 +173,28 @@ export class Login {
         return {
             success: false,
             error: 'User not found.'
+        };
+    }
+
+    /**
+     * logout
+     * @param session
+     */
+    @Get('/json/logout')
+    public async logout(@Session() session: any): Promise<LogoutResponse> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            session.user.userid = 0;
+            session.user.isLogin = false;
+            session.user.isAdmin = false;
+            session.user.main_group_id = 0;
+
+            return {
+                success: true
+            };
+        }
+
+        return {
+            success: false
         };
     }
 

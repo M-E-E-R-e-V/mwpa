@@ -8,6 +8,13 @@ export type IsLogin = {
 };
 
 /**
+ * LogoutResponse
+ */
+export type LogoutResponse = {
+    success: boolean;
+};
+
+/**
  * Login
  */
 export class Login {
@@ -38,9 +45,9 @@ export class Login {
      * isLogin
      */
     public static async isLogin(): Promise<boolean> {
-        const resulte = await NetFetch.getData('/json/islogin') as IsLogin;
+        const response = await NetFetch.getData('/json/islogin') as IsLogin;
 
-        if (resulte.status) {
+        if (response.status) {
             return true;
         }
 
@@ -53,7 +60,7 @@ export class Login {
     public static async logout(): Promise<boolean> {
         const response = await NetFetch.getData('/json/logout');
 
-        if (response) {
+        if (response.status) {
             return true;
         }
 
