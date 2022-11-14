@@ -2,6 +2,8 @@ import {User as UserAPI} from '../Api/User';
 import {Card, CardBodyType, CardLine, CardType} from '../Bambooo/Content/Card/Card';
 import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
 import {ContentRow, ContentRowClass} from '../Bambooo/Content/ContentRow';
+import {FormGroup} from '../Bambooo/Content/Form/FormGroup';
+import {InputBottemBorderOnly2, InputType} from '../Bambooo/Content/Form/InputBottemBorderOnly2';
 import {Image, ImageArt, ImageType} from '../Bambooo/Content/Image/Image';
 import {PText, PTextType} from '../Bambooo/Content/Text/PText';
 import {Text, TextAlignment} from '../Bambooo/Content/Text/Text';
@@ -43,20 +45,21 @@ export class Profil extends BasePage {
         const colProfile = new ContentCol(row2, ContentColSize.colMd3);
         const colForm = new ContentCol(row2, ContentColSize.colMd9);
 
-        // profile
-        const cardProfile = new Card(
-            colProfile,
-            CardBodyType.none,
-            CardType.primary,
-            CardLine.outline
+        this._onLoadTable = async(): Promise<void> => {
+            colProfile.empty();
+            colForm.empty();
+
+            const currentuser = await UserAPI.getUserInfo();
+
+            // profile
+            const cardProfile = new Card(
+                colProfile,
+                CardBodyType.none,
+                CardType.primary,
+                CardLine.outline
             );
 
-        cardProfile.hideHeader();
-
-        // form
-
-        this._onLoadTable = async(): Promise<void> => {
-            const currentuser = await UserAPI.getUserInfo();
+            cardProfile.hideHeader();
 
             const mProfileElement = cardProfile.getElement();
             const imageText = new Text(mProfileElement, TextAlignment.center);
@@ -78,6 +81,28 @@ export class Profil extends BasePage {
             const ulElement = jQuery('<ul class="list-group list-group-unbordered mb-3"></ul>').appendTo(mProfileElement);
             jQuery(`<li class="list-group-item"><b>Main-Group</b> <a class="float-right">${currentuser!.group!.name}</a></li>`).appendTo(ulElement);
             jQuery(`<li class="list-group-item"><b>Organization</b> <a class="float-right">${currentuser!.organization!.name}</a></li>`).appendTo(ulElement);
+
+            // form
+            const detailsCard = new Card(colForm, CardBodyType.none);
+            detailsCard.setTitle('Details');
+
+            const groupEMail = new FormGroup(detailsCard, 'EMail');
+            const emailInput = new InputBottemBorderOnly2(groupEMail);
+            emailInput.setValue(currentuser!.user!.email);
+
+            const passwordCard = new Card(colForm, CardBodyType.none);
+            passwordCard.setTitle('Change password');
+
+            const groupNewPassword = new FormGroup(passwordCard, 'New password');
+            const newpasswordInput = new InputBottemBorderOnly2(groupNewPassword, undefined, InputType.password);
+            newpasswordInput.show();
+
+            const groupRepeatPassword = new FormGroup(passwordCard, 'Repeat password');
+            const repeatpasswordInput = new InputBottemBorderOnly2(groupRepeatPassword, undefined, InputType.password);
+            repeatpasswordInput.show();
+
+            const mobilePinCard = new Card(colForm, CardBodyType.none);
+            mobilePinCard.setTitle('Change mobile app pin');
 
             Lang.i().lAll();
         };
