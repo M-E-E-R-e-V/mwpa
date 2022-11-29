@@ -1,4 +1,5 @@
 import moment from 'moment';
+import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Sightings as SightingsAPI, SightingsEntry} from '../Api/Sightings';
@@ -59,6 +60,10 @@ export class Sighting extends BasePage {
         });
     }
 
+    /*protected createSightingCard(sighting: SightingsEntry): Promise<void> {
+
+    }*/
+
     /**
      * loadContent
      */
@@ -68,17 +73,17 @@ export class Sighting extends BasePage {
 
         card.setTitle(new LangText('Sighting'));
 
-        const table = new Table(card.getElement());
+        const divResp = jQuery('<div class="table-responsive"></div>').appendTo(card.getElement());
+
+        const table = new Table(divResp);
         const trhead = new Tr(table.getThead());
 
         // eslint-disable-next-line no-new
         new Th(trhead, new ColumnContent([
             new LangText('Id'),
             new LangText('TourId'),
+            new LangText('Date')
         ]));
-
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Date'));
 
         // eslint-disable-next-line no-new
         new Th(trhead, new ColumnContent([
@@ -87,24 +92,40 @@ export class Sighting extends BasePage {
         ]));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Species'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Group-Size'));
+        new Th(trhead, new ColumnContent([
+            new LangText('Species'),
+            new LangText('Other species')
+        ]));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Time begin-end'));
+        new Th(trhead, new ColumnContent([
+            new LangText('Group-Size'),
+            new LangText('Subgroups')
+        ]));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Duration'));
+        new Th(trhead, new ColumnContent([
+            new LangText('Time begin-end'),
+            new LangText('Duration')
+        ]));
 
         // eslint-disable-next-line no-new
         new Th(trhead, new LangText('Location'));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Encounter'));
+        new Th(trhead, new LangText('Distance'));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Other species'));
+        new Th(trhead, new ColumnContent([
+            new LangText('Photos taken'),
+            new LangText('E. without GPS')
+        ]));
+
+        // eslint-disable-next-line no-new
+        new Th(trhead, new LangText('Behaviour'));
+
+        // eslint-disable-next-line no-new
+        new Th(trhead, new LangText('Encounter'));
 
         // eslint-disable-next-line no-new
         new Th(trhead, '');
@@ -159,6 +180,17 @@ export class Sighting extends BasePage {
                 }
             }
 
+            // behaviours ----------------------------------------------------------------------------------------------
+
+            const behaviours = await BehaviouralStatesAPI.getList();
+            const mbehaviours = new Map<number, BehaviouralStateEntry>();
+
+            if (behaviours) {
+                for (const behaviour of behaviours) {
+                    mbehaviours.set(behaviour.id, behaviour);
+                }
+            }
+
             // sightings -----------------------------------------------------------------------------------------------
 
             const onLoadsightings = async(sightings: SightingsEntry[]): Promise<void> => {
@@ -171,7 +203,7 @@ export class Sighting extends BasePage {
                     const specie = mspecies.get(entry.species_id!);
 
                     if (specie) {
-                        specieName = specie.name;
+                        specieName = specie.name.split(',')[0];
                     }
 
                     // const encCate = mencates.get(entry.encounter_categorie_id);
@@ -196,28 +228,43 @@ export class Sighting extends BasePage {
 
                     const trbody = new Tr(table.getTbody());
 
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `#${entry.id}<br>#${entry.tour_id}`);
-
                     const date = moment(entry.date);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, date.format('YYYY.MM.DD'));
+                    new Td(trbody, `<b>#${entry.id}</b><br>#${entry.tour_id}<br>${date.format('YYYY.MM.DD')}`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${vehicleName}<br>${vehicleDriverName}`);
 
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `${specieName}`);
+                    let otherSpecies = '';
+                    const otherSpeciesList = JSON.parse(entry.other_species!);
+
+                    if (otherSpeciesList) {
+                        for (const otherSpeciesKey in otherSpeciesList) {
+                            const otherSpecie = otherSpeciesList[otherSpeciesKey];
+
+                            if (otherSpecie.trim() !== '') {
+                                const totherSpecie = mspecies.get(parseInt(otherSpecie, 10));
+
+                                if (totherSpecie) {
+                                    if (otherSpecies.length > 0 ) {
+                                        otherSpecies += ', ';
+                                    }
+
+                                    otherSpecies += totherSpecie.name.split(',')[0];
+                                }
+                            }
+                        }
+                    }
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${entry.species_count}`);
+                    new Td(trbody, `<b>${specieName}</b><br>${otherSpecies}`);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${entry.tour_start} - ${entry.tour_end}`);
+                    new Td(trbody, `<b>${entry.species_count}</b><br>${entry.subgroups! > 0 ? 'Yes' : 'No'}`);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${entry.duration_from} - ${entry.duration_until}`);
+                    new Td(trbody, `<b>${entry.tour_start} - ${entry.tour_end}</b><br>${entry.duration_from} - ${entry.duration_until}`);
 
                     try {
                         const location = JSON.parse(entry.location_begin!);
@@ -235,14 +282,29 @@ export class Sighting extends BasePage {
                     }
 
                     // eslint-disable-next-line no-new
-                    //
+                    new Td(trbody, `${entry.distance_coast}`);
+
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, `<b>${entry.photo_taken! > 0 ? 'Yes' : 'No'}</b><br>${entry.distance_coast_estimation_gps! > 0 ? 'Yes' : 'No'}`);
+
+                    let behaviourStr = '';
+                    const ebehaviours = JSON.parse(entry.behaviours!);
+
+                    if (ebehaviours) {
+                        for (const ebehaviourKey in ebehaviours) {
+                            const tbehviour = mbehaviours.get(Number(ebehaviours[ebehaviourKey]));
+
+                            if (tbehviour) {
+                                behaviourStr += `${tbehviour.name} <br>`;
+                            }
+                        }
+                    }
+
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, behaviourStr);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${encounterCategorieName}`);
-
-                    // other species
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, '');
 
                     // action
                     const actionTd = new Td(trbody, '');
