@@ -178,6 +178,7 @@ export class Sightings {
                 sighting.newborns = request.newborns || 0;
                 sighting.behaviours = request.behaviours || '';
                 sighting.subgroups = request.subgroups || 0;
+                sighting.group_structure_id = request.group_structure_id || 0;
                 sighting.reaction_id = request.reaction_id || 0;
                 sighting.freq_behaviour = request.freq_behaviour || '';
                 sighting.recognizable_animals = request.recognizable_animals || '';

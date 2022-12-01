@@ -10,6 +10,8 @@ import {Card} from '../Bambooo/Content/Card/Card';
 import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
 import {ContentRow} from '../Bambooo/Content/ContentRow';
 import {Button, ButtonType} from '../Bambooo/Content/Form/Button';
+import {ButtonMenu} from '../Bambooo/Content/Form/ButtonMenu';
+import {IconFa} from '../Bambooo/Content/Icon/Icon';
 import {Table} from '../Bambooo/Content/Table/Table';
 import {Td} from '../Bambooo/Content/Table/Td';
 import {Th} from '../Bambooo/Content/Table/Th';
@@ -17,6 +19,7 @@ import {Tr} from '../Bambooo/Content/Table/Tr';
 import {LangText} from '../Bambooo/Lang/LangText';
 import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
 import {Lang} from '../Lang';
+import {UtilDownload} from '../Utils/UtilDownload';
 import {UtilLocation} from '../Utils/UtilLocation';
 import {BasePage} from './BasePage';
 import {SightingEditModal} from './Sighting/SightingEditModal';
@@ -72,6 +75,20 @@ export class Sighting extends BasePage {
         const card = new Card(new ContentCol(row1, ContentColSize.col12));
 
         card.setTitle(new LangText('Sighting'));
+
+        const btnMenu = new ButtonMenu(
+            card.getToolsElement(),
+            IconFa.bars,
+            true,
+            ButtonType.borderless
+        );
+
+        btnMenu.addMenuItem(
+            new LangText('to Excel'),
+            (): void => {
+                UtilDownload.download('/json/sightings/list/excel', 'sightings_list.xlsx');
+            },
+            IconFa.edit);
 
         const divResp = jQuery('<div class="table-responsive"></div>').appendTo(card.getElement());
 
