@@ -192,6 +192,12 @@ export class Sighting extends BaseEntity {
         // @ts-ignore
     subgroups: number;
 
+    @Column({
+        default: 0
+    })
+        // @ts-ignore
+    group_structure_id: number;
+
     @Index()
     @Column()
         // @ts-ignore

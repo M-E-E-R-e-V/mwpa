@@ -22,7 +22,7 @@ services:
         max-file: "50"
 
   mwpa:
-    image: mwpa/mwpa:1.0.4
+    image: mwpa/mwpa:1.0.12
     build:
      context: .
     restart: always
@@ -30,6 +30,7 @@ services:
     volumes:
       - ./config.json:/opt/app/config.json
       - ./imports:/opt/app/imports
+      - ./data:/opt/app/data
     ports:
       - 3000:3000
     networks:

@@ -23,6 +23,7 @@ export type TypeSighting = {
     newborns?: number;
     behaviours?: string;
     subgroups?: number;
+    group_structure_id?: number;
     reaction_id?: number;
     freq_behaviour?: string;
     recognizable_animals?: string;
