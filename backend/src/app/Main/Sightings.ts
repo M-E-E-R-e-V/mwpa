@@ -153,6 +153,7 @@ export class Sightings {
             const behStates: Map<number, BehaviouralStatesDB> = new Map<number, BehaviouralStatesDB>();
             const groupStructure: Map<number, string> = new Map<number, string>();
             const enCats: Map<number, EncounterCategoriesDB> = new Map<number, EncounterCategoriesDB>();
+            const users: Map<number, UserDB> = new Map<number, UserDB>();
 
             // repositories --------------------------------------------------------------------------------------------
 
@@ -161,6 +162,7 @@ export class Sightings {
             const speciesRepository = MariaDbHelper.getConnection().getRepository(SpeciesDB);
             const behStatesRepository = MariaDbHelper.getConnection().getRepository(BehaviouralStatesDB);
             const enCatRepository = MariaDbHelper.getConnection().getRepository(EncounterCategoriesDB);
+            const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
 
             // vehicle list --------------------------------------------------------------------------------------------
             const dbVehicles = await vehicleRepository.find();
@@ -199,6 +201,16 @@ export class Sightings {
                 }
             }
 
+            // users ---------------------------------------------------------------------------------------------------
+
+            const dbUsers = await userRepository.find();
+
+            if (dbUsers) {
+                for (const dbUser of dbUsers) {
+                    users.set(dbUser.id, dbUser);
+                }
+            }
+
             // behavioural states --------------------------------------------------------------------------------------
 
             const dbBehStates = await behStatesRepository.find();
@@ -233,6 +245,7 @@ export class Sightings {
                     'Id',
                     'Boat',
                     'Skipper',
+                    'Observer',
                     'Wind/Seastate (Beaufort)',
                     'Date',
                     'Start of trip',
@@ -273,6 +286,7 @@ export class Sightings {
                     for (const entry of dblist) {
                         let vehicleStr = '';
                         let vehicleDriverStr = '';
+                        let userStr = '';
                         let specieStr = '';
                         let behaviourStr = '';
                         let groupStructrStr = '';
@@ -293,6 +307,14 @@ export class Sightings {
 
                         if (driver) {
                             vehicleDriverStr = driver;
+                        }
+
+                        // observer ------------------------------------------------------------------------------------
+
+                        const user = users.get(entry.creater_id);
+
+                        if (user) {
+                            userStr = user.full_name;
                         }
 
                         // date ----------------------------------------------------------------------------------------
@@ -403,6 +425,7 @@ export class Sightings {
                             `${entry.id}`,
                             `${vehicleStr}`,
                             `${vehicleDriverStr}`,
+                            `${userStr}`,
                             `${entry.beaufort_wind}`,
                             `${date.format('YYYY/DD/MM')}`,
                             `${entry.tour_start}`,
