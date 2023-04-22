@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as Path from 'path';
 import {Body, BodyParam, JsonController, Post, Session, UploadedFile} from 'routing-controllers';
+import {v4 as uuidv4} from 'uuid';
 import {Config} from '../../inc/Config/Config';
 import {Devices as DevicesDB} from '../../inc/Db/MariaDb/Entity/Devices';
 import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
@@ -8,7 +9,6 @@ import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/Sighti
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
-import {v4 as uuidv4} from 'uuid';
 import {TypeSighting} from '../../inc/Types/TypeSighting';
 import {DateHelper} from '../../inc/Utils/DateHelper';
 import {UtilSighting} from '../../inc/Utils/UtilSighting';
@@ -234,9 +234,7 @@ export class Sightings {
                 fs.mkdirSync(sightingUidDir, 0o744);
             }
 
-            const tFilePath = Path.join(sightingUidDir, filename);
-
-            return tFilePath;
+            return Path.join(sightingUidDir, filename);
         }
 
         return null;
