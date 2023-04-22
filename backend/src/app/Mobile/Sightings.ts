@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as Path from 'path';
-import {Body, JsonController, Post, Session} from 'routing-controllers';
+import {Body, BodyParam, JsonController, Post, Session, UploadedFile} from 'routing-controllers';
 import {Config} from '../../inc/Config/Config';
 import {Devices as DevicesDB} from '../../inc/Db/MariaDb/Entity/Devices';
 import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
@@ -30,16 +30,16 @@ export type SightingMobile = TypeSighting;
  * SightingImageExist
  */
 export type SightingImageExist = {
-    unid?: string;
-    filename?: string;
-    size?: number;
+    unid: string;
+    filename: string;
+    size: number;
 };
 
 /**
  * SightingImageExistResponse
  */
 export type SightingImageExistResponse = DefaultReturn & {
-    exist?: boolean;
+    isExist?: boolean;
 };
 
 /**
@@ -108,7 +108,7 @@ export class Sightings {
                 tour.update_datetime = ctime;
                 tour.vehicle_id = request.vehicle_id || 0;
                 tour.vehicle_driver_id = request.vehicle_driver_id || 0;
-                tour.beaufort_wind = request.beaufort_wind || 0;
+                tour.beaufort_wind = request.beaufort_wind || '';
                 tour.date = request.date || '';
                 tour.tour_start = request.tour_start || '';
                 tour.tour_end = request.tour_end || '';
@@ -158,7 +158,7 @@ export class Sightings {
                 sighting.device_id = device.id;
                 sighting.vehicle_id = request.vehicle_id || 0;
                 sighting.vehicle_driver_id = request.vehicle_driver_id || 0;
-                sighting.beaufort_wind = request.beaufort_wind || 0;
+                sighting.beaufort_wind = request.beaufort_wind || '';
                 sighting.date = request.date || '';
                 sighting.tour_id = tour?.id!;
                 sighting.tour_fid = tourFid;
@@ -206,13 +206,104 @@ export class Sightings {
     }
 
     /**
+     * _getImageUploadPath
+     * @param sightingUnid
+     * @param filename
+     * @private
+     */
+    private async _getImageUploadPath(sightingUnid: string, filename: string): Promise<string|null> {
+        const config = Config.get();
+
+        if (config?.datadir !== null && fs.existsSync(config?.datadir!)) {
+            let sightingDir = Path.join(config?.datadir!, 'sighting');
+
+            if (sightingDir.charAt(0) !== '/') {
+                sightingDir = Path.join(__dirname, sightingDir);
+            }
+
+            if (!fs.existsSync(sightingDir)) {
+                fs.mkdirSync(sightingDir, {
+                    recursive: true,
+                    mode: 0o744
+                });
+            }
+
+            const sightingUidDir = Path.join(sightingDir, sightingUnid);
+
+            if (!fs.existsSync(sightingUidDir)) {
+                fs.mkdirSync(sightingUidDir, 0o744);
+            }
+
+            const tFilePath = Path.join(sightingUidDir, filename);
+
+            return tFilePath;
+        }
+
+        return null;
+    }
+
+    /**
      * existImage
      * @param session
      * @param request
      */
+    @Post('/mobile/sighting/image/exist')
     public async existImage(@Session() session: any, @Body() request: SightingImageExist): Promise<SightingImageExistResponse> {
         if ((session.user !== undefined) && session.user.isLogin && session.user.isMobileLogin) {
-            // TODO
+            const deviceIdentity = session.user.deviceIdentity;
+            const devicesRepository = MariaDbHelper.getConnection().getRepository(DevicesDB);
+            const device = await devicesRepository.findOne({
+                where: {
+                    identity: deviceIdentity
+                }
+            });
+
+            if (!device) {
+                return {
+                    statusCode: StatusCodes.INTERNAL_ERROR,
+                    msg: 'Device not found!'
+                };
+            }
+
+            // ---------------------------------------------------------------------------------------------------------
+
+            const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
+
+            const sighting = sightingRepository.findOne({
+                where: {
+                    unid: request.unid
+                }
+            });
+
+            if (!sighting) {
+                return {
+                    statusCode: StatusCodes.INTERNAL_ERROR,
+                    msg: 'Sighting not found!'
+                };
+            }
+
+            // ---------------------------------------------------------------------------------------------------------
+
+            const filePath = await this._getImageUploadPath(request.unid, request.filename);
+
+            if (filePath !== null) {
+                if (fs.existsSync(filePath)) {
+                    return {
+                        statusCode: StatusCodes.OK,
+                        isExist: true
+                    };
+                }
+
+                return {
+                    statusCode: StatusCodes.OK,
+                    isExist: false
+                };
+            }
+
+            return {
+                statusCode: StatusCodes.INTERNAL_ERROR,
+                msg: 'Image upload faild, data director not found!'
+            };
         }
 
         return {
@@ -221,25 +312,61 @@ export class Sightings {
     }
 
     @Post('/mobile/sighting/image/save')
-    public async saveImage(@Session() session: any, @Body() request: SightingImageSavePart): Promise<SightingImageSaveResponse> {
+    public async saveImage(
+        @Session() session: any,
+        @UploadedFile('file') pfile: any,
+        @BodyParam('unid') punid: string,
+        @BodyParam('filename') pfilename: string,
+        @BodyParam('size') psize: string
+    ): Promise<SightingImageSaveResponse> {
         if ((session.user !== undefined) && session.user.isLogin && session.user.isMobileLogin) {
             const deviceIdentity = session.user.deviceIdentity;
-            const config = Config.get();
-
-            if (config?.datadir !== null && fs.existsSync(config?.datadir!)) {
-                const sightingDir = Path.join(config?.datadir!, 'sighting');
-
-                if (!fs.existsSync(sightingDir)) {
-                    fs.mkdirSync(sightingDir, 0o744);
+            const devicesRepository = MariaDbHelper.getConnection().getRepository(DevicesDB);
+            const device = await devicesRepository.findOne({
+                where: {
+                    identity: deviceIdentity
                 }
+            });
 
-                const sightingUidDir = Path.join(sightingDir, request.unid!);
+            if (!device) {
+                return {
+                    statusCode: StatusCodes.INTERNAL_ERROR,
+                    msg: 'Device not found!'
+                };
+            }
 
-                if (!fs.existsSync(sightingUidDir)) {
-                    fs.mkdirSync(sightingUidDir, 0o744);
+            // ---------------------------------------------------------------------------------------------------------
+
+            const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
+
+            const sighting = sightingRepository.findOne({
+                where: {
+                    unid: punid
                 }
+            });
 
-                console.log(request);
+            if (!sighting) {
+                return {
+                    statusCode: StatusCodes.INTERNAL_ERROR,
+                    msg: 'Sighting not found!'
+                };
+            }
+
+            // ---------------------------------------------------------------------------------------------------------
+
+            const filePath = await this._getImageUploadPath(punid!, pfilename!);
+
+            if (filePath !== null) {
+                fs.writeFileSync(filePath, pfile.buffer);
+
+                const fileStats = fs.statSync(filePath);
+
+                if (fileStats.size !== parseInt(psize, 10)) {
+                    return {
+                        statusCode: StatusCodes.INTERNAL_ERROR,
+                        msg: 'Image file size is not correct!'
+                    };
+                }
 
                 return {
                     statusCode: StatusCodes.OK
