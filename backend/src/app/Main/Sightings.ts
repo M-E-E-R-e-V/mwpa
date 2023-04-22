@@ -147,7 +147,6 @@ export class Sightings {
     /**
      * getExcel
      * @param session
-     * @param response
      */
     @Get('/json/sightings/list/excel')
     @ContentType('application/octet-stream')
