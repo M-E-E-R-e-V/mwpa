@@ -16,6 +16,7 @@ import {Login as LoginMobileController} from './app/Mobile/Login';
 import {Sightings as SightingsMainController} from './app/Main/Sightings';
 import {Species as SpeciesMainController} from './app/Main/Species';
 import {Sightings as SightingsMobileController} from './app/Mobile/Sightings';
+import {SightingTourTracking as SightingTourTrackingMobileController} from './app/Mobile/SightingTourTracking';
 import {Species as SpeciesMobileController} from './app/Mobile/Species';
 import {User as UserMainController} from './app/Main/User';
 import {User as UserMobileController} from './app/Mobile/User';
@@ -34,6 +35,7 @@ import {Sighting as SightingDB} from './inc/Db/MariaDb/Entity/Sighting';
 import {SightingTour as SightingTourDB} from './inc/Db/MariaDb/Entity/SightingTour';
 import {SightingTourTracking as SightingTourTrackingDB} from './inc/Db/MariaDb/Entity/SightingTourTracking';
 import {Species as SpeciesDB} from './inc/Db/MariaDb/Entity/Species';
+import {SpeciesGroup as SpeciesGroupDB} from './inc/Db/MariaDb/Entity/SpeciesGroup';
 import {User as UserDB} from './inc/Db/MariaDb/Entity/User';
 import {UserGroups as UserGroupsDB} from './inc/Db/MariaDb/Entity/UserGroups';
 import {Vehicle as VehicleDB} from './inc/Db/MariaDb/Entity/Vehicle';
@@ -113,6 +115,7 @@ import {Server} from './inc/Server/Server';
                 GroupDB,
                 UserGroupsDB,
                 SpeciesDB,
+                SpeciesGroupDB,
                 VehicleDB,
                 VehicleDriverDB,
                 SightingTourDB,
@@ -254,7 +257,8 @@ import {Server} from './inc/Server/Server';
             EncounterCategoriesMobileController,
             BehaviouralStatesMobileController,
             SpeciesMobileController,
-            SightingsMobileController
+            SightingsMobileController,
+            SightingTourTrackingMobileController
         ],
         publicDir: public_dir
     });

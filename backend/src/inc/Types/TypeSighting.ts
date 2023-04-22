@@ -5,7 +5,7 @@ export type TypeSighting = {
     unid?: string;
     vehicle_id?: number;
     vehicle_driver_id?: number;
-    beaufort_wind?: number;
+    beaufort_wind?: string;
     date?: string;
     tour_start?: string;
     tour_end?: string;

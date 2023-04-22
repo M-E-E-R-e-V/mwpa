@@ -1,8 +1,6 @@
-FROM node:10-alpine
+FROM node:18-bullseye
 
 RUN mkdir -p /opt/app
-
-RUN adduser -S app
 
 RUN mkdir -p /opt/app/dist
 RUN mkdir -p /opt/app/node_modules
@@ -15,11 +13,7 @@ COPY frontend/ ./frontend
 
 COPY backend/package.json ./package.json
 
-RUN npm install
-
-RUN chown -R app /opt/app
-
-USER app
+RUN npm install --force
 
 EXPOSE 3000
 

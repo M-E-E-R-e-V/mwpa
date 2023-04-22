@@ -6,10 +6,12 @@ import {Sightings as SightingsAPI, SightingsEntry} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {ColumnContent} from '../Bambooo/ColumnContent';
+import {ButtonClass} from '../Bambooo/Content/Button/ButtonDefault';
 import {Card} from '../Bambooo/Content/Card/Card';
 import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
 import {ContentRow} from '../Bambooo/Content/ContentRow';
-import {Button, ButtonType} from '../Bambooo/Content/Form/Button';
+import {DialogConfirm} from '../Bambooo/Content/Dialog/DialogConfirm';
+import {ButtonType} from '../Bambooo/Content/Form/Button';
 import {ButtonMenu} from '../Bambooo/Content/Form/ButtonMenu';
 import {IconFa} from '../Bambooo/Content/Icon/Icon';
 import {Table} from '../Bambooo/Content/Table/Table';
@@ -17,8 +19,10 @@ import {Td} from '../Bambooo/Content/Table/Td';
 import {Th} from '../Bambooo/Content/Table/Th';
 import {Tr} from '../Bambooo/Content/Table/Tr';
 import {LangText} from '../Bambooo/Lang/LangText';
+import {ModalDialogType} from '../Bambooo/Modal/ModalDialog';
 import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
 import {Lang} from '../Lang';
+import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilDownload} from '../Utils/UtilDownload';
 import {UtilLocation} from '../Utils/UtilLocation';
 import {BasePage} from './BasePage';
@@ -58,6 +62,7 @@ export class Sighting extends BasePage {
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), new LangText('Add sighting'), () => {
             this._sightingDialog.setTitle(new LangText('Add new sighting'));
+            this._sightingDialog.resetValues();
             this._sightingDialog.show();
             return false;
         });
@@ -130,7 +135,7 @@ export class Sighting extends BasePage {
         new Th(trhead, new LangText('Location'));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Distance'));
+        new Th(trhead, new LangText('Distance<br>(Miles)'));
 
         // eslint-disable-next-line no-new
         new Th(trhead, new ColumnContent([
@@ -162,6 +167,8 @@ export class Sighting extends BasePage {
                 for (const tspecies of species) {
                     mspecies.set(tspecies.id, tspecies);
                 }
+
+                this._sightingDialog.setSpeciesList(species);
             }
 
             // encounters ----------------------------------------------------------------------------------------------
@@ -184,6 +191,8 @@ export class Sighting extends BasePage {
                 for (const tvehicle of vehicles) {
                     mvehicles.set(tvehicle.id, tvehicle);
                 }
+
+                this._sightingDialog.setVehicleList(vehicles);
             }
 
             // drivers -------------------------------------------------------------------------------------------------
@@ -195,6 +204,8 @@ export class Sighting extends BasePage {
                 for (const tdriver of drivers) {
                     mdrivers.set(tdriver.id, tdriver);
                 }
+
+                this._sightingDialog.setVehicleDriverList(drivers);
             }
 
             // behaviours ----------------------------------------------------------------------------------------------
@@ -254,24 +265,32 @@ export class Sighting extends BasePage {
                     new Td(trbody, `${vehicleName}<br>${vehicleDriverName}`);
 
                     let otherSpecies = '';
-                    const otherSpeciesList = JSON.parse(entry.other_species!);
 
-                    if (otherSpeciesList) {
-                        for (const otherSpeciesKey in otherSpeciesList) {
-                            const otherSpecie = otherSpeciesList[otherSpeciesKey];
+                    try {
+                        const otherSpeciesList = JSON.parse(entry.other_species!);
 
-                            if (otherSpecie.trim() !== '') {
-                                const totherSpecie = mspecies.get(parseInt(otherSpecie, 10));
+                        if (otherSpeciesList) {
+                            for (const otherSpeciesKey in otherSpeciesList) {
+                                const otherSpecie = otherSpeciesList[otherSpeciesKey];
 
-                                if (totherSpecie) {
-                                    if (otherSpecies.length > 0 ) {
-                                        otherSpecies += ', ';
+                                if (otherSpecie.trim() !== '') {
+                                    const totherSpecie = mspecies.get(parseInt(otherSpecie, 10));
+
+                                    if (totherSpecie) {
+                                        if (otherSpecies.length > 0) {
+                                            otherSpecies += ', ';
+                                        }
+
+                                        otherSpecies += totherSpecie.name.split(',')[0];
                                     }
-
-                                    otherSpecies += totherSpecie.name.split(',')[0];
                                 }
                             }
                         }
+                    } catch (e) {
+                        console.log(`JSON Parse::other_species: `);
+                        console.log(e);
+                        console.log(entry);
+                        console.log('');
                     }
 
                     // eslint-disable-next-line no-new
@@ -292,29 +311,42 @@ export class Sighting extends BasePage {
                         const beginLonStr = `${begin_lon.direction}: ${begin_lon.degree}º ${begin_lon.minute.toFixed(3)}`;
 
                         new Td(trbody, `<dl class="row"><dt class="col-sm-1"><i class="fas fa-map-marker-alt mr-1"></i></dt><dd class="col-sm-5">${beginLatStr}<br>${beginLonStr}</dd></dl>`);
-                    }
-                    catch (e) {
+                    } catch (e) {
+                        console.log(`JSON Parse::location_begin: `);
                         console.log(e);
+                        console.log(entry);
+                        console.log('');
+
                         new Td(trbody, '?');
                     }
 
+                    const floatDistance = parseFloat(entry.distance_coast!) | 0;
+
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${entry.distance_coast}`);
+                    new Td(trbody, `${UtilDistanceCoast.meterToM(floatDistance, true)}`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `<b>${entry.photo_taken! > 0 ? 'Yes' : 'No'}</b><br>${entry.distance_coast_estimation_gps! > 0 ? 'Yes' : 'No'}`);
 
                     let behaviourStr = '';
-                    const ebehaviours = JSON.parse(entry.behaviours!);
 
-                    if (ebehaviours) {
-                        for (const ebehaviourKey in ebehaviours) {
-                            const tbehviour = mbehaviours.get(Number(ebehaviours[ebehaviourKey]));
+                    try {
+                        const ebehaviours = JSON.parse(entry.behaviours!);
 
-                            if (tbehviour) {
-                                behaviourStr += `${tbehviour.name} <br>`;
+                        if (ebehaviours) {
+                            for (const ebehaviourKey in ebehaviours) {
+                                const tbehviour = mbehaviours.get(Number(ebehaviours[ebehaviourKey]));
+
+                                if (tbehviour) {
+                                    behaviourStr += `${tbehviour.name} <br>`;
+                                }
                             }
                         }
+                    } catch (e) {
+                        console.log(`JSON Parse::behaviours: `);
+                        console.log(e);
+                        console.log(entry);
+                        console.log('');
                     }
 
                     // eslint-disable-next-line no-new
@@ -324,13 +356,61 @@ export class Sighting extends BasePage {
                     new Td(trbody, `${encounterCategorieName}`);
 
                     // action
-                    const actionTd = new Td(trbody, '');
+                    const tdAction = new Td(trbody, '');
+                    const btnMenu = new ButtonMenu(tdAction, IconFa.bars, true, ButtonType.borderless);
 
-                    const editBtn = new Button(actionTd.getElement(),  ButtonType.borderless);
-                    editBtn.getElement().append('<i class="fa fa-edit"></i>');
-                    editBtn.setOnClickFn((): void => {
-                        alert('TODO');
-                    });
+                    btnMenu.addMenuItem(
+                        'Edit',
+                        async(): Promise<void> => {
+                            this._sightingDialog.setTitle('Edit Sighting');
+                            this._sightingDialog.resetValues();
+                            this._sightingDialog.setId(entry.id);
+                            this._sightingDialog.setVehicle(entry.vehicle_id!);
+                            this._sightingDialog.setVehicleDriver(entry.vehicle_driver_id!);
+                            this._sightingDialog.setBeaufortWind(entry.beaufort_wind!);
+                            this._sightingDialog.setDateSight(entry.date!);
+                            this._sightingDialog.setSpecie(entry.species_id!);
+                            this._sightingDialog.setSpeciesCount(entry.species_count!);
+                            this._sightingDialog.show();
+                        },
+                        IconFa.edit);
+
+                    btnMenu.addDivider();
+
+                    btnMenu.addMenuItem(
+                        'Delete',
+                        (): void => {
+                            DialogConfirm.confirm(
+                                'dcDeleteSighting',
+                                ModalDialogType.large,
+                                'Delete sighting',
+                                `Are you sure you want to delete the sighting?`,
+                                async(_, dialog) => {
+                                    try {
+                                        if (await SightingsAPI.delete({id: entry.id})) {
+                                            this._toast.fire({
+                                                icon: 'success',
+                                                title: 'Sighting delete success.'
+                                            });
+                                        }
+                                    } catch ({message}) {
+                                        this._toast.fire({
+                                            icon: 'error',
+                                            title: message
+                                        });
+                                    }
+
+                                    dialog.hide();
+
+                                    if (this._onLoadTable) {
+                                        this._onLoadTable();
+                                    }
+                                },
+                                undefined,
+                                'Delete',
+                                ButtonClass.danger
+                            );
+                        }, IconFa.trash);
                 }
             };
 

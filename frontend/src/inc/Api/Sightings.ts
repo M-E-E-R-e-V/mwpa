@@ -68,6 +68,13 @@ export type SightingsResponse = DefaultReturn & {
 };
 
 /**
+ * SightingDeleteRequest
+ */
+export type SightingDeleteRequest = {
+    id: number;
+};
+
+/**
  * Sightings
  */
 export class Sightings {
@@ -95,6 +102,26 @@ export class Sightings {
         }
 
         return null;
+    }
+
+    /**
+     * delete
+     * @param sighting
+     */
+    public static async delete(sighting: SightingDeleteRequest): Promise<boolean> {
+        const result = await NetFetch.postData('/json/sightings/delete', sighting);
+
+        if (result && result.statusCode) {
+            switch(result.statusCode) {
+                case StatusCodes.OK:
+                    return true;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return false;
     }
 
 }

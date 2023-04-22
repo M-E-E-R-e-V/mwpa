@@ -71,10 +71,10 @@ export class Sighting extends BaseEntity {
      */
     @Index()
     @Column({
-        default: 0
+        default: ''
     })
         // @ts-ignore
-    beaufort_wind: number;
+    beaufort_wind: string;
 
     /**
      * date
