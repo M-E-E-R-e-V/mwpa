@@ -99,6 +99,7 @@ import {Server} from './inc/Server/Server';
         // MariaDb -----------------------------------------------------------------------------------------------------
         await MariaDbHelper.init({
             type: 'mysql',
+            charset: 'utf8mb4_bin',
             // 'localhost',
             host: tconfig.db.mysql.host,
             // 3306,
