@@ -1,10 +1,11 @@
 import moment from 'moment';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
-import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Sightings as SightingsAPI, SightingsEntry} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
+import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
+import {Badge, BadgeType} from '../Bambooo/Content/Badge/Badge';
 import {ColumnContent} from '../Bambooo/ColumnContent';
 import {ButtonClass} from '../Bambooo/Content/Button/ButtonDefault';
 import {Card} from '../Bambooo/Content/Card/Card';
@@ -22,6 +23,7 @@ import {LangText} from '../Bambooo/Lang/LangText';
 import {ModalDialogType} from '../Bambooo/Modal/ModalDialog';
 import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
 import {Lang} from '../Lang';
+import {UtilColor} from '../Utils/UtilColor';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilDownload} from '../Utils/UtilDownload';
 import {UtilLocation} from '../Utils/UtilLocation';
@@ -44,6 +46,17 @@ export class Sighting extends BasePage {
      * @protected
      */
     protected _sightingDialog: SightingEditModal;
+
+    /**
+     * turtles
+     * @protected
+     */
+    protected _turtles: string[] = [
+        'Caretta caretta',
+        'Dermochelys coriacea',
+        'Chelonia mydas',
+        'Eretmochelys imbricata'
+    ];
 
     /**
      * constructor
@@ -147,7 +160,7 @@ export class Sighting extends BasePage {
         new Th(trhead, new LangText('Behaviour'));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Encounter'));
+        new Th(trhead, new LangText('Reaction'));
 
         // eslint-disable-next-line no-new
         new Th(trhead, '');
@@ -180,6 +193,8 @@ export class Sighting extends BasePage {
                 for (const tencat of encates) {
                     mencates.set(tencat.id, tencat);
                 }
+
+                this._sightingDialog.setReactionList(encates);
             }
 
             // vehicles ------------------------------------------------------------------------------------------------
@@ -223,8 +238,9 @@ export class Sighting extends BasePage {
 
             const onLoadsightings = async(sightings: SightingsEntry[]): Promise<void> => {
                 for (const entry of sightings) {
-                    let encounterCategorieName = '';
+                    let reactionName = 'not set';
                     let specieName = '';
+                    let specieColor = '#ffffff';
                     let vehicleName = '';
                     let vehicleDriverName = '';
 
@@ -232,13 +248,28 @@ export class Sighting extends BasePage {
 
                     if (specie) {
                         specieName = specie.name.split(',')[0];
+
+                        if (specie.species_group) {
+                            specieColor = specie.species_group?.color;
+                        }
+                    } else {
+                        specieName = 'not set';
+
+                        if (entry.other) {
+                            if (this._turtles.includes(entry.other?.trim())) {
+                                specieName = entry.other?.trim();
+                                specieColor = '#27AE60';
+                            }
+                        }
                     }
 
-                    // const encCate = mencates.get(entry.encounter_categorie_id);
+                    if (entry.reaction_id) {
+                        const encCate = mencates.get(entry.reaction_id);
 
-                    // if (encCate) {
-                       // encounterCategorieName = encCate.name;
-                    // }
+                        if (encCate) {
+                            reactionName = encCate.name;
+                        }
+                    }
 
                     const vehicle = mvehicles.get(entry.vehicle_id!);
 
@@ -294,7 +325,9 @@ export class Sighting extends BasePage {
                     }
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `<b>${specieName}</b><br>${otherSpecies}`);
+                    const speciesTd = new Td(trbody);
+                    new Badge(speciesTd, `<b style="color: ${UtilColor.getContrastYIQ(specieColor)}">${specieName}</b>`, BadgeType.info, specieColor);
+                    speciesTd.append(`<br>${otherSpecies}`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `<b>${entry.species_count}</b><br>${entry.subgroups! > 0 ? 'Yes' : 'No'}`);
@@ -353,7 +386,7 @@ export class Sighting extends BasePage {
                     new Td(trbody, behaviourStr);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${encounterCategorieName}`);
+                    new Td(trbody, `${reactionName}`);
 
                     // action
                     const tdAction = new Td(trbody, '');
@@ -371,6 +404,7 @@ export class Sighting extends BasePage {
                             this._sightingDialog.setDateSight(entry.date!);
                             this._sightingDialog.setSpecie(entry.species_id!);
                             this._sightingDialog.setSpeciesCount(entry.species_count!);
+                            this._sightingDialog.setReaction(entry.reaction_id!);
                             this._sightingDialog.show();
                         },
                         IconFa.edit);
@@ -393,7 +427,7 @@ export class Sighting extends BasePage {
                                                 title: 'Sighting delete success.'
                                             });
                                         }
-                                    } catch ({message}) {
+                                    } catch (message) {
                                         this._toast.fire({
                                             icon: 'error',
                                             title: message

@@ -1,4 +1,5 @@
 import moment from 'moment';
+import {EncounterCategorieEntry} from '../../Api/EncounterCategories';
 import {SpeciesEntry} from '../../Api/Species';
 import {VehicleDriverEntry} from '../../Api/VehicleDriver';
 import {FormGroup} from '../../Bambooo/Content/Form/FormGroup';
@@ -102,7 +103,7 @@ export class SightingEditModal extends ModalDialog {
      * encounter select
      * @protected
      */
-    protected _encounterSelect: SelectBottemBorderOnly2;
+    protected _reactionSelect: SelectBottemBorderOnly2;
 
     /**
      * on save click
@@ -133,6 +134,11 @@ export class SightingEditModal extends ModalDialog {
             this._beaufortWindSelect.addValue({
                 key: `${i}`,
                 value: `${i}`
+            });
+
+            this._beaufortWindSelect.addValue({
+                key: `${i}.5`,
+                value: `${i}.5`
             });
         }
 
@@ -170,8 +176,8 @@ export class SightingEditModal extends ModalDialog {
         const groupSpeciesCount = new FormGroup(bodyCard, 'Group-Size');
         this._inputSpeciesCount = new InputBottemBorderOnly2(groupSpeciesCount, undefined, InputType.number);
 
-        const groupEncounter = new FormGroup(bodyCard, 'Encounter');
-        this._encounterSelect = new SelectBottemBorderOnly2(groupEncounter);
+        const groupReaction = new FormGroup(bodyCard, 'Reaction');
+        this._reactionSelect = new SelectBottemBorderOnly2(groupReaction);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
@@ -274,15 +280,15 @@ export class SightingEditModal extends ModalDialog {
      * setBeaufortWind
      * @param state
      */
-    public setBeaufortWind(state: number): void {
+    public setBeaufortWind(state: string): void {
         this._beaufortWindSelect.setSelectedValue(`${state}`);
     }
 
     /**
      * getBeaufortWind
      */
-    public getBeaufortWind(): number {
-        return parseInt(this._beaufortWindSelect.getSelectedValue(), 10) || 0;
+    public getBeaufortWind(): string {
+        return this._beaufortWindSelect.getSelectedValue();
     }
 
     /**
@@ -313,10 +319,12 @@ export class SightingEditModal extends ModalDialog {
         });
 
         for (const specie of list) {
-            this._specieSelect.addValue({
-                key: `${specie.id}`,
-                value: specie.name
-            });
+            if (!specie.isdeleted) {
+                this._specieSelect.addValue({
+                    key: `${specie.id}`,
+                    value: specie.name.split(', ')[0]
+                });
+            }
         }
     }
 
@@ -351,6 +359,39 @@ export class SightingEditModal extends ModalDialog {
     }
 
     /**
+     * setReactionList
+     * @param list
+     */
+    public setReactionList(list: EncounterCategorieEntry[]): void {
+        this._reactionSelect.clearValues();
+
+        this._reactionSelect.addValue({
+            key: '-1',
+            value: 'Please select a encounter categorie!'
+        });
+
+        for (const encounter of list) {
+            if (!encounter.isdeleted) {
+                this._reactionSelect.addValue({
+                    key: `${encounter.id}`,
+                    value: encounter.name
+                });
+            }
+        }
+    }
+
+    public setReaction(reactionId: number) {
+        this._reactionSelect.setSelectedValue(`${reactionId}`);
+    }
+
+    /**
+     * getReaction
+     */
+    public getReaction(): number {
+        return parseInt(this._reactionSelect.getSelectedValue(), 10) || 0;
+    }
+
+    /**
      * resetValues
      */
     public resetValues(): void {
@@ -359,6 +400,8 @@ export class SightingEditModal extends ModalDialog {
         this.setVehicleDriver(0);
         this.setDateSight(moment(new Date()).format('YYYY.MM.DD'));
         this.setSpecie(0);
+        this.setSpeciesCount(0);
+        this.setReaction(-1);
     }
 
     /**

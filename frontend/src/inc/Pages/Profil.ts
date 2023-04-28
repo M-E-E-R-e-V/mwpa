@@ -83,14 +83,16 @@ export class Profil extends BasePage {
             jQuery(`<li class="list-group-item"><b>Organization</b> <a class="float-right">${currentuser!.organization!.name}</a></li>`).appendTo(ulElement);
 
             // form
-            const detailsCard = new Card(colForm, CardBodyType.none);
+            const detailsCard = new Card(colForm, CardBodyType.none, CardType.secondary, CardLine.outline);
             detailsCard.setTitle('Details');
 
             const groupEMail = new FormGroup(detailsCard, 'EMail');
             const emailInput = new InputBottemBorderOnly2(groupEMail);
             emailInput.setValue(currentuser!.user!.email);
 
-            const passwordCard = new Card(colForm, CardBodyType.none);
+            // password ------------------------------------------------------------------------------------------------
+
+            const passwordCard = new Card(colForm, CardBodyType.none, CardType.secondary, CardLine.outline);
             passwordCard.setTitle('Change password');
 
             const groupNewPassword = new FormGroup(passwordCard, 'New password');
@@ -101,8 +103,28 @@ export class Profil extends BasePage {
             const repeatpasswordInput = new InputBottemBorderOnly2(groupRepeatPassword, undefined, InputType.password);
             repeatpasswordInput.show();
 
-            const mobilePinCard = new Card(colForm, CardBodyType.none);
+            const btnSavePassword = jQuery('<button type="button" class="btn btn-primary">Save password</button>').appendTo(passwordCard.getMainElement());
+            btnSavePassword.on('click', (): void => {
+                alert('Save');
+            });
+
+            // pin -----------------------------------------------------------------------------------------------------
+
+            const mobilePinCard = new Card(colForm, CardBodyType.none, CardType.secondary, CardLine.outline);
             mobilePinCard.setTitle('Change mobile app pin');
+
+            const groupNewPin = new FormGroup(mobilePinCard, 'New pin');
+            const newPinInput = new InputBottemBorderOnly2(groupNewPin, undefined, InputType.password);
+            newPinInput.show();
+
+            const groupRepeatPin = new FormGroup(mobilePinCard, 'Repeat pin');
+            const repeatPinInput = new InputBottemBorderOnly2(groupRepeatPin, undefined, InputType.password);
+            repeatPinInput.show();
+
+            const btnSavePin = jQuery('<button type="button" class="btn btn-primary">Save pin</button>').appendTo(mobilePinCard.getMainElement());
+            btnSavePin.on('click', (): void => {
+                alert('Save');
+            });
 
             Lang.i().lAll();
         };

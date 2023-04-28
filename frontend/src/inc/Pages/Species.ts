@@ -95,7 +95,7 @@ export class Species extends BasePage {
                         title: 'Specie save success.'
                     });
                 }
-            } catch ({message}) {
+            } catch (message) {
                 this._toast.fire({
                     icon: 'error',
                     title: message
@@ -124,7 +124,7 @@ export class Species extends BasePage {
                         title: 'Specie merge success.'
                     });
                 }
-            } catch ({message}) {
+            } catch (message) {
                 this._toast.fire({
                     icon: 'error',
                     title: message
@@ -226,7 +226,7 @@ export class Species extends BasePage {
                                                 title: 'Specie delete success.'
                                             });
                                         }
-                                    } catch ({message}) {
+                                    } catch (message) {
                                         this._toast.fire({
                                             icon: 'error',
                                             title: message

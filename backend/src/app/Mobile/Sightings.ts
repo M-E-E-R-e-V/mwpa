@@ -158,7 +158,7 @@ export class Sightings {
                 sighting.device_id = device.id;
                 sighting.vehicle_id = request.vehicle_id || 0;
                 sighting.vehicle_driver_id = request.vehicle_driver_id || 0;
-                sighting.beaufort_wind = request.beaufort_wind || '';
+                sighting.beaufort_wind_n = request.beaufort_wind || '';
                 sighting.date = request.date || '';
                 sighting.tour_id = tour?.id!;
                 sighting.tour_fid = tourFid;

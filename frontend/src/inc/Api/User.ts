@@ -124,4 +124,12 @@ export class User {
 
         return false;
     }
+
+    public static async saveNewPassword(): Promise<boolean> {
+        return false;
+    }
+
+    public static async saveNewPin(): Promise<boolean> {
+        return false;
+    }
 }
