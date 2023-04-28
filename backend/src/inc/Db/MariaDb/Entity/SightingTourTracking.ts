@@ -30,7 +30,10 @@ export class SightingTourTracking extends BaseEntity {
         // @ts-ignore
     sighting_tour_id: number;
 
-    @Column()
+    @Column({
+        type: 'text',
+        default: ''
+    })
     // @ts-ignore
     position: string;
 

@@ -1,6 +1,9 @@
 import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
 import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
 import {Species as SpeciesDB} from '../../inc/Db/MariaDb/Entity/Species';
+import {SpeciesGroup} from '../../inc/Db/MariaDb/Entity/SpeciesGroup';
+import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
+import {VehicleDriver as VehicleDriverDB} from '../../inc/Db/MariaDb/Entity/VehicleDriver';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
@@ -11,7 +14,11 @@ import {StatusCodes} from '../../inc/Routes/StatusCodes';
 export type SpeciesEntry = {
     id: number;
     name: string;
-    isdeleted: boolean;
+    isdeleted?: boolean;
+    species_group?: {
+        name: string;
+        color: string;
+    };
 };
 
 /**
@@ -51,15 +58,28 @@ export class Species {
         if ((session.user !== undefined) && session.user.isLogin) {
             const list: SpeciesEntry[] = [];
 
-            const speciesRepository = MariaDbHelper.getConnection().getRepository(SpeciesDB);
-            const species = await speciesRepository.find();
+            const dbSpecies = await MariaDbHelper.getConnection()
+            .getRepository(SpeciesDB)
+            .createQueryBuilder('species')
+            .leftJoinAndSelect(
+                SpeciesGroup,
+                'group',
+                'species.species_groupid = group.id'
+            )
+            .getRawMany();
 
-            for (const specie of species) {
-                list.push({
-                    id: specie.id,
-                    name: specie.name,
-                    isdeleted: specie.isdeleted
-                });
+            if (dbSpecies) {
+                for (const specie of dbSpecies) {
+                    list.push({
+                        id: specie.species_id,
+                        name: specie.species_name,
+                        isdeleted: specie.species_isdeleted,
+                        species_group: {
+                            name: specie.group_name,
+                            color: specie.group_color
+                        }
+                    });
+                }
             }
 
             return {

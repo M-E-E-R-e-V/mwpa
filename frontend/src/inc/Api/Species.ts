@@ -9,6 +9,11 @@ import {DefaultReturn} from './Types/DefaultReturn';
 export type SpeciesEntry = {
     id: number;
     name: string;
+    isdeleted?: boolean;
+    species_group?: {
+        name: string;
+        color: string;
+    };
 };
 
 /**

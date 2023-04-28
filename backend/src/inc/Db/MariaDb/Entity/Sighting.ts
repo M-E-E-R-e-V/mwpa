@@ -3,7 +3,9 @@ import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm
 /**
  * Sighting
  */
-@Entity({name: 'sighting'})
+@Entity({
+    name: 'sighting'
+})
 export class Sighting extends BaseEntity {
 
     @PrimaryGeneratedColumn()
@@ -68,13 +70,24 @@ export class Sighting extends BaseEntity {
 
     /**
      * beaufort wind
+     * depricated use beaufort_wind_n
+     */
+    @Index()
+    @Column({
+        default: 0
+    })
+        // @ts-ignore
+    beaufort_wind: number;
+
+    /**
+     * beaufort wind
      */
     @Index()
     @Column({
         default: ''
     })
         // @ts-ignore
-    beaufort_wind: string;
+    beaufort_wind_n: string;
 
     /**
      * date

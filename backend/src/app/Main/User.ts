@@ -68,6 +68,22 @@ export type UserListResponse = DefaultReturn & {
 };
 
 /**
+ * UserSavePassword
+ */
+export type UserSavePassword = {
+    password: string;
+    repeatpassword: string;
+};
+
+/**
+ * UserSavePin
+ */
+export type UserSavePin = {
+  pin: string;
+  repeatpin: string;
+};
+
+/**
  * User JSON API
  */
 @JsonController()
@@ -227,6 +243,59 @@ export class User {
             return {
                 statusCode: StatusCodes.OK
             };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
+    }
+
+    /**
+     * savePassword
+     * @param session
+     * @param request
+     */
+    @Post('/json/user/savepassword')
+    public async savePassword(@Session() session: any, @Body() request: UserSavePassword): Promise<DefaultReturn> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
+            const user = await userRepository.findOne({
+                where: {
+                    id: session.user.id
+                }
+            });
+
+            if (user) {
+                if (request.password === request.repeatpassword) {
+                    user.password = await bcrypt.hash(request.password!, 10);
+
+                    await MariaDbHelper.getConnection().manager.save(user);
+
+                    return {
+                        statusCode: StatusCodes.OK
+                    };
+                }
+
+                return {
+                    statusCode: StatusCodes.INTERNAL_ERROR,
+                    msg: 'The repeat password is differend!'
+                };
+            }
+
+            return {
+                statusCode: StatusCodes.INTERNAL_ERROR,
+                msg: 'User not found by session-user-id!'
+            };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
+    }
+
+    public async savePin(@Session() session: any, @Body() request: UserSavePin): Promise<DefaultReturn> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+
         }
 
         return {

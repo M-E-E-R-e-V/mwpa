@@ -9,6 +9,7 @@ import {DefaultReturn} from './Types/DefaultReturn';
 export type EncounterCategorieEntry = {
     id: number;
     name: string;
+    isdeleted: boolean;
 };
 
 /**

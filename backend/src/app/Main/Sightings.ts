@@ -80,13 +80,20 @@ export class Sightings {
             const count = await sightingRepository.count();
             const dblist = await sightingRepository.find({
                 order: {
-                    id: 'DESC'
+                    date: 'DESC',
+                    tour_start: 'DESC'
                 },
                 skip: filter.offset,
                 take: filter.limit
             });
 
             for (const entry of dblist) {
+                let beaufort_wind = entry.beaufort_wind_n;
+
+                if (entry.beaufort_wind_n === '') {
+                    beaufort_wind = `${entry.beaufort_wind}`;
+                }
+
                 list.push({
                     id: entry.id,
                     unid: entry.unid,
@@ -96,7 +103,7 @@ export class Sightings {
                     device_id: entry.device_id,
                     vehicle_id: entry.vehicle_id,
                     vehicle_driver_id: entry.vehicle_driver_id,
-                    beaufort_wind: entry.beaufort_wind,
+                    beaufort_wind,
                     date: entry.date,
                     tour_id: entry.tour_id,
                     tour_fid: entry.tour_fid,
@@ -429,14 +436,21 @@ export class Sightings {
                         } catch (e) {
                             otherSpeciesStr = '';
                         }
+
                         // ---------------------------------------------------------------------------------------------
+
+                        let beaufort_wind = entry.beaufort_wind_n;
+
+                        if (entry.beaufort_wind_n === '') {
+                            beaufort_wind = `${entry.beaufort_wind}`;
+                        }
 
                         data.push([
                             `${entry.id}`,
                             `${vehicleStr}`,
                             `${vehicleDriverStr}`,
                             `${userStr}`,
-                            `${entry.beaufort_wind}`,
+                            `${beaufort_wind}`,
                             `${date.format('YYYY/MM/DD')}`,
                             `${entry.tour_start}`,
                             `${entry.tour_end}`,
