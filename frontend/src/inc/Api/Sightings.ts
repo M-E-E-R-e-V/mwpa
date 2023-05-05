@@ -55,6 +55,7 @@ export type SightingsEntry = {
     other?: string;
     other_vehicle?: string;
     note?: string;
+    files: string[];
 };
 
 /**

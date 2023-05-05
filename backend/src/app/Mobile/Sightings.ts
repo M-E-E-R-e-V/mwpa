@@ -11,6 +11,7 @@ import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 import {TypeSighting} from '../../inc/Types/TypeSighting';
 import {DateHelper} from '../../inc/Utils/DateHelper';
+import {UtilImageUploadPath} from '../../inc/Utils/UtilImageUploadPath';
 import {UtilSighting} from '../../inc/Utils/UtilSighting';
 import {UtilTourFid} from '../../inc/Utils/UtilTourFid';
 
@@ -212,28 +213,9 @@ export class Sightings {
      * @private
      */
     private async _getImageUploadPath(sightingUnid: string, filename: string): Promise<string|null> {
-        const config = Config.get();
+        const sightingUidDir = UtilImageUploadPath.getSightingDirector(sightingUnid);
 
-        if (config?.datadir !== null && fs.existsSync(config?.datadir!)) {
-            let sightingDir = Path.join(config?.datadir!, 'sighting');
-
-            if (sightingDir.charAt(0) !== '/') {
-                sightingDir = Path.join(__dirname, sightingDir);
-            }
-
-            if (!fs.existsSync(sightingDir)) {
-                fs.mkdirSync(sightingDir, {
-                    recursive: true,
-                    mode: 0o744
-                });
-            }
-
-            const sightingUidDir = Path.join(sightingDir, sightingUnid);
-
-            if (!fs.existsSync(sightingUidDir)) {
-                fs.mkdirSync(sightingUidDir, 0o744);
-            }
-
+        if (sightingUidDir) {
             return Path.join(sightingUidDir, filename);
         }
 

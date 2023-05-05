@@ -58,6 +58,8 @@ export class Login extends MainLogin {
         }
 
         const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
+        const groupRepository = MariaDbHelper.getConnection().getRepository(GroupDB);
+        const devicesRepository = MariaDbHelper.getConnection().getRepository(DevicesDB);
 
         const user = await userRepository.findOne({
             where: {
@@ -66,7 +68,7 @@ export class Login extends MainLogin {
             }
         });
 
-        const userData: SessionUserData = {
+        session.user = {
             isLogin: false,
             isAdmin: false,
             isMobileLogin: true,
@@ -75,21 +77,46 @@ export class Login extends MainLogin {
             main_organization_id: 0,
             groups: [],
             organizations: []
-        };
-
-        session.user = userData;
+        } as SessionUserData;
 
         if (user) {
             const bresult = await bcrypt.compare(login.password, user.password);
+            let pinresult = false;
 
-            if (bresult) {
+            if (!bresult) {
+                Logger.log(`Password is differend, check is pin by session: ${session.id}`);
+
+                const knownDevice = await devicesRepository.findOne({
+                    where: {
+                        identity: login.deviceIdentity,
+                        user_id: user.id
+                    }
+                });
+
+                if (knownDevice) {
+                    Logger.log(`Device is found, start pin check by session: ${session.id}`);
+
+                    pinresult = await bcrypt.compare(login.password, user.pin);
+
+                    if (pinresult) {
+                        Logger.log(`Is pin login by session: ${session.id}`);
+                    } else {
+                        Logger.log(`Wrong pin login by session: ${session.id}`);
+                    }
+                }
+            }
+
+            if (bresult || pinresult) {
+                // eslint-disable-next-line require-atomic-updates
                 session.user.userid = user.id;
+                // eslint-disable-next-line require-atomic-updates
                 session.user.isLogin = true;
+                // eslint-disable-next-line require-atomic-updates
                 session.user.isAdmin = user.isAdmin;
+                // eslint-disable-next-line require-atomic-updates
                 session.user.deviceIdentity = login.deviceIdentity;
+                // eslint-disable-next-line require-atomic-updates
                 session.user.main_group_id = user.main_groupid;
-
-                const groupRepository = MariaDbHelper.getConnection().getRepository(GroupDB);
 
                 const groups: number[] = [];
                 const organisations: number[] = [];
@@ -129,12 +156,13 @@ export class Login extends MainLogin {
                     }
                 }
 
+                // eslint-disable-next-line require-atomic-updates
                 session.user.groups = groups;
+                // eslint-disable-next-line require-atomic-updates
                 session.user.organizations = organisations;
 
                 Logger.log(`Login success by session: ${session.id}`);
 
-                const devicesRepository = MariaDbHelper.getConnection().getRepository(DevicesDB);
                 const tdevice = await devicesRepository.findOne({
                     where: {
                         identity: login.deviceIdentity,

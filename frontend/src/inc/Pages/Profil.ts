@@ -1,5 +1,5 @@
 import {User as UserAPI} from '../Api/User';
-import {Card, CardBodyType, CardLine, CardType} from '../Bambooo/Content/Card/Card';
+import {Card, CardBodyType, CardLine, CardType} from     '../Bambooo/Content/Card/Card';
 import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
 import {ContentRow, ContentRowClass} from '../Bambooo/Content/ContentRow';
 import {FormGroup} from '../Bambooo/Content/Form/FormGroup';
@@ -104,8 +104,26 @@ export class Profil extends BasePage {
             repeatpasswordInput.show();
 
             const btnSavePassword = jQuery('<button type="button" class="btn btn-primary">Save password</button>').appendTo(passwordCard.getMainElement());
-            btnSavePassword.on('click', (): void => {
-                alert('Save');
+            btnSavePassword.on('click', async(): Promise<void> => {
+                try {
+                    if (await UserAPI.saveNewPassword({
+                        password: newpasswordInput.getValue(),
+                        repeatpassword: repeatpasswordInput.getValue()
+                    })) {
+                        this._toast.fire({
+                            icon: 'success',
+                            title: 'New password is save.'
+                        });
+
+                        newpasswordInput.setValue('');
+                        repeatpasswordInput.setValue('');
+                    }
+                } catch (message) {
+                    this._toast.fire({
+                        icon: 'error',
+                        title: message
+                    });
+                }
             });
 
             // pin -----------------------------------------------------------------------------------------------------
@@ -122,8 +140,26 @@ export class Profil extends BasePage {
             repeatPinInput.show();
 
             const btnSavePin = jQuery('<button type="button" class="btn btn-primary">Save pin</button>').appendTo(mobilePinCard.getMainElement());
-            btnSavePin.on('click', (): void => {
-                alert('Save');
+            btnSavePin.on('click', async(): Promise<void> => {
+                try {
+                    if (await UserAPI.saveNewPin({
+                        pin: newPinInput.getValue(),
+                        repeatpin: repeatPinInput.getValue()
+                    })) {
+                        this._toast.fire({
+                            icon: 'success',
+                            title: 'New pin is save.'
+                        });
+
+                        newPinInput.setValue('');
+                        repeatPinInput.setValue('');
+                    }
+                } catch (message) {
+                    this._toast.fire({
+                        icon: 'error',
+                        title: message
+                    });
+                }
             });
 
             Lang.i().lAll();

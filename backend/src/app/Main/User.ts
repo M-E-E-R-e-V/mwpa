@@ -57,6 +57,9 @@ export type UserInfoResponse = DefaultReturn & {
 export type UserData = UserInfoData & {
     main_groupid: number;
     password?: string;
+    password_repeat?: string;
+    pin?: string;
+    pin_repeat?: string;
     disable: boolean;
 };
 
@@ -230,8 +233,40 @@ export class User {
             auser.full_name = request.fullname;
             auser.email = request.email;
 
-            if (request.password !== '') {
+            if (request.password && request.password_repeat) {
+                if (request.password === '') {
+                    return {
+                        statusCode: StatusCodes.INTERNAL_ERROR,
+                        msg: 'Password is empty!'
+                    };
+                }
+
+                if (request.password !== request.password_repeat) {
+                    return {
+                        statusCode: StatusCodes.INTERNAL_ERROR,
+                        msg: 'Password repeat is different!'
+                    };
+                }
+
                 auser.password = await bcrypt.hash(request.password!, 10);
+            }
+
+            if (request.pin && request.pin_repeat) {
+                if (request.pin === '') {
+                    return {
+                        statusCode: StatusCodes.INTERNAL_ERROR,
+                        msg: 'Pin is empty!'
+                    };
+                }
+
+                if (request.pin !== request.pin_repeat) {
+                    return {
+                        statusCode: StatusCodes.INTERNAL_ERROR,
+                        msg: 'Pin repeat is different!'
+                    };
+                }
+
+                auser.pin = await bcrypt.hash(request.pin!, 10);
             }
 
             auser.main_groupid = request.main_groupid;
@@ -261,7 +296,7 @@ export class User {
             const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
             const user = await userRepository.findOne({
                 where: {
-                    id: session.user.id
+                    id: session.user.userid
                 }
             });
 
@@ -293,9 +328,42 @@ export class User {
         };
     }
 
+    /**
+     * savePin
+     * @param session
+     * @param request
+     */
+    @Post('/json/user/savepin')
     public async savePin(@Session() session: any, @Body() request: UserSavePin): Promise<DefaultReturn> {
         if ((session.user !== undefined) && session.user.isLogin) {
+            const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
+            const user = await userRepository.findOne({
+                where: {
+                    id: session.user.userid
+                }
+            });
 
+            if (user) {
+                if (request.pin === request.repeatpin) {
+                    user.pin = await bcrypt.hash(request.pin!, 10);
+
+                    await MariaDbHelper.getConnection().manager.save(user);
+
+                    return {
+                        statusCode: StatusCodes.OK
+                    };
+                }
+
+                return {
+                    statusCode: StatusCodes.INTERNAL_ERROR,
+                    msg: 'The repeat pin is differend!'
+                };
+            }
+
+            return {
+                statusCode: StatusCodes.INTERNAL_ERROR,
+                msg: 'User not found by session-user-id!'
+            };
         }
 
         return {

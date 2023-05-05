@@ -46,6 +46,9 @@ export type UserInfo = {
 export type UserData = UserInfoData & {
     main_groupid: number;
     password?: string;
+    password_repeat?: string;
+    pin?: string;
+    pin_repeat?: string;
     disable: boolean;
 };
 
@@ -54,6 +57,22 @@ export type UserData = UserInfoData & {
  */
 export type UserListResponse = DefaultReturn & {
     list?: UserData[];
+};
+
+/**
+ * UserSavePassword
+ */
+export type UserSavePassword = {
+    password: string;
+    repeatpassword: string;
+};
+
+/**
+ * UserSavePin
+ */
+export type UserSavePin = {
+    pin: string;
+    repeatpin: string;
 };
 
 /**
@@ -119,17 +138,58 @@ export class User {
 
                 case StatusCodes.UNAUTHORIZED:
                     throw new UnauthorizedError();
+
+                case StatusCodes.INTERNAL_ERROR:
+                    throw new Error(result.msg);
             }
         }
 
         return false;
     }
 
-    public static async saveNewPassword(): Promise<boolean> {
+    /**
+     * saveNewPassword
+     * @param password
+     */
+    public static async saveNewPassword(password: UserSavePassword): Promise<boolean> {
+        const result = await NetFetch.postData('/json/user/savepassword', password);
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return true;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+
+                case StatusCodes.INTERNAL_ERROR:
+                    throw new Error(result.msg);
+            }
+        }
+
         return false;
     }
 
-    public static async saveNewPin(): Promise<boolean> {
+    /**
+     * saveNewPin
+     * @param pin
+     */
+    public static async saveNewPin(pin: UserSavePin): Promise<boolean> {
+        const result = await NetFetch.postData('/json/user/savepin', pin);
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return true;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+
+                case StatusCodes.INTERNAL_ERROR:
+                    throw new Error(result.msg);
+            }
+        }
+
         return false;
     }
 }

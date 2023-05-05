@@ -47,6 +47,18 @@ export class UsersEditModal extends ModalDialog {
     protected _inputPasswordRepeat: InputBottemBorderOnly2;
 
     /**
+     * input pin repeat
+     * @protected
+     */
+    protected _inputPin: InputBottemBorderOnly2;
+
+    /**
+     * input pin repeat
+     * @protected
+     */
+    protected _inputPinRepeat: InputBottemBorderOnly2;
+
+    /**
      * input EMail
      * @protected
      */
@@ -100,6 +112,14 @@ export class UsersEditModal extends ModalDialog {
         const groupPasswordRepeat = new FormGroup(bodyCard, 'Password repeat');
         this._inputPasswordRepeat = new InputBottemBorderOnly2(groupPasswordRepeat, undefined, InputType.password);
         this._inputPasswordRepeat.setPlaceholder('');
+
+        const groupPing = new FormGroup(bodyCard, 'Pin');
+        this._inputPin = new InputBottemBorderOnly2(groupPing, undefined, InputType.password);
+        this._inputPin.setPlaceholder('');
+
+        const groupPinRepeat = new FormGroup(bodyCard, 'Pin repeat');
+        this._inputPinRepeat = new InputBottemBorderOnly2(groupPinRepeat, undefined, InputType.password);
+        this._inputPinRepeat.setPlaceholder('');
 
         const groupEMail = new FormGroup(bodyCard, 'EMail');
         this._inputEMail = new InputBottemBorderOnly2(groupEMail);
@@ -187,6 +207,47 @@ export class UsersEditModal extends ModalDialog {
     }
 
     /**
+     * getPasswordRepeat
+     */
+    public getPasswordRepeat(): string {
+        return this._inputPasswordRepeat.getValue();
+    }
+
+    /**
+     * setPasswordRepeat
+     * @param password
+     */
+    public setPasswordRepeat(password: string): void {
+        this._inputPasswordRepeat.setValue(password);
+    }
+
+    /**
+     * getPin
+     */
+    public getPin(): string {
+        return this._inputPin.getValue();
+    }
+
+    public setPin(pin: string): void {
+        this._inputPin.setValue(pin);
+    }
+
+    /**
+     * getPinRepeat
+     */
+    public getPinRepeat(): string {
+        return this._inputPinRepeat.getValue();
+    }
+
+    /**
+     * setPinRepeat
+     * @param pin
+     */
+    public setPinRepeat(pin: string): void {
+        this._inputPinRepeat.setValue(pin);
+    }
+
+    /**
      * getEMail
      */
     public getEMail(): string {
@@ -270,6 +331,9 @@ export class UsersEditModal extends ModalDialog {
         this.setFullname('');
         this.setEMail('');
         this.setPassword('');
+        this.setPasswordRepeat('');
+        this.setPin('');
+        this.setPinRepeat('');
         this.setMainGroup(0);
         this.setIsAdmin(false);
         this.setIsDisabled(false);

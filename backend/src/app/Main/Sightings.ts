@@ -1,6 +1,8 @@
 import moment from 'moment';
 import xlsx from 'node-xlsx';
-import {Body, ContentType, Get, JsonController, Post, Session} from 'routing-controllers';
+import fs from 'fs';
+import Path from 'path';
+import {Body, ContentType, Get, JsonController, Param, Post, Session} from 'routing-controllers';
 import {BehaviouralStates as BehaviouralStatesDB} from '../../inc/Db/MariaDb/Entity/BehaviouralStates';
 import {EncounterCategories as EncounterCategoriesDB} from '../../inc/Db/MariaDb/Entity/EncounterCategories';
 import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
@@ -9,11 +11,14 @@ import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
 import {Vehicle as VehicleDB} from '../../inc/Db/MariaDb/Entity/Vehicle';
 import {VehicleDriver as VehicleDriverDB} from '../../inc/Db/MariaDb/Entity/VehicleDriver';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
+import {Logger} from '../../inc/Logger/Logger';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 import {TypeSighting} from '../../inc/Types/TypeSighting';
 import {UtilDistanceCoast} from '../../inc/Utils/UtilDistanceCoast';
+import {UtilImageUploadPath} from '../../inc/Utils/UtilImageUploadPath';
 import {UtilPosition, UtilPositionToStr} from '../../inc/Utils/UtilPosition';
+import {UtilSelect} from '../../inc/Utils/UtilSelect';
 
 /**
  * SightingsFilter
@@ -39,6 +44,7 @@ export type SightingsEntry = TypeSighting & {
     hash_import_count: number;
     source_import_file: string;
     organization_id: number;
+    files: string[];
 };
 
 /**
@@ -57,6 +63,7 @@ export type SightingsResponse = DefaultReturn & {
 export type SightingDeleteRequest = {
     id: number;
 };
+
 
 /**
  * Sightings
@@ -92,6 +99,17 @@ export class Sightings {
 
                 if (entry.beaufort_wind_n === '') {
                     beaufort_wind = `${entry.beaufort_wind}`;
+                }
+
+                let files: string[] = [];
+                const sightingUidDir = UtilImageUploadPath.getSightingDirector(entry.unid);
+
+                if (sightingUidDir) {
+                    const tfiles = fs.readdirSync(sightingUidDir);
+
+                    if (tfiles) {
+                        files = tfiles;
+                    }
                 }
 
                 list.push({
@@ -133,7 +151,8 @@ export class Sightings {
                     hash: entry.hash,
                     hash_import_count: entry.hash_import_count,
                     source_import_file: entry.source_import_file,
-                    organization_id: entry.organization_id
+                    organization_id: entry.organization_id,
+                    files
                 });
             }
 
@@ -158,7 +177,7 @@ export class Sightings {
     @Get('/json/sightings/list/excel')
     @ContentType('application/octet-stream')
     public async getExcel(@Session() session: any): Promise<Buffer | null> {
-        if ((session.user !== undefined) && session.user.isLogin) {
+        if ((session.user !== undefined) && session.user.isLogin && session.user.isAdmin) {
             const filter = session.sightingFilter;
             const vehicles: Map<number, VehicleDB> = new Map<number, VehicleDB>();
             const drivers: Map<number, string> = new Map<number, string>();
@@ -256,32 +275,32 @@ export class Sightings {
             const data: any[] = [
                 [
                     'Id',
+                    'Date',
+                    'Start of trip',
+                    'End of trip',
                     'Boat',
                     'Skipper',
                     'Observer',
                     'Wind/Seastate (Beaufort)',
-                    'Date',
-                    'Start of trip',
-                    'End of trip',
+                    'Species',
+                    'Number of animals',
                     'Duration from',
                     'Duration until',
                     'Position begin latitude',
                     'Position begin longitude',
                     'Position end latitude',
                     'Position end longitude',
-                    'Distance to nearst coast (nm)',
-                    'Photos taken',
                     'Estimation without GPS',
-                    'Species',
-                    'Number of animals',
+                    'Distance to nearst coast (nm)',
                     'Juveniles',
                     'Calves',
                     'Newborns',
                     'Behaviour',
-                    'Subgroups',
                     'Group structure',
+                    'Subgroups',
                     'Reaction',
                     'Frequent behaviours of individuals',
+                    'Photos taken',
                     'Recognizable animals',
                     'Other species',
                     'Other',
@@ -293,7 +312,8 @@ export class Sightings {
             if (filter) {
                 const dblist = await sightingRepository.find({
                     order: {
-                        id: 'DESC'
+                        date: 'DESC',
+                        tour_start: 'DESC'
                     }
                 });
 
@@ -447,32 +467,32 @@ export class Sightings {
 
                         data.push([
                             `${entry.id}`,
+                            `${date.format('YYYY/MM/DD')}`,
+                            `${entry.tour_start}`,
+                            `${entry.tour_end}`,
                             `${vehicleStr}`,
                             `${vehicleDriverStr}`,
                             `${userStr}`,
                             `${beaufort_wind}`,
-                            `${date.format('YYYY/MM/DD')}`,
-                            `${entry.tour_start}`,
-                            `${entry.tour_end}`,
+                            specieStr,
+                            `${entry.species_count}`,
                             `${entry.duration_from}`,
                             `${entry.duration_until}`,
                             `${positionBeginLat}`,
                             `${positionBeginLon}`,
                             `${positionEndLat}`,
                             `${positionEndLon}`,
+                            UtilSelect.getSelectStr(entry.distance_coast_estimation_gps),
                             distance,
-                            entry.photo_taken ? 'Yes' : 'No',
-                            entry.distance_coast_estimation_gps ? 'Yes' : 'No',
-                            specieStr,
-                            `${entry.species_count}`,
-                            entry.juveniles ? 'Yes' : 'No',
-                            entry.calves ? 'Yes' : 'No',
-                            entry.newborns ? 'Yes' : 'No',
+                            UtilSelect.getSelectStr(entry.juveniles),
+                            UtilSelect.getSelectStr(entry.calves),
+                            UtilSelect.getSelectStr(entry.newborns),
                             behaviourStr,
-                            entry.subgroups ? 'Yes' : 'No',
                             groupStructrStr,
+                            UtilSelect.getSelectStr(entry.subgroups),
                             reactionStr,
                             freqStr,
+                            UtilSelect.getSelectStr(entry.photo_taken),
                             `${entry.recognizable_animals}`,
                             otherSpeciesStr,
                             `${entry.other}`,
@@ -526,6 +546,48 @@ export class Sightings {
         return {
             statusCode: StatusCodes.UNAUTHORIZED
         };
+    }
+
+    /**
+     * getImage
+     * @param session
+     * @param id
+     * @param filename
+     */
+    @Get('/json/sightings/getimage/:id/:filename')
+    public async getImage(
+        @Session() session: any,
+        @Param('id') id: number,
+        @Param('filename') filename: string
+    ): Promise<Buffer | null> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
+            const sighting = await sightingRepository.findOne({
+                where: {
+                    id
+                }
+            });
+
+            if (sighting) {
+                try {
+                    const sightingUidDir = UtilImageUploadPath.getSightingDirector(sighting.unid);
+
+                    if (sightingUidDir) {
+                        return fs.readFileSync(Path.join(sightingUidDir, filename));
+                    }
+
+                    Logger.log(`getImage: image upload is empty by id: ${id}`);
+                } catch (e) {
+                    Logger.log(e);
+                }
+            } else {
+                Logger.log(`getImage: sighting not found by id: ${id}`);
+            }
+        } else {
+            Logger.log(`getImage: session not login by id: ${id}`);
+        }
+
+        return null;
     }
 
 }
