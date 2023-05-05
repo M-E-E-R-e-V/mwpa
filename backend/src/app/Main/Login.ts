@@ -89,7 +89,7 @@ export class Login {
             }
         });
 
-        const userData: SessionUserData = {
+        session.user = {
             isLogin: false,
             isAdmin: false,
             isMobileLogin: false,
@@ -98,9 +98,7 @@ export class Login {
             main_organization_id: 0,
             groups: [],
             organizations: []
-        };
-
-        session.user = userData;
+        } as SessionUserData;
 
         if (user) {
             const bresult = await bcrypt.compare(login.password, user.password);

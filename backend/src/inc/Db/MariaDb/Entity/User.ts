@@ -7,28 +7,27 @@ import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, Index} from 'typeorm
 export class User extends BaseEntity {
 
     @PrimaryGeneratedColumn()
-        // @ts-ignore
-    id: number;
+    public id!: number;
 
     @Index()
     @Column({
         type: 'varchar',
         length: 128
     })
-        // @ts-ignore
-    username: string;
+    public username!: string;
 
     @Column({
         type: 'varchar',
         length: 255,
         default: ''
     })
-        // @ts-ignore
-    full_name: string;
+    public full_name!: string;
 
     @Column()
-        // @ts-ignore
-    password: string;
+    public password!: string;
+
+    @Column()
+    public pin!: string;
 
     @Index()
     @Column({
@@ -36,30 +35,26 @@ export class User extends BaseEntity {
         length: 255,
         default: ''
     })
-        // @ts-ignore
-    email: string;
+    public email!: string;
 
     @Index()
     @Column({
         default: 0
     })
-        // @ts-ignore
-    main_groupid: number;
+    public main_groupid!: number;
 
     @Index()
     @Column({
         type: 'boolean',
         default: false
     })
-        // @ts-ignore
-    isAdmin: boolean;
+    public isAdmin!: boolean;
 
     @Index()
     @Column({
         type: 'boolean',
         default: true
     })
-        // @ts-ignore
-    disable: boolean;
+    public disable!: boolean;
 
 }

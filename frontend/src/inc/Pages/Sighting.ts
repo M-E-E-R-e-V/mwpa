@@ -1,3 +1,4 @@
+import {DialogInfo} from '../Bambooo/Content/Dialog/DialogInfo';
 import moment from 'moment';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
@@ -5,8 +6,8 @@ import {Sightings as SightingsAPI, SightingsEntry} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
-import {Badge, BadgeType} from '../Bambooo/Content/Badge/Badge';
 import {ColumnContent} from '../Bambooo/ColumnContent';
+import {Badge, BadgeType} from '../Bambooo/Content/Badge/Badge';
 import {ButtonClass} from '../Bambooo/Content/Button/ButtonDefault';
 import {Card} from '../Bambooo/Content/Card/Card';
 import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
@@ -27,6 +28,7 @@ import {UtilColor} from '../Utils/UtilColor';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilDownload} from '../Utils/UtilDownload';
 import {UtilLocation} from '../Utils/UtilLocation';
+import {UtilSelect} from '../Utils/UtilSelect';
 import {BasePage} from './BasePage';
 import {SightingEditModal} from './Sighting/SightingEditModal';
 
@@ -287,7 +289,7 @@ export class Sighting extends BasePage {
 
                     const trbody = new Tr(table.getTbody());
 
-                    const date = moment(entry.date);
+                    const date = moment(entry.date?.split(' ')[0]);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `<b>#${entry.id}</b><br>#${entry.tour_id}<br>${date.format('YYYY.MM.DD')}`);
@@ -330,7 +332,7 @@ export class Sighting extends BasePage {
                     speciesTd.append(`<br>${otherSpecies}`);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `<b>${entry.species_count}</b><br>${entry.subgroups! > 0 ? 'Yes' : 'No'}`);
+                    new Td(trbody, `<b>${entry.species_count}</b><br>${UtilSelect.getSelectStr(entry.subgroups!)}`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `<b>${entry.tour_start} - ${entry.tour_end}</b><br>${entry.duration_from} - ${entry.duration_until}`);
@@ -359,7 +361,7 @@ export class Sighting extends BasePage {
                     new Td(trbody, `${UtilDistanceCoast.meterToM(floatDistance, true)}`);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `<b>${entry.photo_taken! > 0 ? 'Yes' : 'No'}</b><br>${entry.distance_coast_estimation_gps! > 0 ? 'Yes' : 'No'}`);
+                    new Td(trbody, `<b>${UtilSelect.getSelectStr(entry.photo_taken!)}</b><br>${UtilSelect.getSelectStr(entry.distance_coast_estimation_gps!)}`);
 
                     let behaviourStr = '';
 
@@ -445,6 +447,33 @@ export class Sighting extends BasePage {
                                 ButtonClass.danger
                             );
                         }, IconFa.trash);
+
+                    if (entry.files.length > 0) {
+                        tdAction.append('<br>');
+                        const btnAttachment = new ButtonMenu(tdAction, IconFa.paperclip, true, ButtonType.borderless);
+
+                        for (const afiel of entry.files) {
+                            btnAttachment.addMenuItem(
+                                afiel,
+                                (): void => {
+                                    const aImage = new Image();
+                                    aImage.src = `/json/sightings/getimage/${entry.id}/${afiel}`;
+                                    aImage.style.width = '100%';
+
+                                    DialogInfo.info(
+                                        'sightimage',
+                                        ModalDialogType.xlarge,
+                                        `Image for Sighting #${entry.id}`,
+                                        aImage,
+                                        (_, modal: DialogInfo) => {
+                                            modal.hide();
+                                        }
+                                    );
+                                },
+                                IconFa.camera
+                            );
+                        }
+                    }
                 }
             };
 

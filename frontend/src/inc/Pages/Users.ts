@@ -78,11 +78,23 @@ export class Users extends BasePage {
                     username: this._usersDialog.getUsername(),
                     fullname: this._usersDialog.getFullname(),
                     email: this._usersDialog.getEMail(),
-                    password: this._usersDialog.getPassword(),
                     main_groupid: this._usersDialog.getMainGroup(),
                     isAdmin: this._usersDialog.getIsAdmin(),
                     disable: this._usersDialog.getIsDisabled()
                 };
+
+                const password = this._usersDialog.getPassword();
+                const pin = this._usersDialog.getPin();
+
+                if (password !== '') {
+                    aUser.password = password;
+                    aUser.password_repeat = this._usersDialog.getPasswordRepeat();
+                }
+
+                if (pin !== '') {
+                    aUser.pin = pin;
+                    aUser.pin_repeat = this._usersDialog.getPinRepeat();
+                }
 
                 if (await UserAPI.save(aUser)) {
                     this._usersDialog.hide();
@@ -161,7 +173,7 @@ export class Users extends BasePage {
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${user.email}`);
 
-                    let groupName = 'Unknow';
+                    let groupName = 'Unknown';
 
                     if (groups) {
                         for (const agroup of groups) {
