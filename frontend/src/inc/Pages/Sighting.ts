@@ -83,10 +83,6 @@ export class Sighting extends BasePage {
         });
     }
 
-    /*protected createSightingCard(sighting: SightingsEntry): Promise<void> {
-
-    }*/
-
     /**
      * loadContent
      */
@@ -108,7 +104,8 @@ export class Sighting extends BasePage {
             (): void => {
                 UtilDownload.download('/json/sightings/list/excel', 'sightings_list.xlsx');
             },
-            IconFa.edit);
+            IconFa.edit
+        );
 
         const divResp = jQuery('<div class="table-responsive"></div>').appendTo(card.getElement());
 
@@ -303,6 +300,7 @@ export class Sighting extends BasePage {
                         const otherSpeciesList = JSON.parse(entry.other_species!);
 
                         if (otherSpeciesList) {
+                            // eslint-disable-next-line guard-for-in
                             for (const otherSpeciesKey in otherSpeciesList) {
                                 const otherSpecie = otherSpeciesList[otherSpeciesKey];
 
@@ -320,7 +318,7 @@ export class Sighting extends BasePage {
                             }
                         }
                     } catch (e) {
-                        console.log(`JSON Parse::other_species: `);
+                        console.log('JSON Parse::other_species: ');
                         console.log(e);
                         console.log(entry);
                         console.log('');
@@ -328,6 +326,7 @@ export class Sighting extends BasePage {
 
                     // eslint-disable-next-line no-new
                     const speciesTd = new Td(trbody);
+                    // eslint-disable-next-line no-new
                     new Badge(speciesTd, `<b style="color: ${UtilColor.getContrastYIQ(specieColor)}">${specieName}</b>`, BadgeType.info, specieColor);
                     speciesTd.append(`<br>${otherSpecies}`);
 
@@ -345,17 +344,19 @@ export class Sighting extends BasePage {
                         const beginLatStr = `${begin_lat.direction}: ${begin_lat.degree}º ${begin_lat.minute.toFixed(3)}`;
                         const beginLonStr = `${begin_lon.direction}: ${begin_lon.degree}º ${begin_lon.minute.toFixed(3)}`;
 
+                        // eslint-disable-next-line no-new
                         new Td(trbody, `<dl class="row"><dt class="col-sm-1"><i class="fas fa-map-marker-alt mr-1"></i></dt><dd class="col-sm-5">${beginLatStr}<br>${beginLonStr}</dd></dl>`);
                     } catch (e) {
-                        console.log(`JSON Parse::location_begin: `);
+                        console.log('JSON Parse::location_begin: ');
                         console.log(e);
                         console.log(entry);
                         console.log('');
 
+                        // eslint-disable-next-line no-new
                         new Td(trbody, '?');
                     }
 
-                    const floatDistance = parseFloat(entry.distance_coast!) | 0;
+                    const floatDistance = parseFloat(entry.distance_coast!) || 0;
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${UtilDistanceCoast.meterToM(floatDistance, true)}`);
@@ -378,7 +379,7 @@ export class Sighting extends BasePage {
                             }
                         }
                     } catch (e) {
-                        console.log(`JSON Parse::behaviours: `);
+                        console.log('JSON Parse::behaviours: ');
                         console.log(e);
                         console.log(entry);
                         console.log('');
@@ -392,9 +393,9 @@ export class Sighting extends BasePage {
 
                     // action
                     const tdAction = new Td(trbody, '');
-                    const btnMenu = new ButtonMenu(tdAction, IconFa.bars, true, ButtonType.borderless);
+                    const abtnMenu = new ButtonMenu(tdAction, IconFa.bars, true, ButtonType.borderless);
 
-                    btnMenu.addMenuItem(
+                    abtnMenu.addMenuItem(
                         'Edit',
                         async(): Promise<void> => {
                             this._sightingDialog.setTitle('Edit Sighting');
@@ -409,18 +410,19 @@ export class Sighting extends BasePage {
                             this._sightingDialog.setReaction(entry.reaction_id!);
                             this._sightingDialog.show();
                         },
-                        IconFa.edit);
+                        IconFa.edit
+                    );
 
-                    btnMenu.addDivider();
+                    abtnMenu.addDivider();
 
-                    btnMenu.addMenuItem(
+                    abtnMenu.addMenuItem(
                         'Delete',
                         (): void => {
                             DialogConfirm.confirm(
                                 'dcDeleteSighting',
                                 ModalDialogType.large,
                                 'Delete sighting',
-                                `Are you sure you want to delete the sighting?`,
+                                'Are you sure you want to delete the sighting?',
                                 async(_, dialog) => {
                                     try {
                                         if (await SightingsAPI.delete({id: entry.id})) {
@@ -446,7 +448,9 @@ export class Sighting extends BasePage {
                                 'Delete',
                                 ButtonClass.danger
                             );
-                        }, IconFa.trash);
+                        },
+                        IconFa.trash
+                    );
 
                     if (entry.files.length > 0) {
                         tdAction.append('<br>');

@@ -576,15 +576,15 @@ export class Sightings {
                         return fs.readFileSync(Path.join(sightingUidDir, filename));
                     }
 
-                    Logger.log(`getImage: image upload is empty by id: ${id}`);
+                    Logger.log(`Main/Sightings::getImage: image upload is empty by id: ${id}`);
                 } catch (e) {
                     Logger.log(e);
                 }
             } else {
-                Logger.log(`getImage: sighting not found by id: ${id}`);
+                Logger.log(`Main/Sightings::getImage: sighting not found by id: ${id}`);
             }
         } else {
-            Logger.log(`getImage: session not login by id: ${id}`);
+            Logger.log(`Main/Sightings::getImage: session not login by id: ${id}`);
         }
 
         return null;

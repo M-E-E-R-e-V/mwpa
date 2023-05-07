@@ -14,6 +14,7 @@ import {Group as GroupMainController} from './app/Main/Group';
 import {Login as LoginMainController} from './app/Main/Login';
 import {Login as LoginMobileController} from './app/Mobile/Login';
 import {Sightings as SightingsMainController} from './app/Main/Sightings';
+import {Tours as ToursMainController} from './app/Main/Tours';
 import {Species as SpeciesMainController} from './app/Main/Species';
 import {Sightings as SightingsMobileController} from './app/Mobile/Sightings';
 import {SightingTourTracking as SightingTourTrackingMobileController} from './app/Mobile/SightingTourTracking';
@@ -243,6 +244,7 @@ import {Server} from './inc/Server/Server';
             LoginMainController,
             UserMainController,
             SightingsMainController,
+            ToursMainController,
             SpeciesMainController,
             EncounterCategoriesMainController,
             VehicleMainController,

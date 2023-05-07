@@ -85,7 +85,7 @@ export class SightingEditModal extends ModalDialog {
      */
     protected _switchPhotoTaken: Switch;
 
-    //protected _switch
+    // protected _switch
 
     /**
      * specie select
@@ -130,7 +130,7 @@ export class SightingEditModal extends ModalDialog {
         const groupbeaufortWind = new FormGroup(bodyCard, 'Wind/Seastate (Beaufort)');
         this._beaufortWindSelect = new SelectBottemBorderOnly2(groupbeaufortWind);
 
-        for (let i=0; i<13; i++) {
+        for (let i = 0; i < 13; i++) {
             this._beaufortWindSelect.addValue({
                 key: `${i}`,
                 value: `${i}`
@@ -167,8 +167,9 @@ export class SightingEditModal extends ModalDialog {
         this._switchPhotoTaken = new Switch(groupPhotoTaken, 'phototaken');
 
         // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const groupDistanceCoastEstimationGPS = new FormGroup(rowPG.createCol(6), 'Estimation without GPS');
-        //this.
+        // this.
 
         const groupSpecie = new FormGroup(bodyCard, 'Specie');
         this._specieSelect = new SelectBottemBorderOnly2(groupSpecie);
@@ -238,7 +239,7 @@ export class SightingEditModal extends ModalDialog {
      * getVehicle
      */
     public getVehicle(): number {
-        return parseInt(this._vehicleSelect.getSelectedValue(), 10) | 0;
+        return parseInt(this._vehicleSelect.getSelectedValue(), 10) || 0;
     }
 
     /**
@@ -295,7 +296,7 @@ export class SightingEditModal extends ModalDialog {
      * setDateSight
      * @param date
      */
-    public setDateSight(date: string) {
+    public setDateSight(date: string): void {
         this._inputDateSight.setValue(date);
     }
 
@@ -314,8 +315,8 @@ export class SightingEditModal extends ModalDialog {
         this._specieSelect.clearValues();
 
         this._specieSelect.addValue({
-           key: '0',
-           value: 'Please select a specie!'
+            key: '0',
+            value: 'Please select a specie!'
         });
 
         for (const specie of list) {
@@ -380,7 +381,7 @@ export class SightingEditModal extends ModalDialog {
         }
     }
 
-    public setReaction(reactionId: number) {
+    public setReaction(reactionId: number): void {
         this._reactionSelect.setSelectedValue(`${reactionId}`);
     }
 

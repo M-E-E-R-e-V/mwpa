@@ -93,7 +93,7 @@ export class Sightings {
         const result = await NetFetch.postData('/json/sightings/list', data);
 
         if (result && result.statusCode) {
-            switch(result.statusCode) {
+            switch (result.statusCode) {
                 case StatusCodes.OK:
                     return result as SightingsResponse;
 
@@ -113,7 +113,7 @@ export class Sightings {
         const result = await NetFetch.postData('/json/sightings/delete', sighting);
 
         if (result && result.statusCode) {
-            switch(result.statusCode) {
+            switch (result.statusCode) {
                 case StatusCodes.OK:
                     return true;
 
