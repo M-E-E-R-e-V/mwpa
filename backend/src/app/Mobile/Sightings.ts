@@ -2,11 +2,11 @@ import * as fs from 'fs';
 import * as Path from 'path';
 import {Body, BodyParam, JsonController, Post, Session, UploadedFile} from 'routing-controllers';
 import {v4 as uuidv4} from 'uuid';
-import {Config} from '../../inc/Config/Config';
 import {Devices as DevicesDB} from '../../inc/Db/MariaDb/Entity/Devices';
 import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
 import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/SightingTour';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
+import {Logger} from '../../inc/Logger/Logger';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 import {TypeSighting} from '../../inc/Types/TypeSighting';
@@ -44,17 +44,6 @@ export type SightingImageExistResponse = DefaultReturn & {
 };
 
 /**
- * SightingImageSavePart
- */
-export type SightingImageSavePart = {
-    unid?: string;
-    filename?: string;
-    size?: number;
-    offset?: number;
-    data?: string;
-};
-
-/**
  * SightingImageSaveResponse
  */
 export type SightingImageSaveResponse = DefaultReturn;
@@ -83,6 +72,8 @@ export class Sightings {
             });
 
             if (!device) {
+                Logger.log(`Mobile/Sightings::save: Device not found by: ${deviceIdentity}`);
+
                 return {
                     statusCode: StatusCodes.INTERNAL_ERROR,
                     msg: 'Device not found!'
@@ -150,6 +141,10 @@ export class Sightings {
                 const uuid = uuidv4();
                 sighting = new SightingDB();
                 sighting.unid = uuid;
+
+                Logger.log(`Mobile/Sightings::save: is new sighting unid: ${sighting.unid}`);
+            } else {
+                Logger.log(`Mobile/Sightings::save: update sighting unid: ${sighting.unid}`);
             }
 
             if (sighting) {
@@ -193,6 +188,8 @@ export class Sightings {
                 sighting.organization_id = session.user.main_organization_id;
 
                 sighting = await MariaDbHelper.getConnection().manager.save(sighting);
+
+                Logger.log(`Mobile/Sightings::save: sighting save by unid: ${sighting.unid} id: ${sighting.id}`);
 
                 return {
                     statusCode: StatusCodes.OK,
@@ -239,6 +236,8 @@ export class Sightings {
             });
 
             if (!device) {
+                Logger.log(`Mobile/Sightings::existImage: Device not found by: ${deviceIdentity}`);
+
                 return {
                     statusCode: StatusCodes.INTERNAL_ERROR,
                     msg: 'Device not found!'
@@ -256,6 +255,8 @@ export class Sightings {
             });
 
             if (!sighting) {
+                Logger.log(`Mobile/Sightings::existImage: Sighting not found: ${request.unid}`);
+
                 return {
                     statusCode: StatusCodes.INTERNAL_ERROR,
                     msg: 'Sighting not found!'
@@ -267,12 +268,18 @@ export class Sightings {
             const filePath = await this._getImageUploadPath(request.unid, request.filename);
 
             if (filePath !== null) {
+                Logger.log(`Mobile/Sightings::existImage: use file path: ${filePath}`);
+
                 if (fs.existsSync(filePath)) {
+                    Logger.log(`Mobile/Sightings::existImage: file exist true: ${filePath}`);
+
                     return {
                         statusCode: StatusCodes.OK,
                         isExist: true
                     };
                 }
+
+                Logger.log(`Mobile/Sightings::existImage: file not found: ${filePath}`);
 
                 return {
                     statusCode: StatusCodes.OK,
@@ -280,17 +287,29 @@ export class Sightings {
                 };
             }
 
+            Logger.log('Mobile/Sightings::existImage: Image upload faild, data director not found!');
+
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
                 msg: 'Image upload faild, data director not found!'
             };
         }
 
+        Logger.log('Mobile/Sightings::existImage: unautorized');
+
         return {
             statusCode: StatusCodes.UNAUTHORIZED
         };
     }
 
+    /**
+     * save
+     * @param session
+     * @param pfile
+     * @param punid
+     * @param pfilename
+     * @param psize
+     */
     @Post('/mobile/sighting/image/save')
     public async saveImage(
         @Session() session: any,
@@ -309,6 +328,8 @@ export class Sightings {
             });
 
             if (!device) {
+                Logger.log(`Mobile/Sightings::saveImage: Device not found by: ${deviceIdentity}`);
+
                 return {
                     statusCode: StatusCodes.INTERNAL_ERROR,
                     msg: 'Device not found!'
@@ -326,6 +347,8 @@ export class Sightings {
             });
 
             if (!sighting) {
+                Logger.log(`Mobile/Sightings::saveImage: sighting not found by unid: ${punid}`);
+
                 return {
                     statusCode: StatusCodes.INTERNAL_ERROR,
                     msg: 'Sighting not found!'
@@ -339,25 +362,35 @@ export class Sightings {
             if (filePath !== null) {
                 fs.writeFileSync(filePath, pfile.buffer);
 
+                Logger.log(`Mobile/Sightings::saveImage: file write to: ${filePath}`);
+
                 const fileStats = fs.statSync(filePath);
 
                 if (fileStats.size !== parseInt(psize, 10)) {
+                    Logger.log(`Mobile/Sightings::saveImage: file size is not correct: post filesize: ${psize} uploaded filesize: ${fileStats.size}`);
+
                     return {
                         statusCode: StatusCodes.INTERNAL_ERROR,
                         msg: 'Image file size is not correct!'
                     };
                 }
 
+                Logger.log(`Mobile/Sightings::saveImage: file is uploaded: ${filePath}`);
+
                 return {
                     statusCode: StatusCodes.OK
                 };
             }
+
+            Logger.log('Mobile/Sightings::saveImage: Image upload faild, data director not found!');
 
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
                 msg: 'Image upload faild, data director not found!'
             };
         }
+
+        Logger.log('Mobile/Sightings::saveImage: unautorized');
 
         return {
             statusCode: StatusCodes.UNAUTHORIZED
