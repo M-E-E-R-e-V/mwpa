@@ -34,7 +34,7 @@ export class Group {
         if (result && result.statusCode) {
             const tresult = result as GroupListResponse;
 
-            switch(tresult.statusCode) {
+            switch (tresult.statusCode) {
                 case StatusCodes.OK:
                     if (tresult.list) {
                         return tresult.list;
@@ -49,4 +49,5 @@ export class Group {
 
         return null;
     }
+
 }

@@ -119,7 +119,7 @@ export class Login extends MainLogin {
                 session.user.main_group_id = user.main_groupid;
 
                 const groups: number[] = [];
-                const organisations: number[] = [];
+                const organizations: number[] = [];
 
                 const mainGroup = await groupRepository.findOne({
                     where: {
@@ -129,7 +129,7 @@ export class Login extends MainLogin {
 
                 if (mainGroup) {
                     groups.push(mainGroup.id);
-                    organisations.push(mainGroup.organization_id);
+                    organizations.push(mainGroup.organization_id);
                 }
 
                 const userGroups = MariaDbHelper.getConnection().getRepository(UserGroupsDB);
@@ -150,7 +150,7 @@ export class Login extends MainLogin {
 
                             if (subGroup) {
                                 groups.push(subGroup.id);
-                                organisations.push(subGroup.organization_id);
+                                organizations.push(subGroup.organization_id);
                             }
                         }
                     }
@@ -159,7 +159,7 @@ export class Login extends MainLogin {
                 // eslint-disable-next-line require-atomic-updates
                 session.user.groups = groups;
                 // eslint-disable-next-line require-atomic-updates
-                session.user.organizations = organisations;
+                session.user.organizations = organizations;
 
                 Logger.log(`Login success by session: ${session.id}`);
 

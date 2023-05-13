@@ -1,3 +1,4 @@
+import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
 import {DialogInfo} from '../Bambooo/Content/Dialog/DialogInfo';
 import moment from 'moment';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
@@ -112,17 +113,61 @@ export class Sighting extends BasePage {
         const table = new Table(divResp);
         const trhead = new Tr(table.getThead());
 
+        const sortingColum = (element: LangText, currentVal: string): string => {
+            switch (currentVal) {
+                case 'asc':
+                    element.setClass('mwpa_sorting mwpa_sorting_desc');
+                    return 'desc';
+
+                case 'desc':
+                    element.setClass('mwpa_sorting');
+                    return '';
+
+                default:
+                    element.setClass('mwpa_sorting mwpa_sorting_asc');
+                    return 'asc';
+            }
+        };
+
+        const order = {
+            id: '',
+            tour_id: '',
+            date: 'desc',
+            tour_start: 'desc',
+            create_datetime: '',
+            update_datetime: ''
+        };
+
+        let offset = 0;
+        const limit = 20;
+
+        const onLoadListOrder = (): void => {
+            offset = 0;
+            // eslint-disable-next-line no-use-before-define
+            onLoadList();
+        };
+
         // eslint-disable-next-line no-new
         new Th(trhead, new ColumnContent([
-            new LangText('Id'),
-            new LangText('TourId'),
-            new LangText('Date')
+            new LangText('Id', 'mwpa_sorting', (element) => {
+                order.id = sortingColum(element, order.id);
+                onLoadListOrder();
+            }),
+            new LangText('TourId', 'mwpa_sorting', (element) => {
+                order.tour_id = sortingColum(element, order.tour_id);
+                onLoadListOrder();
+            }),
+            new LangText('Date', 'mwpa_sorting mwpa_sorting_desc', (element) => {
+                order.date = sortingColum(element, order.date);
+                onLoadListOrder();
+            })
         ]));
 
         // eslint-disable-next-line no-new
         new Th(trhead, new ColumnContent([
             new LangText('Vehicle'),
-            new LangText('Driver')
+            new LangText('Driver'),
+            new LangText('Organization')
         ]));
 
         // eslint-disable-next-line no-new
@@ -139,7 +184,10 @@ export class Sighting extends BasePage {
 
         // eslint-disable-next-line no-new
         new Th(trhead, new ColumnContent([
-            new LangText('Time begin-end'),
+            new LangText('Time begin-end', 'mwpa_sorting mwpa_sorting_desc', (element) => {
+                order.tour_start = sortingColum(element, order.tour_start);
+                onLoadListOrder();
+            }),
             new LangText('Duration')
         ]));
 
@@ -156,10 +204,23 @@ export class Sighting extends BasePage {
         ]));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Behaviour'));
+        new Th(trhead, new ColumnContent([
+            new LangText('Behaviour'),
+            new LangText('Reaction')
+        ]));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Reaction'));
+        new Th(trhead, new ColumnContent([
+            new LangText('Create date', 'mwpa_sorting', (element) => {
+                order.create_datetime = sortingColum(element, order.create_datetime);
+                onLoadListOrder();
+            }),
+            new LangText('Creater'),
+            new LangText('Update date', 'mwpa_sorting', (element) => {
+                order.update_datetime = sortingColum(element, order.update_datetime);
+                onLoadListOrder();
+            })
+        ]));
 
         // eslint-disable-next-line no-new
         new Th(trhead, '');
@@ -169,6 +230,7 @@ export class Sighting extends BasePage {
          */
         const onLoadList = async(): Promise<void> => {
             card.showLoading();
+            table.getTbody().empty();
 
             // species -------------------------------------------------------------------------------------------------
 
@@ -233,6 +295,17 @@ export class Sighting extends BasePage {
                 }
             }
 
+            // organization --------------------------------------------------------------------------------------------
+
+            const organizations = await OrganizationAPI.getOrganizationByUser();
+            const morganizations = new Map<number, OrganizationEntry>();
+
+            if (organizations) {
+                for (const organization of organizations) {
+                    morganizations.set(organization.id, organization);
+                }
+            }
+
             // sightings -----------------------------------------------------------------------------------------------
 
             const onLoadsightings = async(sightings: SightingsEntry[]): Promise<void> => {
@@ -253,6 +326,7 @@ export class Sighting extends BasePage {
                         }
                     } else {
                         specieName = 'not set';
+                        specieColor = 'red';
 
                         if (entry.other) {
                             if (this._turtles.includes(entry.other?.trim())) {
@@ -291,8 +365,18 @@ export class Sighting extends BasePage {
                     // eslint-disable-next-line no-new
                     new Td(trbody, `<b>#${entry.id}</b><br>#${entry.tour_id}<br>${date.format('YYYY.MM.DD')}`);
 
+                    let orgStr = '';
+
+                    if (entry.organization_id) {
+                        const organisation = morganizations.get(entry.organization_id);
+
+                        if (organisation) {
+                            orgStr = organisation.description;
+                        }
+                    }
+
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${vehicleName}<br>${vehicleDriverName}`);
+                    new Td(trbody, `${vehicleName}<br>${vehicleDriverName}<br>${orgStr}`);
 
                     let otherSpecies = '';
 
@@ -331,7 +415,16 @@ export class Sighting extends BasePage {
                     speciesTd.append(`<br>${otherSpecies}`);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `<b>${entry.species_count}</b><br>${UtilSelect.getSelectStr(entry.subgroups!)}`);
+                    const speciesCountGroupTd = new Td(trbody);
+
+                    if (entry.species_count === 0) {
+                        // eslint-disable-next-line no-new
+                        new Badge(speciesCountGroupTd, `<b style="color: white">${entry.species_count}</b>`, BadgeType.info, 'red');
+                    } else {
+                        speciesCountGroupTd.append(`<b>${entry.species_count}</b>`);
+                    }
+
+                    speciesCountGroupTd.append(`<br>${UtilSelect.getSelectStr(entry.subgroups!)}`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `<b>${entry.tour_start} - ${entry.tour_end}</b><br>${entry.duration_from} - ${entry.duration_until}`);
@@ -385,11 +478,19 @@ export class Sighting extends BasePage {
                         console.log('');
                     }
 
+                    if (behaviourStr === '') {
+                        behaviourStr = 'not set<br>';
+                    }
+
+                    const tdbehRex = new Td(trbody, behaviourStr);
                     // eslint-disable-next-line no-new
-                    new Td(trbody, behaviourStr);
+                    new Badge(tdbehRex, `${reactionName}`, BadgeType.secondary);
+
+                    const createDate = moment(entry.create_datetime * 1000);
+                    const updateDate = moment(entry.update_datetime * 1000);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${reactionName}`);
+                    new Td(trbody, `<b>${createDate.format('YYYY.MM.DD hh.mm.ss')}</b><br>${entry.creater_name}<br>${updateDate.format('YYYY.MM.DD hh.mm.ss')}`);
 
                     // action
                     const tdAction = new Td(trbody, '');
@@ -481,10 +582,8 @@ export class Sighting extends BasePage {
                 }
             };
 
-            let offset = 0;
-            const limit = 20;
-
             const sightings = await SightingsAPI.getList({
+                order,
                 limit,
                 offset
             });
