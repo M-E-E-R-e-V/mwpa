@@ -7,11 +7,13 @@ import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
 import {Im2020} from './app/Import/Im2020';
 import {BehaviouralStates as BehaviouralStatesMainController} from './app/Main/BehaviouralStates';
+import {Organization as OrganizationMainController} from './app/Main/Organization';
 import {BehaviouralStates as BehaviouralStatesMobileController} from './app/Mobile/BehaviouralStates';
 import {EncounterCategories as EncounterCategoriesMainController} from './app/Main/EncounterCategories';
 import {EncounterCategories as EncounterCategoriesMobileController} from './app/Mobile/EncounterCategories';
 import {Group as GroupMainController} from './app/Main/Group';
 import {Login as LoginMainController} from './app/Main/Login';
+import {Info as InfoMobileController} from './app/Mobile/Info';
 import {Login as LoginMobileController} from './app/Mobile/Login';
 import {Sightings as SightingsMainController} from './app/Main/Sightings';
 import {Tours as ToursMainController} from './app/Main/Tours';
@@ -251,8 +253,10 @@ import {Server} from './inc/Server/Server';
             VehicleDriverMainController,
             GroupMainController,
             BehaviouralStatesMainController,
+            OrganizationMainController,
 
             // mobile --------------------------------------------------------------------------------------------------
+            InfoMobileController,
             LoginMobileController,
             UserMobileController,
             VehicleMobileController,

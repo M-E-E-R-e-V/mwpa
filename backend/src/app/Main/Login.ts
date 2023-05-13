@@ -112,7 +112,7 @@ export class Login {
                 const groupRepository = MariaDbHelper.getConnection().getRepository(GroupDB);
 
                 const groups: number[] = [];
-                const organisations: number[] = [];
+                const organizations: number[] = [];
 
                 const mainGroup = await groupRepository.findOne({
                     where: {
@@ -122,7 +122,7 @@ export class Login {
 
                 if (mainGroup) {
                     groups.push(mainGroup.id);
-                    organisations.push(mainGroup.organization_id);
+                    organizations.push(mainGroup.organization_id);
                 }
 
                 const userGroups = MariaDbHelper.getConnection().getRepository(UserGroupsDB);
@@ -143,14 +143,14 @@ export class Login {
 
                             if (subGroup) {
                                 groups.push(subGroup.id);
-                                organisations.push(subGroup.organization_id);
+                                organizations.push(subGroup.organization_id);
                             }
                         }
                     }
                 }
 
                 session.user.groups = groups;
-                session.user.organizations = organisations;
+                session.user.organizations = organizations;
 
                 Logger.log(`Login success by session: ${session.id}`);
 

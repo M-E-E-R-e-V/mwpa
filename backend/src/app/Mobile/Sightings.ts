@@ -10,6 +10,7 @@ import {Logger} from '../../inc/Logger/Logger';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 import {TypeSighting} from '../../inc/Types/TypeSighting';
+import {Users} from '../../inc/Users/Users';
 import {DateHelper} from '../../inc/Utils/DateHelper';
 import {UtilImageUploadPath} from '../../inc/Utils/UtilImageUploadPath';
 import {UtilSighting} from '../../inc/Utils/UtilSighting';
@@ -148,7 +149,16 @@ export class Sightings {
             }
 
             if (sighting) {
-                sighting.creater_id = session.user.userid;
+                const createrId = request.creater_id === 0 ? session.user.userid : request.creater_id;
+
+                const organization = await Users.getMainOrganization(createrId);
+                let organizationId = 0;
+
+                if (organization) {
+                    organizationId = organization.id;
+                }
+
+                sighting.creater_id = createrId;
                 sighting.create_datetime = ctime;
                 sighting.update_datetime = ctime;
                 sighting.device_id = device.id;
@@ -185,7 +195,7 @@ export class Sightings {
                 sighting.hash = hash;
                 sighting.hash_import_count = 0;
                 sighting.source_import_file = '';
-                sighting.organization_id = session.user.main_organization_id;
+                sighting.organization_id = organizationId;
 
                 sighting = await MariaDbHelper.getConnection().manager.save(sighting);
 

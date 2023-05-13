@@ -4,35 +4,33 @@ import {StatusCodes} from './Status/StatusCodes';
 import {DefaultReturn} from './Types/DefaultReturn';
 
 /**
- * GroupEntry
+ * OrganizationEntry
  */
-export type GroupEntry = {
+export type OrganizationEntry = {
     id: number;
-    role: string;
-    organization_id: number;
     description: string;
 };
 
 /**
- * GroupListResponse
+ * OrganizationUserListResponse
  */
-export type GroupListResponse = DefaultReturn & {
-    list?: GroupEntry[];
+export type OrganizationUserListResponse = DefaultReturn & {
+    list?: OrganizationEntry[];
 };
 
 /**
- * Group
+ * Organization
  */
-export class Group {
+export class Organization {
 
     /**
-     * getGroupList
+     * getOrganizationByUser
      */
-    public static async getGroupList(): Promise<GroupEntry[] | null> {
-        const result = await NetFetch.getData('/json/group/list');
+    public static async getOrganizationByUser(): Promise<OrganizationEntry[] | null> {
+        const result = await NetFetch.getData('/json/organization/userlist');
 
         if (result && result.statusCode) {
-            const tresult = result as GroupListResponse;
+            const tresult = result as OrganizationUserListResponse;
 
             switch (tresult.statusCode) {
                 case StatusCodes.OK:

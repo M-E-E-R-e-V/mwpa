@@ -3,6 +3,7 @@
  */
 export type TypeSighting = {
     unid?: string;
+    creater_id?: number;
     vehicle_id?: number;
     vehicle_driver_id?: number;
     beaufort_wind?: string;

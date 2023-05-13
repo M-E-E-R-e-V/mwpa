@@ -49,7 +49,7 @@ export class SightingTourTracking {
      * @param session
      * @param request
      */
-    @Post('/mobile/sighting/tourtracking/save')
+    @Post('/mobile/sighting/tourtracking/check')
     public async check(@Session() session: any, @Body() request: SightingTourTrackingCheckRequest): Promise<DefaultReturn> {
         if ((session.user !== undefined) && session.user.isLogin && session.user.isMobileLogin) {
             const deviceIdentity = session.user.deviceIdentity;

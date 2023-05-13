@@ -3,6 +3,7 @@ import xlsx from 'node-xlsx';
 import fs from 'fs';
 import Path from 'path';
 import {Body, ContentType, Get, JsonController, Param, Post, Session} from 'routing-controllers';
+import {In} from 'typeorm';
 import {BehaviouralStates as BehaviouralStatesDB} from '../../inc/Db/MariaDb/Entity/BehaviouralStates';
 import {EncounterCategories as EncounterCategoriesDB} from '../../inc/Db/MariaDb/Entity/EncounterCategories';
 import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
@@ -15,6 +16,7 @@ import {Logger} from '../../inc/Logger/Logger';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 import {TypeSighting} from '../../inc/Types/TypeSighting';
+import {Users} from '../../inc/Users/Users';
 import {UtilDistanceCoast} from '../../inc/Utils/UtilDistanceCoast';
 import {UtilImageUploadPath} from '../../inc/Utils/UtilImageUploadPath';
 import {UtilPosition, UtilPositionToStr} from '../../inc/Utils/UtilPosition';
@@ -24,7 +26,14 @@ import {UtilSelect} from '../../inc/Utils/UtilSelect';
  * SightingsFilter
  */
 export type SightingsFilter = {
-    year?: number;
+    order?: {
+        id: string;
+        tour_id: string;
+        date: string;
+        tour_start: string;
+        create_datetime: string;
+        update_datetime: string;
+    };
     limit?: number;
     offset?: number;
 };
@@ -35,6 +44,7 @@ export type SightingsFilter = {
 export type SightingsEntry = TypeSighting & {
     id: number;
     creater_id: number;
+    creater_name: string;
     create_datetime: number;
     update_datetime: number;
     device_id: number;
@@ -82,17 +92,64 @@ export class Sightings {
             session.sightingFilter = filter;
 
             const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
+            const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
+            const userOrgIds = await Users.getOrganizationIds(session.user.userid);
+
+            const where: any = {};
+
+            if (!session.user.isAdmin) {
+                where.organization_id = In(userOrgIds);
+            }
+
+            let order: any = {
+                date: 'DESC',
+                tour_start: 'DESC'
+            };
 
             const list: SightingsEntry[] = [];
-            const count = await sightingRepository.count();
+            const count = await sightingRepository.count({
+                where
+            });
+
+            if (filter.order) {
+                order = {};
+
+                if (filter.order.date !== '') {
+                    order.date = filter.order.date.toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+                }
+
+                if (filter.order.id !== '') {
+                    order.id = filter.order.id.toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+                }
+
+                if (filter.order.tour_id !== '') {
+                    order.tour_id = filter.order.tour_id.toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+                }
+
+                if (filter.order.tour_start !== '') {
+                    order.tour_start = filter.order.tour_start.toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+                }
+
+                if (filter.order.create_datetime !== '') {
+                    order.create_datetime = filter.order.create_datetime.toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+                }
+
+                if (filter.order.update_datetime !== '') {
+                    order.update_datetime = filter.order.update_datetime.toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+                }
+            }
+
+            filter.order = order;
+
             const dblist = await sightingRepository.find({
-                order: {
-                    date: 'DESC',
-                    tour_start: 'DESC'
-                },
+                where,
+                order,
                 skip: filter.offset,
                 take: filter.limit
             });
+
+
+            const createrList = new Map<number, UserDB>();
 
             for (const entry of dblist) {
                 let beaufort_wind = entry.beaufort_wind_n;
@@ -112,10 +169,31 @@ export class Sightings {
                     }
                 }
 
+                if (!createrList.has(entry.creater_id)) {
+                    const createrUser = await userRepository.findOne({
+                        where: {
+                            id: entry.creater_id
+                        }
+                    });
+
+                    if (createrUser) {
+                        createrList.set(createrUser.id, createrUser);
+                    }
+                }
+
+                let createUserStr = 'unknown';
+
+                if (createrList.has(entry.creater_id)) {
+                    const tcreaterUser = createrList.get(entry.creater_id);
+
+                    createUserStr = tcreaterUser?.username!;
+                }
+
                 list.push({
                     id: entry.id,
                     unid: entry.unid,
                     creater_id: entry.creater_id,
+                    creater_name: createUserStr,
                     create_datetime: entry.create_datetime,
                     update_datetime: entry.update_datetime,
                     device_id: entry.device_id,

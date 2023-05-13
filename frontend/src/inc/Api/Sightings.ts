@@ -7,7 +7,14 @@ import {DefaultReturn} from './Types/DefaultReturn';
  * SightingsFilter
  */
 export type SightingsFilter = {
-    year?: number;
+    order?: {
+        id: string;
+        tour_id: string;
+        date: string;
+        tour_start: string;
+        create_datetime: string;
+        update_datetime: string;
+    };
     limit?: number;
     offset?: number;
 };
@@ -18,6 +25,7 @@ export type SightingsFilter = {
 export type SightingsEntry = {
     id: number;
     creater_id: number;
+    creater_name: string;
     create_datetime: number;
     update_datetime: number;
     device_id: number;
@@ -26,7 +34,6 @@ export type SightingsEntry = {
     hash: string;
     hash_import_count: number;
     source_import_file: string;
-
     unid?: string;
     vehicle_id?: number;
     vehicle_driver_id?: number;
@@ -55,6 +62,7 @@ export type SightingsEntry = {
     other?: string;
     other_vehicle?: string;
     note?: string;
+    organization_id?: number;
     files: string[];
 };
 

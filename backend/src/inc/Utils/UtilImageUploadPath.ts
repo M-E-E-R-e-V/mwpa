@@ -7,6 +7,10 @@ import {Config} from '../Config/Config';
  */
 export class UtilImageUploadPath {
 
+    /**
+     * getSightingDirector
+     * @param sightingUnid
+     */
     public static getSightingDirector(sightingUnid: string): string | null {
         const config = Config.get();
 
@@ -14,7 +18,7 @@ export class UtilImageUploadPath {
             let sightingDir = Path.join(config?.datadir!, 'sighting');
 
             if (sightingDir.charAt(0) !== '/') {
-                sightingDir = Path.join(__dirname, sightingDir);
+                sightingDir = Path.join(Path.resolve(), sightingDir);
             }
 
             if (!fs.existsSync(sightingDir)) {
