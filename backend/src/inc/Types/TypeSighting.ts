@@ -32,4 +32,5 @@ export type TypeSighting = {
     other?: string;
     other_vehicle?: string;
     note?: string;
+    sightingType?: number;
 };

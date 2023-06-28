@@ -211,12 +211,12 @@ export class Sighting extends BasePage {
 
         // eslint-disable-next-line no-new
         new Th(trhead, new ColumnContent([
-            new LangText('Create date', 'mwpa_sorting', (element) => {
+            new LangText('Created', 'mwpa_sorting', (element) => {
                 order.create_datetime = sortingColum(element, order.create_datetime);
                 onLoadListOrder();
             }),
-            new LangText('Creater'),
-            new LangText('Update date', 'mwpa_sorting', (element) => {
+            new LangText('Created by'),
+            new LangText('Updated', 'mwpa_sorting', (element) => {
                 order.update_datetime = sortingColum(element, order.update_datetime);
                 onLoadListOrder();
             })

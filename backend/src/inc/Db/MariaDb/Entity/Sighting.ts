@@ -1,5 +1,12 @@
 import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
 
+export enum SightingType {
+    NORMAL = 0,
+    SHORT = 1,
+    NOTICE = 2,
+    FREE = 3
+}
+
 /**
  * Sighting
  */
@@ -247,5 +254,11 @@ export class Sighting extends BaseEntity {
         default: 0
     })
     public organization_id!: number;
+
+    @Index()
+    @Column({
+        default: 0
+    })
+    public sighting_type!: number;
 
 }

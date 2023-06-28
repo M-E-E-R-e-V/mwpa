@@ -3,7 +3,7 @@ import * as Path from 'path';
 import {Body, BodyParam, JsonController, Post, Session, UploadedFile} from 'routing-controllers';
 import {v4 as uuidv4} from 'uuid';
 import {Devices as DevicesDB} from '../../inc/Db/MariaDb/Entity/Devices';
-import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
+import {Sighting as SightingDB, SightingType} from '../../inc/Db/MariaDb/Entity/Sighting';
 import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/SightingTour';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from '../../inc/Logger/Logger';
@@ -196,6 +196,7 @@ export class Sightings {
                 sighting.hash_import_count = 0;
                 sighting.source_import_file = '';
                 sighting.organization_id = organizationId;
+                sighting.sighting_type = request.sightingType || SightingType.NORMAL;
 
                 sighting = await MariaDbHelper.getConnection().manager.save(sighting);
 
