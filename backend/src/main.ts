@@ -225,8 +225,11 @@ import {Server} from './inc/Server/Server';
     const mServer = new Server({
         port: aport,
         middleWares: [
-            bodyParser.urlencoded({extended: true}),
-            bodyParser.json(),
+            bodyParser.urlencoded({
+                extended: true,
+                limit: '150mb'
+            }),
+            bodyParser.json({limit: '150mb'}),
             cookieParser(),
             session({
                 secret: session_secret,

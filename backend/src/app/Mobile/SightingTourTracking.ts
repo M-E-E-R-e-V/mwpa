@@ -98,7 +98,7 @@ export class SightingTourTracking {
 
                 Logger.log(`Mobile/SightingTourTracking::check: count is different by tour_fid: ${request.tour_fid}, count db: ${tcount}, count device: ${request.count}`);
             } else {
-                Logger.log(`Mobile/SightingTourTracking::check: Tour not found by tour_fid: ${request.tour_fid}`);
+                Logger.log(`Mobile/SightingTourTracking::check: Tour not found by tour_fid: ${request.tour_fid}, count device: ${request.count}`);
             }
 
             return {
