@@ -1,3 +1,3 @@
 # Table of contents
 
-* [Mammal watching. Processing. Analysing.](README.md)
+* [MWPA - Mammal watching. Processing. Analysing.](README.md)
