@@ -189,7 +189,8 @@ export class Species extends BasePage {
                             this._speciesDialog.setName(specie.name);
                             this._speciesDialog.show();
                         },
-                        IconFa.edit);
+                        IconFa.edit
+                    );
 
                     btnMenu.addMenuItem(
                         'Merge',
@@ -206,7 +207,8 @@ export class Species extends BasePage {
                             this._mergeDialog.setSourceSpecie(`${specie.id}`);
                             this._mergeDialog.show();
                         },
-                        IconFa.ban);
+                        IconFa.ban
+                    );
 
                     btnMenu.addDivider();
 
@@ -217,7 +219,7 @@ export class Species extends BasePage {
                                 'dcDeleteSpecie',
                                 ModalDialogType.large,
                                 'Delete Specie',
-                                `Are you sure you want to delete the specie?`,
+                                'Are you sure you want to delete the specie?',
                                 async(_, dialog) => {
                                     try {
                                         if (await SpeciesAPI.delete({id: specie.id})) {
@@ -244,7 +246,8 @@ export class Species extends BasePage {
                                 ButtonClass.danger
                             );
                         },
-                        IconFa.trash);
+                        IconFa.trash
+                    );
                 }
             }
 

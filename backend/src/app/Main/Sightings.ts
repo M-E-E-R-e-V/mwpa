@@ -72,6 +72,7 @@ export type SightingsResponse = DefaultReturn & {
  */
 export type SightingDeleteRequest = {
     id: number;
+    description: string;
 };
 
 
@@ -95,7 +96,9 @@ export class Sightings {
             const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
             const userOrgIds = await Users.getOrganizationIds(session.user.userid);
 
-            const where: any = {};
+            const where: any = {
+                deleted: false
+            };
 
             if (!session.user.isAdmin) {
                 where.organization_id = In(userOrgIds);
@@ -389,6 +392,9 @@ export class Sightings {
 
             if (filter) {
                 const dblist = await sightingRepository.find({
+                    where: {
+                        deleted: false
+                    },
                     order: {
                         date: 'DESC',
                         tour_start: 'DESC'
@@ -612,12 +618,26 @@ export class Sightings {
 
             const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
 
-            await sightingRepository.delete({
-                id: request.id
+            const sighting = await sightingRepository.findOne({
+                where: {
+                    id: request.id
+                }
             });
 
+            if (sighting) {
+                sighting.deleted = true;
+                sighting.deletedDescription = request.description;
+
+                await MariaDbHelper.getConnection().manager.save(sighting);
+
+                return {
+                    statusCode: StatusCodes.OK
+                };
+            }
+
             return {
-                statusCode: StatusCodes.OK
+                statusCode: StatusCodes.INTERNAL_ERROR,
+                msg: 'Sighting not found!'
             };
         }
 

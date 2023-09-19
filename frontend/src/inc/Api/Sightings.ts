@@ -81,6 +81,7 @@ export type SightingsResponse = DefaultReturn & {
  */
 export type SightingDeleteRequest = {
     id: number;
+    description: string;
 };
 
 /**

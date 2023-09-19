@@ -1,0 +1,32 @@
+
+.mwpa_sorting {
+  cursor: pointer;
+}
+
+.mwpa_sorting:after {
+  opacity: 0.3;
+  padding-left: 0.5em;
+  content: "↑↓";
+  bottom: 0.9em;
+  cursor: pointer;
+}
+
+.mwpa_sorting:hover {
+  background-color: rgba(0,0,0,.075);
+}
+
+.mwpa_sorting_desc:after {
+  opacity: 1;
+  padding-left: 0.5em;
+  content: "↑";
+  bottom: 0.9em;
+  cursor: pointer;
+}
+
+.mwpa_sorting_asc:after {
+  opacity: 1;
+  padding-left: 0.5em;
+  content: "↓";
+  bottom: 0.9em;
+  cursor: pointer;
+}
