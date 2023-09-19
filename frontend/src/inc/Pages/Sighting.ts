@@ -9,11 +9,9 @@ import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {ColumnContent} from '../Bambooo/ColumnContent';
 import {Badge, BadgeType} from '../Bambooo/Content/Badge/Badge';
-import {ButtonClass} from '../Bambooo/Content/Button/ButtonDefault';
 import {Card} from '../Bambooo/Content/Card/Card';
 import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
 import {ContentRow} from '../Bambooo/Content/ContentRow';
-import {DialogConfirm} from '../Bambooo/Content/Dialog/DialogConfirm';
 import {ButtonType} from '../Bambooo/Content/Form/Button';
 import {ButtonMenu} from '../Bambooo/Content/Form/ButtonMenu';
 import {IconFa} from '../Bambooo/Content/Icon/Icon';
@@ -28,9 +26,10 @@ import {Lang} from '../Lang';
 import {UtilColor} from '../Utils/UtilColor';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilDownload} from '../Utils/UtilDownload';
-import {UtilLocation} from '../Utils/UtilLocation';
 import {UtilSelect} from '../Utils/UtilSelect';
+import {LocationDisplay} from '../Widget/LocationDisplay';
 import {BasePage} from './BasePage';
+import {SightingDeletedModal} from './Sighting/SightingDeletedModal';
 import {SightingEditModal} from './Sighting/SightingEditModal';
 
 /**
@@ -51,6 +50,12 @@ export class Sighting extends BasePage {
     protected _sightingDialog: SightingEditModal;
 
     /**
+     * @member {SightingDeletedModal}
+     * @protected
+     */
+    protected _sightingDeletedDialog: SightingDeletedModal;
+
+    /**
      * turtles
      * @protected
      */
@@ -58,7 +63,12 @@ export class Sighting extends BasePage {
         'Caretta caretta',
         'Dermochelys coriacea',
         'Chelonia mydas',
-        'Eretmochelys imbricata'
+        'Eretmochelys imbricata',
+        'Unknown sea turtle',
+        'Eretmochelys imbricata - Hawksbill sea turtle',
+        'Chelonia mydas - Green sea turtle',
+        'Dermochelys coriacea - Leatherback sea turtle',
+        'Caretta caretta - Loggerhead sea turtle'
     ];
 
     /**
@@ -73,6 +83,10 @@ export class Sighting extends BasePage {
             this._wrapper.getContentWrapper().getContent().getElement()
         );
 
+        this._sightingDeletedDialog = new SightingDeletedModal(
+            this._wrapper.getContentWrapper().getContent().getElement()
+        );
+
         // Navbar Left -------------------------------------------------------------------------------------------------
 
         // eslint-disable-next-line no-new
@@ -81,6 +95,44 @@ export class Sighting extends BasePage {
             this._sightingDialog.resetValues();
             this._sightingDialog.show();
             return false;
+        });
+
+        // save --------------------------------------------------------------------------------------------------------
+
+        this._sightingDeletedDialog.setOnSave(async(): Promise<void> => {
+            const tid = this._sightingDeletedDialog.getId();
+
+            if (tid === null) {
+                this._toast.fire({
+                    icon: 'error',
+                    title: 'ID is not set!'
+                });
+                this._sightingDeletedDialog.hide();
+                return;
+            }
+
+            try {
+                if (await SightingsAPI.delete({
+                    id: tid,
+                    description: this._sightingDeletedDialog.getDescription()
+                })) {
+                    if (this._onLoadTable) {
+                        this._onLoadTable();
+                    }
+
+                    this._toast.fire({
+                        icon: 'success',
+                        title: 'Sighting delete success.'
+                    });
+                }
+            } catch (message) {
+                this._toast.fire({
+                    icon: 'error',
+                    title: message
+                });
+            }
+
+            this._sightingDeletedDialog.hide();
         });
     }
 
@@ -141,10 +193,12 @@ export class Sighting extends BasePage {
         let offset = 0;
         const limit = 20;
 
-        const onLoadListOrder = (): void => {
+        const onLoadListOrder = async(): Promise<void> => {
             offset = 0;
-            // eslint-disable-next-line no-use-before-define
-            onLoadList();
+
+            if (this._onLoadTable) {
+                await this._onLoadTable();
+            }
         };
 
         // eslint-disable-next-line no-new
@@ -225,10 +279,7 @@ export class Sighting extends BasePage {
         // eslint-disable-next-line no-new
         new Th(trhead, '');
 
-        /**
-         * onLoadList
-         */
-        const onLoadList = async(): Promise<void> => {
+        this._onLoadTable = async(): Promise<void> => {
             card.showLoading();
             table.getTbody().empty();
 
@@ -429,25 +480,10 @@ export class Sighting extends BasePage {
                     // eslint-disable-next-line no-new
                     new Td(trbody, `<b>${entry.tour_start} - ${entry.tour_end}</b><br>${entry.duration_from} - ${entry.duration_until}`);
 
-                    try {
-                        const location = JSON.parse(entry.location_begin!);
-                        const begin_lat = UtilLocation.ddToDm(location.latitude, true);
-                        const begin_lon = UtilLocation.ddToDm(location.longitude, false);
+                    const tdLocation = new Td(trbody, '');
 
-                        const beginLatStr = `${begin_lat.direction}: ${begin_lat.degree}º ${begin_lat.minute.toFixed(3)}`;
-                        const beginLonStr = `${begin_lon.direction}: ${begin_lon.degree}º ${begin_lon.minute.toFixed(3)}`;
-
-                        // eslint-disable-next-line no-new
-                        new Td(trbody, `<dl class="row"><dt class="col-sm-1"><i class="fas fa-map-marker-alt mr-1"></i></dt><dd class="col-sm-5">${beginLatStr}<br>${beginLonStr}</dd></dl>`);
-                    } catch (e) {
-                        console.log('JSON Parse::location_begin: ');
-                        console.log(e);
-                        console.log(entry);
-                        console.log('');
-
-                        // eslint-disable-next-line no-new
-                        new Td(trbody, '?');
-                    }
+                    // eslint-disable-next-line no-new
+                    new LocationDisplay(tdLocation, entry.location_begin!);
 
                     const floatDistance = parseFloat(entry.distance_coast!) || 0;
 
@@ -463,7 +499,7 @@ export class Sighting extends BasePage {
                         const ebehaviours = JSON.parse(entry.behaviours!);
 
                         if (ebehaviours) {
-                            for (const ebehaviourKey in ebehaviours) {
+                            for (const ebehaviourKey of ebehaviours) {
                                 const tbehviour = mbehaviours.get(Number(ebehaviours[ebehaviourKey]));
 
                                 if (tbehviour) {
@@ -490,7 +526,7 @@ export class Sighting extends BasePage {
                     const updateDate = moment(entry.update_datetime * 1000);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `<b>${createDate.format('YYYY.MM.DD hh.mm.ss')}</b><br>${entry.creater_name}<br>${updateDate.format('YYYY.MM.DD hh.mm.ss')}`);
+                    new Td(trbody, `<b>${createDate.format('YYYY.MM.DD hh:mm:ss')}</b><br>${entry.creater_name}<br>${updateDate.format('YYYY.MM.DD hh:mm:ss')}`);
 
                     // action
                     const tdAction = new Td(trbody, '');
@@ -499,6 +535,8 @@ export class Sighting extends BasePage {
                     abtnMenu.addMenuItem(
                         'Edit',
                         async(): Promise<void> => {
+                            const fDistance = parseFloat(entry.distance_coast!) || 0;
+
                             this._sightingDialog.setTitle('Edit Sighting');
                             this._sightingDialog.resetValues();
                             this._sightingDialog.setId(entry.id);
@@ -506,6 +544,13 @@ export class Sighting extends BasePage {
                             this._sightingDialog.setVehicleDriver(entry.vehicle_driver_id!);
                             this._sightingDialog.setBeaufortWind(entry.beaufort_wind!);
                             this._sightingDialog.setDateSight(entry.date!);
+                            this._sightingDialog.setTourStart(entry.tour_start!);
+                            this._sightingDialog.setTourEnd(entry.tour_end!);
+                            this._sightingDialog.setDurationFrom(entry.duration_from!);
+                            this._sightingDialog.setDurationUntil(entry.duration_until!);
+                            this._sightingDialog.setPositionBegin(entry.location_begin!);
+                            this._sightingDialog.setPositionEnd(entry.location_end!);
+                            this._sightingDialog.setDistanceCoast(UtilDistanceCoast.meterToM(fDistance, true));
                             this._sightingDialog.setSpecie(entry.species_id!);
                             this._sightingDialog.setSpeciesCount(entry.species_count!);
                             this._sightingDialog.setReaction(entry.reaction_id!);
@@ -519,36 +564,10 @@ export class Sighting extends BasePage {
                     abtnMenu.addMenuItem(
                         'Delete',
                         (): void => {
-                            DialogConfirm.confirm(
-                                'dcDeleteSighting',
-                                ModalDialogType.large,
-                                'Delete sighting',
-                                'Are you sure you want to delete the sighting?',
-                                async(_, dialog) => {
-                                    try {
-                                        if (await SightingsAPI.delete({id: entry.id})) {
-                                            this._toast.fire({
-                                                icon: 'success',
-                                                title: 'Sighting delete success.'
-                                            });
-                                        }
-                                    } catch (message) {
-                                        this._toast.fire({
-                                            icon: 'error',
-                                            title: message
-                                        });
-                                    }
-
-                                    dialog.hide();
-
-                                    if (this._onLoadTable) {
-                                        this._onLoadTable();
-                                    }
-                                },
-                                undefined,
-                                'Delete',
-                                ButtonClass.danger
-                            );
+                            this._sightingDeletedDialog.setTitle('Delete a sighting');
+                            this._sightingDeletedDialog.resetValues();
+                            this._sightingDeletedDialog.setId(entry.id);
+                            this._sightingDeletedDialog.show();
                         },
                         IconFa.trash
                     );
@@ -639,7 +658,7 @@ export class Sighting extends BasePage {
 
 
         // load table
-        await onLoadList();
+        this._onLoadTable();
     }
 
 }

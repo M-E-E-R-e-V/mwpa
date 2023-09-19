@@ -8,6 +8,8 @@ import {InputBottemBorderOnly2, InputType} from '../../Bambooo/Content/Form/Inpu
 import {SelectBottemBorderOnly2} from '../../Bambooo/Content/Form/SelectBottemBorderOnly2';
 import {Switch} from '../../Bambooo/Content/Form/Switch';
 import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
+import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
+import {LocationInput} from '../../Widget/LocationInput';
 
 /**
  * SightingEditModalButtonClickFn
@@ -38,7 +40,7 @@ export class SightingEditModal extends ModalDialog {
     protected _vehicleDriverSelect: SelectBottemBorderOnly2;
 
     /**
-     * beaufort wind select
+     * beaufort wind selects
      * @protected
      */
     protected _beaufortWindSelect: SelectBottemBorderOnly2;
@@ -72,6 +74,18 @@ export class SightingEditModal extends ModalDialog {
      * @protected
      */
     protected _inputDurationUntil: InputBottemBorderOnly2;
+
+    /**
+     * input position begins
+     * @member {LocationInput}
+     */
+    protected _inputPositionBegin: LocationInput;
+
+    /**
+     * input position end
+     * @member {LocationInput}
+     */
+    protected _inputPositionEnd: LocationInput;
 
     /**
      * input distance coast
@@ -159,8 +173,17 @@ export class SightingEditModal extends ModalDialog {
         const groupDurationUntil = new FormGroup(rowDurationTime.createCol(6), 'until');
         this._inputDurationUntil = new InputBottemBorderOnly2(groupDurationUntil, 'durationuntil', InputType.time);
 
+        const groupPositionBegin = new FormGroup(bodyCard, 'Position begin');
+        this._inputPositionBegin = new LocationInput(groupPositionBegin, 'positionbegin', InputType.text);
+        this._inputPositionBegin.setReadOnly(true);
+
+        const grouPositionEnd = new FormGroup(bodyCard, 'Position end');
+        this._inputPositionEnd = new LocationInput(grouPositionEnd, 'positionend', InputType.text);
+        this._inputPositionEnd.setReadOnly(true);
+
         const groupDistanceCoast = new FormGroup(bodyCard, 'Distance to nearest coast (nm)');
         this._inputDistanceCoast = new InputBottemBorderOnly2(groupDistanceCoast, 'distancecoast', InputType.number);
+        this._inputDistanceCoast.setReadOnly(true);
 
         const rowPG = new FormRow(bodyCard);
         const groupPhotoTaken = new FormGroup(rowPG.createCol(6), 'Photos taken');
@@ -171,10 +194,10 @@ export class SightingEditModal extends ModalDialog {
         const groupDistanceCoastEstimationGPS = new FormGroup(rowPG.createCol(6), 'Estimation without GPS');
         // this.
 
-        const groupSpecie = new FormGroup(bodyCard, 'Specie');
+        const groupSpecie = new FormGroup(bodyCard, 'Species');
         this._specieSelect = new SelectBottemBorderOnly2(groupSpecie);
 
-        const groupSpeciesCount = new FormGroup(bodyCard, 'Group-Size');
+        const groupSpeciesCount = new FormGroup(bodyCard, 'Number of animals');
         this._inputSpeciesCount = new InputBottemBorderOnly2(groupSpeciesCount, undefined, InputType.number);
 
         const groupReaction = new FormGroup(bodyCard, 'Reaction');
@@ -308,6 +331,94 @@ export class SightingEditModal extends ModalDialog {
     }
 
     /**
+     * Set the tour start time.
+     * @param {string} time - String time.
+     */
+    public setTourStart(time: string): void {
+        this._inputTourStart.setValue(time);
+    }
+
+    /**
+     * Return the tour start time.
+     * @returns {string}
+     */
+    public getTourStart(): string {
+        return this._inputTourStart.getValue();
+    }
+
+    /**
+     * Set the tour end time.
+     * @param {string} time - String time.
+     */
+    public setTourEnd(time: string): void {
+        this._inputTourEnd.setValue(time);
+    }
+
+    /**
+     * Return the tour end time.
+     * @returns {string}
+     */
+    public getTourEnd(): string {
+        return this._inputTourEnd.getValue();
+    }
+
+    /**
+     * Set duration from time.
+     * @param {string} time
+     */
+    public setDurationFrom(time: string): void {
+        this._inputDurationFrom.setValue(time);
+    }
+
+    /**
+     * Return the duration from.
+     * @returns {string}
+     */
+    public getDurationFrom(): string {
+        return this._inputDurationFrom.getValue();
+    }
+
+    /**
+     * Set the duration until time.
+     * @param {string} time
+     */
+    public setDurationUntil(time: string): void {
+        this._inputDurationUntil.setValue(time);
+    }
+
+    public setPositionBegin(position: string|GeolocationCoordinates): void {
+        this._inputPositionBegin.setValue(position);
+    }
+
+    public getPositionBegin(): string {
+        return this._inputPositionBegin.getValue();
+    }
+
+    public setPositionEnd(position: string|GeolocationCoordinates): void {
+        this._inputPositionEnd.setValue(position);
+    }
+
+    public getPositionEnd(): string {
+        return this._inputPositionEnd.getValue();
+    }
+
+    /**
+     * Return the duration until.
+     * @returns {string}
+     */
+    public getDurationUntil(): string {
+        return this._inputDurationUntil.getValue();
+    }
+
+    /**
+     * Set the distance to coast input.
+     * @param {string} distance
+     */
+    public setDistanceCoast(distance: string): void {
+        this._inputDistanceCoast.setValue(distance);
+    }
+
+    /**
      * setSpeciesList
      * @param list
      */
@@ -400,6 +511,13 @@ export class SightingEditModal extends ModalDialog {
         this.setVehicle(0);
         this.setVehicleDriver(0);
         this.setDateSight(moment(new Date()).format('YYYY.MM.DD'));
+        this.setTourStart('');
+        this.setTourEnd('');
+        this.setDurationFrom('');
+        this.setDurationUntil('');
+        this.setPositionBegin('');
+        this.setPositionEnd('');
+        this.setDistanceCoast('');
         this.setSpecie(0);
         this.setSpeciesCount(0);
         this.setReaction(-1);

@@ -261,4 +261,16 @@ export class Sighting extends BaseEntity {
     })
     public sighting_type!: number;
 
+    @Index()
+    @Column({
+        default: false
+    })
+    public deleted!: boolean;
+
+    @Column({
+        type: 'text',
+        default: null
+    })
+    public deletedDescription!: string;
+
 }
