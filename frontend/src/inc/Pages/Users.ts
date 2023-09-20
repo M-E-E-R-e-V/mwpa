@@ -177,7 +177,7 @@ export class Users extends BasePage {
 
                     if (groups) {
                         for (const agroup of groups) {
-                            if (agroup.id == user.main_groupid) {
+                            if (agroup.id === user.main_groupid) {
                                 groupName = agroup.description;
                             }
                         }

@@ -2,6 +2,7 @@ import moment from 'moment';
 import {EncounterCategorieEntry} from '../../Api/EncounterCategories';
 import {SpeciesEntry} from '../../Api/Species';
 import {VehicleDriverEntry} from '../../Api/VehicleDriver';
+import {Textarea} from '../../Bambooo/Content/Form/Textarea';
 import {FormGroup} from '../../Bambooo/Content/Form/FormGroup';
 import {FormRow} from '../../Bambooo/Content/Form/FormRow';
 import {InputBottemBorderOnly2, InputType} from '../../Bambooo/Content/Form/InputBottemBorderOnly2';
@@ -120,6 +121,24 @@ export class SightingEditModal extends ModalDialog {
     protected _reactionSelect: SelectBottemBorderOnly2;
 
     /**
+     * input other
+     * @member {InputBottemBorderOnly2}
+     */
+    protected _inputOther: InputBottemBorderOnly2;
+
+    /**
+     * other boats
+     * @member {InputBottemBorderOnly2}
+     */
+    protected _otherBoats: InputBottemBorderOnly2;
+
+    /**
+     * note textarea
+     * @member {Textarea}
+     */
+    protected _textareaNote: Textarea;
+
+    /**
      * on save click
      * @protected
      */
@@ -202,6 +221,15 @@ export class SightingEditModal extends ModalDialog {
 
         const groupReaction = new FormGroup(bodyCard, 'Reaction');
         this._reactionSelect = new SelectBottemBorderOnly2(groupReaction);
+
+        const groupOther = new FormGroup(bodyCard, 'Other');
+        this._inputOther = new InputBottemBorderOnly2(groupOther);
+
+        const groupOtherBoats = new FormGroup(bodyCard, 'Other boats present');
+        this._otherBoats = new InputBottemBorderOnly2(groupOtherBoats);
+
+        const groupNote = new FormGroup(bodyCard, 'Note');
+        this._textareaNote = new Textarea(groupNote);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
@@ -504,6 +532,54 @@ export class SightingEditModal extends ModalDialog {
     }
 
     /**
+     * Set other information.
+     * @param {string} other
+     */
+    public setOther(other: string): void {
+        this._inputOther.setValue(other);
+    }
+
+    /**
+     * Return the other information.
+     * @returns {string}
+     */
+    public getOther(): string {
+        return this._inputOther.getValue();
+    }
+
+    /**
+     * Set other boats is present.
+     * @param {string} otherBoats
+     */
+    public setOtherBoats(otherBoats: string): void {
+        this._otherBoats.setValue(otherBoats);
+    }
+
+    /**
+     * Return other boats present.
+     * @returns {string}
+     */
+    public getOtherBoats(): string {
+        return this._otherBoats.getValue();
+    }
+
+    /**
+     * Set the note.
+     * @param {string} note
+     */
+    public setNote(note: string): void {
+        this._textareaNote.setValue(note);
+    }
+
+    /**
+     * Return the note.
+     * @returns {string}
+     */
+    public getNote(): string {
+        return this._textareaNote.getValue();
+    }
+
+    /**
      * resetValues
      */
     public resetValues(): void {
@@ -521,6 +597,9 @@ export class SightingEditModal extends ModalDialog {
         this.setSpecie(0);
         this.setSpeciesCount(0);
         this.setReaction(-1);
+        this.setOther('');
+        this.setOtherBoats('');
+        this.setNote('');
     }
 
     /**

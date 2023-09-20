@@ -84,6 +84,17 @@ export type SightingDeleteRequest = {
     description: string;
 };
 
+export type SightingGPSUpdateData = {
+    notHaveLocation: number[];
+    notHaveTimestamp: number[];
+    haveSameDate: number[];
+    newDate: number[];
+};
+
+export type SightingGPSUpdate = DefaultReturn & {
+    data?: SightingGPSUpdateData;
+};
+
 /**
  * Sightings
  */
@@ -132,6 +143,25 @@ export class Sightings {
         }
 
         return false;
+    }
+
+    /**
+     * setDateByGPS
+     */
+    public static async setDateByGPS(): Promise<SightingGPSUpdateData|null> {
+        const result = await NetFetch.getData('/json/sightings/setdatebygps');
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return result.data as SightingGPSUpdateData;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return null;
     }
 
 }

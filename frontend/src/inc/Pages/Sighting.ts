@@ -1,4 +1,6 @@
 import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
+import {DialogConfirm} from '../Bambooo/Content/Dialog/DialogConfirm';
+import {ButtonClass} from '../Bambooo/Content/Button/ButtonDefault';
 import {DialogInfo} from '../Bambooo/Content/Dialog/DialogInfo';
 import moment from 'moment';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
@@ -158,6 +160,50 @@ export class Sighting extends BasePage {
                 UtilDownload.download('/json/sightings/list/excel', 'sightings_list.xlsx');
             },
             IconFa.edit
+        );
+
+        btnMenu.addDivider();
+
+        btnMenu.addMenuItem(
+            new LangText('Set sighting date by GPS (only Admin)'),
+            (): void => {
+                DialogConfirm.confirm(
+                    'dcsetgpsdate',
+                    ModalDialogType.large,
+                    'Set sighting date by GPS (only Admin)',
+                    'Only intended for the transition! Do not use!',
+                    async(_, dialog) => {
+                        try {
+                            const data = await SightingsAPI.setDateByGPS();
+
+                            if (data) {
+                                console.log(data);
+
+                                this._toast.fire({
+                                    icon: 'success',
+                                    title: 'Data set, check log.'
+                                });
+                            } else {
+                                this._toast.fire({
+                                    icon: 'error',
+                                    title: 'Data empty!'
+                                });
+                            }
+                        } catch (message) {
+                            this._toast.fire({
+                                icon: 'error',
+                                title: message
+                            });
+                        }
+
+                        dialog.hide();
+                    },
+                    undefined,
+                    'Start process',
+                    ButtonClass.danger
+                );
+            },
+            IconFa.alert
         );
 
         const divResp = jQuery('<div class="table-responsive"></div>').appendTo(card.getElement());
@@ -554,6 +600,9 @@ export class Sighting extends BasePage {
                             this._sightingDialog.setSpecie(entry.species_id!);
                             this._sightingDialog.setSpeciesCount(entry.species_count!);
                             this._sightingDialog.setReaction(entry.reaction_id!);
+                            this._sightingDialog.setOther(entry.other!);
+                            this._sightingDialog.setOtherBoats(entry.other_vehicle!);
+                            this._sightingDialog.setNote(entry.note!);
                             this._sightingDialog.show();
                         },
                         IconFa.edit

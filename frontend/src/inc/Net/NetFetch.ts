@@ -40,7 +40,7 @@ export class NetFetch {
                 'Content-Type': 'application/json'
             },
             redirect: 'follow',
-            referrerPolicy: 'no-referrer',
+            referrerPolicy: 'no-referrer'
         });
 
         return response.json();
