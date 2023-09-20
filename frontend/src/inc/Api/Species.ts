@@ -50,8 +50,9 @@ export class Species {
         const result = await NetFetch.getData('/json/species/list');
 
         if (result && result.statusCode) {
-            switch(result.statusCode) {
+            switch (result.statusCode) {
                 case StatusCodes.OK:
+                    // eslint-disable-next-line no-case-declarations
                     const response = result as SpeciesListResponse;
                     return response.list;
 

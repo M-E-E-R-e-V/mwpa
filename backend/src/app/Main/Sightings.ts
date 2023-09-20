@@ -1,6 +1,6 @@
+import fs from 'fs';
 import moment from 'moment';
 import xlsx from 'node-xlsx';
-import fs from 'fs';
 import Path from 'path';
 import {Body, ContentType, Get, JsonController, Param, Post, Session} from 'routing-controllers';
 import {In} from 'typeorm';
@@ -75,6 +75,14 @@ export type SightingDeleteRequest = {
     description: string;
 };
 
+export type SightingGPSUpdate = DefaultReturn & {
+    data?: {
+        notHaveLocation: number[];
+        notHaveTimestamp: number[];
+        haveSameDate: number[];
+        newDate: number[];
+    };
+};
 
 /**
  * Sightings
@@ -686,6 +694,79 @@ export class Sightings {
         }
 
         return null;
+    }
+
+    /**
+     * Set date by GPS data.
+     * @param session
+     */
+    @Get('/json/sightings/setdatebygps')
+    public async setDateByGPS(@Session() session: any): Promise<SightingGPSUpdate> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            if (!session.user.isAdmin) {
+                return {
+                    statusCode: StatusCodes.FORBIDDEN
+                };
+            }
+
+            const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
+
+            const dblist = await sightingRepository.find();
+
+            const notHaveLocation: number[] = [];
+            const notHaveTimestamp: number[] = [];
+            const haveSameDate: number[] = [];
+            const newDate: number[] = [];
+
+            for (const entry of dblist) {
+                if (entry.location_begin) {
+                    try {
+                        const data = JSON.parse(entry.location_begin);
+
+                        if (data.timestamp) {
+                            const date = moment(data.timestamp);
+
+                            if (date) {
+                                const olddate = moment(entry.date);
+
+                                if (date.format('YYYY-MM-DD') === olddate.format('YYYY-MM-DD')) {
+                                    haveSameDate.push(entry.id);
+                                } else {
+                                    entry.date = date.format('YYYY-MM-DD');
+
+                                    await MariaDbHelper.getConnection().manager.save(entry);
+
+                                    newDate.push(entry.id);
+                                }
+                            } else {
+                                notHaveTimestamp.push(entry.id);
+                            }
+                        } else {
+                            notHaveTimestamp.push(entry.id);
+                        }
+                    } catch (e) {
+                        console.log(e);
+                        notHaveLocation.push(entry.id);
+                    }
+                } else {
+                    notHaveLocation.push(entry.id);
+                }
+            }
+
+            return {
+                statusCode: StatusCodes.OK,
+                data: {
+                    newDate,
+                    notHaveLocation,
+                    haveSameDate,
+                    notHaveTimestamp
+                }
+            };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
     }
 
 }
