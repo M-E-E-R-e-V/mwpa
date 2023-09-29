@@ -140,8 +140,11 @@ export class Sightings {
 
             if (sighting === undefined) {
                 const uuid = uuidv4();
+
                 sighting = new SightingDB();
+
                 sighting.unid = uuid;
+                sighting.syncblock = false;
 
                 Logger.log(`Mobile/Sightings::save: is new sighting unid: ${sighting.unid}`);
             } else {
@@ -149,6 +152,14 @@ export class Sightings {
             }
 
             if (sighting) {
+                // if sync blocked then can mobile not update this sighting
+                if (sighting.syncblock) {
+                    return {
+                        statusCode: StatusCodes.OK,
+                        unid: sighting.unid
+                    };
+                }
+
                 const createrId = request.creater_id === 0 ? session.user.userid : request.creater_id;
 
                 const organization = await Users.getMainOrganization(createrId);

@@ -13,6 +13,7 @@ import {Vehicle as VehicleDB} from '../../inc/Db/MariaDb/Entity/Vehicle';
 import {VehicleDriver as VehicleDriverDB} from '../../inc/Db/MariaDb/Entity/VehicleDriver';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from '../../inc/Logger/Logger';
+import {Stormglass} from '../../inc/Provider/Stormglass/Stormglass';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 import {TypeSighting} from '../../inc/Types/TypeSighting';
@@ -82,6 +83,13 @@ export type SightingGPSUpdate = DefaultReturn & {
         haveSameDate: number[];
         newDate: number[];
     };
+};
+
+/**
+ * SightingWeather
+ */
+export type SightingWeather = {
+    id: number;
 };
 
 /**
@@ -700,7 +708,7 @@ export class Sightings {
      * Set date by GPS data.
      * @param session
      */
-    @Get('/json/sightings/setdatebygps')
+    // @Get('/json/sightings/setdatebygps')
     public async setDateByGPS(@Session() session: any): Promise<SightingGPSUpdate> {
         if ((session.user !== undefined) && session.user.isLogin) {
             if (!session.user.isAdmin) {
@@ -767,6 +775,94 @@ export class Sightings {
         return {
             statusCode: StatusCodes.UNAUTHORIZED
         };
+    }
+
+    @Get('/json/sightings/setcalvedate')
+    public async setCalveUntilDate(@Session() session: any): Promise<DefaultReturn> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            if (!session.user.isAdmin) {
+                return {
+                    statusCode: StatusCodes.FORBIDDEN
+                };
+            }
+
+            const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
+
+            const dblist = await sightingRepository.find();
+
+            for (const entry of dblist) {
+                const date = moment(entry.date);
+                const untilDate = moment('2023.04.28', 'YYYY.MM.DD');
+
+                if (date < untilDate) {
+                    if (entry.calves === 0) {
+                        entry.calves = -1;
+                        entry.syncblock = true;
+
+                        await MariaDbHelper.getConnection().manager.save(entry);
+                    }
+
+                    console.log(entry);
+                }
+            }
+
+            return {
+                statusCode: StatusCodes.OK
+            };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
+    }
+
+    @Post('/json/sightings/weather')
+    public async getWeather(@Session() session: any, @Body() request: SightingWeather): Promise<void> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
+
+            const sighting = await sightingRepository.findOne({
+                where: {
+                    id: request.id
+                }
+            });
+
+            if (sighting) {
+                const positionBeginLat = UtilPosition.getStr(sighting.location_begin, UtilPositionToStr.LatDec);
+                const positionBeginLon = UtilPosition.getStr(sighting.location_begin, UtilPositionToStr.LonDec);
+                const timestampBegin = moment(sighting.date).unix();
+                const timestampEnd = moment(sighting.date).add({day: 1}).unix();
+
+                const client = new Stormglass('');
+                await client.pointRequest(
+                    'weather',
+                    positionBeginLat,
+                    positionBeginLon,
+                    [
+                        'cloudCover',
+                        'seaLevel',
+                        'swellDirection',
+                        'swellHeight',
+                        'swellPeriod',
+                        'airTemperature',
+                        'waterTemperature',
+                        'waveDirection',
+                        'waveHeight',
+                        'wavePeriod',
+                        'windSpeed',
+                        'pressure',
+                        'humidity',
+                        'visibility',
+                        'windWaveDirection',
+                        'windWaveHeight',
+                        'windWavePeriod',
+                        'windDirection'
+                    ].join(','),
+                    `${timestampBegin}`,
+                    `${timestampEnd}`
+                );
+            }
+        }
     }
 
 }

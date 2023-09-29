@@ -5,6 +5,7 @@ import * as Path from 'path';
 import session from 'express-session';
 import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
+import {OfficeReport as OfficeReportController} from './app/Export/OfficeReport';
 import {Im2020} from './app/Import/Im2020';
 import {BehaviouralStates as BehaviouralStatesMainController} from './app/Main/BehaviouralStates';
 import {Organization as OrganizationMainController} from './app/Main/Organization';
@@ -32,12 +33,14 @@ import {Config} from './inc/Config/Config';
 import {DBSetup} from './inc/Db/MariaDb/DBSetup';
 import {BehaviouralStates as BehaviouralStatesDB} from './inc/Db/MariaDb/Entity/BehaviouralStates';
 import {EncounterCategories as EncounterCategoriesDB} from './inc/Db/MariaDb/Entity/EncounterCategories';
+import {ExternalReceiver as ExternalReceiverDB} from './inc/Db/MariaDb/Entity/ExternalReceiver';
 import {Group as GroupDB} from './inc/Db/MariaDb/Entity/Group';
 import {Organization as OrganizationDB} from './inc/Db/MariaDb/Entity/Organization';
 import {Sighting as SightingDB} from './inc/Db/MariaDb/Entity/Sighting';
 import {SightingTour as SightingTourDB} from './inc/Db/MariaDb/Entity/SightingTour';
 import {SightingTourTracking as SightingTourTrackingDB} from './inc/Db/MariaDb/Entity/SightingTourTracking';
 import {Species as SpeciesDB} from './inc/Db/MariaDb/Entity/Species';
+import {SpeciesExternLink as SpeciesExternLinkDB} from './inc/Db/MariaDb/Entity/SpeciesExternLink';
 import {SpeciesGroup as SpeciesGroupDB} from './inc/Db/MariaDb/Entity/SpeciesGroup';
 import {User as UserDB} from './inc/Db/MariaDb/Entity/User';
 import {UserGroups as UserGroupsDB} from './inc/Db/MariaDb/Entity/UserGroups';
@@ -119,6 +122,7 @@ import {Server} from './inc/Server/Server';
                 GroupDB,
                 UserGroupsDB,
                 SpeciesDB,
+                SpeciesExternLinkDB,
                 SpeciesGroupDB,
                 VehicleDB,
                 VehicleDriverDB,
@@ -127,7 +131,8 @@ import {Server} from './inc/Server/Server';
                 SightingDB,
                 EncounterCategoriesDB,
                 BehaviouralStatesDB,
-                DevicesDB
+                DevicesDB,
+                ExternalReceiverDB
             ],
             migrations: [
             ],
@@ -257,6 +262,7 @@ import {Server} from './inc/Server/Server';
             GroupMainController,
             BehaviouralStatesMainController,
             OrganizationMainController,
+            OfficeReportController,
 
             // mobile --------------------------------------------------------------------------------------------------
             InfoMobileController,

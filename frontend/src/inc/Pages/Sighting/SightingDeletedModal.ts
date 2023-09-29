@@ -41,7 +41,7 @@ export class SightingDeletedModal extends ModalDialog {
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
 
         const rowFirst = new FormRow(bodyCard);
-        const groupDesc = new FormGroup(rowFirst.createCol(6), 'Are you sure you want to delete the sighting? Please descripted:');
+        const groupDesc = new FormGroup(rowFirst.createCol(6), 'Are you sure you want to delete the sighting? Please describe:');
         this._descriptionArea = new Textarea(groupDesc);
 
         // buttons -----------------------------------------------------------------------------------------------------

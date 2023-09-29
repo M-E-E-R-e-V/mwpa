@@ -1,10 +1,7 @@
-import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
-import {DialogConfirm} from '../Bambooo/Content/Dialog/DialogConfirm';
-import {ButtonClass} from '../Bambooo/Content/Button/ButtonDefault';
-import {DialogInfo} from '../Bambooo/Content/Dialog/DialogInfo';
 import moment from 'moment';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
+import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
 import {Sightings as SightingsAPI, SightingsEntry} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
@@ -14,6 +11,9 @@ import {Badge, BadgeType} from '../Bambooo/Content/Badge/Badge';
 import {Card} from '../Bambooo/Content/Card/Card';
 import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
 import {ContentRow} from '../Bambooo/Content/ContentRow';
+// import {DialogConfirm} from '../Bambooo/Content/Dialog/DialogConfirm';
+// import {ButtonClass} from '../Bambooo/Content/Button/ButtonDefault';
+import {DialogInfo} from '../Bambooo/Content/Dialog/DialogInfo';
 import {ButtonType} from '../Bambooo/Content/Form/Button';
 import {ButtonMenu} from '../Bambooo/Content/Form/ButtonMenu';
 import {IconFa} from '../Bambooo/Content/Icon/Icon';
@@ -162,49 +162,57 @@ export class Sighting extends BasePage {
             IconFa.edit
         );
 
-        btnMenu.addDivider();
-
         btnMenu.addMenuItem(
-            new LangText('Set sighting date by GPS (only Admin)'),
+            new LangText('to Report'),
             (): void => {
-                DialogConfirm.confirm(
-                    'dcsetgpsdate',
-                    ModalDialogType.large,
-                    'Set sighting date by GPS (only Admin)',
-                    'Only intended for the transition! Do not use!',
-                    async(_, dialog) => {
-                        try {
-                            const data = await SightingsAPI.setDateByGPS();
-
-                            if (data) {
-                                console.log(data);
-
-                                this._toast.fire({
-                                    icon: 'success',
-                                    title: 'Data set, check log.'
-                                });
-                            } else {
-                                this._toast.fire({
-                                    icon: 'error',
-                                    title: 'Data empty!'
-                                });
-                            }
-                        } catch (message) {
-                            this._toast.fire({
-                                icon: 'error',
-                                title: message
-                            });
-                        }
-
-                        dialog.hide();
-                    },
-                    undefined,
-                    'Start process',
-                    ButtonClass.danger
-                );
+                UtilDownload.download('/json/officereport/create_export', 'AVISTAMIENTOS_EIDOS_PLANTILLA_AROC_MEER.xlsm');
             },
-            IconFa.alert
+            IconFa.edit
         );
+
+        // btnMenu.addDivider();
+        //
+        // btnMenu.addMenuItem(
+        //     new LangText('Set sighting date by GPS (only Admin)'),
+        //     (): void => {
+        //         DialogConfirm.confirm(
+        //             'dcsetgpsdate',
+        //             ModalDialogType.large,
+        //             'Set sighting date by GPS (only Admin)',
+        //             'Only intended for the transition! Do not use!',
+        //             async(_, dialog) => {
+        //                 try {
+        //                     const data = await SightingsAPI.setDateByGPS();
+        //
+        //                     if (data) {
+        //                         console.log(data);
+        //
+        //                         this._toast.fire({
+        //                             icon: 'success',
+        //                             title: 'Data set, check log.'
+        //                         });
+        //                     } else {
+        //                         this._toast.fire({
+        //                             icon: 'error',
+        //                             title: 'Data empty!'
+        //                         });
+        //                     }
+        //                 } catch (message) {
+        //                     this._toast.fire({
+        //                         icon: 'error',
+        //                         title: message
+        //                     });
+        //                 }
+        //
+        //                 dialog.hide();
+        //             },
+        //             undefined,
+        //             'Start process',
+        //             ButtonClass.danger
+        //         );
+        //     },
+        //     IconFa.alert
+        // );
 
         const divResp = jQuery('<div class="table-responsive"></div>').appendTo(card.getElement());
 
@@ -545,13 +553,16 @@ export class Sighting extends BasePage {
                         const ebehaviours = JSON.parse(entry.behaviours!);
 
                         if (ebehaviours) {
-                            for (const ebehaviourKey of ebehaviours) {
-                                const tbehviour = mbehaviours.get(Number(ebehaviours[ebehaviourKey]));
+                            // @ts-ignore
+                            Object.entries(ebehaviours).forEach(([, value]) => {
+                                if (typeof value === 'string') {
+                                    const tbehviour = mbehaviours.get(parseInt(value, 10));
 
-                                if (tbehviour) {
-                                    behaviourStr += `${tbehviour.name} <br>`;
+                                    if (tbehviour) {
+                                        behaviourStr += `${tbehviour.name} <br>`;
+                                    }
                                 }
-                            }
+                            });
                         }
                     } catch (e) {
                         console.log('JSON Parse::behaviours: ');
@@ -609,6 +620,18 @@ export class Sighting extends BasePage {
                     );
 
                     abtnMenu.addDivider();
+
+                    /*abtnMenu.addMenuItem(
+                        'Show Weather',
+                        (): void => {
+                            SightingsAPI.getWeather({
+                                id: entry.id
+                            });
+                        },
+                        IconFa.calendar
+                    );
+
+                    abtnMenu.addDivider();*/
 
                     abtnMenu.addMenuItem(
                         'Delete',
