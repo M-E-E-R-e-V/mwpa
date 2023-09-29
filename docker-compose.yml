@@ -21,28 +21,28 @@ services:
         max-size: "500k"
         max-file: "50"
 
-#  mwpa:
-#    image: mwpa/mwpa:1.0.24
-#    build:
-#     context: .
-#    restart: always
-#    container_name: mwpa_server
-#    volumes:
-#      - ./config.json:/opt/app/config.json
-#      - ./imports:/opt/app/imports
-#      - ./data:/opt/app/data
-#    ports:
-#      - 3000:3000
-#    networks:
-#      mwpaNet:
-#        ipv4_address: 10.122.0.3
-#    logging:
-#      driver: "json-file"
-#      options:
-#        max-size: "500k"
-#        max-file: "50"
-#    depends_on:
-#      - mariadb
+  mwpa:
+    image: mwpa/mwpa:1.0.26_2
+    build:
+     context: .
+    restart: always
+    container_name: mwpa_server
+    volumes:
+      - ./config.json:/opt/app/config.json
+      - ./imports:/opt/app/imports
+      - ./data:/opt/app/data
+    ports:
+      - 3000:3000
+    networks:
+      mwpaNet:
+        ipv4_address: 10.122.0.3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "50"
+    depends_on:
+      - mariadb
 
 volumes:
   mwpaMariadbData:

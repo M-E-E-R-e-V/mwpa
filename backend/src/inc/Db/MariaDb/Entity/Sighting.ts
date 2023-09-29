@@ -273,4 +273,10 @@ export class Sighting extends BaseEntity {
     })
     public deletedDescription!: string;
 
+    @Index()
+    @Column({
+        default: false
+    })
+    public syncblock!: boolean;
+
 }

@@ -96,6 +96,13 @@ export type SightingGPSUpdate = DefaultReturn & {
 };
 
 /**
+ * SightingWeather
+ */
+export type SightingWeather = {
+    id: number;
+};
+
+/**
  * Sightings
  */
 export class Sightings {
@@ -162,6 +169,12 @@ export class Sightings {
         }
 
         return null;
+    }
+
+    public static async getWeather(sighting: SightingWeather): Promise<void> {
+        const result = await NetFetch.postData('/json/sightings/weather', sighting);
+
+        console.log(result);
     }
 
 }
