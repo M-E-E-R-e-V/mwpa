@@ -1,3 +1,15 @@
+import {
+    Badge, BadgeType,
+    ButtonMenu,
+    ButtonType,
+    Card, ColumnContent,
+    ContentCol,
+    ContentColSize,
+    ContentRow, DialogInfo,
+    IconFa,
+    LangText,
+    LeftNavbarLink, ModalDialogType, Table, Td, Th, Tr
+} from 'bambooo';
 import moment from 'moment';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
@@ -6,24 +18,6 @@ import {Sightings as SightingsAPI, SightingsEntry} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
-import {ColumnContent} from '../Bambooo/ColumnContent';
-import {Badge, BadgeType} from '../Bambooo/Content/Badge/Badge';
-import {Card} from '../Bambooo/Content/Card/Card';
-import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
-import {ContentRow} from '../Bambooo/Content/ContentRow';
-// import {DialogConfirm} from '../Bambooo/Content/Dialog/DialogConfirm';
-// import {ButtonClass} from '../Bambooo/Content/Button/ButtonDefault';
-import {DialogInfo} from '../Bambooo/Content/Dialog/DialogInfo';
-import {ButtonType} from '../Bambooo/Content/Form/Button';
-import {ButtonMenu} from '../Bambooo/Content/Form/ButtonMenu';
-import {IconFa} from '../Bambooo/Content/Icon/Icon';
-import {Table} from '../Bambooo/Content/Table/Table';
-import {Td} from '../Bambooo/Content/Table/Td';
-import {Th} from '../Bambooo/Content/Table/Th';
-import {Tr} from '../Bambooo/Content/Table/Tr';
-import {LangText} from '../Bambooo/Lang/LangText';
-import {ModalDialogType} from '../Bambooo/Modal/ModalDialog';
-import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
 import {Lang} from '../Lang';
 import {UtilColor} from '../Utils/UtilColor';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
@@ -97,7 +91,7 @@ export class Sighting extends BasePage {
             this._sightingDialog.resetValues();
             this._sightingDialog.show();
             return false;
-        });
+        }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         // save --------------------------------------------------------------------------------------------------------
 

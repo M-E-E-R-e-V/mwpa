@@ -2,15 +2,18 @@ import moment from 'moment';
 import {EncounterCategorieEntry} from '../../Api/EncounterCategories';
 import {SpeciesEntry} from '../../Api/Species';
 import {VehicleDriverEntry} from '../../Api/VehicleDriver';
-import {Textarea} from '../../Bambooo/Content/Form/Textarea';
-import {FormGroup} from '../../Bambooo/Content/Form/FormGroup';
-import {FormRow} from '../../Bambooo/Content/Form/FormRow';
-import {InputBottemBorderOnly2, InputType} from '../../Bambooo/Content/Form/InputBottemBorderOnly2';
-import {SelectBottemBorderOnly2} from '../../Bambooo/Content/Form/SelectBottemBorderOnly2';
-import {Switch} from '../../Bambooo/Content/Form/Switch';
-import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
 import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
 import {LocationInput} from '../../Widget/LocationInput';
+import {
+    FormGroup,
+    FormRow,
+    InputBottemBorderOnly2, InputType,
+    ModalDialog,
+    ModalDialogType,
+    SelectBottemBorderOnly2,
+    Switch,
+    Textarea
+} from 'bambooo';
 
 /**
  * SightingEditModalButtonClickFn

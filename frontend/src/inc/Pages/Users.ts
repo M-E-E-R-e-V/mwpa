@@ -1,18 +1,18 @@
+import {
+    ButtonMenu, ButtonType,
+    Card,
+    ColumnContent,
+    ContentCol,
+    ContentColSize,
+    ContentRow, IconFa,
+    LangText,
+    LeftNavbarLink,
+    Table, Td,
+    Th,
+    Tr
+} from 'bambooo';
 import {Group as GroupAPI} from '../Api/Group';
 import {User as UserAPI, UserData} from '../Api/User';
-import {ColumnContent} from '../Bambooo/ColumnContent';
-import {Card} from '../Bambooo/Content/Card/Card';
-import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
-import {ContentRow} from '../Bambooo/Content/ContentRow';
-import {ButtonType} from '../Bambooo/Content/Form/Button';
-import {ButtonMenu} from '../Bambooo/Content/Form/ButtonMenu';
-import {IconFa} from '../Bambooo/Content/Icon/Icon';
-import {Table} from '../Bambooo/Content/Table/Table';
-import {Td} from '../Bambooo/Content/Table/Td';
-import {Th} from '../Bambooo/Content/Table/Th';
-import {Tr} from '../Bambooo/Content/Table/Tr';
-import {LangText} from '../Bambooo/Lang/LangText';
-import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
 import {Lang} from '../Lang';
 import {BasePage} from './BasePage';
 import {UsersEditModal} from './Users/UsersEditModal';
@@ -219,7 +219,8 @@ export class Users extends BasePage {
 
                             this._usersDialog.show();
                         },
-                        IconFa.edit);
+                        IconFa.edit
+                    );
                 }
             }
 

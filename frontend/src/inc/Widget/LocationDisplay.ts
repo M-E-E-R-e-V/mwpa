@@ -1,6 +1,5 @@
+import {Tooltip, Element} from 'bambooo';
 import moment from 'moment';
-import {Tooltip} from '../Bambooo/Content/Tooltip/Tooltip';
-import {Element} from '../Bambooo/Element';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';
 import {UtilLocation} from '../Utils/UtilLocation';
 

@@ -1,4 +1,4 @@
-import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
+import {ModalDialog, ModalDialogType} from 'bambooo';
 
 /**
  * TourEditModal

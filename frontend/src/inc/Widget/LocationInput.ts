@@ -1,6 +1,5 @@
+import {InputBottemBorderOnly2, Tooltip} from 'bambooo';
 import moment from 'moment';
-import {InputBottemBorderOnly2} from '../Bambooo/Content/Form/InputBottemBorderOnly2';
-import {Tooltip} from '../Bambooo/Content/Tooltip/Tooltip';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';
 import {UtilLocation} from '../Utils/UtilLocation';
 

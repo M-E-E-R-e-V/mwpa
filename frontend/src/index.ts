@@ -1,12 +1,13 @@
-import './config';
+import {
+    ChangeLangClickFn,
+    LangText,
+    NavbarLinkButton,
+    NavbarLinkFullsize,
+    NavbarLinkLanguage,
+    SidebarMenuItem, SidebarMenuTree
+} from 'bambooo';
 import {Login} from './inc/Api/Login';
 import {User as UserAPI} from './inc/Api/User';
-import {LangText} from './inc/Bambooo/Lang/LangText';
-import {NavbarLinkButton} from './inc/Bambooo/Navbar/NavbarLinkButton';
-import {NavbarLinkFullsize} from './inc/Bambooo/Navbar/NavbarLinkFullsize';
-import {ChangeLangClickFn, NavbarLinkLanguage} from './inc/Bambooo/Navbar/NavbarLinkLanguage';
-import {SidebarMenuItem} from './inc/Bambooo/Sidebar/SidebarMenuItem';
-import {SidebarMenuTree} from './inc/Bambooo/Sidebar/SidebarMenuTree';
 import {Lang} from './inc/Lang';
 import {Admin as AdminPage} from './inc/Pages/Admin';
 import {BasePage} from './inc/Pages/BasePage';
@@ -18,6 +19,7 @@ import {Tours as ToursPage} from './inc/Pages/Tours';
 import {Users as UsersPage} from './inc/Pages/Users';
 import {UtilAvatarGenerator} from './inc/Utils/UtilAvatarGenerator';
 import {UtilColor} from './inc/Utils/UtilColor';
+import {UtilRedirect} from './inc/Utils/UtilRedirect';
 import {UtilShorname} from './inc/Utils/UtilShorname';
 import {Lang_DE} from './langs/Lang_DE';
 import {Lang_EN} from './langs/Lang_EN';
@@ -64,7 +66,7 @@ type SideMenuEntry = {
         // is login ----------------------------------------------------------------------------------------------------
 
         if (!await Login.isLogin()) {
-            window.location.replace('/login.html');
+            UtilRedirect.toLogin();
         }
 
         const currentuser = await UserAPI.getUserInfo();
@@ -221,7 +223,7 @@ type SideMenuEntry = {
             if (item.items) {
                 const menuTree = new SidebarMenuTree(menuItem);
 
-                for( const sitem of item.items) {
+                for (const sitem of item.items) {
                     const pmenuItem = new SidebarMenuItem(menuTree);
                     pmenuItem.setTitle(new LangText(sitem.title));
                     pmenuItem.setName(sitem.name);
@@ -238,10 +240,12 @@ type SideMenuEntry = {
                 }
             }
 
-            if ( (page.getName() === item.name) || isSubActiv) {
+            if ((page.getName() === item.name) || isSubActiv) {
                 menuItem.setActiv(true);
             }
         }
+
+        menu.initTreeview();
 
         // ---------------------------------------------------------------------------------------------------------
 

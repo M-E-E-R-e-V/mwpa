@@ -1,5 +1,5 @@
+import {LangDefine} from 'bambooo';
 import {Lang_DE} from '../langs/Lang_DE';
-import {LangDefine} from './Bambooo/Lang/LangDefine';
 import {Lang_EN} from '../langs/Lang_EN';
 
 /**
@@ -8,6 +8,8 @@ import {Lang_EN} from '../langs/Lang_EN';
 export class Lang {
 
     private static _store: {[index: string]: LangDefine;} = {};
+
+    // eslint-disable-next-line no-use-before-define
     private static _instance: Lang | null = null;
 
     private _defaultLang: LangDefine;
@@ -111,11 +113,12 @@ export class Lang {
         jQuery('body').find('[lang="1"]').each((_index, element) => {
             const attrLangValue = jQuery(element).attr('lang-value');
 
-            if(attrLangValue) {
+            if (attrLangValue) {
                 jQuery(element).empty().append(this.l(attrLangValue));
             }
         });
     }
+
 }
 
 // init

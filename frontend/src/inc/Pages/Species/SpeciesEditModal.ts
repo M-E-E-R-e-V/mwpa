@@ -1,6 +1,4 @@
-import {FormGroup} from '../../Bambooo/Content/Form/FormGroup';
-import {InputBottemBorderOnly2} from '../../Bambooo/Content/Form/InputBottemBorderOnly2';
-import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
+import {FormGroup, InputBottemBorderOnly2, ModalDialog, ModalDialogType} from 'bambooo';
 
 /**
  * SpeciesEditModalButtonClickFn
@@ -98,4 +96,5 @@ export class SpeciesEditModal extends ModalDialog {
     public setOnSave(onSave: SpeciesEditModalButtonClickFn): void {
         this._onSaveClick = onSave;
     }
+
 }
