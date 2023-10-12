@@ -1,34 +1,37 @@
+import {
+    Badge, BadgeType, ButtonMenu, ButtonType,
+    Card,
+    ColumnContent,
+    ContentCol,
+    ContentColSize,
+    ContentRow,
+    IconFa, LangText,
+    LeftNavbarLink,
+    Table, Td,
+    Th,
+    Tr
+} from 'bambooo';
 import moment from 'moment';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {TourEntry, Tours as ToursAPI} from '../Api/Tours';
-import {ColumnContent} from '../Bambooo/ColumnContent';
-import {LangText} from '../Bambooo/Lang/LangText';
-import {Td} from '../Bambooo/Content/Table/Td';
-import {Card} from '../Bambooo/Content/Card/Card';
-import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
-import {ContentRow} from '../Bambooo/Content/ContentRow';
-import {Table} from '../Bambooo/Content/Table/Table';
-import {Th} from '../Bambooo/Content/Table/Th';
-import {Tr} from '../Bambooo/Content/Table/Tr';
-import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
-import {ButtonType} from '../Bambooo/Content/Form/Button';
-import {ButtonMenu} from '../Bambooo/Content/Form/ButtonMenu';
-import {IconFa} from '../Bambooo/Content/Icon/Icon';
 import {Lang} from '../Lang';
 import {BasePage} from './BasePage';
 import {TourEditModal} from './Tours/TourEditModal';
+import {ToursMap} from './Tours/TourMap';
 
 /**
  * Tours
  */
 export class Tours extends BasePage {
 
+    public static NAME: string = 'tours';
+
     /**
      * page name
      * @protected
      */
-    protected _name: string = 'tours';
+    protected _name: string = Tours.NAME;
 
     /**
      * tour dialog
@@ -55,7 +58,7 @@ export class Tours extends BasePage {
             this._tourDialog.setTitle('Add new tour');
             this._tourDialog.show();
             return false;
-        });
+        }, 'btn btn-block btn-default btn-sm', IconFa.add);
     }
 
     /**
@@ -154,7 +157,20 @@ export class Tours extends BasePage {
                     new Td(trbody, `${entry.count_sightings}`);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${entry.count_trackings}`);
+                    const tdTrackingCount = new Td(trbody, '');
+
+                    if (entry.count_trackings > 0) {
+                        const badgeTracking = new Badge(tdTrackingCount, `${entry.count_trackings}`, BadgeType.info);
+                        badgeTracking.getElement().on('click', () => {
+                            this._loadPageFn(new ToursMap(entry.id));
+                        });
+
+                        badgeTracking.getElement().css({
+                            cursor: 'pointer'
+                        });
+                    } else {
+                        tdTrackingCount.addValue(`${entry.count_trackings}`);
+                    }
 
                     // action
                     const tdAction = new Td(trbody, '');

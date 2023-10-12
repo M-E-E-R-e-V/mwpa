@@ -1,9 +1,11 @@
-import {LeftNavbarPushmenu} from '../Bambooo/Navbar/LeftNavbarPushmenu';
-import {Wrapper} from '../Bambooo/Wrapper';
+import {LeftNavbarPushmenu, Wrapper} from 'bambooo';
+
+declare const Swal: any;
 
 /**
  * loadPageFn
  */
+// eslint-disable-next-line no-use-before-define
 type loadPageFn = (apage: BasePage) => void;
 
 /**
@@ -75,7 +77,6 @@ export class BasePage {
         mainSidebar.getLogo().setTitle(this.TITLE);
         mainSidebar.getLogo().setImage(this.LOGO);
 
-        // @ts-ignore
         this._toast = Swal.mixin({
             toast: true,
             position: 'top-end',

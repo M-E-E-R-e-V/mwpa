@@ -1,10 +1,12 @@
+import {
+    FormGroup, FormRow,
+    InputBottemBorderOnly2, InputType,
+    ModalDialog,
+    ModalDialogType,
+    SelectBottemBorderOnly2,
+    Switch
+} from 'bambooo';
 import {GroupEntry} from '../../Api/Group';
-import {FormGroup} from '../../Bambooo/Content/Form/FormGroup';
-import {FormRow} from '../../Bambooo/Content/Form/FormRow';
-import {InputBottemBorderOnly2, InputType} from '../../Bambooo/Content/Form/InputBottemBorderOnly2';
-import {SelectBottemBorderOnly2} from '../../Bambooo/Content/Form/SelectBottemBorderOnly2';
-import {Switch} from '../../Bambooo/Content/Form/Switch';
-import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
 
 /**
  * UsersEditModalButtonClickFn
@@ -281,7 +283,7 @@ export class UsersEditModal extends ModalDialog {
      * getMainGroup
      */
     public getMainGroup(): number {
-        return parseInt(this._selectMainGroup.getSelectedValue(), 10) | 0;
+        return parseInt(this._selectMainGroup.getSelectedValue(), 10) || 0;
     }
 
     /**
@@ -346,4 +348,5 @@ export class UsersEditModal extends ModalDialog {
     public setOnSave(onSave: UsersEditModalButtonClickFn): void {
         this._onSaveClick = onSave;
     }
+
 }

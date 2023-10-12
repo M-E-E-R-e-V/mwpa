@@ -1,7 +1,4 @@
-import {Textarea} from '../../Bambooo/Content/Form/Textarea';
-import {FormGroup} from '../../Bambooo/Content/Form/FormGroup';
-import {FormRow} from '../../Bambooo/Content/Form/FormRow';
-import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
+import {FormGroup, FormRow, ModalDialog, ModalDialogType, Textarea} from 'bambooo';
 
 /**
  * SightingDeletedModalButtonClickFn

@@ -1,19 +1,18 @@
+import {
+    ButtonClass,
+    ButtonMenu, ButtonType,
+    Card,
+    ContentCol,
+    ContentColSize,
+    ContentRow, DialogConfirm, IconFa,
+    LangText,
+    LeftNavbarLink, ModalDialogType,
+    Table,
+    Td,
+    Th,
+    Tr
+} from 'bambooo';
 import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species';
-import {ButtonClass} from '../Bambooo/Content/Button/ButtonDefault';
-import {Card} from '../Bambooo/Content/Card/Card';
-import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
-import {ContentRow} from '../Bambooo/Content/ContentRow';
-import {DialogConfirm} from '../Bambooo/Content/Dialog/DialogConfirm';
-import {ButtonType} from '../Bambooo/Content/Form/Button';
-import {ButtonMenu} from '../Bambooo/Content/Form/ButtonMenu';
-import {IconFa} from '../Bambooo/Content/Icon/Icon';
-import {Table} from '../Bambooo/Content/Table/Table';
-import {Td} from '../Bambooo/Content/Table/Td';
-import {Th} from '../Bambooo/Content/Table/Th';
-import {Tr} from '../Bambooo/Content/Table/Tr';
-import {LangText} from '../Bambooo/Lang/LangText';
-import {ModalDialogType} from '../Bambooo/Modal/ModalDialog';
-import {LeftNavbarLink} from '../Bambooo/Navbar/LeftNavbarLink';
 import {Lang} from '../Lang';
 import {BasePage} from './BasePage';
 import {SpeciesEditModal} from './Species/SpeciesEditModal';

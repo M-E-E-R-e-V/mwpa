@@ -1,7 +1,5 @@
+import {FormGroup, ModalDialog, ModalDialogType, SelectBottemBorderOnly2} from 'bambooo';
 import {SpeciesEntry} from '../../Api/Species';
-import {FormGroup} from '../../Bambooo/Content/Form/FormGroup';
-import {SelectBottemBorderOnly2} from '../../Bambooo/Content/Form/SelectBottemBorderOnly2';
-import {ModalDialog, ModalDialogType} from '../../Bambooo/Modal/ModalDialog';
 
 /**
  * SpeciesMergeModalButtonClickFn
@@ -60,24 +58,24 @@ export class SpeciesMergeModal extends ModalDialog {
      * setSpecies
      * @param species
      */
-    public setSpecies(species: SpeciesEntry[]) {
+    public setSpecies(species: SpeciesEntry[]): void {
         this._specieSourceSelect.clearValues();
         this._specieDestinationSelect.clearValues();
 
         this._specieSourceSelect.addValue({
             key: '0',
-            value: '*Please select a specie*',
+            value: '*Please select a specie*'
         });
 
         this._specieDestinationSelect.addValue({
             key: '0',
-            value: '*Please select a specie*',
+            value: '*Please select a specie*'
         });
 
         for (const specie of species) {
             const toption = {
                 key: `${specie.id}`,
-                value: specie.name,
+                value: specie.name
             };
 
             this._specieSourceSelect.addValue(toption);
@@ -130,4 +128,5 @@ export class SpeciesMergeModal extends ModalDialog {
     public setOnSave(onSave: SpeciesMergeModalButtonClickFn): void {
         this._onSaveClick = onSave;
     }
+
 }

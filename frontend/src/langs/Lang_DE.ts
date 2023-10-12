@@ -1,4 +1,4 @@
-import {LangDefine} from '../inc/Bambooo/Lang/LangDefine';
+import {LangDefine} from 'bambooo';
 
 /**
  * Lang_DE
@@ -10,8 +10,8 @@ export class Lang_DE implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
-        title: 'MWPA',
-        login_title: '<b>MWPA</b>',
+        'title': 'MWPA',
+        'login_title': '<b>MWPA</b>',
         'Sighting': 'Sichtung',
         'Tours': 'Touren',
         'Species': 'Spezies',

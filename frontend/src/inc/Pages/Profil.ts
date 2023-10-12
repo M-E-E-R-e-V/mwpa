@@ -1,12 +1,17 @@
+import {
+    Card,
+    CardBodyType,
+    CardLine,
+    CardType,
+    ContentCol,
+    ContentColSize,
+    ContentRow,
+    ContentRowClass, ImageArt, ImageType,
+    Image,
+    TextAlignment,
+    Text, PText, PTextType, FormGroup, InputBottemBorderOnly2, InputType
+} from 'bambooo';
 import {User as UserAPI} from '../Api/User';
-import {Card, CardBodyType, CardLine, CardType} from     '../Bambooo/Content/Card/Card';
-import {ContentCol, ContentColSize} from '../Bambooo/Content/ContentCol';
-import {ContentRow, ContentRowClass} from '../Bambooo/Content/ContentRow';
-import {FormGroup} from '../Bambooo/Content/Form/FormGroup';
-import {InputBottemBorderOnly2, InputType} from '../Bambooo/Content/Form/InputBottemBorderOnly2';
-import {Image, ImageArt, ImageType} from '../Bambooo/Content/Image/Image';
-import {PText, PTextType} from '../Bambooo/Content/Text/PText';
-import {Text, TextAlignment} from '../Bambooo/Content/Text/Text';
 import {Lang} from '../Lang';
 import {UtilAvatarGenerator} from '../Utils/UtilAvatarGenerator';
 import {UtilColor} from '../Utils/UtilColor';
@@ -63,6 +68,8 @@ export class Profil extends BasePage {
 
             const mProfileElement = cardProfile.getElement();
             const imageText = new Text(mProfileElement, TextAlignment.center);
+
+            // eslint-disable-next-line no-new
             new Image(
                 imageText,
                 UtilAvatarGenerator.generateAvatar(
@@ -72,7 +79,7 @@ export class Profil extends BasePage {
                 ),
                 ImageArt.profile,
                 ImageType.fluidCircle
-                );
+            );
 
             imageText.getElement().append(`<h3 class="profile-username text-center">${currentuser!.user!.fullname}</h3>`);
             const ptext = new PText(imageText, PTextType.muted, TextAlignment.center);
@@ -168,4 +175,5 @@ export class Profil extends BasePage {
         // load table
         this._onLoadTable();
     }
+
 }

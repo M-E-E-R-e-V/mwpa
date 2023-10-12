@@ -1,4 +1,4 @@
-import {LangDefine} from '../inc/Bambooo/Lang/LangDefine';
+import {LangDefine} from 'bambooo';
 
 /**
  * Lang_EN
