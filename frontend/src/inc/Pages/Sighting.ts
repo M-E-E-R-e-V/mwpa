@@ -27,6 +27,7 @@ import {LocationDisplay} from '../Widget/LocationDisplay';
 import {BasePage} from './BasePage';
 import {SightingDeletedModal} from './Sighting/SightingDeletedModal';
 import {SightingEditModal} from './Sighting/SightingEditModal';
+import {ToursMap} from './Tours/TourMap';
 
 /**
  * Sighting
@@ -531,7 +532,9 @@ export class Sighting extends BasePage {
                     const tdLocation = new Td(trbody, '');
 
                     // eslint-disable-next-line no-new
-                    new LocationDisplay(tdLocation, entry.location_begin!);
+                    new LocationDisplay(tdLocation, entry.location_begin!, () => {
+                        this._loadPageFn(new ToursMap(entry.tour_id));
+                    });
 
                     const floatDistance = parseFloat(entry.distance_coast!) || 0;
 
@@ -577,7 +580,7 @@ export class Sighting extends BasePage {
                     const updateDate = moment(entry.update_datetime * 1000);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `<b>${createDate.format('YYYY.MM.DD hh:mm:ss')}</b><br>${entry.creater_name}<br>${updateDate.format('YYYY.MM.DD hh:mm:ss')}`);
+                    new Td(trbody, `<b>${createDate.format('YYYY.MM.DD HH:mm:ss')}</b><br>${entry.creater_name}<br>${updateDate.format('YYYY.MM.DD HH:mm:ss')}`);
 
                     // action
                     const tdAction = new Td(trbody, '');

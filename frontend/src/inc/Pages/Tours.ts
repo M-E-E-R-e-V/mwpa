@@ -177,6 +177,14 @@ export class Tours extends BasePage {
                     const abtnMenu = new ButtonMenu(tdAction, IconFa.bars, true, ButtonType.borderless);
 
                     abtnMenu.addMenuItem(
+                        'Show Map',
+                        (): void => {
+                            this._loadPageFn(new ToursMap(entry.id));
+                        },
+                        IconFa.hockeypuck
+                    );
+
+                    abtnMenu.addMenuItem(
                         'Delete',
                         (): void => {
                             alert('Delete todo');

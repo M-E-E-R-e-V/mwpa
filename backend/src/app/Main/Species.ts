@@ -50,37 +50,47 @@ export type SpeciesDelete = {
 export class Species {
 
     /**
+     * Return a species list.
+     * @returns {SpeciesEntry[]}
+     */
+    public static async getSpeciesList(): Promise<SpeciesEntry[]> {
+        const list: SpeciesEntry[] = [];
+
+        const dbSpecies = await MariaDbHelper.getConnection()
+        .getRepository(SpeciesDB)
+        .createQueryBuilder('species')
+        .leftJoinAndSelect(
+            SpeciesGroup,
+            'group',
+            'species.species_groupid = group.id'
+        )
+        .getRawMany();
+
+        if (dbSpecies) {
+            for (const specie of dbSpecies) {
+                list.push({
+                    id: specie.species_id,
+                    name: specie.species_name,
+                    isdeleted: specie.species_isdeleted,
+                    species_group: {
+                        name: specie.group_name,
+                        color: specie.group_color
+                    }
+                });
+            }
+        }
+
+        return list;
+    }
+
+    /**
      * getList
      * @param session
      */
     @Get('/json/species/list')
     public async getList(@Session() session: any): Promise<SpeciesListResponse> {
         if ((session.user !== undefined) && session.user.isLogin) {
-            const list: SpeciesEntry[] = [];
-
-            const dbSpecies = await MariaDbHelper.getConnection()
-            .getRepository(SpeciesDB)
-            .createQueryBuilder('species')
-            .leftJoinAndSelect(
-                SpeciesGroup,
-                'group',
-                'species.species_groupid = group.id'
-            )
-            .getRawMany();
-
-            if (dbSpecies) {
-                for (const specie of dbSpecies) {
-                    list.push({
-                        id: specie.species_id,
-                        name: specie.species_name,
-                        isdeleted: specie.species_isdeleted,
-                        species_group: {
-                            name: specie.group_name,
-                            color: specie.group_color
-                        }
-                    });
-                }
-            }
+            const list = await Species.getSpeciesList();
 
             return {
                 statusCode: StatusCodes.OK,
