@@ -3,9 +3,11 @@ import moment from 'moment';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';
 import {UtilLocation} from '../Utils/UtilLocation';
 
+export type LocationDisplayButtonClickFn = () => void;
+
 export class LocationDisplay extends Element {
 
-    public constructor(element: Element, value: string|GeolocationCoordinates) {
+    public constructor(element: Element, value: string|GeolocationCoordinates, onClick?: LocationDisplayButtonClickFn) {
         super();
 
         let gcValue: GeolocationCoordinates|null = null;
@@ -58,7 +60,7 @@ export class LocationDisplay extends Element {
 
             if (gcValue.timestamp) {
                 const date = moment(gcValue.timestamp);
-                tooltipstr += `Date: ${date.format('YYYY.MM.DD hh:mm:ss')}<br>`;
+                tooltipstr += `Date: ${date.format('YYYY.MM.DD HH:mm:ss')}<br>`;
             }
 
             tooltipstr += `Latitude: ${gcValue.latitude!}<br>`;
@@ -84,6 +86,18 @@ export class LocationDisplay extends Element {
             Tooltip.init();
         } else {
             this._element.attr('title', '');
+        }
+
+        if (onClick) {
+            this._element.on('click', (event: any): void => {
+                jQuery('[data-toggle="tooltip"]').tooltip('hide');
+                onClick();
+                event.preventDefault();
+            });
+
+            this._element.css({
+                cursor: 'pointer'
+            });
         }
     }
 

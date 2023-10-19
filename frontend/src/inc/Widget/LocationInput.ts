@@ -42,7 +42,7 @@ export class LocationInput extends InputBottemBorderOnly2 {
 
             if (this._gcValue.timestamp) {
                 const date = moment(this._gcValue.timestamp);
-                tooltipstr += `Date: ${date.format('YYYY.MM.DD hh:mm:ss')}<br>`;
+                tooltipstr += `Date: ${date.format('YYYY.MM.DD HH:mm:ss')}<br>`;
             }
 
             tooltipstr += `Latitude: ${this._gcValue.latitude!}<br>`;
