@@ -108,7 +108,7 @@ export class User {
         if (result && result.statusCode) {
             const tresult = result as UserListResponse;
 
-            switch(result.statusCode) {
+            switch (result.statusCode) {
                 case StatusCodes.OK:
                     if (tresult.list) {
                         return tresult.list;

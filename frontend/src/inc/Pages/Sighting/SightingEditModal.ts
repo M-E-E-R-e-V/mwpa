@@ -1,6 +1,7 @@
 import moment from 'moment';
 import {EncounterCategorieEntry} from '../../Api/EncounterCategories';
 import {SpeciesEntry} from '../../Api/Species';
+import {VehicleEntry} from '../../Api/Vehicle';
 import {VehicleDriverEntry} from '../../Api/VehicleDriver';
 import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
 import {LocationInput} from '../../Widget/LocationInput';
@@ -265,7 +266,7 @@ export class SightingEditModal extends ModalDialog {
      * setVehicleList
      * @param list
      */
-    public setVehicleList(list: SpeciesEntry[]): void {
+    public setVehicleList(list: VehicleEntry[]): void {
         this._vehicleSelect.clearValues();
 
         this._vehicleSelect.addValue({

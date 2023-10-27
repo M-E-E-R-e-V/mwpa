@@ -14,7 +14,9 @@ export class Species extends BaseEntity {
 
     /**
      * ott id
-     * see https://github.com/OpenTreeOfLife/germinator/wiki/TNRS-API-v3
+     * @see https://github.com/OpenTreeOfLife/germinator/wiki/TNRS-API-v3
+     * @see https://www.onezoom.org/life.html/@=<id>
+     * @see https://tree.opentreeoflife.org/taxonomy/browse?id=<id>
      */
     @Index()
     @Column({

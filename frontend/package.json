@@ -18,6 +18,7 @@
     "admin-lte": "^3.2.0",
     "bambooo": "git+https://github.com/stefanwerfling/bambooo.git",
     "d3-calendar": "git+https://github.com/vanch3d/d3-calendar.git",
+    "dc": "^4.2.7",
     "ionicons-css": "^5.2.2",
     "jquery": "^3.6.4",
     "jquery-ui-dist": "^1.13.2",
@@ -26,12 +27,13 @@
     "vts": "git+https://github.com/OpenSourcePKG/vts.git"
   },
   "devDependencies": {
+    "@popperjs/core": "^2.11.7",
     "@types/bootstrap": "^4.6.2",
     "@types/jquery": "^3.5.16",
-    "@popperjs/core": "^2.11.7",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
     "bootstrap": "^4.6.2",
+    "crossfilter2": "^1.5.4",
     "dotenv": "^8.2.0",
     "eslint": "^8.38.0",
     "eslint-config-standard": "^17.0.0",

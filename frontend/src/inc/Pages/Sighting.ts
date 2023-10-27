@@ -8,7 +8,7 @@ import {
     ContentRow, DialogInfo,
     IconFa,
     LangText,
-    LeftNavbarLink, ModalDialogType, Table, Td, Th, Tr
+    LeftNavbarLink, ModalDialogType, Table, Td, Th, Tooltip, Tr
 } from 'bambooo';
 import moment from 'moment';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
@@ -19,11 +19,12 @@ import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {Lang} from '../Lang';
-import {UtilColor} from '../Utils/UtilColor';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilDownload} from '../Utils/UtilDownload';
 import {UtilSelect} from '../Utils/UtilSelect';
 import {LocationDisplay} from '../Widget/LocationDisplay';
+import {ReactionDisplay} from '../Widget/ReactionDisplay';
+import {SpeciesDisplay} from '../Widget/SpeciesDisplay';
 import {BasePage} from './BasePage';
 import {SightingDeletedModal} from './Sighting/SightingDeletedModal';
 import {SightingEditModal} from './Sighting/SightingEditModal';
@@ -51,22 +52,6 @@ export class Sighting extends BasePage {
      * @protected
      */
     protected _sightingDeletedDialog: SightingDeletedModal;
-
-    /**
-     * turtles
-     * @protected
-     */
-    protected _turtles: string[] = [
-        'Caretta caretta',
-        'Dermochelys coriacea',
-        'Chelonia mydas',
-        'Eretmochelys imbricata',
-        'Unknown sea turtle',
-        'Eretmochelys imbricata - Hawksbill sea turtle',
-        'Chelonia mydas - Green sea turtle',
-        'Dermochelys coriacea - Leatherback sea turtle',
-        'Caretta caretta - Loggerhead sea turtle'
-    ];
 
     /**
      * constructor
@@ -410,39 +395,8 @@ export class Sighting extends BasePage {
 
             const onLoadsightings = async(sightings: SightingsEntry[]): Promise<void> => {
                 for (const entry of sightings) {
-                    let reactionName = 'not set';
-                    let specieName = '';
-                    let specieColor = '#ffffff';
                     let vehicleName = '';
                     let vehicleDriverName = '';
-
-                    const specie = mspecies.get(entry.species_id!);
-
-                    if (specie) {
-                        specieName = specie.name.split(',')[0];
-
-                        if (specie.species_group) {
-                            specieColor = specie.species_group?.color;
-                        }
-                    } else {
-                        specieName = 'not set';
-                        specieColor = 'red';
-
-                        if (entry.other) {
-                            if (this._turtles.includes(entry.other?.trim())) {
-                                specieName = entry.other?.trim();
-                                specieColor = '#27AE60';
-                            }
-                        }
-                    }
-
-                    if (entry.reaction_id) {
-                        const encCate = mencates.get(entry.reaction_id);
-
-                        if (encCate) {
-                            reactionName = encCate.name;
-                        }
-                    }
 
                     const vehicle = mvehicles.get(entry.vehicle_id!);
 
@@ -510,8 +464,10 @@ export class Sighting extends BasePage {
 
                     // eslint-disable-next-line no-new
                     const speciesTd = new Td(trbody);
+
                     // eslint-disable-next-line no-new
-                    new Badge(speciesTd, `<b style="color: ${UtilColor.getContrastYIQ(specieColor)}">${specieName}</b>`, BadgeType.info, specieColor);
+                    new SpeciesDisplay(speciesTd, entry, mspecies);
+
                     speciesTd.append(`<br>${otherSpecies}`);
 
                     // eslint-disable-next-line no-new
@@ -573,8 +529,9 @@ export class Sighting extends BasePage {
                     }
 
                     const tdbehRex = new Td(trbody, behaviourStr);
+
                     // eslint-disable-next-line no-new
-                    new Badge(tdbehRex, `${reactionName}`, BadgeType.secondary);
+                    new ReactionDisplay(tdbehRex, entry, mencates);
 
                     const createDate = moment(entry.create_datetime * 1000);
                     const updateDate = moment(entry.update_datetime * 1000);
@@ -668,6 +625,9 @@ export class Sighting extends BasePage {
                         }
                     }
                 }
+
+                // init tooltips
+                Tooltip.init();
             };
 
             const sightings = await SightingsAPI.getList({
