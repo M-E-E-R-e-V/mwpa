@@ -25,6 +25,8 @@ import {UtilLocation} from '../../Utils/UtilLocation';
 import {BasePage} from '../BasePage';
 import {Tours} from '../Tours';
 
+//declare const dc: any;
+
 type TourSightingData = {
     pointtype: string;
     points: number[][];
@@ -124,6 +126,27 @@ export class ToursMap extends BasePage {
         card.setTitle(title);
 
         const wrapperHeight = this._wrapper.getElement().height() - 220;
+        // const wrapperWidht = this._wrapper.getElement().width();
+
+        // crossfilter -------------------------------------------------------------------------------------------------
+
+        /*const crossfilterElement = jQuery('<div></div>').appendTo(card.getElement());
+
+        const bc = new dc.BarChart(crossfilterElement);
+
+        bc.width(wrapperWidht - 10)
+        .height(40)
+        .margins({top: 0, right: 50, bottom: 20, left: 40})
+        .dimension(moveMonths)
+        .group(volumeByMonthGroup)
+        .centerBar(true)
+        .gap(1)
+        .x(d3.scaleTime().domain([new Date(1985, 0, 1), new Date(2012, 11, 31)]))
+        .round(d3.timeMonth.round)
+        .alwaysUseRounding(true)
+        .xUnits(d3.timeMonths);*/
+
+        // map ---------------------------------------------------------------------------------------------------------
 
         const mapElement = jQuery('<div></div>').appendTo(card.getElement());
         mapElement.css({
@@ -145,10 +168,7 @@ export class ToursMap extends BasePage {
         const vector = new VectorLayer({
             source: this._source
         });
-
-        // https://crossfilter.github.io/crossfilter/
-        // https://blog.csdn.net/weixin_57933935/article/details/125922646
-        // https://github.com/openlayers/openlayers/issues/9113
+        
         this._map = new OlMap({
             layers: [tileLayer, vector],
             target: mapElement[0],
@@ -394,10 +414,15 @@ export class ToursMap extends BasePage {
                     let images = '';
 
                     for (const file of sighting.files) {
-                        images += `<br><img width="200px" src="/json/sightings/getimage/${sightingId}/${file}">`;
+                        images += `<br><img width="200px" src="/json/sightings/getimage/${sightingId}/${file}" alt="${file}">`;
                     }
 
-                    const speStartTime = moment(sighting.timestamp_start);
+                    let speStartTimeStr = 'unknown';
+
+                    if (sighting.timestamp_start) {
+                        const speStartTime = moment(sighting.timestamp_start);
+                        speStartTimeStr = speStartTime.format('YYYY.MM.DD HH:mm:ss');
+                    }
 
                     geojsonFeatires.push({
                         type: 'Feature',
@@ -408,9 +433,8 @@ export class ToursMap extends BasePage {
                                 `<b>Species</b>: ${speciesName}<br>` +
                                 `<b>Group-Size</b>: ${sighting.species_count}<br>` +
                                 `<b>Distance (Miles)</b>: ${UtilDistanceCoast.meterToM(floatDistance, true)}<br>` +
-                                `<b>Date/Time</b>: ${speStartTime.format('YYYY.MM.DD HH:mm:ss')}<br>` +
-                                `<b>Position</b>: ${latStr} - ${lonStr}<br>` +
-                                images
+                                `<b>Date/Time</b>: ${speStartTimeStr}<br>` +
+                                `<b>Position</b>: ${latStr} - ${lonStr}<br>${images}`
                         },
                         geometry: {
                             type: 'Point',

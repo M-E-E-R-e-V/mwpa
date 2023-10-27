@@ -1,4 +1,5 @@
 import {
+    Badge, BadgeType,
     ButtonMenu, ButtonType,
     Card,
     ColumnContent,
@@ -61,7 +62,7 @@ export class Users extends BasePage {
 
             this._usersDialog.show();
             return false;
-        });
+        }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         // users dialog save -------------------------------------------------------------------------------------------
 
@@ -146,10 +147,13 @@ export class Users extends BasePage {
             ]));
 
             // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('EMail'));
+            new Th(trhead, new ColumnContent([
+                new LangText('EMail'),
+                new LangText('Main-Group')
+            ]));
 
             // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Main-Group'));
+            new Th(trhead, '');
 
             // eslint-disable-next-line no-new
             new Th(trhead, new LangText('Disabled'));
@@ -170,8 +174,7 @@ export class Users extends BasePage {
                         `${user.fullname}`
                     ]));
 
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `${user.email}`);
+                    const tdemailGroup = new Td(trbody, `${user.email}<br>`);
 
                     let groupName = 'Unknown';
 
@@ -184,10 +187,21 @@ export class Users extends BasePage {
                     }
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${groupName}`);
+                    new Badge(tdemailGroup, `<b>${groupName}</b>`, BadgeType.info);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, new LangText(user.disable ? 'Yes' : 'No'));
+                    new Td(trbody, '');
+
+                    // eslint-disable-next-line no-new
+                    const tdDisable = new Td(trbody, '');
+
+                    if (user.disable) {
+                        // eslint-disable-next-line no-new
+                        new Badge(tdDisable, 'Yes', BadgeType.danger);
+                    } else {
+                        // eslint-disable-next-line no-new
+                        new Badge(tdDisable, 'No', BadgeType.success);
+                    }
 
                     // action
                     const actionTd = new Td(trbody, '');

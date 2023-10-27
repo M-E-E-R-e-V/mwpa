@@ -2,8 +2,6 @@ import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
 import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
 import {Species as SpeciesDB} from '../../inc/Db/MariaDb/Entity/Species';
 import {SpeciesGroup} from '../../inc/Db/MariaDb/Entity/SpeciesGroup';
-import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
-import {VehicleDriver as VehicleDriverDB} from '../../inc/Db/MariaDb/Entity/VehicleDriver';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
@@ -14,6 +12,7 @@ import {StatusCodes} from '../../inc/Routes/StatusCodes';
 export type SpeciesEntry = {
     id: number;
     name: string;
+    ottid: number;
     isdeleted?: boolean;
     species_group?: {
         name: string;
@@ -71,6 +70,7 @@ export class Species {
                 list.push({
                     id: specie.species_id,
                     name: specie.species_name,
+                    ottid: specie.species_ott_id,
                     isdeleted: specie.species_isdeleted,
                     species_group: {
                         name: specie.group_name,

@@ -13,7 +13,14 @@ COPY frontend/ ./frontend
 
 COPY backend/package.json ./package.json
 
+WORKDIR /opt/app/frontend
+
 RUN npm install --force
+RUN npm run gulp-clone-bambooo
+RUN npm run gulp-copy-data
+RUN npm run gulp-build-webpack
+
+WORKDIR /opt/app
 
 EXPOSE 3000
 

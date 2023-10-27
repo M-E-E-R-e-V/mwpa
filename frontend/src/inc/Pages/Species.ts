@@ -79,6 +79,7 @@ export class Species extends BasePage {
             try {
                 const aspecie: SpeciesEntry = {
                     id: tid,
+                    ottid: 0,
                     name: this._speciesDialog.getName()
                 };
 

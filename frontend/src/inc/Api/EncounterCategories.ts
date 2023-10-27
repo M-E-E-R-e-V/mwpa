@@ -9,6 +9,7 @@ import {DefaultReturn} from './Types/DefaultReturn';
 export type EncounterCategorieEntry = {
     id: number;
     name: string;
+    description: string;
     isdeleted: boolean;
 };
 
@@ -31,10 +32,11 @@ export class EncounterCategories {
         const result = await NetFetch.getData('/json/encountercategories/list');
 
         if (result && result.statusCode) {
-            switch(result.statusCode) {
-                case StatusCodes.OK:
+            switch (result.statusCode) {
+                case StatusCodes.OK: {
                     const response = result as EncounterCategoriesResponse;
                     return response.list;
+                }
 
                 case StatusCodes.UNAUTHORIZED:
                     throw new UnauthorizedError();
