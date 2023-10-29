@@ -22,7 +22,7 @@ layout:
 
 ## Connection and communication
 
-First of all, I would recommend contacting [M.E.E.R. e.V.](https://m-e-e-r.de/) by email, we look forward to hearing from you! We are open to questions and ideas and value a good exchange of experiences.
+Firstly I would recommend contacting [M.E.E.R. e.V.](https://m-e-e-r.de/) by email we look forward to hearing from you! We are open to questions and ideas and value a good exchange of experiences.
 
 MWPA offers two areas of application:
 
@@ -30,7 +30,7 @@ MWPA offers two areas of application:
 2. You want to collect the data scientifically (university, research, etc.)
 
 {% hint style="info" %}
-If you are 1st, it would of course be ideal if you do both and make your data available to the researchers!
+If the first applies to you it would of course be ideal if you do both and make your data available to the researchers!
 {% endhint %}
 
 
@@ -39,13 +39,13 @@ If you are 1st, it would of course be ideal if you do both and make your data av
 
 <figure><img src="../.gitbook/assets/pkg_logo_rund.png" alt=""><figcaption><p><a href="https://www.pegenau.de/">Pegenau GmbH &#x26; Co. KG</a></p></figcaption></figure>
 
-You don't need any further technical knowledge for this. Hardware and installation can be buying. [Pegenau GmbH & Co. KG ](https://www.pegenau.de/)will also be selling you with a ready-made "[Mini-Serve](https://www.pegenau.de/miniserver/)r" with the software and take care of updates and support. Simply contact us for this.
+You don't need any further technical knowledge for this. The required hardware and installation can be provided by [Pegenau GmbH & Co. KG. ](https://www.pegenau.de/)With their ready-made "[Miniserve](https://www.pegenau.de/miniserver/)r" they take care of the software updates and support. Simply contact them for this. They can also host MWPA in a cloud system.
 
-<figure><img src="../.gitbook/assets/miniserver_csc-scaled-ponn5xr24mr81r7t4hvxwqdt7q3jbt20ehfr94gmuw.jpg" alt=""><figcaption><p>Mini-Server, complete server system in a compact box.</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/miniserver_csc-scaled-ponn5xr24mr81r7t4hvxwqdt7q3jbt20ehfr94gmuw.jpg" alt=""><figcaption><p>Miniserver, complete server system in a compact box.</p></figcaption></figure>
 
 ## Open Source
 
-The software is open source and can be found on GitHub. You are invited, take a look, create a fork and update the code. All we want is that the changes remain visible to all and remain open source. Only together can we create greater added value!
+The software is open source and can be found on GitHub. You are invited to take a look, create a fork and update the code. All we ask for is that the changes remain visible to everyone and stay open source. Only together can we create greater added value!
 
 * [https://github.com/M-E-E-R-e-V/mwpa](https://github.com/M-E-E-R-e-V/mwpa-app)
 * [https://github.com/M-E-E-R-e-V/mwpa-app](https://github.com/M-E-E-R-e-V/mwpa-app)
