@@ -42,7 +42,7 @@ On the boat there is a lot of knowledge, printouts and a sighting in the middle 
 
 At a much later point in time, the data was transferred to an Access database that was unfortunately already out of date. The font meant we had to puzzle too often and ask what this text meant.
 
-But it is not vulnerable, when the association started (1998) collecting the data, our computers and cell phones were not yet ready. The project has to start somewhere, and then you can expand something and see the direction of development.
+But you can't blame that, because when the association started collecting data in (1998), our computers and cell phones weren't that advanced yet. The project has to start somewhere, and then you can expand something and see the direction of development.
 
 ### Digitalization
 
