@@ -42,6 +42,8 @@ On the boat there is a lot of knowledge, printouts and a sighting in the middle 
 
 At a much later point in time, the data was transferred to an Access database that was unfortunately already out of date. The font meant we had to puzzle too often and ask what this text meant.
 
+<figure><img src="../.gitbook/assets/old_accessdb.png" alt=""><figcaption><p>Old access database formula.</p></figcaption></figure>
+
 But you can't blame that, because when the association started collecting data in (1998), our computers and cell phones weren't that advanced yet. The project has to start somewhere, and then you can expand something and see the direction of development.
 
 ### Digitalization
@@ -52,4 +54,4 @@ The goal has been clear to the club for a long time. The viewing data must be di
 
 <figure><img src="../.gitbook/assets/login.png" alt="" width="563"><figcaption><p>Server login page.</p></figcaption></figure>
 
-<figure><img src="../.gitbook/assets/main_tablet.jpeg" alt="" width="375"><figcaption><p>Tablet with app.</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/main_tablet.jpeg" alt="" width="375"><figcaption><p>Tablet with MWPA app.</p></figcaption></figure>
