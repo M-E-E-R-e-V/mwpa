@@ -6,4 +6,4 @@
   * [User instructions](mwpa-mammal-watching.-processing.-analysing./user-instructions.md)
   * [Construction](mwpa-mammal-watching.-processing.-analysing./construction.md)
   * [Help and Support](mwpa-mammal-watching.-processing.-analysing./help-and-support.md)
-  * [How can get](mwpa-mammal-watching.-processing.-analysing./how-can-get.md)
+  * [My own Installation](mwpa-mammal-watching.-processing.-analysing./my-own-installation.md)

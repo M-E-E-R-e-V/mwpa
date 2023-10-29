@@ -1,5 +1,5 @@
 ---
-description: How I can use the software for my sightings.
+description: How I can use the software for my own sightings.
 cover: ../.gitbook/assets/page-head-verein-meer-ev.jpg
 coverY: -42.474666666666664
 layout:
@@ -18,7 +18,7 @@ layout:
     visible: true
 ---
 
-# How can get
+# My own Installation
 
 ## Connection and communication
 
@@ -35,7 +35,7 @@ If you are 1st, it would of course be ideal if you do both and make your data av
 
 ## Completed installation
 
-You don't need any further technical knowledge for this, hardware and installation can be sent ready. [Pegenau GmbH & Co. KG ](https://www.pegenau.de/)will also be happy to supply you with a ready-made mini server with the software and take care of updates and support. Simply contact us for this.
+You don't need any further technical knowledge for this, hardware and installation can be buying  ready. [Pegenau GmbH & Co. KG ](https://www.pegenau.de/)will also be happy to supply you with a ready-made mini server with the software and take care of updates and support. Simply contact us for this.
 
 
 
