@@ -22,7 +22,7 @@ layout:
 
 ## Connection and communication
 
-First of all, I would recommend contacting [M.E.E.R. e.V.](https://m-e-e-r.de/) by email, we look forward to hearing from you!
+First of all, I would recommend contacting [M.E.E.R. e.V.](https://m-e-e-r.de/) by email, we look forward to hearing from you! We are open to questions and ideas and value a good exchange of experiences.
 
 You have two options:
 
@@ -32,6 +32,8 @@ You have two options:
 {% hint style="info" %}
 If you are 1st, it would of course be ideal if you do both and make your data available to the researchers!
 {% endhint %}
+
+
 
 ## Completed installation
 
