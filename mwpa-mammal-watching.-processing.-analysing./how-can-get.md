@@ -18,13 +18,13 @@ layout:
     visible: true
 ---
 
-# My own Installation
+# Self-hosted Installation
 
 ## Connection and communication
 
 First of all, I would recommend contacting [M.E.E.R. e.V.](https://m-e-e-r.de/) by email, we look forward to hearing from you! We are open to questions and ideas and value a good exchange of experiences.
 
-You have two options:
+MWPA offers two areas of application:
 
 1. You need the app to report your sightings to the government (e.g. in Spain)
 2. You want to collect the data scientifically (university, research, etc.)
