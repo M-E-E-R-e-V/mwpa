@@ -1,5 +1,21 @@
 ---
 description: Processing and analysing data gathered by mammal watching.
+cover: .gitbook/assets/slider-startseite-meer-ev-06.jpg
+coverY: -99
+layout:
+  cover:
+    visible: true
+    size: hero
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: true
 ---
 
 # MWPA - Mammal watching. Processing. Analysing.
