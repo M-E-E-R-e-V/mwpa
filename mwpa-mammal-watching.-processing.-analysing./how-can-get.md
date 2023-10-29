@@ -35,11 +35,11 @@ If you are 1st, it would of course be ideal if you do both and make your data av
 
 ## Completed installation
 
-You don't need any further technical knowledge for this. Hardware and installation can be buying. [Pegenau GmbH & Co. KG ](https://www.pegenau.de/)will also be selling you with a ready-made mini server with the software and take care of updates and support. Simply contact us for this.
-
-
-
 <figure><img src="../.gitbook/assets/pkg_logo_rund.png" alt=""><figcaption><p><a href="https://www.pegenau.de/">Pegenau GmbH &#x26; Co. KG</a></p></figcaption></figure>
+
+You don't need any further technical knowledge for this. Hardware and installation can be buying. [Pegenau GmbH & Co. KG ](https://www.pegenau.de/)will also be selling you with a ready-made "[Mini-Serve](https://www.pegenau.de/miniserver/)r" with the software and take care of updates and support. Simply contact us for this.
+
+<figure><img src="../.gitbook/assets/miniserver_csc-scaled-ponn5xr24mr81r7t4hvxwqdt7q3jbt20ehfr94gmuw.jpg" alt=""><figcaption><p>Mini-Server, complete server system in a compact box.</p></figcaption></figure>
 
 ## Open Source
 
