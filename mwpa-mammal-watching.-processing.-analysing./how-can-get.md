@@ -22,7 +22,7 @@ layout:
 
 ## Connection and communication
 
-First of all, I would recommend contacting [M.E.E.R e.V.](https://m-e-e-r.de/) by email, we look forward to hearing from you!
+First of all, I would recommend contacting [M.E.E.R. e.V.](https://m-e-e-r.de/) by email, we look forward to hearing from you!
 
 You have two options:
 
@@ -35,7 +35,7 @@ If you are 1st, it would of course be ideal if you do both and make your data av
 
 ## Completed installation
 
-You don't need any further technical knowledge for this, hardware and installation can be buying  ready. [Pegenau GmbH & Co. KG ](https://www.pegenau.de/)will also be happy to supply you with a ready-made mini server with the software and take care of updates and support. Simply contact us for this.
+You don't need any further technical knowledge for this. Hardware and installation can be buying  ready. [Pegenau GmbH & Co. KG ](https://www.pegenau.de/)will also be selling you with a ready-made mini server with the software and take care of updates and support. Simply contact us for this.
 
 
 
@@ -47,3 +47,4 @@ The software is open source and can be found on GitHub. You are invited, take a 
 
 * [https://github.com/M-E-E-R-e-V/mwpa](https://github.com/M-E-E-R-e-V/mwpa-app)
 * [https://github.com/M-E-E-R-e-V/mwpa-app](https://github.com/M-E-E-R-e-V/mwpa-app)
+
