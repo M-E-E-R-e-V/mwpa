@@ -60,6 +60,6 @@ The goal has been clear to the club for a long time. The viewing data must be di
 
 ## Goal
 
-After all the data has been collected, it is sent to scientists for evaluation. The result is then [publications/publications](https://m-e-e-r.de/en/research/publications/) and graphics.
+After all data has been collected, the data from M.E.E.R. e.V. evaluated in collaboration with other scientists. The result is then [publications/publications](https://m-e-e-r.de/en/research/publications/) and graphics.
 
 <figure><img src="../.gitbook/assets/slides_klein_all (1).jpg" alt=""><figcaption><p><a href="https://m-e-e-r.de/en/milestone-for-meers-work-in-the-canaries/">https://m-e-e-r.de/en/milestone-for-meers-work-in-the-canaries/</a></p></figcaption></figure>
