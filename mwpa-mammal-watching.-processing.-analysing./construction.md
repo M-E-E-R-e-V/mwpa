@@ -43,7 +43,7 @@ The data (sightings, tracking) is recorded on the boat using the app for the tab
 
 ## MWPA Server structure
 
-The sightings data and tracking data are sent to the backend via HTTPS protocol. The backend saves this data in the database (images are stored in the file store). The backend takes care of the processing (collection, analysis, conversion and export creation). The frontend (web portal in the browser) can query data on the backend and trigger actions in the backend (exports, etc.)
+The sightings data and tracking data are sent to the backend via [HTTPS](https://de.wikipedia.org/wiki/Hypertext\_Transfer\_Protocol\_Secure) protocol. The backend saves this data in the database (images are stored in the file store). The backend takes care of the processing (collection, analysis, conversion and export creation). The frontend (web portal in the browser) can query data on the backend and trigger actions in the backend (exports, etc.)
 
 <figure><img src="../.gitbook/assets/mwpa_server_structure.png" alt=""><figcaption><p>Structure of MWPA server.</p></figcaption></figure>
 
@@ -57,7 +57,7 @@ MWPA Server is installed in a container on a Virtual Environment ([Proxmox](http
 
 The MWPA server is located in a [Docker](https://www.docker.com/) container in the container. Using an image of the MWPA server, one version can be quickly exchanged for a new version of the MWPA server.
 
-To ensure that MWPA can be accessed securely from the Internet, it is released via HTTPS. This is done via [FlyingFish](https://flying-fish.gitbook.io/flyingfish/) (a proxy manager, another software that was developed, among other things, to solve problems for the MWPA software).
+To ensure that MWPA can be accessed securely from the Internet, it is released via [HTTPS](https://de.wikipedia.org/wiki/Hypertext\_Transfer\_Protocol\_Secure). This is done via [FlyingFish](https://flying-fish.gitbook.io/flyingfish/) (a proxy manager ([reverse proxy](https://de.wikipedia.org/wiki/Reverse\_Proxy)), another software that was developed, among other things, to solve problems for the MWPA software).
 
 <figure><img src="../.gitbook/assets/mwpa_server_request.png" alt=""><figcaption><p>Server and network structure + Request way. </p></figcaption></figure>
 
