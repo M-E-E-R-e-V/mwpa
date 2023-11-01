@@ -35,6 +35,8 @@ MWPA is divided into two parts.  The mobile app on your cell phone or tablet. An
 * MWPA - Server: [https://github.com/M-E-E-R-e-V/mwpa](https://github.com/M-E-E-R-e-V/mwpa)
 * MWPA - App: [https://github.com/M-E-E-R-e-V/mwpa-app](https://github.com/M-E-E-R-e-V/mwpa-app)
 
+<figure><img src="../.gitbook/assets/Newsbeitrag_App.png" alt=""><figcaption><p>Tablet for the MWPA App (Outdoor device).</p></figcaption></figure>
+
 ## Sighting data flow
 
 The data (sightings, tracking) is recorded on the boat using the app for the tablet. Back on site in the office (at home, etc.), the data is then transferred to the Internet (with WiFi) to the MWPA server (our MWPA Server hosting). On the server the data is collected, validated, analyzed, converted and can be exported.
