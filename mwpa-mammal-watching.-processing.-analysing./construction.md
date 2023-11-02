@@ -125,7 +125,7 @@ The development of the software is one of many projects at M.E.E.R e.V. Short, c
 
 <figure><img src="../.gitbook/assets/mwpa_team.png" alt=""><figcaption><p>Dev-Team.</p></figcaption></figure>
 
-If there is a problem on the boat, Rolf gets feedback from the guide (end user). Rolf (from Oceano) passes on problems and questions to Tina & Stefan. Tina and Stefan discuss the requirements/data and further development of MWPA. Inquiries from Fabian/M.E.E.R. team will also be discussed additionally (new requirements).
+If there is a problem on the boat, Rolf gets feedback from the guide (end user). Rolf (from [Oceano](https://whalewatching-gomera.com/)) passes on problems and questions to Tina & Stefan. Tina and Stefan discuss the requirements/data and further development of MWPA. Inquiries from Fabian/M.E.E.R. team will also be discussed additionally (new requirements).
 
 #### Tests of new versions:
 
