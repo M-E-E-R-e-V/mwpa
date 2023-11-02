@@ -93,7 +93,10 @@ A data check is already carried out both during data recording (mobile device) a
 
 <figure><img src="../.gitbook/assets/mwpa_dataverification.png" alt=""><figcaption><p>Step 1 of Data verification.</p></figcaption></figure>
 
-According to this check, a sighting is already displayed as yellow/red in the mobile app. The person entering the data can immediately see and correct the error. This sighting is also immediately marked in red in the portal.
+According to this check, a sighting is already displayed as <mark style="background-color:yellow;">yellow</mark>/<mark style="background-color:red;">red</mark> in the mobile app. The person entering the data can immediately see and correct the error. This sighting is also immediately marked in red in the portal.
+
+* <mark style="background-color:yellow;">**Yellow**</mark>: The sighting is missing data/incomplete, but the sighting is still running (the viewing end time has not yet been set).
+* <mark style="background-color:red;">**Red**</mark>: The viewing has ended, the end of the viewing time has been set, but data is still missing.
 
 <figure><img src="../.gitbook/assets/mwpa_dataverification_errors.png" alt=""><figcaption><p>Sighting with missing and incorrect data.</p></figcaption></figure>
 
@@ -111,3 +114,19 @@ M.E.E.R. e.V. has several instances of MWPA Server (backend and database) to rec
 
 
 <figure><img src="../.gitbook/assets/mwpa_instances.png" alt=""><figcaption><p>M.E.E.R. e.V. MWPA instances.</p></figcaption></figure>
+
+
+
+***
+
+## Team structure & Version Release
+
+The development of the software is one of many projects at M.E.E.R e.V. Short, clear communication channels provide quick opportunities for action for requests for new functions or for reporting errors. The tasks are recorded in GitHub in a weekly meeting (with Tina and more and more Rolf) about requirements and problems.
+
+<figure><img src="../.gitbook/assets/mwpa_team.png" alt=""><figcaption><p>Dev-Team.</p></figcaption></figure>
+
+If there is a problem on the boat, Rolf gets feedback from the guide (end user). Rolf (from Oceano) passes on problems and questions to Tina & Stefan. Tina and Stefan discuss the requirements/data and further development of MWPA. Inquiries from Fabian/M.E.E.R. team will also be discussed additionally (new requirements).
+
+#### Tests of new versions:
+
+Tina tests the new versions of MWPA and gives feedback on errors that are then corrected by Stefan. Then there is another test run. Once the errors have been fixed, the version can be released. The new version is then played on the tablet with Rolf. Innovations are then discussed together (user handling).
