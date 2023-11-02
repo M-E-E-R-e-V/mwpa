@@ -71,8 +71,12 @@ The [FlyingFish](https://flying-fish.gitbook.io/flyingfish/) uses [LetsEncrypt](
 
 ## Data verification
 
+An important part of working with scientific data is the correctness of the data.
+
 A data check is already carried out both during data recording (mobile device) and during data collection (backend). That the most important fields are set in order to be able to record a sighting.
 
 <figure><img src="../.gitbook/assets/mwpa_dataverification.png" alt=""><figcaption><p>Step 1 of Data verification.</p></figcaption></figure>
 
-According to this check, a sighting is already displayed as red in the mobile app. The person entering the data can immediately see and correct the error. This sighting is also immediately marked in red in the portal.
+According to this check, a sighting is already displayed as yellow/red in the mobile app. The person entering the data can immediately see and correct the error. This sighting is also immediately marked in red in the portal.
+
+<figure><img src="../.gitbook/assets/mwpa_dataverification_errors.png" alt=""><figcaption><p>Sighting with missing and incorrect data.</p></figcaption></figure>
