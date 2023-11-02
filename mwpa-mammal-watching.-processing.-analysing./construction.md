@@ -68,3 +68,11 @@ To ensure that MWPA can be accessed securely from the Internet, it is released v
 The [FlyingFish](https://flying-fish.gitbook.io/flyingfish/) uses [LetsEncrypt](https://letsencrypt.org/de/) to issue a valid certificate, which can be used by the mobile app without any problems and allows the front end in the browser to run in a secure connection.
 
 <figure><img src="../.gitbook/assets/mwpa_certificate.png" alt=""><figcaption><p>Certificate for HTTPS.</p></figcaption></figure>
+
+## Data verification
+
+A data check is already carried out both during data recording (mobile device) and during data collection (backend). That the most important fields are set in order to be able to record a sighting.
+
+<figure><img src="../.gitbook/assets/mwpa_dataverification.png" alt=""><figcaption><p>Step 1 of Data verification.</p></figcaption></figure>
+
+According to this check, a sighting is already displayed as red in the mobile app. The person entering the data can immediately see and correct the error. This sighting is also immediately marked in red in the portal.
