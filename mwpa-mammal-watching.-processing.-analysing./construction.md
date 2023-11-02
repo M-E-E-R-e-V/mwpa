@@ -37,17 +37,29 @@ MWPA is divided into two parts.  The mobile app on your cell phone or tablet. An
 
 <figure><img src="../.gitbook/assets/Newsbeitrag_App.png" alt=""><figcaption><p>Tablet for the MWPA App (Outdoor device).</p></figcaption></figure>
 
+
+
+***
+
 ## Sighting data flow
 
 The data (sightings, tracking) is recorded on the boat using the app for the tablet. Back on site in the office (at home, etc.), the data is then transferred to the Internet (with WiFi) to the MWPA server (our MWPA Server hosting). On the server the data is collected, validated, analyzed, converted and can be exported.
 
 <figure><img src="../.gitbook/assets/sighting_flow.png" alt=""><figcaption><p>Sighting data flow.</p></figcaption></figure>
 
+
+
+***
+
 ## MWPA Server structure
 
 The sightings data and tracking data are sent to the backend via [HTTPS](https://de.wikipedia.org/wiki/Hypertext\_Transfer\_Protocol\_Secure) protocol. The backend saves this data in the database (images are stored in the file store). The backend takes care of the processing (collection, analysis, conversion and export creation). The frontend (web portal in the browser) can query data on the backend and trigger actions in the backend (exports, etc.)
 
 <figure><img src="../.gitbook/assets/mwpa_server_structure.png" alt=""><figcaption><p>Structure of MWPA server.</p></figcaption></figure>
+
+
+
+***
 
 ## Structure at M.E.E.R. e.V.
 
@@ -69,6 +81,10 @@ The [FlyingFish](https://flying-fish.gitbook.io/flyingfish/) uses [LetsEncrypt](
 
 <figure><img src="../.gitbook/assets/mwpa_certificate.png" alt=""><figcaption><p>Certificate for HTTPS.</p></figcaption></figure>
 
+
+
+***
+
 ## Data verification
 
 An important part of working with scientific data is the correctness of the data.
@@ -80,3 +96,18 @@ A data check is already carried out both during data recording (mobile device) a
 According to this check, a sighting is already displayed as yellow/red in the mobile app. The person entering the data can immediately see and correct the error. This sighting is also immediately marked in red in the portal.
 
 <figure><img src="../.gitbook/assets/mwpa_dataverification_errors.png" alt=""><figcaption><p>Sighting with missing and incorrect data.</p></figcaption></figure>
+
+***
+
+## Instances of MWPA at M.E.E.R. e.V.
+
+M.E.E.R. e.V. has several instances of MWPA Server (backend and database) to record sightings:
+
+* **Main**: In the main instance, the guides record the sightings which are later used for evaluation/exports etc.
+* **Courses**: A separate database was created specifically for the [internship](https://m-e-e-r.de/delfine-erleben/praktikumskurse/). Participants can practice data collection here in parallel and later compare it with the main MWPA.
+* **Demo**: This instance is used to check the app without the data from M.E.E.R. e.V. to release. This is an important part so that Google can test the app so that it can later publish the app in the app store.
+* **Dev**: A version that is located locally on the developer's computer. This is where errors are checked, or new functions are implemented and tested.
+
+
+
+<figure><img src="../.gitbook/assets/mwpa_instances.png" alt=""><figcaption><p>M.E.E.R. e.V. MWPA instances.</p></figcaption></figure>

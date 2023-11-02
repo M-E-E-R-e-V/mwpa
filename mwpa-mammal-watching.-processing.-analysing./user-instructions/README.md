@@ -24,6 +24,8 @@ layout:
 The software is still in development and some areas have not yet been completed.
 {% endhint %}
 
+<figure><img src="../../.gitbook/assets/login.png" alt=""><figcaption><p>Login page MWPA.</p></figcaption></figure>
+
 After logging into the site (frontend) you can navigate to the following areas:
 
 <table data-view="cards"><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><strong>Sighting</strong></td><td>A list of sightings.</td><td></td></tr><tr><td><strong>Tours</strong></td><td>A list of boat tours.</td><td></td></tr><tr><td><strong>Admin</strong></td><td>Setting, select lists for the sightings.</td><td></td></tr></tbody></table>
