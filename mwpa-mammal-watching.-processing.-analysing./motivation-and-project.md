@@ -38,9 +38,11 @@ As always, there is a situation that is unbearable and in which software can hel
 
 Early or midday everyone gathered at the boat, some pieces of paper were pre-printed and ready for sighting dates.
 
+<figure><img src="../.gitbook/assets/old_paper.png" alt=""><figcaption><p>Old sighting paper.</p></figcaption></figure>
+
 On the boat there is a lot of knowledge, printouts and a sighting in the middle of it all. From behind, the skipper called out the coordinates of the boat and the distance to the mainland. The behavior, species, young animals and so on were observed. Everything had to be written down on the piece of paper.
 
-<figure><img src="../.gitbook/assets/old_paper.png" alt=""><figcaption><p>Old sighting paper.</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/2017-1022_Fabian-Datenaufnahme-Gomera-300x200.jpg" alt=""><figcaption><p>Fabian with old sighting paper.</p></figcaption></figure>
 
 At a much later point in time, the data was transferred to an Access database that was unfortunately already out of date. The font meant we had to puzzle too often and ask what this text meant.
 
