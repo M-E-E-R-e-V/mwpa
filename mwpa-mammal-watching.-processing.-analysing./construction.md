@@ -95,8 +95,8 @@ A data check is already carried out both during data recording (mobile device) a
 
 According to this check, a sighting is already displayed as <mark style="background-color:yellow;">yellow</mark>/<mark style="background-color:red;">red</mark> in the mobile app. The person entering the data can immediately see and correct the error. This sighting is also immediately marked in red in the portal.
 
-* <mark style="background-color:yellow;">**Yellow**</mark>: The sighting is missing data/incomplete, but the sighting is still running (the viewing end time has not yet been set).
-* <mark style="background-color:red;">**Red**</mark>: The viewing has ended, the end of the viewing time has been set, but data is still missing.
+* <mark style="background-color:yellow;">**Yellow**</mark>: The sighting is missing data/incomplete, but the sighting is still running (the sighting end time has not yet been set).
+* <mark style="background-color:red;">**Red**</mark>: The sighting has ended, the end of the sighting time has been set, but data is still missing.
 
 <figure><img src="../.gitbook/assets/mwpa_dataverification_errors.png" alt=""><figcaption><p>Sighting with missing and incorrect data.</p></figcaption></figure>
 
@@ -107,7 +107,7 @@ According to this check, a sighting is already displayed as <mark style="backgro
 M.E.E.R. e.V. has several instances of MWPA Server (backend and database) to record sightings:
 
 * **Main**: In the main instance, the guides record the sightings which are later used for evaluation/exports etc.
-* **Courses**: A separate database was created specifically for the [internship](https://m-e-e-r.de/delfine-erleben/praktikumskurse/). Participants can practice data collection here in parallel and later compare it with the main MWPA.
+* **Courses**: A separate database was created specifically for the [practical courses](https://m-e-e-r.de/en/experience/practicalcourses/). Participants can practice data collection here in parallel and later compare it with the main MWPA.
 * **Demo**: This instance is used to check the app without the data from M.E.E.R. e.V. to release. This is an important part so that Google can test the app so that it can later publish the app in the app store.
 * **Dev**: A version that is located locally on the developer's computer. This is where errors are checked, or new functions are implemented and tested.
 
@@ -129,4 +129,4 @@ If there is a problem on the boat, Rolf gets feedback from the guide (end user).
 
 #### Tests of new versions:
 
-Tina tests the new versions of MWPA and gives feedback on errors that are then corrected by Stefan. Then there is another test run. Once the errors have been fixed, the version can be released. The new version is then played on the tablet with Rolf. Innovations are then discussed together (user handling).
+Tina tests the new versions of MWPA and gives feedback on errors that are then corrected by Stefan. Then there is another test run. Once the errors have been fixed, the version can be released. The [new version is then installed on the tablet](https://m-e-e-r-e-v.gitbook.io/mwpa-app/mwpa-mammal-watching.-processing.-analysing./update-and-debugging) with Rolf. Innovations are then discussed together (user handling).
