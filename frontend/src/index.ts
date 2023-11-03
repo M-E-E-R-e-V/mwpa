@@ -224,7 +224,7 @@ type SideMenuEntry = {
                 const menuTree = new SidebarMenuTree(menuItem);
 
                 for (const sitem of item.items) {
-                    const pmenuItem = new SidebarMenuItem(menuTree);
+                    const pmenuItem = new SidebarMenuItem(menuTree, true);
                     pmenuItem.setTitle(new LangText(sitem.title));
                     pmenuItem.setName(sitem.name);
                     pmenuItem.setClick(sitem.onClick);

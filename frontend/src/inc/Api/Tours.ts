@@ -19,6 +19,7 @@ export type TourEntry = {
     id: number;
     tour_fid: string;
     creater_id: number;
+    device_id: number;
     create_datetime: number;
     update_datetime: number;
     vehicle_id: number;
@@ -35,6 +36,22 @@ export type TourEntry = {
 };
 
 /**
+ * ToursDevice
+ */
+export type ToursDevice = {
+    id: number;
+    name: string;
+};
+
+/**
+ * ToursCreater
+ */
+export type ToursCreater = {
+    id: number;
+    name: string;
+};
+
+/**
  * ToursResponse
  */
 export type ToursResponse = DefaultReturn & {
@@ -42,6 +59,14 @@ export type ToursResponse = DefaultReturn & {
     offset?: number;
     count?: number;
     list?: TourEntry[];
+    devices?: ToursDevice[];
+    creaters?: ToursCreater[];
+};
+
+export type ToursTrackingSightingExtended = {
+    unid: string;
+    name: string;
+    data: string;
 };
 
 export type ToursTrackingSightingData = {
@@ -54,6 +79,7 @@ export type ToursTrackingSightingData = {
     species_count: number;
     distance_coast: string;
     files: string[];
+    extended: ToursTrackingSightingExtended[];
 };
 
 export type ToursTrackingData = {

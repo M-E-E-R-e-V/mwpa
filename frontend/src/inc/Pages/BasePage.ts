@@ -76,6 +76,9 @@ export class BasePage {
 
         mainSidebar.getLogo().setTitle(this.TITLE);
         mainSidebar.getLogo().setImage(this.LOGO);
+        mainSidebar.getLogo().getElement().find('img').css({
+            'background-color': '#ffffff'
+        });
 
         this._toast = Swal.mixin({
             toast: true,

@@ -1,8 +1,11 @@
 import fs from 'fs';
 import {Body, JsonController, Post, Session} from 'routing-controllers';
+import {Devices as DevicesDB} from '../../inc/Db/MariaDb/Entity/Devices';
 import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
+import {SightingExtended as SightingExtendedDB} from '../../inc/Db/MariaDb/Entity/SightingExtended';
 import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/SightingTour';
 import {SightingTourTracking as SightingTourTrackingDB} from '../../inc/Db/MariaDb/Entity/SightingTourTracking';
+import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
@@ -24,6 +27,7 @@ export type ToursFilter = {
 export type TourEntry = {
     id: number;
     tour_fid: string;
+    device_id: number;
     creater_id: number;
     create_datetime: number;
     update_datetime: number;
@@ -41,6 +45,22 @@ export type TourEntry = {
 };
 
 /**
+ * ToursDevice
+ */
+export type ToursDevice = {
+    id: number;
+    name: string;
+};
+
+/**
+ * ToursCreater
+ */
+export type ToursCreater = {
+    id: number;
+    name: string;
+};
+
+/**
  * ToursResponse
  */
 export type ToursResponse = DefaultReturn & {
@@ -48,6 +68,8 @@ export type ToursResponse = DefaultReturn & {
     offset?: number;
     count?: number;
     list?: TourEntry[];
+    devices?: ToursDevice[];
+    creaters?: ToursCreater[];
 };
 
 /**
@@ -55,6 +77,12 @@ export type ToursResponse = DefaultReturn & {
  */
 export type ToursTrackingRequest = {
     tour_id: number;
+};
+
+export type ToursTrackingSightingExtended = {
+    unid: string;
+    name: string;
+    data: string;
 };
 
 export type ToursTrackingSightingData = {
@@ -67,6 +95,7 @@ export type ToursTrackingSightingData = {
     species_count: number;
     distance_coast: string;
     files: string[];
+    extended: ToursTrackingSightingExtended[];
 };
 
 export type ToursTrackingData = {
@@ -114,6 +143,8 @@ export class Tours {
             const tourRepository = MariaDbHelper.getConnection().getRepository(SightingTourDB);
             const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
             const tourTrackRepository = MariaDbHelper.getConnection().getRepository(SightingTourTrackingDB);
+            const devicesRepository = MariaDbHelper.getConnection().getRepository(DevicesDB);
+            const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
 
             const list: TourEntry[] = [];
             const count = await tourRepository.count();
@@ -125,6 +156,9 @@ export class Tours {
                 skip: filter.offset,
                 take: filter.limit
             });
+
+            const mapDevices = new Map<number, ToursDevice>();
+            const mapCreaters = new Map<number, ToursCreater>();
 
             for (const entry of dblist) {
                 const countSigh = await sightingRepository.count({
@@ -139,9 +173,46 @@ export class Tours {
                     }
                 });
 
+                // list device -----------------------------------------------------------------------------------------
+
+                if (!mapDevices.has(entry.device_id)) {
+                    const device = await devicesRepository.findOne({
+                        where: {
+                            id: entry.device_id
+                        }
+                    });
+
+                    if (device) {
+                        mapDevices.set(device.id, {
+                            id: device.id,
+                            name: device.description
+                        });
+                    }
+                }
+
+                // creater ---------------------------------------------------------------------------------------------
+
+                if (!mapCreaters.has(entry.creater_id)) {
+                    const user = await userRepository.findOne({
+                        where: {
+                            id: entry.creater_id
+                        }
+                    });
+
+                    if (user) {
+                        mapCreaters.set(user.id, {
+                            id: user.id,
+                            name: user.username
+                        });
+                    }
+                }
+
+                // -----------------------------------------------------------------------------------------------------
+
                 list.push({
                     id: entry.id,
                     tour_fid: entry.tour_fid,
+                    device_id: entry.device_id,
                     creater_id: entry.creater_id,
                     create_datetime: entry.create_datetime,
                     update_datetime: entry.update_datetime,
@@ -164,7 +235,9 @@ export class Tours {
                 filter,
                 count,
                 offset: filter.offset ? filter.offset : 0,
-                list
+                list,
+                devices: Array.from(mapDevices.values()),
+                creaters: Array.from(mapCreaters.values())
             };
         }
 
@@ -184,6 +257,7 @@ export class Tours {
             const tourRepository = MariaDbHelper.getConnection().getRepository(SightingTourDB);
             const tourTrackRepository = MariaDbHelper.getConnection().getRepository(SightingTourTrackingDB);
             const sightingRepository = MariaDbHelper.getConnection().getRepository(SightingDB);
+            const sightingExtendedRepository = MariaDbHelper.getConnection().getRepository(SightingExtendedDB);
 
             const tour = await tourRepository.findOne({where: {id: request.tour_id}});
 
@@ -242,6 +316,22 @@ export class Tours {
                         }
                     }
 
+                    const extendeds = await sightingExtendedRepository.find({
+                        where: {
+                            sighting_id: sighting.id
+                        }
+                    });
+
+                    const extendedList: ToursTrackingSightingExtended[] = [];
+
+                    for (const extended of extendeds) {
+                        extendedList.push({
+                            unid: extended.unid,
+                            name: extended.name,
+                            data: extended.data
+                        });
+                    }
+
                     sightList.push({
                         id: sighting.id,
                         location_begin: sighting.location_begin,
@@ -251,7 +341,8 @@ export class Tours {
                         species_name: speciesName,
                         species_count: sighting.species_count,
                         distance_coast: sighting.distance_coast,
-                        files
+                        files,
+                        extended: extendedList
                     });
                 }
 

@@ -37,6 +37,7 @@ import {ExternalReceiver as ExternalReceiverDB} from './inc/Db/MariaDb/Entity/Ex
 import {Group as GroupDB} from './inc/Db/MariaDb/Entity/Group';
 import {Organization as OrganizationDB} from './inc/Db/MariaDb/Entity/Organization';
 import {Sighting as SightingDB} from './inc/Db/MariaDb/Entity/Sighting';
+import {SightingExtended as SightingExtendedDB} from './inc/Db/MariaDb/Entity/SightingExtended';
 import {SightingTour as SightingTourDB} from './inc/Db/MariaDb/Entity/SightingTour';
 import {SightingTourTracking as SightingTourTrackingDB} from './inc/Db/MariaDb/Entity/SightingTourTracking';
 import {Species as SpeciesDB} from './inc/Db/MariaDb/Entity/Species';
@@ -50,6 +51,7 @@ import {Devices as DevicesDB} from './inc/Db/MariaDb/Entity/Devices';
 import {MariaDbHelper} from './inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from './inc/Logger/Logger';
 import {Server} from './inc/Server/Server';
+import {DepthService} from './inc/Service/DepthService';
 
 /**
  * main application
@@ -132,7 +134,8 @@ import {Server} from './inc/Server/Server';
                 EncounterCategoriesDB,
                 BehaviouralStatesDB,
                 DevicesDB,
-                ExternalReceiverDB
+                ExternalReceiverDB,
+                SightingExtendedDB
             ],
             migrations: [
             ],
@@ -282,4 +285,5 @@ import {Server} from './inc/Server/Server';
     // listen, start express server
     mServer.listen();
 
+    DepthService.getInstance().start().then();
 })();

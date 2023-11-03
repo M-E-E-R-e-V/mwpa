@@ -17,7 +17,7 @@ import VectorLayer from 'ol/layer/Vector';
 import {OSM} from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import {Circle, Fill, Icon, Stroke, Style} from 'ol/style';
-import {Tours as ToursAPI} from '../../Api/Tours';
+import {Tours as ToursAPI, ToursTrackingSightingExtended} from '../../Api/Tours';
 import {Species as SpeciesAPI, SpeciesEntry} from '../../Api/Species';
 import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
 import {UtilDistanceCoast} from '../../Utils/UtilDistanceCoast';
@@ -25,7 +25,7 @@ import {UtilLocation} from '../../Utils/UtilLocation';
 import {BasePage} from '../BasePage';
 import {Tours} from '../Tours';
 
-//declare const dc: any;
+// declare const dc: any;
 
 type TourSightingData = {
     pointtype: string;
@@ -37,6 +37,7 @@ type TourSightingData = {
     species_count: number;
     distance_coast: string;
     files: string[];
+    extended: ToursTrackingSightingExtended[];
 };
 
 export class ToursMap extends BasePage {
@@ -101,59 +102,13 @@ export class ToursMap extends BasePage {
         }
     }
 
-    /**
-     * loadContent
-     */
-    public async loadContent(): Promise<void> {
-        const menuItem = this._wrapper.getMainSidebar().getSidebar().getMenu().getMenuItem(Tours.NAME);
-        let menuTree: SidebarMenuTree|null = null;
-
-        const title = `Tour #${this._tourId}`;
-
-        if (menuItem !== null) {
-            menuTree = new SidebarMenuTree(menuItem);
-            const pmenuItem = new SidebarMenuItem(menuTree);
-            pmenuItem.setTitle(title);
-            pmenuItem.setActiv(true);
-
-            this._badge = new SidebarMenuItemBadge(pmenuItem);
-            this._badge.setContent('0');
-        }
-
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-
-        card.setTitle(title);
-
+    private _createMap(card: Card): void {
         const wrapperHeight = this._wrapper.getElement().height() - 220;
-        // const wrapperWidht = this._wrapper.getElement().width();
-
-        // crossfilter -------------------------------------------------------------------------------------------------
-
-        /*const crossfilterElement = jQuery('<div></div>').appendTo(card.getElement());
-
-        const bc = new dc.BarChart(crossfilterElement);
-
-        bc.width(wrapperWidht - 10)
-        .height(40)
-        .margins({top: 0, right: 50, bottom: 20, left: 40})
-        .dimension(moveMonths)
-        .group(volumeByMonthGroup)
-        .centerBar(true)
-        .gap(1)
-        .x(d3.scaleTime().domain([new Date(1985, 0, 1), new Date(2012, 11, 31)]))
-        .round(d3.timeMonth.round)
-        .alwaysUseRounding(true)
-        .xUnits(d3.timeMonths);*/
-
-        // map ---------------------------------------------------------------------------------------------------------
 
         const mapElement = jQuery('<div></div>').appendTo(card.getElement());
         mapElement.css({
             height: `${wrapperHeight}px`
         });
-
-        this._tooltip_popup = jQuery('<div id="popup"></div>').appendTo(this._wrapper.getContentWrapper().getContent().getElement());
 
         const tileLayer = new TileLayer({
             source: new OSM({
@@ -168,7 +123,7 @@ export class ToursMap extends BasePage {
         const vector = new VectorLayer({
             source: this._source
         });
-        
+
         this._map = new OlMap({
             layers: [tileLayer, vector],
             target: mapElement[0],
@@ -178,8 +133,10 @@ export class ToursMap extends BasePage {
                 multiWorld: true
             })
         });
+    }
 
-        // tooltip -----------------------------------------------------------------------------------------------------
+    protected _createMapToolTip(): void {
+        this._tooltip_popup = jQuery('<div id="popup"></div>').appendTo(this._wrapper.getContentWrapper().getContent().getElement());
 
         const overlayTooltip = new Overlay({
             element: this._tooltip_popup[0],
@@ -227,6 +184,41 @@ export class ToursMap extends BasePage {
         this._map.on('movestart', () => {
             this.disposePopover();
         });
+    }
+
+    /**
+     * loadContent
+     */
+    public async loadContent(): Promise<void> {
+        const menuItem = this._wrapper.getMainSidebar().getSidebar().getMenu().getMenuItem(Tours.NAME);
+        let menuTree: SidebarMenuTree|null = null;
+
+        const title = `Tour #${this._tourId}`;
+
+        if (menuItem !== null) {
+            menuTree = new SidebarMenuTree(menuItem);
+            const pmenuItem = new SidebarMenuItem(menuTree, true);
+            pmenuItem.setTitle(title);
+            pmenuItem.setActiv(true);
+
+            this._badge = new SidebarMenuItemBadge(pmenuItem);
+            this._badge.setContent('0');
+        }
+
+        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const card = new Card(new ContentCol(row1, ContentColSize.col12));
+
+        card.setTitle(title);
+
+        // map ---------------------------------------------------------------------------------------------------------
+
+        this._createMap(card);
+
+        // tooltip -----------------------------------------------------------------------------------------------------
+
+        this._createMapToolTip();
+
+        // load table --------------------------------------------------------------------------------------------------
 
         this._onLoadTable = async(): Promise<void> => {
             this._map.setView(new View({
@@ -273,7 +265,8 @@ export class ToursMap extends BasePage {
                         species_name: sighting.species_name,
                         species_count: sighting.species_count,
                         distance_coast: sighting.distance_coast,
-                        files: sighting.files
+                        files: sighting.files,
+                        extended: sighting.extended
                     };
 
                     try {
@@ -370,6 +363,11 @@ export class ToursMap extends BasePage {
                 // create track for sighting ---------------------------------------------------------------------------
 
                 for (const [sightingId, sighting] of sighPostionTrack) {
+                    if (!sighting.points || !sighting.points[0] || (sighting.points[0].length !== 2)) {
+                        // eslint-disable-next-line no-continue
+                        continue;
+                    }
+
                     geojsonFeatires.push({
                         type: 'Feature',
                         properties: {
@@ -424,6 +422,16 @@ export class ToursMap extends BasePage {
                         speStartTimeStr = speStartTime.format('YYYY.MM.DD HH:mm:ss');
                     }
 
+                    let extendedStr = '';
+
+                    for (const extended of sighting.extended) {
+                        switch (extended.name) {
+                            case 'depth_contour':
+                                extendedStr += `<b>Sea depth</b>: ${extended.data} m<br>`;
+                                break;
+                        }
+                    }
+
                     geojsonFeatires.push({
                         type: 'Feature',
                         properties: {
@@ -434,7 +442,8 @@ export class ToursMap extends BasePage {
                                 `<b>Group-Size</b>: ${sighting.species_count}<br>` +
                                 `<b>Distance (Miles)</b>: ${UtilDistanceCoast.meterToM(floatDistance, true)}<br>` +
                                 `<b>Date/Time</b>: ${speStartTimeStr}<br>` +
-                                `<b>Position</b>: ${latStr} - ${lonStr}<br>${images}`
+                                `<b>Position</b>: ${latStr} - ${lonStr}<br>${images}<br>` +
+                                `${extendedStr}`
                         },
                         geometry: {
                             type: 'Point',
@@ -646,10 +655,6 @@ export class ToursMap extends BasePage {
                 });
 
                 this._map.addLayer(vectorLayer);
-
-                // https://stackoverflow.com/questions/71305749/openlayers-linestring-round-corners
-
-                console.log('Add vector line');
             }
         };
 
