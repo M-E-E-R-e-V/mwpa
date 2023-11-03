@@ -119,4 +119,10 @@ export class SightingTour extends BaseEntity {
         // @ts-ignore
     record_by_persons: string;
 
+    @Index()
+    @Column({
+        default: 0
+    })
+    public device_id!: number;
+
 }

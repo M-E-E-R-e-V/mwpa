@@ -7,8 +7,7 @@ import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm
 export class SightingTourTracking extends BaseEntity {
 
     @PrimaryGeneratedColumn('uuid')
-        // @ts-ignore
-    unid: string;
+    public unid!: string;
 
     /**
      * create datetime
@@ -17,8 +16,7 @@ export class SightingTourTracking extends BaseEntity {
     @Column({
         default: 0
     })
-        // @ts-ignore
-    create_datetime: number;
+    public create_datetime!: number;
 
     /**
      * sighting tour id
@@ -27,14 +25,12 @@ export class SightingTourTracking extends BaseEntity {
     @Column({
         default: 0
     })
-        // @ts-ignore
-    sighting_tour_id: number;
+    public sighting_tour_id!: number;
 
     @Column({
         type: 'text',
         default: ''
     })
-    // @ts-ignore
-    position: string;
+    public position!: string;
 
 }

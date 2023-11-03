@@ -1,20 +1,25 @@
 import {
-    Badge, BadgeType, ButtonMenu, ButtonType,
+    Badge,
+    BadgeType,
+    ButtonMenu,
+    ButtonType,
     Card,
     ColumnContent,
     ContentCol,
     ContentColSize,
     ContentRow,
-    IconFa, LangText,
+    IconFa,
+    LangText,
     LeftNavbarLink,
-    Table, Td,
+    Table,
+    Td,
     Th,
     Tr
 } from 'bambooo';
 import moment from 'moment';
+import {TourEntry, Tours as ToursAPI, ToursCreater, ToursDevice} from '../Api/Tours';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
-import {TourEntry, Tours as ToursAPI} from '../Api/Tours';
 import {Lang} from '../Lang';
 import {BasePage} from './BasePage';
 import {TourEditModal} from './Tours/TourEditModal';
@@ -74,21 +79,31 @@ export class Tours extends BasePage {
         const trhead = new Tr(table.getThead());
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Id<br>Date');
-
-        // eslint-disable-next-line no-new
-        new Th(trhead, 'Vehicle<br>Driver');
-
-        // eslint-disable-next-line no-new
         new Th(trhead, new ColumnContent([
-            new LangText('Time begin-end')
+            new LangText('Id'),
+            new LangText('Date')
         ]));
 
         // eslint-disable-next-line no-new
-        new Th(trhead, 'Count sighting');
+        new Th(trhead, new ColumnContent([
+            new LangText('Vehicle'),
+            new LangText('Driver')
+        ]));
+
+        // eslint-disable-next-line no-new
+        new Th(trhead, new ColumnContent([
+            new LangText('Time begin-end'),
+            new LangText('Count sighting')
+        ]));
 
         // eslint-disable-next-line no-new
         new Th(trhead, 'Count tracking-points');
+
+        // eslint-disable-next-line no-new
+        new Th(trhead, new ColumnContent([
+            new LangText('from Device'),
+            new LangText('Created by')
+        ]));
 
         // eslint-disable-next-line no-new
         new Th(trhead, '');
@@ -123,7 +138,25 @@ export class Tours extends BasePage {
 
             // sightings -----------------------------------------------------------------------------------------------
 
-            const onLoadtours = async(tours: TourEntry[]): Promise<void> => {
+            const onLoadtours = async(tours: TourEntry[], devices: ToursDevice[], creaters: ToursCreater[]): Promise<void> => {
+                // devices ---------------------------------------------------------------------------------------------
+
+                const mdevices = new Map<number, ToursDevice>();
+
+                for (const device of devices) {
+                    mdevices.set(device.id, device);
+                }
+
+                // creaters --------------------------------------------------------------------------------------------
+
+                const mcreaters = new Map<number, ToursCreater>();
+
+                for (const creater of creaters) {
+                    mcreaters.set(creater.id, creater);
+                }
+
+                // -----------------------------------------------------------------------------------------------------
+
                 for (const entry of tours) {
                     let vehicleName = '';
                     let vehicleDriverName = '';
@@ -151,10 +184,14 @@ export class Tours extends BasePage {
                     new Td(trbody, `${vehicleName}<br>${vehicleDriverName}`);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `<b>${entry.tour_start} - ${entry.tour_end}</b>`);
+                    const tdTimeCount = new Td(trbody, `<b>${entry.tour_start} - ${entry.tour_end}</b><br>`);
 
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `${entry.count_sightings}`);
+                    new Badge(
+                        tdTimeCount,
+                        `${entry.count_sightings}`,
+                        entry.count_sightings > 0 ? BadgeType.success : BadgeType.secondary
+                    );
 
                     // eslint-disable-next-line no-new
                     const tdTrackingCount = new Td(trbody, '');
@@ -171,6 +208,29 @@ export class Tours extends BasePage {
                     } else {
                         tdTrackingCount.addValue(`${entry.count_trackings}`);
                     }
+
+                    let deviceCreaterStr = '';
+
+                    const device = mdevices.get(entry.device_id);
+
+                    if (device) {
+                        deviceCreaterStr += `${device.name}`;
+                    } else {
+                        deviceCreaterStr += 'not set';
+                    }
+
+                    deviceCreaterStr += '<br>';
+
+                    const creater = mcreaters.get(entry.creater_id);
+
+                    if (creater) {
+                        deviceCreaterStr += `${creater.name}`;
+                    } else {
+                        deviceCreaterStr += 'not set';
+                    }
+
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, deviceCreaterStr);
 
                     // action
                     const tdAction = new Td(trbody, '');
@@ -205,7 +265,7 @@ export class Tours extends BasePage {
             if (tours) {
                 card.setTitle(`Tours (${tours.count})`);
 
-                await onLoadtours(tours.list!);
+                await onLoadtours(tours.list!, tours.devices!, tours.creaters);
 
                 jQuery(window).on('scroll', async() => {
                     const h = jQuery(window).height()!;
@@ -241,7 +301,7 @@ export class Tours extends BasePage {
                         });
 
                         if (ttours) {
-                            await onLoadtours(ttours.list!);
+                            await onLoadtours(ttours.list!, ttours.devices!, ttours.creaters!);
                         }
                     }
                 });

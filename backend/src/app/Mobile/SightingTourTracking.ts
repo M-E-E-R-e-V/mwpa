@@ -75,7 +75,8 @@ export class SightingTourTracking {
             const sightingTourRepository = MariaDbHelper.getConnection().getRepository(SightingTourDB);
             const tour = await sightingTourRepository.findOne({
                 where: {
-                    tour_fid: request.tour_fid
+                    tour_fid: request.tour_fid,
+                    device_id: device.id
                 }
             });
 
@@ -170,7 +171,8 @@ export class SightingTourTracking {
             for (const [tour_fid, value] of groupList) {
                 const tour = await sightingTourRepository.findOne({
                     where: {
-                        tour_fid
+                        tour_fid,
+                        device_id: device.id
                     }
                 });
 
