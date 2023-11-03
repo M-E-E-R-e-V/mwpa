@@ -102,6 +102,16 @@ According to this check, a sighting is already displayed as <mark style="backgro
 
 ***
 
+## More data for the sightings
+
+Additional data about the viewing is collected in a separate table using API via third-party services (tested services). Using existing data (e.g. time/location), further data can be collected (e.g. sea depth, weather, etc.).
+
+<figure><img src="../.gitbook/assets/mwpa_sightingextend.png" alt=""><figcaption><p>Cronjob call over API more sighting data.</p></figcaption></figure>
+
+A cron job (a service that starts after a certain time) is used to check new sightings and query additional data using the provider's API. This data is saved in an extra table with a reference to the sighting.
+
+***
+
 ## Instances of MWPA at M.E.E.R. e.V.
 
 M.E.E.R. e.V. has several instances of MWPA Server (backend and database) to record sightings:
@@ -130,3 +140,5 @@ If there is a problem on the boat, Rolf gets feedback from the guide (end user).
 #### Tests of new versions:
 
 Tina tests the new versions of MWPA and gives feedback on errors that are then corrected by Stefan. Then there is another test run. Once the errors have been fixed, the version can be released. The [new version is then installed on the tablet](https://m-e-e-r-e-v.gitbook.io/mwpa-app/mwpa-mammal-watching.-processing.-analysing./update-and-debugging) with Rolf. Innovations are then discussed together (user handling).
+
+<figure><img src="../.gitbook/assets/mwpa_release_flow.png" alt=""><figcaption><p>Flow for new version release.</p></figcaption></figure>
