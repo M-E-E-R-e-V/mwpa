@@ -1,3 +1,7 @@
+---
+description: A list of boat tours.
+---
+
 # Tours
 
 ## Tour List
