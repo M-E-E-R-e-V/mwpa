@@ -150,50 +150,6 @@ export class Sighting extends BasePage {
             IconFa.edit
         );
 
-        // btnMenu.addDivider();
-        //
-        // btnMenu.addMenuItem(
-        //     new LangText('Set sighting date by GPS (only Admin)'),
-        //     (): void => {
-        //         DialogConfirm.confirm(
-        //             'dcsetgpsdate',
-        //             ModalDialogType.large,
-        //             'Set sighting date by GPS (only Admin)',
-        //             'Only intended for the transition! Do not use!',
-        //             async(_, dialog) => {
-        //                 try {
-        //                     const data = await SightingsAPI.setDateByGPS();
-        //
-        //                     if (data) {
-        //                         console.log(data);
-        //
-        //                         this._toast.fire({
-        //                             icon: 'success',
-        //                             title: 'Data set, check log.'
-        //                         });
-        //                     } else {
-        //                         this._toast.fire({
-        //                             icon: 'error',
-        //                             title: 'Data empty!'
-        //                         });
-        //                     }
-        //                 } catch (message) {
-        //                     this._toast.fire({
-        //                         icon: 'error',
-        //                         title: message
-        //                     });
-        //                 }
-        //
-        //                 dialog.hide();
-        //             },
-        //             undefined,
-        //             'Start process',
-        //             ButtonClass.danger
-        //         );
-        //     },
-        //     IconFa.alert
-        // );
-
         const divResp = jQuery('<div class="table-responsive"></div>').appendTo(card.getElement());
 
         const table = new Table(divResp);
