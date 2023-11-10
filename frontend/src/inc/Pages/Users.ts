@@ -56,8 +56,8 @@ export class Users extends BasePage {
             this._usersDialog.resetValues();
             this._usersDialog.setTitle('Add User');
 
-            if (groups) {
-                this._usersDialog.setMainGroupList(groups);
+            if (groups.list) {
+                this._usersDialog.setMainGroupList(groups.list);
             }
 
             this._usersDialog.show();
@@ -178,8 +178,8 @@ export class Users extends BasePage {
 
                     let groupName = 'Unknown';
 
-                    if (groups) {
-                        for (const agroup of groups) {
+                    if (groups.list) {
+                        for (const agroup of groups.list) {
                             if (agroup.id === user.main_groupid) {
                                 groupName = agroup.description;
                             }
@@ -223,8 +223,8 @@ export class Users extends BasePage {
                             this._usersDialog.setFullname(user.fullname);
                             this._usersDialog.setEMail(user.email);
 
-                            if (groups) {
-                                this._usersDialog.setMainGroupList(groups);
+                            if (groups.list) {
+                                this._usersDialog.setMainGroupList(groups.list);
                             }
 
                             this._usersDialog.setMainGroup(user.main_groupid);
