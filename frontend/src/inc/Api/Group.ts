@@ -14,10 +14,23 @@ export type GroupEntry = {
 };
 
 /**
+ * Group Organization
+ */
+export type GroupOrganization = {
+    id: number;
+    name: string;
+    location: string;
+    lat: string;
+    lon: string;
+    country: string;
+};
+
+/**
  * GroupListResponse
  */
 export type GroupListResponse = DefaultReturn & {
     list?: GroupEntry[];
+    organizationList?: GroupOrganization[];
 };
 
 /**
@@ -28,7 +41,7 @@ export class Group {
     /**
      * getGroupList
      */
-    public static async getGroupList(): Promise<GroupEntry[] | null> {
+    public static async getGroupList(): Promise<GroupListResponse | null> {
         const result = await NetFetch.getData('/json/group/list');
 
         if (result && result.statusCode) {
@@ -36,11 +49,7 @@ export class Group {
 
             switch (tresult.statusCode) {
                 case StatusCodes.OK:
-                    if (tresult.list) {
-                        return tresult.list;
-                    }
-
-                    throw new Error('Grouplist is empty return!');
+                    return tresult;
 
                 case StatusCodes.UNAUTHORIZED:
                     throw new UnauthorizedError();
