@@ -1,5 +1,6 @@
 import moment from 'moment';
 import {Body, JsonController, Post, Session} from 'routing-controllers';
+import {Const} from '../../inc/Const';
 import {Devices as DevicesDB} from '../../inc/Db/MariaDb/Entity/Devices';
 import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/SightingTour';
 import {SightingTourTracking as SightingTourTrackingDB} from '../../inc/Db/MariaDb/Entity/SightingTourTracking';
@@ -7,6 +8,7 @@ import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from '../../inc/Logger/Logger';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
+import {DateHelper} from '../../inc/Utils/DateHelper';
 
 /**
  * SightingTourTrackingEntry
@@ -39,6 +41,14 @@ export type SightingTourTrackingCheckRequest = {
 };
 
 /**
+ * SightingTourTrackingCheckResponse
+ */
+export type SightingTourTrackingCheckResponse = DefaultReturn & {
+    isComplete?: boolean;
+    canDelete?: boolean;
+};
+
+/**
  * SightingTourTracking
  */
 @JsonController()
@@ -50,7 +60,7 @@ export class SightingTourTracking {
      * @param request
      */
     @Post('/mobile/sighting/tourtracking/check')
-    public async check(@Session() session: any, @Body() request: SightingTourTrackingCheckRequest): Promise<DefaultReturn> {
+    public async check(@Session() session: any, @Body() request: SightingTourTrackingCheckRequest): Promise<SightingTourTrackingCheckResponse> {
         if ((session.user !== undefined) && session.user.isLogin && session.user.isMobileLogin) {
             const deviceIdentity = session.user.deviceIdentity;
 
@@ -92,15 +102,38 @@ export class SightingTourTracking {
                 });
 
                 if (tcount === request.count) {
+                    const tourDate = moment(tour.date?.split(' ')[0]);
+                    const fixDate = moment(Const.FIX_DELETE_DATE);
+
+                    Logger.log(`Mobile/SightingTourTracking::check: check can delete for overtime: sightingDate: ${tourDate.format('YYYY.MM.DD')} < fixDate: ${fixDate.format('YYYY.MM.DD')} by tourid: ${tour.id}`);
+
+                    if (DateHelper.isDateOverTime(tourDate.toDate(), fixDate.toDate())) {
+                        Logger.log(`Mobile/SightingTourTracking::check: can delete for overtime by tourid: ${tour.id}`);
+
+                        return {
+                            statusCode: StatusCodes.OK,
+                            isComplete: true,
+                            canDelete: true
+                        };
+                    }
+
+                    Logger.log(`Mobile/SightingTourTracking::check: keep sighting, not in overtime by tourid: ${tour.id}`);
+
                     return {
-                        statusCode: StatusCodes.OK
+                        statusCode: StatusCodes.OK,
+                        isComplete: true
                     };
                 }
 
                 Logger.log(`Mobile/SightingTourTracking::check: count is different by tour_fid: ${request.tour_fid}, count db: ${tcount}, count device: ${request.count}`);
-            } else {
-                Logger.log(`Mobile/SightingTourTracking::check: Tour not found by tour_fid: ${request.tour_fid}, count device: ${request.count}`);
+
+                return {
+                    statusCode: StatusCodes.OK,
+                    isComplete: false
+                };
             }
+
+            Logger.log(`Mobile/SightingTourTracking::check: Tour not found by tour_fid: ${request.tour_fid}, count device: ${request.count}`);
 
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR

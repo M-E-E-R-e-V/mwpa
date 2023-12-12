@@ -4,6 +4,17 @@ import {StatusCodes} from './Status/StatusCodes';
 import {DefaultReturn} from './Types/DefaultReturn';
 
 /**
+ * SightingsFilter
+ */
+export type UserListFilter = {
+    filter?: {
+        show_disabled?: boolean;
+    };
+    limit?: number;
+    offset?: number;
+};
+
+/**
  * UserInfoData
  */
 export type UserInfoData = {
@@ -87,7 +98,7 @@ export class User {
         const result = await NetFetch.getData('/json/user/info');
 
         if (result && result.statusCode) {
-            switch(result.statusCode) {
+            switch (result.statusCode) {
                 case StatusCodes.OK:
                     return result.data as UserInfo;
 
@@ -101,9 +112,11 @@ export class User {
 
     /**
      * getUserList
+     * @param {UserListFilter} filter
+     * @returns {UserData[] | null}
      */
-    public static async getUserList(): Promise<UserData[] | null> {
-        const result = await NetFetch.getData('/json/user/list');
+    public static async getUserList(filter: UserListFilter): Promise<UserData[] | null> {
+        const result = await NetFetch.postData('/json/user/list', filter);
 
         if (result && result.statusCode) {
             const tresult = result as UserListResponse;

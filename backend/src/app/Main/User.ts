@@ -8,6 +8,17 @@ import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 
 /**
+ * SightingsFilter
+ */
+export type UserListFilter = {
+    filter?: {
+        show_disabled?: boolean;
+    };
+    limit?: number;
+    offset?: number;
+};
+
+/**
  * UserInfoData
  */
 export type UserInfoData = {
@@ -158,8 +169,8 @@ export class User {
      * getList
      * @param session
      */
-    @Get('/json/user/list')
-    public async getList(@Session() session: any): Promise<UserListResponse> {
+    @Post('/json/user/list')
+    public async getList(@Body() filter: UserListFilter, @Session() session: any): Promise<UserListResponse> {
         if ((session.user !== undefined) && session.user.isLogin) {
             if (!session.user.isAdmin) {
                 return {
@@ -167,8 +178,21 @@ export class User {
                 };
             }
 
+            const where: any = {};
+
+            if (filter.filter) {
+                if (filter.filter.show_disabled !== undefined) {
+                    if (!filter.filter.show_disabled) {
+                        where.disable = false;
+                    }
+                }
+            }
+
             const userRepository = MariaDbHelper.getConnection().getRepository(UserDB);
-            const users = await userRepository.find();
+            const users = await userRepository.find({
+                where
+            });
+
             const list: UserData[] = [];
 
             for (const user of users) {

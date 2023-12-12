@@ -12,6 +12,7 @@ import {Lang} from './inc/Lang';
 import {Admin as AdminPage} from './inc/Pages/Admin';
 import {BasePage} from './inc/Pages/BasePage';
 import {Group as GroupPage} from './inc/Pages/Group';
+import {Organization} from './inc/Pages/Organization';
 import {Profil} from './inc/Pages/Profil';
 import {Sighting as SightingPage} from './inc/Pages/Sighting';
 import {Species as SpeciesPage} from './inc/Pages/Species';
@@ -180,6 +181,14 @@ type SideMenuEntry = {
                             }
                         },
                         {
+                            title: 'Organization',
+                            icon: 'fa-solid fa-globe',
+                            name: 'admin-organization',
+                            onClick: (): void => {
+                                loadPage(new Organization());
+                            }
+                        },
+                        {
                             title: 'Species',
                             icon: 'fa-solid fa-paw',
                             name: 'admin-species',
@@ -197,8 +206,16 @@ type SideMenuEntry = {
                         },
                         {
                             title: 'Encounters',
-                            icon: 'fa-solid fa-hand-paper-o',
-                            name: 'admin-vehicle',
+                            icon: 'fa-solid fa-satellite-dish',
+                            name: 'admin-encounters',
+                            onClick: (): void => {
+                                //loadPage(new Species());
+                            }
+                        },
+                        {
+                            title: 'Devices',
+                            icon: 'fa-solid fa-server',
+                            name: 'admin-devices',
                             onClick: (): void => {
                                 //loadPage(new Species());
                             }

@@ -7,14 +7,17 @@ import {
     ContentColSize,
     ContentRow, IconFa,
     LangText,
-    LeftNavbarLink,
+    LeftNavbarLink, Switch,
     Table, Td,
     Th,
     Tr
 } from 'bambooo';
 import {Group as GroupAPI} from '../Api/Group';
-import {User as UserAPI, UserData} from '../Api/User';
+import {User as UserAPI, UserData, UserListFilter} from '../Api/User';
 import {Lang} from '../Lang';
+import {UtilAvatarGenerator} from '../Utils/UtilAvatarGenerator';
+import {UtilColor} from '../Utils/UtilColor';
+import {UtilShorname} from '../Utils/UtilShorname';
 import {BasePage} from './BasePage';
 import {UsersEditModal} from './Users/UsersEditModal';
 
@@ -122,6 +125,12 @@ export class Users extends BasePage {
      * loadContent
      */
     public async loadContent(): Promise<void> {
+        const filter: UserListFilter = {
+            filter: {
+                show_disabled: false
+            }
+        };
+
         this._onLoadTable = async(): Promise<void> => {
             this._wrapper.getContentWrapper().getContent().empty();
 
@@ -131,14 +140,17 @@ export class Users extends BasePage {
             card.setTitle(new LangText('Users'));
             card.showLoading();
 
-            const users = await UserAPI.getUserList();
+            const users = await UserAPI.getUserList(filter);
             const groups = await GroupAPI.getGroupList();
 
             const table = new Table(card.getElement());
             const trhead = new Tr(table.getThead());
 
             // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Id'));
+            new Th(trhead, new ColumnContent([
+                new LangText('Id'),
+                new LangText('Avatar')
+            ]));
 
             // eslint-disable-next-line no-new
             new Th(trhead, new ColumnContent([
@@ -156,7 +168,17 @@ export class Users extends BasePage {
             new Th(trhead, '');
 
             // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Disabled'));
+            const thDisabled = new Th(trhead, new LangText('Disabled'));
+            const filterDisabled = new Switch(thDisabled, 'filterDisabled', 'Show all');
+            filterDisabled.setEnable(filter.filter.show_disabled);
+            filterDisabled.getElement().css({
+                'margin-bottom': '0'
+            });
+
+            filterDisabled.setChangeFn((value) => {
+                filter.filter.show_disabled = value;
+                this._onLoadTable();
+            });
 
             // eslint-disable-next-line no-new
             new Th(trhead, '');
@@ -165,8 +187,14 @@ export class Users extends BasePage {
                 for (const user of users) {
                     const trbody = new Tr(table.getTbody());
 
+                    const avatarImg = UtilAvatarGenerator.generateAvatar(
+                        UtilShorname.getShortname(user.fullname),
+                        'white',
+                        UtilColor.getColor(user.username)
+                    );
+
                     // eslint-disable-next-line no-new
-                    new Td(trbody, `#${user.id}`);
+                    new Td(trbody, `#${user.id}<br><div class="image"><img src="${avatarImg}" class="img-circle elevation-2" alt="User Image" width="33px"></div>`);
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, new ColumnContent([
