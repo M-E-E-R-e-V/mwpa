@@ -1,7 +1,9 @@
 import * as fs from 'fs';
+import moment from 'moment/moment';
 import * as Path from 'path';
 import {Body, BodyParam, JsonController, Post, Session, UploadedFile} from 'routing-controllers';
 import {v4 as uuidv4} from 'uuid';
+import {Const} from '../../inc/Const';
 import {Devices as DevicesDB} from '../../inc/Db/MariaDb/Entity/Devices';
 import {Sighting as SightingDB, SightingType} from '../../inc/Db/MariaDb/Entity/Sighting';
 import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/SightingTour';
@@ -21,6 +23,7 @@ import {UtilTourFid} from '../../inc/Utils/UtilTourFid';
  */
 export type SightingSaveResponse = DefaultReturn & {
     unid?: string;
+    canDelete?: boolean;
 };
 
 /**
@@ -151,6 +154,24 @@ export class Sightings {
                 Logger.log(`Mobile/Sightings::save: is new sighting unid: ${sighting.unid}`);
             } else {
                 Logger.log(`Mobile/Sightings::save: update sighting unid: ${sighting.unid}`);
+
+                // can delete for overtime
+                const sightingDate = moment(sighting.date?.split(' ')[0]);
+                const fixDate = moment(Const.FIX_DELETE_DATE);
+
+                Logger.log(`Mobile/Sightings::save: check can delete for overtime: sightingDate: ${sightingDate.format('YYYY.MM.DD')} < fixDate: ${fixDate.format('YYYY.MM.DD')} by unid: ${sighting.unid}`);
+
+                if (DateHelper.isDateOverTime(sightingDate.toDate(), fixDate.toDate())) {
+                    Logger.log(`Mobile/Sightings::save: can delete for overtime by unid: ${sighting.unid}`);
+
+                    return {
+                        statusCode: StatusCodes.OK,
+                        unid: sighting.unid,
+                        canDelete: true
+                    };
+                }
+
+                Logger.log(`Mobile/Sightings::save: keep sighting, not in overtime by unid: ${sighting.unid}`);
             }
 
             if (sighting) {

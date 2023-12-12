@@ -8,9 +8,15 @@ import {
     ContentRow, DialogInfo,
     IconFa,
     LangText,
-    LeftNavbarLink, ModalDialogType, Table, Td, Th, Tooltip, Tr
+    LeftNavbarLink, ModalDialogType, NavTab, Table, Td, Th, Tooltip, Tr
 } from 'bambooo';
 import moment from 'moment';
+import {Map as OlMap, View} from 'ol';
+import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
+import {fromLonLat} from 'ol/proj';
+import {OSM} from 'ol/source';
+import VectorSource from 'ol/source/Vector';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
@@ -52,6 +58,18 @@ export class Sighting extends BasePage {
      * @protected
      */
     protected _sightingDeletedDialog: SightingDeletedModal;
+
+    /**
+     * map object
+     * @protected
+     */
+    protected _map: OlMap;
+
+    /**
+     * map source
+     * @protected
+     */
+    protected _source: VectorSource;
 
     /**
      * constructor
@@ -118,6 +136,39 @@ export class Sighting extends BasePage {
         });
     }
 
+    private _createMap(element: any): void {
+        const wrapperHeight = this._wrapper.getElement().height() - 220;
+
+        const mapElement = jQuery('<div></div>').appendTo(element);
+        mapElement.css({
+            height: `${wrapperHeight}px`
+        });
+
+        const tileLayer = new TileLayer({
+            source: new OSM({
+                wrapX: false
+            })
+        });
+
+        this._source = new VectorSource({
+            wrapX: false
+        });
+
+        const vector = new VectorLayer({
+            source: this._source
+        });
+
+        this._map = new OlMap({
+            layers: [tileLayer, vector],
+            target: mapElement[0],
+            view: new View({
+                center: fromLonLat([11.030, 47.739]),
+                zoom: 2.2,
+                multiWorld: true
+            })
+        });
+    }
+
     /**
      * loadContent
      */
@@ -150,7 +201,13 @@ export class Sighting extends BasePage {
             IconFa.edit
         );
 
-        const divResp = jQuery('<div class="table-responsive"></div>').appendTo(card.getElement());
+        const navTab = new NavTab(card.getElement(), 'sightinglistTab');
+        const tabList = navTab.addTab('List', 'list');
+        const tabMap = navTab.addTab('Map', 'map');
+
+        this._createMap(tabMap.body);
+
+        const divResp = jQuery('<div class="table-responsive"></div>').appendTo(tabList.body);
 
         const table = new Table(divResp);
         const trhead = new Tr(table.getThead());
@@ -345,6 +402,19 @@ export class Sighting extends BasePage {
                 for (const organization of organizations) {
                     morganizations.set(organization.id, organization);
                 }
+            }
+
+            // set map -------------------------------------------------------------------------------------------------
+
+            if (this._map) {
+                this._map.setView(new View({
+                    center: fromLonLat([
+                        -17.3340221,
+                        28.0525008
+                    ]),
+                    zoom: 12.5,
+                    multiWorld: true
+                }));
             }
 
             // sightings -----------------------------------------------------------------------------------------------

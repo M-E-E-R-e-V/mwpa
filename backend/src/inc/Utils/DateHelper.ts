@@ -30,4 +30,17 @@ export class DateHelper {
         return adate.getTimezoneOffset() < DateHelper.stdTimezoneOffset(adate);
     }
 
+    /**
+     * isDateOverTime
+     * @param aDate
+     * @param toDate
+     */
+    public static isDateOverTime(aDate: Date, toDate: Date): boolean {
+        if (aDate.getTime() < toDate.getTime()) {
+            return true;
+        }
+
+        return false;
+    }
+
 }
