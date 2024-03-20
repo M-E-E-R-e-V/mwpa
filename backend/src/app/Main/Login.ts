@@ -123,6 +123,9 @@ export class Login {
                 if (mainGroup) {
                     groups.push(mainGroup.id);
                     organizations.push(mainGroup.organization_id);
+
+                    // eslint-disable-next-line require-atomic-updates
+                    session.user.main_organization_id = mainGroup.organization_id;
                 }
 
                 const userGroups = MariaDbHelper.getConnection().getRepository(UserGroupsDB);

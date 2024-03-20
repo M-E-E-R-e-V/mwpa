@@ -1,5 +1,8 @@
-import {Get, JsonController, Session} from 'routing-controllers';
+import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
 import {Organization as OrganizationDB} from '../../inc/Db/MariaDb/Entity/Organization';
+import {
+    OrganizationTrackingArea as OrganizationTrackingAreaDB
+} from '../../inc/Db/MariaDb/Entity/OrganizationTrackingArea';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
@@ -18,6 +21,51 @@ export type OrganizationEntry = {
  */
 export type OrganizationUserListResponse = DefaultReturn & {
     list?: OrganizationEntry[];
+};
+
+/**
+ * OrganizationFullEntry
+ */
+export type OrganizationFullEntry = OrganizationEntry & {
+    location: string;
+    lat: string;
+    lon: string;
+    country: string;
+};
+
+/**
+ * OrganizationListResponse
+ */
+export type OrganizationListResponse = DefaultReturn & {
+    list?: OrganizationFullEntry[];
+};
+
+/**
+ * OrganizationTrackingAreaRequest
+ */
+export type OrganizationTrackingAreaRequest = {
+    id?: number;
+    organization?: {
+        organization_id: number;
+        area_type: string;
+    };
+};
+
+/**
+ * Organization tracking area entry
+ */
+export type OrganizationTrackingAreaEntry = {
+    id: number;
+    organization_id: number;
+    area_type: string;
+    geojsonstr: string;
+};
+
+/**
+ * OrganizationTrackingAreaRespose
+ */
+export type OrganizationTrackingAreaRespose = DefaultReturn & {
+    data?: OrganizationTrackingAreaEntry;
 };
 
 /**
@@ -56,6 +104,201 @@ export class Organization {
             return {
                 statusCode: StatusCodes.OK,
                 list
+            };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
+    }
+
+    /**
+     * getOrganizations
+     * @param session
+     */
+    @Get('/json/organization/list')
+    public async getOrganizations(@Session() session: any): Promise<OrganizationListResponse> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            if (!session.user.isAdmin) {
+                return {
+                    statusCode: StatusCodes.FORBIDDEN
+                };
+            }
+
+            const organizationRepository = MariaDbHelper.getConnection().getRepository(OrganizationDB);
+
+            const orgs = await organizationRepository.find();
+
+            const list: OrganizationFullEntry[] = [];
+
+            for (const org of orgs) {
+                list.push({
+                    id: org.id,
+                    description: org.description,
+                    location: org.location,
+                    lat: org.lat,
+                    lon: org.lon,
+                    country: org.country
+                });
+            }
+
+            return {
+                statusCode: StatusCodes.OK,
+                list
+            };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
+    }
+
+    /**
+     * Save Organization
+     * @param session
+     * @param req
+     */
+    @Post('/json/organization/save')
+    public async saveOrganization(@Session() session: any, @Body() req: OrganizationFullEntry): Promise<DefaultReturn> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            if (!session.user.isAdmin) {
+                return {
+                    statusCode: StatusCodes.FORBIDDEN
+                };
+            }
+
+            const organizationRepository = MariaDbHelper.getConnection().getRepository(OrganizationDB);
+            let org: OrganizationDB|null = null;
+
+            if (req.id !== 0) {
+                const torg = await organizationRepository.findOne({
+                    where: {
+                        id: req.id
+                    }
+                });
+
+                if (torg) {
+                    org = torg;
+                }
+            }
+
+            if (org === null) {
+                org = new OrganizationDB();
+            }
+
+            org.description = req.description;
+            org.country = req.country;
+            org.location = req.location;
+            org.lat = req.lat;
+            org.lon = req.lon;
+
+            await organizationRepository.save(org);
+
+            return {
+                statusCode: StatusCodes.OK
+            };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
+    }
+
+    /**
+     * getTrackingArea
+     * @param session
+     */
+    @Post('/json/organization/trackingarea/list')
+    public async getTrackingArea(@Session() session: any, @Body() req: OrganizationTrackingAreaRequest): Promise<OrganizationTrackingAreaRespose> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            if (!session.user.isAdmin) {
+                return {
+                    statusCode: StatusCodes.FORBIDDEN
+                };
+            }
+
+            const otaRepository = MariaDbHelper.getConnection().getRepository(OrganizationTrackingAreaDB);
+            let ota: OrganizationTrackingAreaDB|undefined;
+
+            if (req.id) {
+                ota = await otaRepository.findOne({
+                    where: {
+                        id: req.id
+                    }
+                });
+            } else if (req.organization) {
+                ota = await otaRepository.findOne({
+                    where: {
+                        organization_id: req.organization.organization_id,
+                        area_type: req.organization.area_type
+                    }
+                });
+            }
+
+
+            if (ota) {
+                return {
+                    statusCode: StatusCodes.OK,
+                    data: {
+                        id: ota.id,
+                        area_type: ota.area_type,
+                        organization_id: ota.organization_id,
+                        geojsonstr: ota.geojsonstr
+                    }
+                };
+            }
+
+            return {
+                statusCode: StatusCodes.OK
+            };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
+    }
+
+    /**
+     * saveTrackingArea
+     * @param session
+     * @param {OrganizationTrackingAreaEntry} req
+     */
+    @Post('/json/organization/trackingarea/save')
+    public async saveTrackingArea(@Session() session: any, @Body() req: OrganizationTrackingAreaEntry): Promise<DefaultReturn> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            if (!session.user.isAdmin) {
+                return {
+                    statusCode: StatusCodes.FORBIDDEN
+                };
+            }
+
+            const otaRepository = MariaDbHelper.getConnection().getRepository(OrganizationTrackingAreaDB);
+            let ota: OrganizationTrackingAreaDB|null = null;
+
+            if (req.id !== 0) {
+                const tota = await otaRepository.findOne({
+                    where: {
+                        id: req.id
+                    }
+                });
+
+                if (tota) {
+                    ota = tota;
+                }
+            }
+
+            if (ota === null) {
+                ota = new OrganizationTrackingAreaDB();
+            }
+
+            ota.organization_id = req.organization_id;
+            ota.area_type = req.area_type;
+            ota.geojsonstr = req.geojsonstr;
+
+            await otaRepository.save(ota);
+
+            return {
+                statusCode: StatusCodes.OK
             };
         }
 

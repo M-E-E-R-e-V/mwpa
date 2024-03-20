@@ -23,6 +23,7 @@ import {Sightings as SightingsMobileController} from './app/Mobile/Sightings';
 import {SightingTourTracking as SightingTourTrackingMobileController} from './app/Mobile/SightingTourTracking';
 import {Species as SpeciesMobileController} from './app/Mobile/Species';
 import {User as UserMainController} from './app/Main/User';
+import {TrackingArea as TrackingAreaController} from './app/Mobile/TrackingArea';
 import {User as UserMobileController} from './app/Mobile/User';
 import {Vehicle as VehicleMainController} from './app/Main/Vehicle';
 import {Vehicle as VehicleMobileController} from './app/Mobile/Vehicle';
@@ -36,6 +37,7 @@ import {EncounterCategories as EncounterCategoriesDB} from './inc/Db/MariaDb/Ent
 import {ExternalReceiver as ExternalReceiverDB} from './inc/Db/MariaDb/Entity/ExternalReceiver';
 import {Group as GroupDB} from './inc/Db/MariaDb/Entity/Group';
 import {Organization as OrganizationDB} from './inc/Db/MariaDb/Entity/Organization';
+import {OrganizationTrackingArea as OrganizationTrackingAreaDB} from './inc/Db/MariaDb/Entity/OrganizationTrackingArea';
 import {Sighting as SightingDB} from './inc/Db/MariaDb/Entity/Sighting';
 import {SightingExtended as SightingExtendedDB} from './inc/Db/MariaDb/Entity/SightingExtended';
 import {SightingTour as SightingTourDB} from './inc/Db/MariaDb/Entity/SightingTour';
@@ -121,6 +123,7 @@ import {DepthService} from './inc/Service/DepthService';
             entities: [
                 UserDB,
                 OrganizationDB,
+                OrganizationTrackingAreaDB,
                 GroupDB,
                 UserGroupsDB,
                 SpeciesDB,
@@ -277,7 +280,8 @@ import {DepthService} from './inc/Service/DepthService';
             BehaviouralStatesMobileController,
             SpeciesMobileController,
             SightingsMobileController,
-            SightingTourTrackingMobileController
+            SightingTourTrackingMobileController,
+            TrackingAreaController
         ],
         publicDir: public_dir
     });
