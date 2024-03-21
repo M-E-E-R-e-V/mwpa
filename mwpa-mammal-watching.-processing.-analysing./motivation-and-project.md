@@ -72,5 +72,6 @@ The IUCN Marine Mammal Protected Areas Task Force recently announced the designa
 
 <figure><img src="../.gitbook/assets/IMMA_Karte_Europa-300x300.png" alt=""><figcaption><p>IMMA e-Atlas</p></figcaption></figure>
 
-Original article: [https://m-e-e-r.de/iucn-weist-die-kanarischen-inseln-als-imma/](https://m-e-e-r.de/iucn-weist-die-kanarischen-inseln-als-imma/)\
-Working group documents and reports: [https://www.marinemammalhabitat.org/resources/documents/](https://www.marinemammalhabitat.org/resources/documents/) IMMA e-Atlas: [https://www.marinemammalhabitat.org/imma-eatlas/](https://www.marinemammalhabitat.org/imma-eatlas/)
+* Original article: [https://m-e-e-r.de/iucn-weist-die-kanarischen-inseln-als-imma/](https://m-e-e-r.de/iucn-weist-die-kanarischen-inseln-als-imma/)
+* Working group documents and reports: [https://www.marinemammalhabitat.org/resources/documents/](https://www.marinemammalhabitat.org/resources/documents/)
+* IMMA e-Atlas: [https://www.marinemammalhabitat.org/imma-eatlas/](https://www.marinemammalhabitat.org/imma-eatlas/)
