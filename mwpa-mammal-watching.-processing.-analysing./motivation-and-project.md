@@ -65,3 +65,12 @@ The goal has been clear to the club for a long time. The viewing data must be di
 After all data has been collected, the data from M.E.E.R. e.V. evaluated in collaboration with other scientists. The result is then [publications/publications](https://m-e-e-r.de/en/research/publications/) and graphics.
 
 <figure><img src="../.gitbook/assets/slides_klein_all (1).jpg" alt=""><figcaption><p><a href="https://m-e-e-r.de/en/milestone-for-meers-work-in-the-canaries/">https://m-e-e-r.de/en/milestone-for-meers-work-in-the-canaries/</a></p></figcaption></figure>
+
+#### 2024-03-01 - IUCN REGARDS THE CANARY ISLANDS AS IMMA
+
+The IUCN Marine Mammal Protected Areas Task Force recently announced the designation of 39 new Important Marine Mammal Areas (IMMAs) in the North-East Atlantic and the Baltic Sea. There are now 280 IMMAs worldwide. SEA. In May 2023, during an international workshop in Hamburg, he worked on the proposal to designate an IMMA for the entire Canary Islands, providing sighting data and geographical maps for La Gomera. We are delighted that this proposal has now been accepted! M.E.E.R.'s sightings database, one of the largest in the world, has undoubtedly helped to reinforce the importance of these waters to whales and dolphins. IMMAs represent important habitats for marine mammals. With the addition of new IMMAs to the IMMA e-Atlas, the portfolio of regions that require direct conservation measures based on verified data is growing. Scientists are calling on national and regional governments to use the IMMA database, for example to set up new protected areas and carry out environmental impact assessments.
+
+<figure><img src="../.gitbook/assets/IMMA_Karte_Europa-300x300.png" alt=""><figcaption><p>IMMA e-Atlas</p></figcaption></figure>
+
+Original article: [https://m-e-e-r.de/iucn-weist-die-kanarischen-inseln-als-imma/](https://m-e-e-r.de/iucn-weist-die-kanarischen-inseln-als-imma/)\
+Working group documents and reports: [https://www.marinemammalhabitat.org/resources/documents/](https://www.marinemammalhabitat.org/resources/documents/) IMMA e-Atlas: [https://www.marinemammalhabitat.org/imma-eatlas/](https://www.marinemammalhabitat.org/imma-eatlas/)
