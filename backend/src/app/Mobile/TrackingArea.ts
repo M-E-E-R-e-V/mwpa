@@ -6,19 +6,21 @@ import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 
+export type FeatureCollectionCordinate = number[][];
+
 export type FeatureCollection = {
     type: string;
     features: {
         type: string;
         geometry: {
             type: string;
-            coordinates: number[][];
+            coordinates: FeatureCollectionCordinate[];
         };
     }[];
 };
 
 export type TrackingAreaHomeData = {
-    coordinates: number[][];
+    coordinates: FeatureCollectionCordinate;
     organization_id: number;
 };
 
@@ -60,7 +62,7 @@ export class TrackingArea {
                                     return {
                                         statusCode: StatusCodes.OK,
                                         data: {
-                                            coordinates: geometry.coordinates,
+                                            coordinates: geometry.coordinates[0],
                                             organization_id: ota.organization_id
                                         }
                                     };
