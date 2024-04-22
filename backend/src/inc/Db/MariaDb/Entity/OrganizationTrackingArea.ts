@@ -36,4 +36,22 @@ export class OrganizationTrackingArea extends BaseEntity {
     })
     public geojsonstr!: string;
 
+    /**
+     * create datetime
+     */
+    @Index()
+    @Column({
+        default: 0
+    })
+    public create_datetime!: number;
+
+    /**
+     * update datetime
+     */
+    @Index()
+    @Column({
+        default: 0
+    })
+    public update_datetime!: number;
+
 }
