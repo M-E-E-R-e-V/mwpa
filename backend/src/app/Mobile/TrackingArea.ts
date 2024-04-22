@@ -22,6 +22,8 @@ export type FeatureCollection = {
 export type TrackingAreaHomeData = {
     coordinates: FeatureCollectionCordinate;
     organization_id: number;
+    create_datetime: number;
+    update_datetime: number;
 };
 
 export type TrackingAreaHomeResponse = DefaultReturn & {
@@ -63,7 +65,9 @@ export class TrackingArea {
                                         statusCode: StatusCodes.OK,
                                         data: {
                                             coordinates: geometry.coordinates[0],
-                                            organization_id: ota.organization_id
+                                            organization_id: ota.organization_id,
+                                            create_datetime: ota.create_datetime,
+                                            update_datetime: ota.update_datetime
                                         }
                                     };
                                 }

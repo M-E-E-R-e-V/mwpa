@@ -7,6 +7,7 @@ import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 import {Users} from '../../inc/Users/Users';
+import {DateHelper} from '../../inc/Utils/DateHelper';
 
 /**
  * OrganizationEntry
@@ -287,9 +288,18 @@ export class Organization {
                 }
             }
 
+            const ctime = DateHelper.getCurrentDbTime();
+
             if (ota === null) {
                 ota = new OrganizationTrackingAreaDB();
+                ota.create_datetime = ctime;
             }
+
+            if (ota.create_datetime === 0) {
+                ota.create_datetime = ctime;
+            }
+
+            ota.update_datetime = ctime;
 
             ota.organization_id = req.organization_id;
             ota.area_type = req.area_type;
