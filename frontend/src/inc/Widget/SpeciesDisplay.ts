@@ -1,7 +1,8 @@
-import {Badge, BadgeType, DialogInfo, Element, ModalDialogType} from 'bambooo';
+import {Badge, BadgeType, Element} from 'bambooo';
 import {SightingsEntry} from '../Api/Sightings';
 import {SpeciesEntry} from '../Api/Species';
 import {UtilColor} from '../Utils/UtilColor';
+import {UtilOttLink} from '../Utils/UtilOttLink';
 
 export class SpeciesDisplay extends Element {
 
@@ -23,7 +24,7 @@ export class SpeciesDisplay extends Element {
         'Caretta caretta - Loggerhead sea turtle'
     ];
 
-    public constructor(element: Element, sighting: SightingsEntry, speciesList: Map<number, SpeciesEntry>) {
+    public constructor(element: Element|any, sighting: SightingsEntry, speciesList: Map<number, SpeciesEntry>) {
         super();
 
         let specieName = '';
@@ -61,30 +62,7 @@ export class SpeciesDisplay extends Element {
         this._element = this._badge.getElement();
 
         if (ottid) {
-            const tooltpSpecStr = 'Click for more Information';
-
-            this._element.attr('data-toggle', 'tooltip');
-            this._element.attr('data-html', 'true');
-            this._element.attr('data-original-title', tooltpSpecStr);
-            this._element.css({
-                cursor: 'pointer'
-            });
-
-            this._element.on('click', () => {
-                let infoStr = 'You can learn more about the species at the following links:&nbsp;';
-                infoStr += `<a href="https://tree.opentreeoflife.org/taxonomy/browse?id=${ottid}" target="_blank">Opentreeoflife.org</a><br>`;
-                infoStr += `<iframe style="width: 100%; height: 400px; border: 0" src="https://www.onezoom.org/life.html/@=${ottid}""></iframe>`;
-
-                DialogInfo.info(
-                    'sightspeciesinfo',
-                    ModalDialogType.xlarge,
-                    `More Information over "${specieName}"`,
-                    infoStr,
-                    (_, modal: DialogInfo) => {
-                        modal.hide();
-                    }
-                );
-            });
+            UtilOttLink.setDialog(this._element, specieName, ottid);
         }
     }
 

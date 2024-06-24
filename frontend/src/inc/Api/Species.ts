@@ -4,6 +4,14 @@ import {StatusCodes} from './Status/StatusCodes';
 import {DefaultReturn} from './Types/DefaultReturn';
 
 /**
+ * Species entry group
+ */
+export type SpeciesEntryGroup = {
+    name: string;
+    color: string;
+};
+
+/**
  * SpeciesEntry
  */
 export type SpeciesEntry = {
@@ -11,10 +19,7 @@ export type SpeciesEntry = {
     name: string;
     ottid: number;
     isdeleted?: boolean;
-    species_group?: {
-        name: string;
-        color: string;
-    };
+    species_group?: SpeciesEntryGroup;
 };
 
 /**

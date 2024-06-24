@@ -10,6 +10,7 @@ import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
 import {UtilImageUploadPath} from '../../inc/Utils/UtilImageUploadPath';
+import {UtilTurtleList} from '../Utils/UtilTurtleList';
 import {Species, SpeciesEntry} from './Species';
 
 /**
@@ -115,22 +116,6 @@ export type ToursTrackingResponse = DefaultReturn & {
  */
 @JsonController()
 export class Tours {
-
-    /**
-     * turtles
-     * @protected
-     */
-    protected _turtles: string[] = [
-        'Caretta caretta',
-        'Dermochelys coriacea',
-        'Chelonia mydas',
-        'Eretmochelys imbricata',
-        'Unknown sea turtle',
-        'Eretmochelys imbricata - Hawksbill sea turtle',
-        'Chelonia mydas - Green sea turtle',
-        'Dermochelys coriacea - Leatherback sea turtle',
-        'Caretta caretta - Loggerhead sea turtle'
-    ];
 
     /**
      * getList
@@ -299,7 +284,7 @@ export class Tours {
                             pointtype = species.species_group?.name.toLowerCase();
                         }
                     } else if (sighting.other) {
-                        if (this._turtles.includes(sighting.other?.trim())) {
+                        if (UtilTurtleList.isTurtle(sighting.other)) {
                             pointtype = 'testudines';
                             speciesName = sighting.other;
                         }

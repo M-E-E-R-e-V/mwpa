@@ -13,11 +13,7 @@ export class LocationDisplay extends Element {
         let gcValue: GeolocationCoordinates|null = null;
 
         if (typeof value === 'string') {
-            try {
-                gcValue = JSON.parse(value!);
-            } catch (e) {
-                console.log(e);
-            }
+            gcValue = UtilLocation.strToGeolocationCoordinates(value);
         } else {
             gcValue = value as GeolocationCoordinates;
         }

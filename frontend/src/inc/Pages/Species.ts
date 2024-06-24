@@ -1,4 +1,5 @@
 import {
+    Badge, BadgeType,
     ButtonClass,
     ButtonMenu, ButtonType,
     Card,
@@ -14,6 +15,9 @@ import {
 } from 'bambooo';
 import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species';
 import {Lang} from '../Lang';
+import {UtilColor} from '../Utils/UtilColor';
+import {UtilOttLink} from '../Utils/UtilOttLink';
+import {SpeciesGroupDisplay} from '../Widget/SpeciesGroupDisplay';
 import {BasePage} from './BasePage';
 import {SpeciesEditModal} from './Species/SpeciesEditModal';
 import {SpeciesMergeModal} from './Species/SpeciesMergeModal';
@@ -65,7 +69,7 @@ export class Species extends BasePage {
             this._speciesDialog.setTitle('Add Specie');
             this._speciesDialog.show();
             return false;
-        });
+        }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         // species dialog save -----------------------------------------------------------------------------------------
 
@@ -158,6 +162,12 @@ export class Species extends BasePage {
             new Th(trhead, new LangText('Name'));
 
             // eslint-disable-next-line no-new
+            new Th(trhead, new LangText('Ott-Id'));
+
+            // eslint-disable-next-line no-new
+            new Th(trhead, new LangText('Species-Name'));
+
+            // eslint-disable-next-line no-new
             new Th(trhead, '');
 
             if (species) {
@@ -169,6 +179,28 @@ export class Species extends BasePage {
 
                     // eslint-disable-next-line no-new
                     new Td(trbody, `${specie.name}`);
+
+                    // eslint-disable-next-line no-new
+                    const ottIdTd = new Td(trbody, '');
+
+                    if (specie.ottid !== 0) {
+                        const ottBadge = new Badge(
+                            ottIdTd,
+                            `<b style="color: ${UtilColor.getContrastYIQ('#6c757d')}">${specie.ottid}</b>`,
+                            BadgeType.info,
+                            '#6c757d'
+                        );
+
+                        UtilOttLink.setDialog(ottBadge.getElement(), `ID: ${specie.ottid}`, specie.ottid);
+                    }
+
+                    // eslint-disable-next-line no-new
+                    const speciesGroupTd = new Td(trbody, '');
+
+                    if (specie.species_group !== null) {
+                        // eslint-disable-next-line no-new
+                        new SpeciesGroupDisplay(speciesGroupTd, specie.species_group);
+                    }
 
                     // action
                     const actionTd = new Td(trbody, '');

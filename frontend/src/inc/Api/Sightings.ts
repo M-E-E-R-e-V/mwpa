@@ -64,6 +64,8 @@ export type SightingsEntry = {
     note?: string;
     organization_id?: number;
     files: string[];
+    pointtype?: string;
+    species_name?: string;
 };
 
 /**
