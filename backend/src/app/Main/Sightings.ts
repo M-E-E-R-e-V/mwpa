@@ -22,6 +22,8 @@ import {UtilDistanceCoast} from '../../inc/Utils/UtilDistanceCoast';
 import {UtilImageUploadPath} from '../../inc/Utils/UtilImageUploadPath';
 import {UtilPosition, UtilPositionToStr} from '../../inc/Utils/UtilPosition';
 import {UtilSelect} from '../../inc/Utils/UtilSelect';
+import {UtilTurtleList} from '../Utils/UtilTurtleList';
+import {Species, SpeciesEntry} from './Species';
 
 /**
  * SightingsFilter
@@ -56,6 +58,8 @@ export type SightingsEntry = TypeSighting & {
     source_import_file: string;
     organization_id: number;
     files: string[];
+    pointtype?: string;
+    species_name?: string;
 };
 
 /**
@@ -160,6 +164,8 @@ export class Sightings {
 
             filter.order = order;
 
+            // sighting list -------------------------------------------------------------------------------------------
+
             const dblist = await sightingRepository.find({
                 where,
                 order,
@@ -167,10 +173,35 @@ export class Sightings {
                 take: filter.limit
             });
 
+            // species list --------------------------------------------------------------------------------------------
+
+            const speciesList = await Species.getSpeciesList();
+            const speciesMap = new Map<number, SpeciesEntry>();
+
+            for (const species of speciesList) {
+                speciesMap.set(species.id, species);
+            }
+
+            // ---------------------------------------------------------------------------------------------------------
 
             const createrList = new Map<number, UserDB>();
 
             for (const entry of dblist) {
+                const species = speciesMap.get(entry.species_id);
+                let pointtype = 'none';
+                let speciesName = '';
+
+                if (species) {
+                    if (species.species_group) {
+                        pointtype = species.species_group?.name.toLowerCase();
+                    }
+                } else if (entry.other) {
+                    if (UtilTurtleList.isTurtle(entry.other)) {
+                        pointtype = 'testudines';
+                        speciesName = entry.other;
+                    }
+                }
+
                 let beaufort_wind = entry.beaufort_wind_n;
 
                 if (entry.beaufort_wind_n === '') {
@@ -249,7 +280,9 @@ export class Sightings {
                     hash_import_count: entry.hash_import_count,
                     source_import_file: entry.source_import_file,
                     organization_id: entry.organization_id,
-                    files
+                    files,
+                    pointtype,
+                    species_name: speciesName
                 });
             }
 

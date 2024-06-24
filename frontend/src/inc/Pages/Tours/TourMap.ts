@@ -161,7 +161,21 @@ export class ToursMap extends BasePage {
             this._popover = this._tooltip_popup.popover({
                 html: true,
                 content: () => {
-                    return feature.get('content');
+                    const content = feature.get('content');
+
+                    if (typeof content === 'string') {
+                        return content;
+                    } else if (typeof content === 'function') {
+                        const returnContent = content();
+
+                        if (typeof returnContent === 'string') {
+                            return returnContent;
+                        } else if (typeof returnContent === 'object') {
+                            return jQuery(returnContent).html();
+                        }
+                    }
+
+                    return 'None content found.';
                 }
             });
 
