@@ -56,7 +56,8 @@ gulp.task('copy-data', async() => {
 
         gulp.src([
             `${currentPath}node_modules/admin-lte/dist/css/**/*`,
-            `${currentPath}node_modules/ol/ol.css`
+            `${currentPath}node_modules/ol/ol.css`,
+            `${currentPath}node_modules/ol-layerswitcher/dist/ol-layerswitcher.css`,
         ])
         .pipe(gulp.dest(`${assetsPath}css`))
 

@@ -175,9 +175,16 @@ export class Sighting extends BasePage {
         // create map --------------------------------------------------------------------------------------------------
 
         this._map = new SightingMap(tabMap.body);
-        this._map.setHeight(this._wrapper.getElement().height() - 220);
-        this._map.load();
+        this._map.setHeight(jQuery(window).height() - 220);
+        this._map.load(true);
         this._map.setView();
+
+        tabMap.tab.on('click', () => {
+            this._map.setHeight(jQuery(window).height() - 220);
+            this._map.updateSize();
+        });
+
+        await this._map.addAreaByJson('map_areas/ES7020123.json', 'ES7020123', 'sigthing_ES7020123_layer');
 
         // create Table ------------------------------------------------------------------------------------------------
 
@@ -642,7 +649,7 @@ export class Sighting extends BasePage {
                 }
 
                 if (this._map !== null) {
-                    this._map.refrech();
+                    await this._map.refrech();
                 }
 
                 // init tooltips
