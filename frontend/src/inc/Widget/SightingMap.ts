@@ -1,8 +1,10 @@
-import {Element} from 'bambooo/src/Element';
+import {Element} from 'bambooo';
 import {Feature, Map as OlMap, Overlay, View} from 'ol';
+import LayerSwitcher from 'ol-layerswitcher';
 import {Coordinate} from 'ol/coordinate';
-import {GeoJSON} from 'ol/format';
+import {EsriJSON, GeoJSON} from 'ol/format';
 import {Point} from 'ol/geom';
+import {Heatmap} from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import {fromLonLat} from 'ol/proj';
@@ -58,6 +60,12 @@ export class SightingMap extends Element {
      * @protected
      */
     protected _geojsonFeatures: object[] = [];
+
+    /**
+     * Heatmap
+     * @protected
+     */
+    protected _useHeatmap: boolean = false;
 
     /**
      * Global styles
@@ -166,6 +174,13 @@ export class SightingMap extends Element {
                 multiWorld: true
             })
         });
+
+        const layerSwitcher = new LayerSwitcher({
+            reverse: true,
+            groupSelectStyle: 'group'
+        });
+
+        this._map.addControl(layerSwitcher);
     }
 
     /**
@@ -181,9 +196,13 @@ export class SightingMap extends Element {
     /**
      * Load
      */
-    public load(): void {
+    public load(useHeatmap: boolean): void {
         this._createMap();
         this._createMapToolTip();
+
+        if (useHeatmap) {
+            this._useHeatmap = true;
+        }
     }
 
     /**
@@ -348,25 +367,33 @@ export class SightingMap extends Element {
         });
     }
 
-    public refrech(): void {
-        this._printLayer();
+    public async refrech(): Promise<void> {
+        await this._printLayer();
+    }
+
+    public updateSize(): void {
+        this._map.updateSize();
     }
 
     /**
      * Print layer, move old layer and add new layer with new information
      * @protected
      */
-    protected _printLayer(): void {
+    protected async _printLayer(): Promise<void> {
         // first clear layers ------------------------------------------------------------------------------------------
-        const layers = this._map.getLayers();
-
-        for (const layer of layers.getArray()) {
+        this._map.getLayers().forEach((layer) => {
             const layerName = layer.get('name');
 
-            if (layerName && layerName === 'sigthing_layer') {
-                this._map.removeLayer(layer);
+            if (layerName) {
+                if (layerName === 'sigthing_layer') {
+                    this._map.removeLayer(layer);
+                }
+
+                if (layerName === 'sigthing_heat_layer') {
+                    this._map.removeLayer(layer);
+                }
             }
-        }
+        });
 
         // reprint layers ----------------------------------------------------------------------------------------------
 
@@ -429,7 +456,53 @@ export class SightingMap extends Element {
         });
 
         vectorLayer.set('name', 'sigthing_layer');
+        vectorLayer.set('title', 'Sightings');
 
+        this._map.addLayer(vectorLayer);
+
+        // heatmap -----------------------------------------------------------------------------------------------------
+
+        if (this._useHeatmap) {
+            const blur = 20;
+            const radius = 10;
+
+            const heatmaplayer = new Heatmap({
+                title: 'HeatMap',
+                // @ts-ignore
+                source: vectorSource,
+                blur,
+                radius,
+                weight: (): number => {
+                    return 10;
+                }
+            });
+
+            heatmaplayer.set('name', 'sigthing_heat_layer');
+
+            this._map.addLayer(heatmaplayer);
+        }
+    }
+
+    public async addAreaByJson(jsonFileUrl: string, title: string, name: string): Promise<void> {
+        const response = await fetch(jsonFileUrl);
+
+        const esriJsonObject = await response.json();
+
+        const esriJsonObj = new EsriJSON();
+        const features = esriJsonObj.readFeatures(esriJsonObject, {
+            featureProjection: 'EPSG:3857'
+        });
+
+        const vectorSource = new VectorSource({
+            features
+        });
+
+        const vectorLayer = new VectorLayer({
+            source: vectorSource
+        });
+
+        vectorLayer.set('title', title);
+        vectorLayer.set('name', name);
         this._map.addLayer(vectorLayer);
     }
 
