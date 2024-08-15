@@ -350,6 +350,7 @@ export class ToursMap extends BasePage {
                     coordList.push([value.longitude, value.latitude]);
 
                     // add boat direction ------------------------------------------------------------------------------
+                    end = value;
 
                     if (index > 0 && (index % 400 === 0)) {
                         boatDirection.push({
@@ -366,7 +367,6 @@ export class ToursMap extends BasePage {
                         });
                     }
 
-                    end = value;
                     index++;
                 }
 

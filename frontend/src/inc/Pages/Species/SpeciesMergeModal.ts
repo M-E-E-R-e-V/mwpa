@@ -75,7 +75,7 @@ export class SpeciesMergeModal extends ModalDialog {
         for (const specie of species) {
             const toption = {
                 key: `${specie.id}`,
-                value: specie.name
+                value: `#${specie.id} - ${specie.name}`
             };
 
             this._specieSourceSelect.addValue(toption);
@@ -100,7 +100,7 @@ export class SpeciesMergeModal extends ModalDialog {
 
     /**
      * setDestinationSpecie
-     * @param speciesId
+     * @param {string} specieId
      */
     public setDestinationSpecie(specieId: string): void {
         this._specieDestinationSelect.setSelectedValue(specieId);

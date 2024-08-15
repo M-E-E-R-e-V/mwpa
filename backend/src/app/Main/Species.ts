@@ -14,6 +14,7 @@ export type SpeciesEntry = {
     name: string;
     ottid: number;
     isdeleted?: boolean;
+    species_groupid: number;
     species_group?: {
         name: string;
         color: string;
@@ -72,6 +73,7 @@ export class Species {
                     name: specie.species_name,
                     ottid: specie.species_ott_id,
                     isdeleted: specie.species_isdeleted,
+                    species_groupid: specie.group_id,
                     species_group: {
                         name: specie.group_name,
                         color: specie.group_color
@@ -139,6 +141,8 @@ export class Species {
             }
 
             aspecie.name = request.name;
+            aspecie.ott_id = request.ottid;
+            aspecie.species_groupid = request.species_groupid;
 
             await MariaDbHelper.getConnection().manager.save(aspecie);
 

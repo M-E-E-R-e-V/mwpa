@@ -1,5 +1,3 @@
-version: '3.1'
-
 services:
   mariadb:
     image: mariadb:lts
@@ -7,9 +5,15 @@ services:
     environment:
       MARIADB_AUTO_UPGRADE: '1'
       MARIADB_INITDB_SKIP_TZINFO: '1'
-      MYSQL_ROOT_PASSWORD: 'test'
+      MYSQL_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
       MYSQL_ROOT_HOST: '%'
-      MYSQL_DATABASE: 'mwpa'
+      MYSQL_DATABASE: "${MARIADB_DATABASE}"
+    healthcheck:
+      test: [ "CMD", "mariadb", "-u${MARIADB_ROOT_USERNAME}", "-p${MARIADB_ROOT_PASSWORD}", "-e", "use ${MARIADB_DATABASE}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     volumes:
       - mwpaMariadbData:/var/lib/mysql
     ports:
@@ -43,6 +47,10 @@ services:
 #     context: .
 #    restart: always
 #    container_name: mwpa_server
+#    environment:
+#      MWPA_DB_MYSQL_USERNAME: "${MARIADB_ROOT_USERNAME}"
+#      MWPA_DB_MYSQL_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
+#      MWPA_DB_MYSQL_DATABASE: "${MARIADB_DATABASE}"
 #    volumes:
 #      - ./config.json:/opt/app/config.json
 #      - ./imports:/opt/app/imports
@@ -58,7 +66,8 @@ services:
 #        max-size: "500k"
 #        max-file: "50"
 #    depends_on:
-#      - mariadb
+#      mariadb:
+#        condition: service_healthy
 
 volumes:
   mwpaMariadbData:

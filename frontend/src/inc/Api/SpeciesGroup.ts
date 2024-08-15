@@ -3,38 +3,32 @@ import {UnauthorizedError} from './Error/UnauthorizedError';
 import {StatusCodes} from './Status/StatusCodes';
 import {DefaultReturn} from './Types/DefaultReturn';
 
-/**
- * BehaviouralStateEntry
- */
-export type BehaviouralStateEntry = {
+export type SpeciesGroupEntry = {
     id: number;
     name: string;
-    description: string;
-    isdeleted: boolean;
+    color: string;
+};
+
+export type SpeciesGroupListResponse = DefaultReturn & {
+    list: SpeciesGroupEntry[];
 };
 
 /**
- * BehaviouralStatesResponse
+ * Speces group api
  */
-export type BehaviouralStatesResponse = DefaultReturn & {
-    list: BehaviouralStateEntry[];
-};
-
-/**
- * BehaviouralStates
- */
-export class BehaviouralStates {
+export class SpeciesGroup {
 
     /**
-     * getList
+     * Return a list of speces group
      */
-    public static async getList(): Promise<null|BehaviouralStateEntry[]> {
-        const result = await NetFetch.getData('/json/behaviouralstates/list');
+    public static async getList(): Promise<null|SpeciesGroupEntry[]> {
+        const result = await NetFetch.getData('/json/speciesgroup/list');
 
         if (result && result.statusCode) {
             switch (result.statusCode) {
                 case StatusCodes.OK:
-                    const response = result as BehaviouralStatesResponse;
+                    // eslint-disable-next-line no-case-declarations
+                    const response = result as SpeciesGroupListResponse;
                     return response.list;
 
                 case StatusCodes.UNAUTHORIZED:
@@ -44,4 +38,5 @@ export class BehaviouralStates {
 
         return null;
     }
+
 }

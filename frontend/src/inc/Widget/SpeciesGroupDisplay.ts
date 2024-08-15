@@ -1,6 +1,5 @@
-import {Badge, BadgeType, Element} from 'bambooo';
+import {Badge, BadgeType, Element, UtilColor} from 'bambooo';
 import {SpeciesEntryGroup} from '../Api/Species';
-import {UtilColor} from '../Utils/UtilColor';
 
 /**
  * SpeciesGroupDisplay

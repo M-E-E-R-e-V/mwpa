@@ -11,11 +11,11 @@ import {
     Table,
     Td,
     Th,
-    Tr
+    Tr, UtilColor
 } from 'bambooo';
 import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species';
+import {SpeciesGroup as SpeciesGroupAPI} from '../Api/SpeciesGroup';
 import {Lang} from '../Lang';
-import {UtilColor} from '../Utils/UtilColor';
 import {UtilOttLink} from '../Utils/UtilOttLink';
 import {SpeciesGroupDisplay} from '../Widget/SpeciesGroupDisplay';
 import {BasePage} from './BasePage';
@@ -64,9 +64,12 @@ export class Species extends BasePage {
         // Navbar Left -------------------------------------------------------------------------------------------------
 
         // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Specie', () => {
+        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Specie', async() => {
             this._speciesDialog.resetValues();
             this._speciesDialog.setTitle('Add Specie');
+
+            const groups = await SpeciesGroupAPI.getList();
+            this._speciesDialog.setSpeciesGroupList(groups);
             this._speciesDialog.show();
             return false;
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
@@ -83,8 +86,9 @@ export class Species extends BasePage {
             try {
                 const aspecie: SpeciesEntry = {
                     id: tid,
-                    ottid: 0,
-                    name: this._speciesDialog.getName()
+                    ottid: this._speciesDialog.getOttId(),
+                    name: this._speciesDialog.getName(),
+                    species_groupid: this._speciesDialog.getSpeciesGroup()
                 };
 
                 if (await SpeciesAPI.save(aspecie)) {
@@ -214,11 +218,17 @@ export class Species extends BasePage {
 
                     btnMenu.addMenuItem(
                         'Edit',
-                        (): void => {
+                        async(): Promise<void> => {
                             this._speciesDialog.resetValues();
                             this._speciesDialog.setTitle('Edit Species');
                             this._speciesDialog.setId(specie.id);
                             this._speciesDialog.setName(specie.name);
+                            this._speciesDialog.setOttId(specie.ottid);
+
+                            const groups = await SpeciesGroupAPI.getList();
+                            this._speciesDialog.setSpeciesGroupList(groups);
+                            this._speciesDialog.setSpeciesGroup(specie.species_groupid);
+
                             this._speciesDialog.show();
                         },
                         IconFa.edit

@@ -7,10 +7,14 @@ import {Point} from 'ol/geom';
 import {Heatmap} from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
-import {fromLonLat} from 'ol/proj';
-import {OSM} from 'ol/source';
+import {fromLonLat, ProjectionLike} from 'ol/proj';
+import {OSM, TileWMS} from 'ol/source';
+import * as olProj from 'ol/proj';
+import * as olExtent from 'ol/extent';
 import VectorSource from 'ol/source/Vector';
 import {Circle, Fill, Icon, Stroke, Style} from 'ol/style';
+import WMTSTileGrid from 'ol/tilegrid/WMTS';
+import XYZ from 'ol/source/XYZ';
 
 export enum SightingMapObjectType {
     Route = 'route',
@@ -25,6 +29,14 @@ export enum SightingMapObjectType {
 }
 
 export type SightingMapPopupContent = () => string|any;
+
+/**
+ * Load map options
+ */
+export type SightingMapLoadOptions = {
+    useHeatmap?: boolean;
+    useBathymetriemap?: boolean;
+};
 
 /**
  * SightingMap
@@ -62,10 +74,10 @@ export class SightingMap extends Element {
     protected _geojsonFeatures: object[] = [];
 
     /**
-     * Heatmap
+     * load options
      * @protected
      */
-    protected _useHeatmap: boolean = false;
+    protected _loadOptions: SightingMapLoadOptions = {};
 
     /**
      * Global styles
@@ -196,12 +208,12 @@ export class SightingMap extends Element {
     /**
      * Load
      */
-    public load(useHeatmap: boolean): void {
+    public load(options?: SightingMapLoadOptions): void {
         this._createMap();
         this._createMapToolTip();
 
-        if (useHeatmap) {
-            this._useHeatmap = true;
+        if (options !== undefined) {
+            this._loadOptions = options;
         }
     }
 
@@ -381,19 +393,84 @@ export class SightingMap extends Element {
      */
     protected async _printLayer(): Promise<void> {
         // first clear layers ------------------------------------------------------------------------------------------
+        const layerNameList = [
+            'sigthing_layer',
+            'sigthing_heat_layer',
+            'sigthing_bathymetrie_layer',
+            'sigthing_idee_es_layer'
+        ];
+
         this._map.getLayers().forEach((layer) => {
+            if (layer === undefined || layer === null) {
+                return;
+            }
+
+            if (layer.get === undefined) {
+                return;
+            }
+
             const layerName = layer.get('name');
 
             if (layerName) {
-                if (layerName === 'sigthing_layer') {
-                    this._map.removeLayer(layer);
-                }
-
-                if (layerName === 'sigthing_heat_layer') {
+                if (layerNameList.indexOf(layerName) > -1) {
                     this._map.removeLayer(layer);
                 }
             }
         });
+
+        // Bathymetriemap ----------------------------------------------------------------------------------------------
+
+        if (this._loadOptions.useBathymetriemap !== undefined && this._loadOptions.useBathymetriemap) {
+            /*const bathymetrieLayer = new TileLayer({
+                opacity: 0.7,
+                source: new WMTS({
+                    //url: 'https://tiles.emodnet-bathymetry.eu/2020/{Layer}/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png',
+                    url: 'https://ows.emodnet-bathymetry.eu/wms',
+                    layer: 'baselayer',
+                    requestEncoding: 'REST',
+                    matrixSet: 'inspire_quad',
+                    format: 'image/png',
+                    projection: 'EPSG:4326',
+                    tileGrid: this._inspireWgs84Grid(12),
+                    style: 'default'
+                })
+            });
+
+            bathymetrieLayer.set('title', 'EMODnet Bathymetry');
+            bathymetrieLayer.set('name', 'sigthing_bathymetrie_layer');
+            this._map.addLayer(bathymetrieLayer);*/
+
+            const bathymetry = new TileLayer({
+                source: new TileWMS({
+                    url: 'https://ows.emodnet-bathymetry.eu/wms',
+                    params: {
+                        LAYERS: 'mean_atlas_land'
+                    }
+                })
+            });
+
+            bathymetry.set('title', 'EMODnet Bathymetry');
+            bathymetry.set('name', 'sigthing_bathymetrie_layer');
+            bathymetry.set('base', true);
+            bathymetry.setVisible(false);
+            this._map.addLayer(bathymetry);
+        }
+
+        // TMS Relieve ES Map ------------------------------------------------------------------------------------------
+
+        const tmsEs = new TileLayer({
+            source: new XYZ({
+                url: 'https://tms-relieve.idee.es/1.0.0/relieve/{z}/{x}/{-y}.jpeg',
+                projection: 'EPSG:3857' as ProjectionLike
+            }),
+            visible: true
+        });
+
+        tmsEs.set('title', 'IDEE ES');
+        tmsEs.set('name', 'sigthing_idee_es_layer');
+        tmsEs.set('base', true);
+
+        this._map.addLayer(tmsEs);
 
         // reprint layers ----------------------------------------------------------------------------------------------
 
@@ -457,12 +534,12 @@ export class SightingMap extends Element {
 
         vectorLayer.set('name', 'sigthing_layer');
         vectorLayer.set('title', 'Sightings');
-
+        vectorLayer.setZIndex(99);
         this._map.addLayer(vectorLayer);
 
-        // heatmap -----------------------------------------------------------------------------------------------------
+        // Heatmap -----------------------------------------------------------------------------------------------------
 
-        if (this._useHeatmap) {
+        if (this._loadOptions.useHeatmap !== undefined && this._loadOptions.useHeatmap) {
             const blur = 20;
             const radius = 10;
 
@@ -481,6 +558,28 @@ export class SightingMap extends Element {
 
             this._map.addLayer(heatmaplayer);
         }
+    }
+
+    protected _inspireWgs84Grid(levels: number): WMTSTileGrid {
+        const projection = olProj.get('EPSG:4326');
+
+        const projectionExtent = projection.getExtent();
+        const resolution = olExtent.getWidth(projectionExtent) / 512;
+
+        const resolutions = new Array(levels);
+        const matrixIds = new Array(levels);
+
+        for (let z = 0; z < levels; z++) {
+            // eslint-disable-next-line no-mixed-operators
+            resolutions[z] = resolution / 2 ** z;
+            matrixIds[z] = z;
+        }
+
+        return new WMTSTileGrid({
+            origin: olExtent.getTopLeft(projectionExtent),
+            resolutions,
+            matrixIds
+        });
     }
 
     public async addAreaByJson(jsonFileUrl: string, title: string, name: string): Promise<void> {
@@ -503,6 +602,7 @@ export class SightingMap extends Element {
 
         vectorLayer.set('title', title);
         vectorLayer.set('name', name);
+        vectorLayer.setZIndex(50);
         this._map.addLayer(vectorLayer);
     }
 
