@@ -206,6 +206,8 @@ export class Sighting extends BasePage {
         });
 
         await this._map.addAreaByJson('map_areas/ES7020123.json', 'ES7020123', 'sigthing_ES7020123_layer');
+        await this._map.addAreaByJson('map_areas/ES7020122.json', 'ES7020122', 'sigthing_ES7020122_layer');
+        await this._map.addAreaByJson('map_areas/ES0000526.json', 'ES0000526', 'sigthing_ES0000526_layer');
 
         // create Table ------------------------------------------------------------------------------------------------
 

@@ -10,6 +10,7 @@ import {Im2020} from './app/Import/Im2020';
 import {BehaviouralStates as BehaviouralStatesMainController} from './app/Main/BehaviouralStates';
 import {Organization as OrganizationMainController} from './app/Main/Organization';
 import {SpeciesGroup as SpeciesGroupMainController} from './app/Main/SpeciesGroup';
+import {MapCache as MapCacheController} from './app/Map/MapCache';
 import {BehaviouralStates as BehaviouralStatesMobileController} from './app/Mobile/BehaviouralStates';
 import {EncounterCategories as EncounterCategoriesMainController} from './app/Main/EncounterCategories';
 import {EncounterCategories as EncounterCategoriesMobileController} from './app/Mobile/EncounterCategories';
@@ -285,7 +286,10 @@ import {DepthService} from './inc/Service/DepthService';
             SpeciesMobileController,
             SightingsMobileController,
             SightingTourTrackingMobileController,
-            TrackingAreaController
+            TrackingAreaController,
+
+            // map-server ----------------------------------------------------------------------------------------------
+            MapCacheController
         ],
         publicDir: public_dir
     });

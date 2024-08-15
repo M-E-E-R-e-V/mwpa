@@ -8,7 +8,7 @@ import {Heatmap} from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import {fromLonLat, ProjectionLike} from 'ol/proj';
-import {OSM, TileWMS} from 'ol/source';
+import {TileWMS} from 'ol/source';
 import * as olProj from 'ol/proj';
 import * as olExtent from 'ol/extent';
 import VectorSource from 'ol/source/Vector';
@@ -164,8 +164,11 @@ export class SightingMap extends Element {
      */
     private _createMap(): void {
         const tileLayer = new TileLayer({
-            source: new OSM({
-                wrapX: false
+            // source: new OSM({
+            //     wrapX: false
+            //})
+            source: new XYZ({
+                url: '/mapcache/openstreetmap/{z}/{x}/{y}.png'
             })
         });
 
@@ -421,25 +424,6 @@ export class SightingMap extends Element {
         // Bathymetriemap ----------------------------------------------------------------------------------------------
 
         if (this._loadOptions.useBathymetriemap !== undefined && this._loadOptions.useBathymetriemap) {
-            /*const bathymetrieLayer = new TileLayer({
-                opacity: 0.7,
-                source: new WMTS({
-                    //url: 'https://tiles.emodnet-bathymetry.eu/2020/{Layer}/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.png',
-                    url: 'https://ows.emodnet-bathymetry.eu/wms',
-                    layer: 'baselayer',
-                    requestEncoding: 'REST',
-                    matrixSet: 'inspire_quad',
-                    format: 'image/png',
-                    projection: 'EPSG:4326',
-                    tileGrid: this._inspireWgs84Grid(12),
-                    style: 'default'
-                })
-            });
-
-            bathymetrieLayer.set('title', 'EMODnet Bathymetry');
-            bathymetrieLayer.set('name', 'sigthing_bathymetrie_layer');
-            this._map.addLayer(bathymetrieLayer);*/
-
             const bathymetry = new TileLayer({
                 source: new TileWMS({
                     url: 'https://ows.emodnet-bathymetry.eu/wms',
@@ -460,7 +444,8 @@ export class SightingMap extends Element {
 
         const tmsEs = new TileLayer({
             source: new XYZ({
-                url: 'https://tms-relieve.idee.es/1.0.0/relieve/{z}/{x}/{-y}.jpeg',
+                //url: 'https://tms-relieve.idee.es/1.0.0/relieve/{z}/{x}/{-y}.jpeg',
+                url: '/mapcache/tms-relieve.idee.es/{z}/{x}/{-y}.jpeg',
                 projection: 'EPSG:3857' as ProjectionLike
             }),
             visible: true
@@ -555,6 +540,7 @@ export class SightingMap extends Element {
             });
 
             heatmaplayer.set('name', 'sigthing_heat_layer');
+            vectorLayer.setZIndex(98);
 
             this._map.addLayer(heatmaplayer);
         }
@@ -582,7 +568,7 @@ export class SightingMap extends Element {
         });
     }
 
-    public async addAreaByJson(jsonFileUrl: string, title: string, name: string): Promise<void> {
+    public async addAreaByJson(jsonFileUrl: string, title: string, name: string, visible: boolean = false): Promise<void> {
         const response = await fetch(jsonFileUrl);
 
         const esriJsonObject = await response.json();
@@ -592,17 +578,42 @@ export class SightingMap extends Element {
             featureProjection: 'EPSG:3857'
         });
 
+        features.forEach((feature: Feature) => {
+            const sitename = feature.get('SITENAME');
+
+            if (sitename) {
+                const sitecode = feature.get('SITECODE');
+                const url =  feature.get('URL');
+
+                let urlContent = '';
+
+                if (url) {
+                    urlContent = `<a href="${url}" target="_blank">read more</a>`;
+                }
+
+                feature.setProperties({
+                    content:
+                        `<b>${sitename}</b><br>` +
+                        `Site-Code: ${sitecode}<br>` +
+                        `<br>` +
+                        `${urlContent}`
+                });
+            }
+        });
+
         const vectorSource = new VectorSource({
             features
         });
 
         const vectorLayer = new VectorLayer({
-            source: vectorSource
+            source: vectorSource,
         });
 
         vectorLayer.set('title', title);
         vectorLayer.set('name', name);
         vectorLayer.setZIndex(50);
+        vectorLayer.setVisible(visible);
+
         this._map.addLayer(vectorLayer);
     }
 
