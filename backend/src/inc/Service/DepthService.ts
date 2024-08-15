@@ -5,6 +5,9 @@ import {MariaDbHelper} from '../Db/MariaDb/MariaDbHelper';
 import {Navionics} from '../Provider/Navionics/Navionics';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';
 
+/**
+ * Depth Service object
+ */
 export class DepthService {
 
     /**

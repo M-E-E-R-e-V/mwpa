@@ -121,38 +121,46 @@ export class User {
             });
 
             if (user) {
+                const data: UserInfo = {
+                    islogin: true,
+                    user: {
+                        id: user.id,
+                        username: user.username,
+                        fullname: user.full_name,
+                        email: user.email,
+                        isAdmin: user.isAdmin
+                    }
+                };
+
                 const mainGroup = await groupRepository.findOne({
                     where: {
                         id: user.main_groupid
                     }
                 });
 
-                const org = await orgRepository.findOne({
-                    where: {
-                        id: mainGroup?.organization_id!
+                if (mainGroup) {
+                    data.group = {
+                        id: mainGroup.id,
+                        name: mainGroup.description
+                    };
+
+                    const org = await orgRepository.findOne({
+                        where: {
+                            id: mainGroup.organization_id
+                        }
+                    });
+
+                    if (org) {
+                        data.organization = {
+                            id: org.id,
+                            name: org.description
+                        }
                     }
-                });
+                }
 
                 return {
                     statusCode: StatusCodes.OK,
-                    data: {
-                        islogin: true,
-                        user: {
-                            id: user.id,
-                            username: user.username,
-                            fullname: user.full_name,
-                            email: user.email,
-                            isAdmin: user.isAdmin
-                        },
-                        group: {
-                            id: mainGroup?.id!,
-                            name: mainGroup?.description!
-                        },
-                        organization: {
-                            id: org?.id!,
-                            name: org?.description!
-                        }
-                    }
+                    data: data
                 };
             }
         }

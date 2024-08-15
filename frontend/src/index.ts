@@ -4,7 +4,7 @@ import {
     NavbarLinkButton,
     NavbarLinkFullsize,
     NavbarLinkLanguage,
-    SidebarMenuItem, SidebarMenuTree
+    SidebarMenuItem, SidebarMenuTree, UtilAvatarGenerator, UtilColor, UtilRedirect, UtilShorname
 } from 'bambooo';
 import {Login} from './inc/Api/Login';
 import {User as UserAPI} from './inc/Api/User';
@@ -18,10 +18,7 @@ import {Sighting as SightingPage} from './inc/Pages/Sighting';
 import {Species as SpeciesPage} from './inc/Pages/Species';
 import {Tours as ToursPage} from './inc/Pages/Tours';
 import {Users as UsersPage} from './inc/Pages/Users';
-import {UtilAvatarGenerator} from './inc/Utils/UtilAvatarGenerator';
-import {UtilColor} from './inc/Utils/UtilColor';
-import {UtilRedirect} from './inc/Utils/UtilRedirect';
-import {UtilShorname} from './inc/Utils/UtilShorname';
+import {Vehicle} from './inc/Pages/Vehicle';
 import {Lang_DE} from './langs/Lang_DE';
 import {Lang_EN} from './langs/Lang_EN';
 
@@ -201,7 +198,7 @@ type SideMenuEntry = {
                             icon: 'fa-solid fa-ship',
                             name: 'admin-vehicle',
                             onClick: (): void => {
-                                //loadPage(new Species());
+                                loadPage(new Vehicle());
                             }
                         },
                         {

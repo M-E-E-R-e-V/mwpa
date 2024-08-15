@@ -10,14 +10,11 @@ import {
     LeftNavbarLink, Switch,
     Table, Td,
     Th,
-    Tr
+    Tr, UtilAvatarGenerator, UtilColor, UtilShorname
 } from 'bambooo';
 import {Group as GroupAPI} from '../Api/Group';
 import {User as UserAPI, UserData, UserListFilter} from '../Api/User';
 import {Lang} from '../Lang';
-import {UtilAvatarGenerator} from '../Utils/UtilAvatarGenerator';
-import {UtilColor} from '../Utils/UtilColor';
-import {UtilShorname} from '../Utils/UtilShorname';
 import {BasePage} from './BasePage';
 import {UsersEditModal} from './Users/UsersEditModal';
 
@@ -112,7 +109,7 @@ export class Users extends BasePage {
                         title: 'User save success.'
                     });
                 }
-            } catch ({message}) {
+            } catch (message) {
                 this._toast.fire({
                     icon: 'error',
                     title: message

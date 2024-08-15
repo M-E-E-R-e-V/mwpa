@@ -9,13 +9,10 @@ import {
     ContentRowClass, ImageArt, ImageType,
     Image,
     TextAlignment,
-    Text, PText, PTextType, FormGroup, InputBottemBorderOnly2, InputType
+    Text, PText, PTextType, FormGroup, InputBottemBorderOnly2, InputType, UtilAvatarGenerator, UtilShorname, UtilColor
 } from 'bambooo';
 import {User as UserAPI} from '../Api/User';
 import {Lang} from '../Lang';
-import {UtilAvatarGenerator} from '../Utils/UtilAvatarGenerator';
-import {UtilColor} from '../Utils/UtilColor';
-import {UtilShorname} from '../Utils/UtilShorname';
 import {BasePage} from './BasePage';
 
 /**

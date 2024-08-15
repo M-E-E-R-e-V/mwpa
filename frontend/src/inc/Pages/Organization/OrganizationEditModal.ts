@@ -3,12 +3,12 @@ import {FormGroup, FormRow, InputBottemBorderOnly2, ModalDialog, ModalDialogType
 /**
  * OrgEditModalButtonClickFn
  */
-type OrgEditModalButtonClickFn = () => void;
+export type OrgEditModalButtonClickFn = () => void;
 
 export class OrganizationEditModal extends ModalDialog {
 
     /**
-     * Id from organization
+     * ID from organization
      * @protected
      */
     protected _id: number|null = null;

@@ -1,7 +1,6 @@
-import {Badge, BadgeType, Element} from 'bambooo';
+import {Badge, BadgeType, Element, UtilColor} from 'bambooo';
 import {SightingsEntry} from '../Api/Sightings';
 import {SpeciesEntry} from '../Api/Species';
-import {UtilColor} from '../Utils/UtilColor';
 import {UtilOttLink} from '../Utils/UtilOttLink';
 
 export class SpeciesDisplay extends Element {

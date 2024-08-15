@@ -1,4 +1,4 @@
-import {Get, JsonController, Session} from 'routing-controllers';
+import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
 import {Group as GroupDB} from '../../inc/Db/MariaDb/Entity/Group';
 import {Organization as OrganizationDB} from '../../inc/Db/MariaDb/Entity/Organization';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
@@ -88,6 +88,55 @@ export class Group {
                 statusCode: StatusCodes.OK,
                 list,
                 organizationList: Array.from(organizationMap.values())
+            };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
+    }
+
+    /**
+     * Save Organization
+     * @param session
+     * @param req
+     */
+    @Post('/json/group/save')
+    public async saveGroup(@Session() session: any, @Body() req: GroupEntry): Promise<DefaultReturn> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            if (!session.user.isAdmin) {
+                return {
+                    statusCode: StatusCodes.FORBIDDEN
+                };
+            }
+
+            const groupRepository = MariaDbHelper.getConnection().getRepository(GroupDB);
+            let group: GroupDB|null = null;
+
+            if (req.id !== 0) {
+                const tgroup = await groupRepository.findOne({
+                    where: {
+                        id: req.id
+                    }
+                });
+
+                if (tgroup) {
+                    group = tgroup;
+                }
+            }
+
+            if (group === null) {
+                group = new GroupDB();
+            }
+
+            group.description = req.description;
+            group.role = req.role;
+            group.organization_id = req.organization_id;
+
+            await groupRepository.save(group);
+
+            return {
+                statusCode: StatusCodes.OK
             };
         }
 

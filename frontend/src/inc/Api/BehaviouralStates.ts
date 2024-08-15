@@ -32,7 +32,7 @@ export class BehaviouralStates {
         const result = await NetFetch.getData('/json/behaviouralstates/list');
 
         if (result && result.statusCode) {
-            switch(result.statusCode) {
+            switch (result.statusCode) {
                 case StatusCodes.OK:
                     const response = result as BehaviouralStatesResponse;
                     return response.list;

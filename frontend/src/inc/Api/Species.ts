@@ -19,6 +19,7 @@ export type SpeciesEntry = {
     name: string;
     ottid: number;
     isdeleted?: boolean;
+    species_groupid: number;
     species_group?: SpeciesEntryGroup;
 };
 
@@ -134,4 +135,5 @@ export class Species {
 
         return false;
     }
+
 }

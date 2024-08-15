@@ -18,7 +18,7 @@ import {
     Td,
     Th,
     Tooltip,
-    Tr
+    Tr, UtilDownload
 } from 'bambooo';
 import moment from 'moment';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
@@ -30,7 +30,6 @@ import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {Lang} from '../Lang';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
-import {UtilDownload} from '../Utils/UtilDownload';
 import {UtilLocation} from '../Utils/UtilLocation';
 import {UtilSelect} from '../Utils/UtilSelect';
 import {LocationDisplay} from '../Widget/LocationDisplay';
@@ -40,6 +39,7 @@ import {SpeciesDisplay} from '../Widget/SpeciesDisplay';
 import {BasePage} from './BasePage';
 import {SightingDeletedModal} from './Sighting/SightingDeletedModal';
 import {SightingEditModal} from './Sighting/SightingEditModal';
+import {SightingFilter} from './Sighting/SightingFilter';
 import {ToursMap} from './Tours/TourMap';
 
 /**
@@ -140,6 +140,13 @@ export class Sighting extends BasePage {
      * loadContent
      */
     public async loadContent(): Promise<void> {
+        // Filter ------------------------------------------------------------------------------------------------------
+
+        const rowFilter = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const filter = new SightingFilter(new ContentCol(rowFilter, ContentColSize.col12));
+
+        // List --------------------------------------------------------------------------------------------------------
+
         const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
         const card = new Card(new ContentCol(row1, ContentColSize.col12));
 
@@ -151,6 +158,16 @@ export class Sighting extends BasePage {
             true,
             ButtonType.borderless
         );
+
+        btnMenu.addMenuItem(
+            new LangText('Filter'),
+            (): void => {
+                filter.show();
+            },
+            'fa fa-filter'
+        );
+
+        btnMenu.addDivider();
 
         btnMenu.addMenuItem(
             new LangText('to Excel'),
@@ -176,7 +193,11 @@ export class Sighting extends BasePage {
 
         this._map = new SightingMap(tabMap.body);
         this._map.setHeight(jQuery(window).height() - 220);
-        this._map.load(true);
+        this._map.load({
+            useHeatmap: true,
+            useBathymetriemap: true
+        });
+
         this._map.setView();
 
         tabMap.tab.on('click', () => {

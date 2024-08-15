@@ -20,7 +20,7 @@ type OrganizationTrackingAreaModalButtonClickFn = () => void;
 export class OrganizationTrackingAreaModal extends ModalDialog {
 
     /**
-     * Id from tracking area
+     * ID from tracking area
      * @protected
      */
     protected _id: number|null = null;

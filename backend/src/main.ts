@@ -9,6 +9,7 @@ import {OfficeReport as OfficeReportController} from './app/Export/OfficeReport'
 import {Im2020} from './app/Import/Im2020';
 import {BehaviouralStates as BehaviouralStatesMainController} from './app/Main/BehaviouralStates';
 import {Organization as OrganizationMainController} from './app/Main/Organization';
+import {SpeciesGroup as SpeciesGroupMainController} from './app/Main/SpeciesGroup';
 import {BehaviouralStates as BehaviouralStatesMobileController} from './app/Mobile/BehaviouralStates';
 import {EncounterCategories as EncounterCategoriesMainController} from './app/Main/EncounterCategories';
 import {EncounterCategories as EncounterCategoriesMobileController} from './app/Mobile/EncounterCategories';
@@ -42,6 +43,7 @@ import {Sighting as SightingDB} from './inc/Db/MariaDb/Entity/Sighting';
 import {SightingExtended as SightingExtendedDB} from './inc/Db/MariaDb/Entity/SightingExtended';
 import {SightingTour as SightingTourDB} from './inc/Db/MariaDb/Entity/SightingTour';
 import {SightingTourTracking as SightingTourTrackingDB} from './inc/Db/MariaDb/Entity/SightingTourTracking';
+import {SightingViewFilter as SightingViewFilterDB} from './inc/Db/MariaDb/Entity/SightingViewFilter';
 import {Species as SpeciesDB} from './inc/Db/MariaDb/Entity/Species';
 import {SpeciesExternLink as SpeciesExternLinkDB} from './inc/Db/MariaDb/Entity/SpeciesExternLink';
 import {SpeciesGroup as SpeciesGroupDB} from './inc/Db/MariaDb/Entity/SpeciesGroup';
@@ -134,6 +136,7 @@ import {DepthService} from './inc/Service/DepthService';
                 SightingTourDB,
                 SightingTourTrackingDB,
                 SightingDB,
+                SightingViewFilterDB,
                 EncounterCategoriesDB,
                 BehaviouralStatesDB,
                 DevicesDB,
@@ -261,6 +264,7 @@ import {DepthService} from './inc/Service/DepthService';
             UserMainController,
             SightingsMainController,
             ToursMainController,
+            SpeciesGroupMainController,
             SpeciesMainController,
             EncounterCategoriesMainController,
             VehicleMainController,

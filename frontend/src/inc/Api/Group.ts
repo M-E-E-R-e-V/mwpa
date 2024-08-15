@@ -4,6 +4,16 @@ import {StatusCodes} from './Status/StatusCodes';
 import {DefaultReturn} from './Types/DefaultReturn';
 
 /**
+ * Group Roles
+ */
+export enum GroupRoles {
+    'admin' = 'admin',
+    'importer' = 'importer',
+    'driver' = 'driver',
+    'guide' = 'guide'
+};
+
+/**
  * GroupEntry
  */
 export type GroupEntry = {
@@ -57,6 +67,27 @@ export class Group {
         }
 
         return null;
+    }
+
+    /**
+     * Save the group
+     * @param {GroupEntry} group
+     * @returns {boolean}
+     */
+    public static async saveGroup(group: GroupEntry): Promise<boolean> {
+        const result = await NetFetch.postData('/json/group/save', group);
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return true;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return false;
     }
 
 }

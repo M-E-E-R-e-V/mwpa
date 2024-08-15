@@ -11,9 +11,11 @@ import {
     Th,
     Tr
 } from 'bambooo';
-import {Group as GroupAPI, GroupOrganization} from '../Api/Group';
+import {Group as GroupAPI, GroupEntry, GroupOrganization} from '../Api/Group';
+import {Organization as OrganizationAPI} from '../Api/Organization';
 import {Lang} from '../Lang';
 import {BasePage} from './BasePage';
+import {GroupEditModal} from './Group/GroupEditModal';
 
 /**
  * Group
@@ -27,18 +29,74 @@ export class Group extends BasePage {
     protected _name: string = 'admin-user-groups';
 
     /**
+     * Group Modal
+     * @protected
+     */
+    protected _groupModal: GroupEditModal;
+
+    /**
      * constructor
      */
     public constructor() {
         super();
 
+        this._groupModal = new GroupEditModal(
+            this._wrapper.getContentWrapper().getContent().getElement()
+        );
+
         // Navbar Left -------------------------------------------------------------------------------------------------
 
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Group', async() => {
+            this._groupModal.resetValues();
+            this._groupModal.setTitle('Add new Group');
+
+            const orgs = await OrganizationAPI.getOrganization();
+
+            if (orgs !== null) {
+                this._groupModal.setOrganizations(orgs);
+            }
+
+            this._groupModal.show();
             return false;
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
+        // save --------------------------------------------------------------------------------------------------------
+
+        this._groupModal.setOnSave(async(): Promise<void> => {
+            let tid = this._groupModal.getId();
+
+            if (tid === null) {
+                tid = 0;
+            }
+
+            try {
+                const groupEntry: GroupEntry = {
+                    id: tid,
+                    description: this._groupModal.getName(),
+                    role: this._groupModal.getRole(),
+                    organization_id: this._groupModal.getOrganization()
+                };
+
+                if (await GroupAPI.saveGroup(groupEntry)) {
+                    this._groupModal.hide();
+
+                    if (this._onLoadTable) {
+                        this._onLoadTable();
+                    }
+
+                    this._toast.fire({
+                        icon: 'success',
+                        title: 'Group save success.'
+                    });
+                }
+            } catch (message) {
+                this._toast.fire({
+                    icon: 'error',
+                    title: message
+                });
+            }
+        });
     }
 
     /**
@@ -117,8 +175,21 @@ export class Group extends BasePage {
 
                     btnMenu.addMenuItem(
                         'Edit',
-                        (): void => {
-                            // TODO
+                        async(): Promise<void> => {
+                            this._groupModal.resetValues();
+                            this._groupModal.setTitle('Edit Group');
+                            this._groupModal.setId(group.id);
+                            this._groupModal.setName(group.description);
+                            this._groupModal.setRole(group.role);
+
+                            const orgs = await OrganizationAPI.getOrganization();
+
+                            if (orgs !== null) {
+                                this._groupModal.setOrganizations(orgs);
+                            }
+
+                            this._groupModal.setOrganization(group.organization_id);
+                            this._groupModal.show();
                         },
                         IconFa.edit
                     );
