@@ -40,4 +40,33 @@ export class UtilImageUploadPath {
         return null;
     }
 
+    /**
+     * Create the mapche directory
+     * @param {string} server
+     * @param {string} z
+     * @param {string} x
+     * @return {string|null}
+     */
+    public static getMapCacheDirector(server: string, z: string, x: string): string | null {
+        const config = Config.get();
+
+        if (config?.datadir !== null && fs.existsSync(config?.datadir!)) {
+            let mapcacheDir = Path.join(config?.datadir!, 'mapcache', server, z, x);
+
+            if (mapcacheDir.charAt(0) !== '/') {
+                mapcacheDir = Path.join(Path.resolve(), mapcacheDir);
+            }
+
+            if (!fs.existsSync(mapcacheDir)) {
+                fs.mkdirSync(mapcacheDir, {
+                    recursive: true,
+                    mode: 0o744
+                });
+            }
+
+            return mapcacheDir;
+        }
+
+        return null;
+    }
 }
