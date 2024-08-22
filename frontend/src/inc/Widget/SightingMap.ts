@@ -2,6 +2,7 @@ import {Element} from 'bambooo';
 import {Feature, Map as OlMap, Overlay, View} from 'ol';
 import LayerSwitcher from 'ol-layerswitcher';
 import {Coordinate} from 'ol/coordinate';
+import {FeatureLike} from 'ol/Feature';
 import {EsriJSON, GeoJSON} from 'ol/format';
 import {Point} from 'ol/geom';
 import {Heatmap} from 'ol/layer';
@@ -9,11 +10,8 @@ import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import {fromLonLat, ProjectionLike} from 'ol/proj';
 import {TileWMS} from 'ol/source';
-import * as olProj from 'ol/proj';
-import * as olExtent from 'ol/extent';
 import VectorSource from 'ol/source/Vector';
 import {Circle, Fill, Icon, Stroke, Style} from 'ol/style';
-import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import XYZ from 'ol/source/XYZ';
 
 export enum SightingMapObjectType {
@@ -47,13 +45,13 @@ export class SightingMap extends Element {
      * map object
      * @protected
      */
-    protected _map: OlMap;
+    protected _map: OlMap | undefined;
 
     /**
      * map source
      * @protected
      */
-    protected _source: VectorSource;
+    protected _source: VectorSource | undefined;
 
     /**
      * tooltip popup
@@ -164,9 +162,6 @@ export class SightingMap extends Element {
      */
     private _createMap(): void {
         const tileLayer = new TileLayer({
-            // source: new OSM({
-            //     wrapX: false
-            //})
             source: new XYZ({
                 url: '/mapcache/openstreetmap/{z}/{x}/{y}.png'
             })
@@ -252,6 +247,10 @@ export class SightingMap extends Element {
      * @protected
      */
     protected _createMapToolTip(): void {
+        if (!this._map) {
+            return;
+        }
+
         this._tooltip_popup = jQuery('<div id="popup"></div>').appendTo(jQuery('body'));
 
         const overlayTooltip = new Overlay({
@@ -263,6 +262,10 @@ export class SightingMap extends Element {
         this._map.addOverlay(overlayTooltip);
 
         this._map.on('click', (evt) => {
+            if (!this._map) {
+                return;
+            }
+
             const feature = this._map.forEachFeatureAtPixel(evt.pixel, (inFeature) => {
                 return inFeature;
             });
@@ -299,6 +302,10 @@ export class SightingMap extends Element {
         });
 
         this._map.on('pointermove', (evt) => {
+            if (!this._map) {
+                return;
+            }
+
             const pixel = this._map.getEventPixel(evt.originalEvent);
             const hit = this._map.hasFeatureAtPixel(pixel);
             const target = this._map.getTarget();
@@ -322,10 +329,14 @@ export class SightingMap extends Element {
      * @param {number} viewZoom
      */
     public setView(viewCenter: Coordinate|null = null, viewZoom: number = 12.5): void {
+        if (!this._map) {
+            return;
+        }
+
         let center = fromLonLat([-17.3340221, 28.0525008]);
 
         if (viewCenter !== null) {
-            center = fromLonLat(viewCenter);
+            center = viewCenter;
         }
 
         this._map.setView(new View({
@@ -387,6 +398,10 @@ export class SightingMap extends Element {
     }
 
     public updateSize(): void {
+        if (!this._map) {
+            return;
+        }
+
         this._map.updateSize();
     }
 
@@ -395,6 +410,10 @@ export class SightingMap extends Element {
      * @protected
      */
     protected async _printLayer(): Promise<void> {
+        if (!this._map) {
+            return;
+        }
+
         // first clear layers ------------------------------------------------------------------------------------------
         const layerNameList = [
             'sigthing_layer',
@@ -404,6 +423,10 @@ export class SightingMap extends Element {
         ];
 
         this._map.getLayers().forEach((layer) => {
+            if (!this._map) {
+                return;
+            }
+
             if (layer === undefined || layer === null) {
                 return;
             }
@@ -444,7 +467,6 @@ export class SightingMap extends Element {
 
         const tmsEs = new TileLayer({
             source: new XYZ({
-                //url: 'https://tms-relieve.idee.es/1.0.0/relieve/{z}/{x}/{-y}.jpeg',
                 url: '/mapcache/tms-relieve.idee.es/{z}/{x}/{-y}.jpeg',
                 projection: 'EPSG:3857' as ProjectionLike
             }),
@@ -481,7 +503,7 @@ export class SightingMap extends Element {
 
         const vectorLayer = new VectorLayer({
             source: vectorSource,
-            style: (feature: Feature): Style[] => {
+            style: (feature: FeatureLike): Style[] => {
                 const styles: Style[] = [];
 
                 const props = feature.getProperties() || {};
@@ -546,29 +568,11 @@ export class SightingMap extends Element {
         }
     }
 
-    protected _inspireWgs84Grid(levels: number): WMTSTileGrid {
-        const projection = olProj.get('EPSG:4326');
-
-        const projectionExtent = projection.getExtent();
-        const resolution = olExtent.getWidth(projectionExtent) / 512;
-
-        const resolutions = new Array(levels);
-        const matrixIds = new Array(levels);
-
-        for (let z = 0; z < levels; z++) {
-            // eslint-disable-next-line no-mixed-operators
-            resolutions[z] = resolution / 2 ** z;
-            matrixIds[z] = z;
+    public async addAreaByJson(jsonFileUrl: string, title: string, name: string, visible: boolean = false): Promise<void> {
+        if (!this._map) {
+            return;
         }
 
-        return new WMTSTileGrid({
-            origin: olExtent.getTopLeft(projectionExtent),
-            resolutions,
-            matrixIds
-        });
-    }
-
-    public async addAreaByJson(jsonFileUrl: string, title: string, name: string, visible: boolean = false): Promise<void> {
         const response = await fetch(jsonFileUrl);
 
         const esriJsonObject = await response.json();
@@ -583,7 +587,7 @@ export class SightingMap extends Element {
 
             if (sitename) {
                 const sitecode = feature.get('SITECODE');
-                const url =  feature.get('URL');
+                const url = feature.get('URL');
 
                 let urlContent = '';
 
@@ -595,7 +599,7 @@ export class SightingMap extends Element {
                     content:
                         `<b>${sitename}</b><br>` +
                         `Site-Code: ${sitecode}<br>` +
-                        `<br>` +
+                        '<br>' +
                         `${urlContent}`
                 });
             }
@@ -606,7 +610,7 @@ export class SightingMap extends Element {
         });
 
         const vectorLayer = new VectorLayer({
-            source: vectorSource,
+            source: vectorSource
         });
 
         vectorLayer.set('title', title);

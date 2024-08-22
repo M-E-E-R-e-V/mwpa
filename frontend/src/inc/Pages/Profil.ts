@@ -24,7 +24,7 @@ export class Profil extends BasePage {
      * page name
      * @protected
      */
-    protected _name: string = 'profil';
+    protected override _name: string = 'profil';
 
     /**
      * constructor
@@ -36,7 +36,7 @@ export class Profil extends BasePage {
     /**
      * loadContent
      */
-    public async loadContent(): Promise<void> {
+    public override async loadContent(): Promise<void> {
         const row1 = new ContentRow(this._wrapper, ContentRowClass.mb2);
 
         const colHead = new ContentCol(row1, ContentColSize.colSm12);

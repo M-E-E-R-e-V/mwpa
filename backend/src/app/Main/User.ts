@@ -43,6 +43,8 @@ export type UserInfoGroup = {
 export type UserInfoOrg = {
     name: string;
     id: number;
+    lat: string;
+    lon: string;
 };
 
 /**
@@ -153,14 +155,16 @@ export class User {
                     if (org) {
                         data.organization = {
                             id: org.id,
-                            name: org.description
-                        }
+                            name: org.description,
+                            lat: org.lat,
+                            lon: org.lon
+                        };
                     }
                 }
 
                 return {
                     statusCode: StatusCodes.OK,
-                    data: data
+                    data
                 };
             }
         }
@@ -175,7 +179,8 @@ export class User {
 
     /**
      * getList
-     * @param session
+     * @param {UserListFilter} filter
+     * @param {any} session
      */
     @Post('/json/user/list')
     public async getList(@Body() filter: UserListFilter, @Session() session: any): Promise<UserListResponse> {

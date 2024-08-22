@@ -3,7 +3,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "strict": true,
-    "baseUrl": "./",
     "outDir": "dist",
     "sourceMap": true,
     "removeComments": true,
@@ -15,12 +14,9 @@
     "esModuleInterop": true,
     "types": [
       "node"
-    ],
-    "typeRoots": [
-      "node_modules/@types"
     ]
   },
   "include": [
     "./src/**/*.ts"
-  ],
+  ]
 }

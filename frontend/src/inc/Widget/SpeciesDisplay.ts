@@ -28,7 +28,7 @@ export class SpeciesDisplay extends Element {
 
         let specieName = '';
         let specieColor = '#ffffff';
-        let ottid: number;
+        let ottid: number|null = null;
 
         const specie = speciesList.get(sighting.species_id!);
 
@@ -60,7 +60,7 @@ export class SpeciesDisplay extends Element {
 
         this._element = this._badge.getElement();
 
-        if (ottid) {
+        if (ottid !== null) {
             UtilOttLink.setDialog(this._element, specieName, ottid);
         }
     }

@@ -157,7 +157,7 @@ export class SpeciesEditModal extends ModalDialog {
     /**
      * resetValues
      */
-    public resetValues(): void {
+    public override resetValues(): void {
         this.setId(null);
         this.setName('');
         this.setSpeciesGroup(0);

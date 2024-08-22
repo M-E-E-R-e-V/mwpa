@@ -47,7 +47,7 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
      * ol draw
      * @protected
      */
-    protected _draw: Draw;
+    protected _draw: Draw | null = null;
 
     /**
      * ol Modify
@@ -59,7 +59,7 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
      * ol snap
      * @protected
      */
-    protected _snap: Snap;
+    protected _snap: Snap| null = null;
 
     /**
      * allow drawing
@@ -174,18 +174,28 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
     }
 
     private _startDraw(): void {
-        this._snap = new Snap({source: this._source});
-        this._map.addInteraction(this._snap);
-        this._draw.setActive(true);
-        this._map.addInteraction(this._draw);
-        this._startDrawing = true;
+        if (this._draw) {
+            this._snap = new Snap({source: this._source});
+            this._map.addInteraction(this._snap);
+            this._draw.setActive(true);
+            this._map.addInteraction(this._draw);
+            this._startDrawing = true;
+        }
     }
 
     private _stopDraw(): void {
-        this._map.removeInteraction(this._snap);
-        this._draw.setActive(false);
-        this._draw.finishDrawing();
-        this._map.removeInteraction(this._draw);
+        if (this._snap) {
+            this._map.removeInteraction(this._snap);
+            this._snap = null;
+        }
+
+        if (this._draw) {
+            this._draw.setActive(false);
+            this._draw.finishDrawing();
+            this._map.removeInteraction(this._draw);
+            this._draw = null;
+        }
+
         this._startDrawing = false;
     }
 
@@ -286,14 +296,19 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
     /**
      * resetValues
      */
-    public resetValues(): void {
+    public override resetValues(): void {
         this._source.clear();
 
         if (this._snap) {
             this._map.removeInteraction(this._snap);
+            this._snap = null;
         }
 
-        this._map.removeInteraction(this._draw);
+        if (this._draw) {
+            this._map.removeInteraction(this._draw);
+            this._draw = null;
+        }
+
         this._createDraw();
         this._id = null;
         this._orgId = null;

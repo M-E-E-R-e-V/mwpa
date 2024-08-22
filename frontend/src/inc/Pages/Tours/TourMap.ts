@@ -46,7 +46,7 @@ export class ToursMap extends BasePage {
      * page name
      * @protected
      */
-    protected _name: string = 'tour_map';
+    protected override _name: string = 'tour_map';
 
     protected _tourId: number;
 

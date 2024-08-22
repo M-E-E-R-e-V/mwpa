@@ -1,17 +1,23 @@
 import {
-    Badge, BadgeType,
+    Badge,
+    BadgeType,
     ButtonClass,
-    ButtonMenu, ButtonType,
+    ButtonMenu,
+    ButtonType,
     Card,
     ContentCol,
     ContentColSize,
-    ContentRow, DialogConfirm, IconFa,
+    ContentRow,
+    DialogConfirm,
+    IconFa,
     LangText,
-    LeftNavbarLink, ModalDialogType,
+    LeftNavbarLink,
+    ModalDialogType,
     Table,
     Td,
     Th,
-    Tr, UtilColor
+    Tr,
+    UtilColor
 } from 'bambooo';
 import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species';
 import {SpeciesGroup as SpeciesGroupAPI} from '../Api/SpeciesGroup';
@@ -31,7 +37,7 @@ export class Species extends BasePage {
      * page name
      * @protected
      */
-    protected _name: string = 'admin-species';
+    protected override _name: string = 'admin-species';
 
     /**
      * species dialog
@@ -69,7 +75,11 @@ export class Species extends BasePage {
             this._speciesDialog.setTitle('Add Specie');
 
             const groups = await SpeciesGroupAPI.getList();
-            this._speciesDialog.setSpeciesGroupList(groups);
+
+            if (groups) {
+                this._speciesDialog.setSpeciesGroupList(groups);
+            }
+
             this._speciesDialog.show();
             return false;
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
@@ -144,7 +154,7 @@ export class Species extends BasePage {
     /**
      * loadContent
      */
-    public async loadContent(): Promise<void> {
+    public override async loadContent(): Promise<void> {
         this._onLoadTable = async(): Promise<void> => {
             this._wrapper.getContentWrapper().getContent().empty();
 
@@ -201,10 +211,12 @@ export class Species extends BasePage {
                     // eslint-disable-next-line no-new
                     const speciesGroupTd = new Td(trbody, '');
 
-                    if (specie.species_group !== null) {
-                        // eslint-disable-next-line no-new
-                        new SpeciesGroupDisplay(speciesGroupTd, specie.species_group);
-                    }
+
+                    //     eslint-disable-next-line no-new
+                    new SpeciesGroupDisplay(speciesGroupTd, specie.species_group ?? {
+                        name: 'Unknown',
+                        color: 'white'
+                    });
 
                     // action
                     const actionTd = new Td(trbody, '');
@@ -226,7 +238,11 @@ export class Species extends BasePage {
                             this._speciesDialog.setOttId(specie.ottid);
 
                             const groups = await SpeciesGroupAPI.getList();
-                            this._speciesDialog.setSpeciesGroupList(groups);
+
+                            if (groups) {
+                                this._speciesDialog.setSpeciesGroupList(groups);
+                            }
+
                             this._speciesDialog.setSpeciesGroup(specie.species_groupid);
 
                             this._speciesDialog.show();
@@ -262,7 +278,10 @@ export class Species extends BasePage {
                                 ModalDialogType.large,
                                 'Delete Specie',
                                 'Are you sure you want to delete the specie?',
-                                async(_, dialog) => {
+                                async(
+                                    _,
+                                    dialog
+                                ) => {
                                     try {
                                         if (await SpeciesAPI.delete({id: specie.id})) {
                                             this._toast.fire({

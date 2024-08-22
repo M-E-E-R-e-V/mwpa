@@ -184,7 +184,7 @@ export class OrganizationEditModal extends ModalDialog {
     /**
      * resetValues
      */
-    public resetValues(): void {
+    public override resetValues(): void {
         this._id = null;
         this.setName('');
         this.setCountry('');

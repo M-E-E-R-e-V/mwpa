@@ -7,7 +7,7 @@ import {
     ColumnContent,
     ContentCol,
     ContentColSize,
-    ContentRow,
+    ContentRow, DialogConfirm,
     DialogInfo,
     IconFa,
     LangText,
@@ -21,11 +21,14 @@ import {
     Tr, UtilDownload
 } from 'bambooo';
 import moment from 'moment';
+import {Coordinate} from 'ol/coordinate';
+import {fromLonLat} from 'ol/proj';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
 import {Sightings as SightingsAPI, SightingsEntry} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
+import {User as UserAPI} from '../Api/User';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {Lang} from '../Lang';
@@ -42,6 +45,8 @@ import {SightingEditModal} from './Sighting/SightingEditModal';
 import {SightingFilter} from './Sighting/SightingFilter';
 import {ToursMap} from './Tours/TourMap';
 
+export type SightingOnLoad = (sightings: SightingsEntry[]) => Promise<void>;
+
 /**
  * Sighting
  */
@@ -51,7 +56,7 @@ export class Sighting extends BasePage {
      * page name
      * @protected
      */
-    protected _name: string = 'sighting';
+    protected override _name: string = 'sighting';
 
     /**
      * sighting dialog
@@ -70,6 +75,12 @@ export class Sighting extends BasePage {
      * @protected
      */
     protected _map: SightingMap|null = null;
+
+    /**
+     * On Load sighting
+     * @protected
+     */
+    protected _onLoadSighting: SightingOnLoad|null = null;
 
     /**
      * constructor
@@ -139,7 +150,21 @@ export class Sighting extends BasePage {
     /**
      * loadContent
      */
-    public async loadContent(): Promise<void> {
+    public override async loadContent(): Promise<void> {
+        // Variables ---------------------------------------------------------------------------------------------------
+        let offset = 0;
+        let sightingCount = 0;
+        const limit = 20;
+
+        const order = {
+            id: '',
+            tour_id: '',
+            date: 'desc',
+            tour_start: 'desc',
+            create_datetime: '',
+            update_datetime: ''
+        };
+
         // Filter ------------------------------------------------------------------------------------------------------
 
         const rowFilter = new ContentRow(this._wrapper.getContentWrapper().getContent());
@@ -189,20 +214,72 @@ export class Sighting extends BasePage {
         const tabList = navTab.addTab('List', 'list');
         const tabMap = navTab.addTab('Map', 'map');
 
+        const currentuser = await UserAPI.getUserInfo();
+
+        let viewCenter: Coordinate|null = null;
+
+        if (currentuser && currentuser.organization) {
+            viewCenter = fromLonLat([
+                parseFloat(currentuser.organization.lon),
+                parseFloat(currentuser.organization.lat)
+            ]);
+        }
+
         // create map --------------------------------------------------------------------------------------------------
 
         this._map = new SightingMap(tabMap.body);
-        this._map.setHeight(jQuery(window).height() - 220);
+
+        let wHeight = jQuery(window).height();
+
+        if (wHeight) {
+            this._map.setHeight(wHeight - 220);
+        }
+
         this._map.load({
             useHeatmap: true,
             useBathymetriemap: true
         });
 
-        this._map.setView();
+        this._map.setView(viewCenter);
 
         tabMap.tab.on('click', () => {
-            this._map.setHeight(jQuery(window).height() - 220);
-            this._map.updateSize();
+            if (this._map) {
+                wHeight = jQuery(window).height();
+
+                if (wHeight) {
+                    this._map.setHeight(wHeight - 220);
+                    this._map.updateSize();
+                }
+            }
+
+            if (offset < sightingCount) {
+                DialogConfirm.confirm(
+                    'loadallsightings',
+                    ModalDialogType.xlarge,
+                    'Load all ...',
+                    `Load all Sightings ${sightingCount} by current filter?`,
+                    async(
+                        _,
+                        modal: DialogConfirm
+                    ) => {
+                        if (this._onLoadSighting !== null) {
+                            const diffLimit = sightingCount - offset;
+                            const tsightings = await SightingsAPI.getList({
+                                order,
+                                limit: diffLimit,
+                                offset
+                            });
+
+                            if (tsightings) {
+                                offset += diffLimit;
+                                await this._onLoadSighting(tsightings.list);
+                            }
+                        }
+
+                        modal.hide();
+                    }
+                );
+            }
         });
 
         await this._map.addAreaByJson('map_areas/ES7020123.json', 'ES7020123', 'sigthing_ES7020123_layer');
@@ -231,18 +308,6 @@ export class Sighting extends BasePage {
                     return 'asc';
             }
         };
-
-        const order = {
-            id: '',
-            tour_id: '',
-            date: 'desc',
-            tour_start: 'desc',
-            create_datetime: '',
-            update_datetime: ''
-        };
-
-        let offset = 0;
-        const limit = 20;
 
         const onLoadListOrder = async(): Promise<void> => {
             offset = 0;
@@ -410,7 +475,7 @@ export class Sighting extends BasePage {
 
             // sightings -----------------------------------------------------------------------------------------------
 
-            const onLoadsightings = async(sightings: SightingsEntry[]): Promise<void> => {
+            this._onLoadSighting = async(sightings: SightingsEntry[]): Promise<void> => {
                 for (const entry of sightings) {
                     let vehicleName = '';
                     let vehicleDriverName = '';
@@ -506,7 +571,9 @@ export class Sighting extends BasePage {
 
                     // eslint-disable-next-line no-new
                     new LocationDisplay(tdLocation, entry.location_begin!, () => {
-                        this._loadPageFn(new ToursMap(entry.tour_id));
+                        if (this._loadPageFn) {
+                            this._loadPageFn(new ToursMap(entry.tour_id));
+                        }
                     });
 
                     const floatDistance = parseFloat(entry.distance_coast!) || 0;
@@ -644,8 +711,8 @@ export class Sighting extends BasePage {
 
                     // add to map --------------------------------------------------------------------------------------
 
-                    if (this._map !== null) {
-                        const bgeol = UtilLocation.strToGeolocationCoordinates(entry.location_begin);
+                    if (this._map !== null && entry) {
+                        const bgeol = UtilLocation.strToGeolocationCoordinates(entry.location_begin!);
 
                         if (bgeol) {
                             let objectType = `${SightingMapObjectType.Testudines}`;
@@ -656,7 +723,7 @@ export class Sighting extends BasePage {
 
                             this._map.addSighting(
                                 objectType,
-                                entry.unid,
+                                entry.unid!,
                                 () => {
                                     const div = jQuery('<div/>');
 
@@ -688,7 +755,9 @@ export class Sighting extends BasePage {
             if (sightings) {
                 card.setTitle(`Sighting (${sightings.count})`);
 
-                await onLoadsightings(sightings.list);
+                offset += limit;
+                sightingCount = sightings.count;
+                await this._onLoadSighting(sightings.list);
 
                 jQuery(window).on('scroll', async() => {
                     const h = jQuery(window).height()!;
@@ -716,15 +785,19 @@ export class Sighting extends BasePage {
                      */
 
                     if (sh >= h - 5) {
-                        offset += limit;
-
                         const tsightings = await SightingsAPI.getList({
+                            order,
                             limit,
                             offset
                         });
 
                         if (tsightings) {
-                            await onLoadsightings(tsightings.list);
+                            sightingCount = tsightings.count;
+                            offset += limit;
+
+                            if (this._onLoadSighting) {
+                                await this._onLoadSighting(tsightings.list);
+                            }
                         }
                     }
                 });

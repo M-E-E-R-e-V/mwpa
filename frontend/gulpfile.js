@@ -89,29 +89,5 @@ gulp.task('build-webpack', () => {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-gulp.task('setup-bambooo', (cb) => {
-    exec('cd node_modules && rm -R bambooo && git submodule add -f https://github.com/stefanwerfling/bambooo.git', (err, stdout, stderr) => {
-        console.log(stdout);
-        console.log(stderr);
-        cb(err);
-    });
-});
-
-gulp.task('clone-bambooo', (cb) => {
-    exec('cd node_modules && rm -R bambooo && git clone https://github.com/stefanwerfling/bambooo.git', (err, stdout, stderr) => {
-        console.log(stdout);
-        console.log(stderr);
-        cb(err);
-    });
-});
-
-gulp.task('build-bambooo', (cb) => {
-    exec('cd node_modules/bambooo && rm -rf ./dist && npm install && npm run build', (err, stdout, stderr) => {
-        console.log(stdout);
-        console.log(stderr);
-        cb(err);
-    });
-});
-
 // all builds
 gulp.task('default', gulp.parallel('copy-data', 'build-webpack'));
