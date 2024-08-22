@@ -116,7 +116,7 @@ export class SpeciesMergeModal extends ModalDialog {
     /**
      * resetValues
      */
-    public resetValues(): void {
+    public override resetValues(): void {
         this._specieSourceSelect.setSelectedValue('0');
         this._specieDestinationSelect.setSelectedValue('0');
     }

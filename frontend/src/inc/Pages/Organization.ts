@@ -33,7 +33,7 @@ export class Organization extends BasePage {
      * page name
      * @protected
      */
-    protected _name: string = 'admin-organization';
+    protected override _name: string = 'admin-organization';
 
     /**
      * Organization modal
@@ -83,7 +83,7 @@ export class Organization extends BasePage {
             try {
                 const trackingEntry: OrganizationTrackingAreaEntry = {
                     id: tid,
-                    organization_id: this._orgTrackingAreaModal.getOrgId(),
+                    organization_id: this._orgTrackingAreaModal.getOrgId() ?? 0,
                     area_type: TrackingAreaType.HOME,
                     geojsonstr: this._orgTrackingAreaModal.getGeoJsonStr()
                 };
@@ -149,7 +149,7 @@ export class Organization extends BasePage {
     /**
      * loadContent
      */
-    public async loadContent(): Promise<void> {
+    public override async loadContent(): Promise<void> {
         this._onLoadTable = async(): Promise<void> => {
             this._wrapper.getContentWrapper().getContent().empty();
 

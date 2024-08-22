@@ -26,7 +26,7 @@ export class Group extends BasePage {
      * page name
      * @protected
      */
-    protected _name: string = 'admin-user-groups';
+    protected override _name: string = 'admin-user-groups';
 
     /**
      * Group Modal
@@ -102,7 +102,7 @@ export class Group extends BasePage {
     /**
      * loadContent
      */
-    public async loadContent(): Promise<void> {
+    public override async loadContent(): Promise<void> {
         this._onLoadTable = async(): Promise<void> => {
             this._wrapper.getContentWrapper().getContent().empty();
 
@@ -116,9 +116,11 @@ export class Group extends BasePage {
 
             const orgList = new Map<number, GroupOrganization>();
 
-            if (groups.organizationList) {
-                for (const org of groups.organizationList) {
-                    orgList.set(org.id, org);
+            if (groups) {
+                if (groups.organizationList) {
+                    for (const org of groups.organizationList) {
+                        orgList.set(org.id, org);
+                    }
                 }
             }
 
@@ -140,7 +142,7 @@ export class Group extends BasePage {
             // eslint-disable-next-line no-new
             new Th(trhead, '');
 
-            if (groups.list) {
+            if (groups && groups.list) {
                 for (const group of groups.list) {
                     const trbody = new Tr(table.getTbody());
 

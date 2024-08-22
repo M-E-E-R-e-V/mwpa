@@ -586,7 +586,7 @@ export class SightingEditModal extends ModalDialog {
     /**
      * resetValues
      */
-    public resetValues(): void {
+    public override resetValues(): void {
         this.setId(null);
         this.setVehicle(0);
         this.setVehicleDriver(0);

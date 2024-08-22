@@ -9,7 +9,7 @@ export class Admin extends BasePage {
      * page name
      * @protected
      */
-    protected _name: string = 'admin';
+    protected override _name: string = 'admin';
 
     /**
      * constructor
@@ -21,7 +21,7 @@ export class Admin extends BasePage {
     /**
      * loadContent
      */
-    public async loadContent(): Promise<void> {
+    public override async loadContent(): Promise<void> {
 
     }
 

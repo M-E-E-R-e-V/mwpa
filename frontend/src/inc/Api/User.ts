@@ -39,6 +39,8 @@ export type UserInfoGroup = {
 export type UserInfoOrg = {
     name: string;
     id: number;
+    lat: string;
+    lon: string;
 };
 
 /**
