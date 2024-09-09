@@ -88,6 +88,7 @@ export type ToursTrackingData = {
     end: string;
     positions: string[];
     sightings: ToursTrackingSightingData[];
+    org_id: number;
 };
 
 export type ToursTrackingResponse = DefaultReturn & {

@@ -18,7 +18,7 @@ export class LocationInput extends InputBottemBorderOnly2 {
      * Set the location value as a type or string.
      * @param {string|GeolocationCoordinates} value
      */
-    public setValue(value: string|GeolocationCoordinates): void {
+    public override setValue(value: string|GeolocationCoordinates): void {
         if (typeof value === 'string') {
             try {
                 this._gcValue = JSON.parse(value!);
@@ -80,7 +80,7 @@ export class LocationInput extends InputBottemBorderOnly2 {
         return this._gcValue;
     }
 
-    public getValue(): string {
+    public override getValue(): string {
         return this.getGcValue(true) as string;
     }
 

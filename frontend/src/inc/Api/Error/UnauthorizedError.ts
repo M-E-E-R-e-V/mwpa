@@ -7,7 +7,7 @@ export class UnauthorizedError extends Error {
      * constructor
      * @param message
      */
-    constructor(message?: string) {
+    public constructor(message?: string) {
         let msg = '';
 
         if (message) {
@@ -16,4 +16,5 @@ export class UnauthorizedError extends Error {
 
         super(msg);
     }
+
 }

@@ -30,10 +30,11 @@ export class Vehicle {
         const result = await NetFetch.getData('/json/vehicle/list');
 
         if (result && result.statusCode) {
-            switch(result.statusCode) {
-                case StatusCodes.OK:
+            switch (result.statusCode) {
+                case StatusCodes.OK: {
                     const response = result as VehicleListResponse;
                     return response.list;
+                }
 
                 case StatusCodes.UNAUTHORIZED:
                     throw new UnauthorizedError();

@@ -159,7 +159,7 @@ export class Organization extends BasePage {
             card.setTitle(new LangText('Organization'));
             card.showLoading();
 
-            const orgs = await OrganizationAPI.getOrganization();
+            const orgs = await OrganizationAPI.getOrganizations();
 
             const table = new Table(card.getElement());
             const trhead = new Tr(table.getThead());

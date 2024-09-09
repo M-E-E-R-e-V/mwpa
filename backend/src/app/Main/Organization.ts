@@ -42,6 +42,20 @@ export type OrganizationListResponse = DefaultReturn & {
 };
 
 /**
+ * Organization get request
+ */
+export type OrganizationGetRequest = {
+    id: number;
+};
+
+/**
+ * Organization response
+ */
+export type OrganizationResponse = DefaultReturn & {
+    data?: OrganizationFullEntry;
+};
+
+/**
  * OrganizationTrackingAreaRequest
  */
 export type OrganizationTrackingAreaRequest = {
@@ -120,12 +134,6 @@ export class Organization {
     @Get('/json/organization/list')
     public async getOrganizations(@Session() session: any): Promise<OrganizationListResponse> {
         if ((session.user !== undefined) && session.user.isLogin) {
-            if (!session.user.isAdmin) {
-                return {
-                    statusCode: StatusCodes.FORBIDDEN
-                };
-            }
-
             const organizationRepository = MariaDbHelper.getConnection().getRepository(OrganizationDB);
 
             const orgs = await organizationRepository.find();
@@ -146,6 +154,48 @@ export class Organization {
             return {
                 statusCode: StatusCodes.OK,
                 list
+            };
+        }
+
+        return {
+            statusCode: StatusCodes.UNAUTHORIZED
+        };
+    }
+
+    /**
+     * Get organization
+     * @param {any} session
+     * @param {OrganizationGetRequest} req
+     * @return {OrganizationResponse}
+     */
+    @Post('/json/organization/get')
+    public async getOrganization(@Session() session: any, @Body() req: OrganizationGetRequest): Promise<OrganizationResponse> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+            const organizationRepository = MariaDbHelper.getConnection().getRepository(OrganizationDB);
+
+            const org = await organizationRepository.findOne({
+                where: {
+                    id: req.id
+                }
+            });
+
+            if (org) {
+                return {
+                    statusCode: StatusCodes.OK,
+                    data: {
+                        id: org.id,
+                        description: org.description,
+                        location: org.location,
+                        lat: org.lat,
+                        lon: org.lon,
+                        country: org.country
+                    }
+                };
+            }
+
+            return {
+                statusCode: StatusCodes.INTERNAL_ERROR,
+                msg: 'Organization not found!'
             };
         }
 

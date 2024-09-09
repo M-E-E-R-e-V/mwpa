@@ -125,6 +125,7 @@ export class SightingMap extends Element {
         [SightingMapObjectType.Mysticeti, new Style({
             image: new Icon({
                 src: 'images/marker-mysticeti.png',
+                anchor: [0.5, 1],
                 rotateWithView: false,
                 size: [500, 500],
                 scale: 0.1
@@ -133,6 +134,7 @@ export class SightingMap extends Element {
         [SightingMapObjectType.Odontoceti, new Style({
             image: new Icon({
                 src: 'images/marker-odontoceti.png',
+                anchor: [0.5, 1],
                 rotateWithView: false,
                 size: [500, 500],
                 scale: 0.1
@@ -141,6 +143,7 @@ export class SightingMap extends Element {
         [SightingMapObjectType.Testudines, new Style({
             image: new Icon({
                 src: 'images/marker-testudines.png',
+                anchor: [0.5, 1],
                 rotateWithView: false,
                 size: [500, 500],
                 scale: 0.1
@@ -277,6 +280,7 @@ export class SightingMap extends Element {
             }
 
             overlayTooltip.setPosition(evt.coordinate);
+
             this._popover = this._tooltip_popup.popover({
                 html: true,
                 content: () => {
@@ -344,6 +348,15 @@ export class SightingMap extends Element {
             zoom: viewZoom,
             multiWorld: true
         }));
+    }
+
+    /**
+     * Return the style
+     * @param {string} name
+     * @returns {Style|undefined}
+     */
+    public getStyle(name: string): Style|undefined {
+        return this._styles.get(name);
     }
 
     /**
@@ -509,11 +522,7 @@ export class SightingMap extends Element {
                 const props = feature.getProperties() || {};
 
                 if (props.pointtype) {
-                    const globalStyle = this._styles.get(props.pointtype);
-
-                    if (globalStyle) {
-                        styles.push(globalStyle);
-                    } else if (props.pointtype === SightingMapObjectType.Boat) {
+                    if (props.pointtype === SightingMapObjectType.Boat) {
                         const pstart = props.start as number[];
                         const pend = props.end as number[];
 
@@ -525,13 +534,19 @@ export class SightingMap extends Element {
                             geometry: new Point(fromLonLat(pstart)),
                             image: new Icon({
                                 src: 'images/boat.png',
-                                anchor: [0.75, 0.5],
-                                rotateWithView: false,
+                                anchor: [0.5, 0.5],
+                                rotateWithView: true,
                                 rotation: -rotation,
                                 size: [752, 752],
                                 scale: 0.08
                             })
                         }));
+                    } else {
+                        const globalStyle = this._styles.get(props.pointtype);
+
+                        if (globalStyle) {
+                            styles.push(globalStyle);
+                        }
                     }
                 }
 

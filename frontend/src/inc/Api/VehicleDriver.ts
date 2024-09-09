@@ -34,10 +34,11 @@ export class VehicleDriver {
         const result = await NetFetch.getData('/json/vehicledriver/list');
 
         if (result && result.statusCode) {
-            switch(result.statusCode) {
-                case StatusCodes.OK:
+            switch (result.statusCode) {
+                case StatusCodes.OK: {
                     const response = result as VehicleDriverListResponse;
                     return response.list;
+                }
 
                 case StatusCodes.UNAUTHORIZED:
                     throw new UnauthorizedError();

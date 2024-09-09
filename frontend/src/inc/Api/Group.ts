@@ -11,7 +11,7 @@ export enum GroupRoles {
     'importer' = 'importer',
     'driver' = 'driver',
     'guide' = 'guide'
-};
+}
 
 /**
  * GroupEntry

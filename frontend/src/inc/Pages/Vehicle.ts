@@ -8,7 +8,7 @@ export class Vehicle extends BasePage {
      * page name
      * @protected
      */
-    protected _name: string = 'admin-vehicle';
+    protected override _name: string = 'admin-vehicle';
 
     /**
      * constructor
@@ -27,7 +27,7 @@ export class Vehicle extends BasePage {
     /**
      * loadContent
      */
-    public async loadContent(): Promise<void> {
+    public override async loadContent(): Promise<void> {
         this._onLoadTable = async(): Promise<void> => {
             this._wrapper.getContentWrapper().getContent().empty();
 

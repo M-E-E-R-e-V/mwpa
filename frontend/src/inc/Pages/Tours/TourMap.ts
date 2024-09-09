@@ -8,20 +8,16 @@ import {
     SidebarMenuTree
 } from 'bambooo';
 import moment from 'moment/moment';
-import {View, Map as OlMap, Feature, Overlay} from 'ol';
-import {GeoJSON} from 'ol/format';
-import {Point} from 'ol/geom';
+import {Coordinate} from 'ol/coordinate';
 import {fromLonLat} from 'ol/proj';
-import TileLayer from 'ol/layer/Tile';
-import VectorLayer from 'ol/layer/Vector';
-import {OSM} from 'ol/source';
-import VectorSource from 'ol/source/Vector';
-import {Circle, Fill, Icon, Stroke, Style} from 'ol/style';
-import {Tours as ToursAPI, ToursTrackingSightingExtended} from '../../Api/Tours';
+import {Organization as OrganizationAPI} from '../../Api/Organization';
 import {Species as SpeciesAPI, SpeciesEntry} from '../../Api/Species';
+import {Tours as ToursAPI, ToursTrackingSightingExtended} from '../../Api/Tours';
+import {User as UserAPI} from '../../Api/User';
 import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
 import {UtilDistanceCoast} from '../../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../../Utils/UtilLocation';
+import {SightingMap, SightingMapObjectType} from '../../Widget/SightingMap';
 import {BasePage} from '../BasePage';
 import {Tours} from '../Tours';
 
@@ -48,29 +44,23 @@ export class ToursMap extends BasePage {
      */
     protected override _name: string = 'tour_map';
 
+    /**
+     * Tour id
+     * @protected
+     */
     protected _tourId: number;
 
     /**
-     * map object
+     * Map widget
      * @protected
      */
-    protected _map: OlMap;
+    protected _smap: SightingMap | null = null;
 
     /**
-     * map source
+     * Badge menu item
      * @protected
      */
-    protected _source: VectorSource;
-
-    /**
-     * tooltip popup
-     * @protected
-     */
-    protected _tooltip_popup: any;
-
     protected _badge: SidebarMenuItemBadge|null = null;
-
-    protected _popover: any|undefined;
 
     /**
      * constructor
@@ -81,129 +71,21 @@ export class ToursMap extends BasePage {
         this._tourId = tourId;
     }
 
-    public async unloadContent(): Promise<void> {
-        this.disposePopover(true);
-        jQuery('.popover').remove();
-
-        if (this._tooltip_popup) {
-            this._tooltip_popup.remove();
+    /**
+     * unload content
+     */
+    public override async unloadContent(): Promise<void> {
+        if (this._smap) {
+            this._smap.disposePopover(true);
+            this._smap.unload();
+            this._smap = null;
         }
-    }
-
-    public disposePopover(andRemove: boolean = false): void {
-        if (this._popover) {
-            this._popover.popover('dispose');
-
-            if (andRemove) {
-                this._popover.remove();
-            }
-
-            this._popover = undefined;
-        }
-    }
-
-    private _createMap(card: Card): void {
-        const wrapperHeight = this._wrapper.getElement().height() - 220;
-
-        const mapElement = jQuery('<div></div>').appendTo(card.getElement());
-        mapElement.css({
-            height: `${wrapperHeight}px`
-        });
-
-        const tileLayer = new TileLayer({
-            source: new OSM({
-                wrapX: false
-            })
-        });
-
-        this._source = new VectorSource({
-            wrapX: false
-        });
-
-        const vector = new VectorLayer({
-            source: this._source
-        });
-
-        this._map = new OlMap({
-            layers: [tileLayer, vector],
-            target: mapElement[0],
-            view: new View({
-                center: fromLonLat([11.030, 47.739]),
-                zoom: 2.2,
-                multiWorld: true
-            })
-        });
-    }
-
-    protected _createMapToolTip(): void {
-        this._tooltip_popup = jQuery('<div id="popup"></div>').appendTo(this._wrapper.getContentWrapper().getContent().getElement());
-
-        const overlayTooltip = new Overlay({
-            element: this._tooltip_popup[0],
-            offset: [10, 0],
-            positioning: 'bottom-left'
-        });
-
-        this._map.addOverlay(overlayTooltip);
-
-        this._map.on('click', (evt) => {
-            const feature = this._map.forEachFeatureAtPixel(evt.pixel, (inFeature) => {
-                return inFeature;
-            });
-
-            this.disposePopover();
-
-            if (!feature) {
-                return;
-            }
-
-            overlayTooltip.setPosition(evt.coordinate);
-            this._popover = this._tooltip_popup.popover({
-                html: true,
-                content: () => {
-                    const content = feature.get('content');
-
-                    if (typeof content === 'string') {
-                        return content;
-                    } else if (typeof content === 'function') {
-                        const returnContent = content();
-
-                        if (typeof returnContent === 'string') {
-                            return returnContent;
-                        } else if (typeof returnContent === 'object') {
-                            return jQuery(returnContent).html();
-                        }
-                    }
-
-                    return 'None content found.';
-                }
-            });
-
-            this._popover.popover('show');
-        });
-
-        this._map.on('pointermove', (evt) => {
-            const pixel = this._map.getEventPixel(evt.originalEvent);
-            const hit = this._map.hasFeatureAtPixel(pixel);
-            const target = this._map.getTarget();
-
-            if (target) {
-                // @ts-ignore
-                if ('style' in target) {
-                    target.style.cursor = hit ? 'pointer' : '';
-                }
-            }
-        });
-
-        this._map.on('movestart', () => {
-            this.disposePopover();
-        });
     }
 
     /**
      * loadContent
      */
-    public async loadContent(): Promise<void> {
+    public override async loadContent(): Promise<void> {
         const menuItem = this._wrapper.getMainSidebar().getSidebar().getMenu().getMenuItem(Tours.NAME);
         let menuTree: SidebarMenuTree|null = null;
 
@@ -226,20 +108,36 @@ export class ToursMap extends BasePage {
 
         // map ---------------------------------------------------------------------------------------------------------
 
-        this._createMap(card);
+        this._smap = new SightingMap(card.getBodyElement());
 
-        // tooltip -----------------------------------------------------------------------------------------------------
+        const wHeight = jQuery(window).height();
 
-        this._createMapToolTip();
+        if (wHeight) {
+            this._smap.setHeight(wHeight - 220);
+        }
+
+        const currentuser = await UserAPI.getUserInfo();
+
+        let viewCenter: Coordinate|null = null;
+
+        if (currentuser && currentuser.organization) {
+            viewCenter = fromLonLat([
+                parseFloat(currentuser.organization.lon),
+                parseFloat(currentuser.organization.lat)
+            ]);
+        }
 
         // load table --------------------------------------------------------------------------------------------------
 
         this._onLoadTable = async(): Promise<void> => {
-            this._map.setView(new View({
-                center: fromLonLat([-17.3340221, 28.0525008]),
-                zoom: 12.5,
-                multiWorld: true
-            }));
+            if (this._smap) {
+                this._smap.load({
+                    useHeatmap: false,
+                    useBathymetriemap: true
+                });
+
+                this._smap.setView(viewCenter);
+            }
 
             // species -------------------------------------------------------------------------------------------------
 
@@ -255,18 +153,32 @@ export class ToursMap extends BasePage {
             const trackingData = await ToursAPI.getTrackingList(this._tourId);
 
             if (trackingData) {
+                const org = await OrganizationAPI.getOrganization(trackingData.org_id);
+
+                if (org) {
+                    const orgViewCenter = fromLonLat([
+                        parseFloat(org.lon),
+                        parseFloat(org.lat)
+                    ]);
+
+                    if (this._smap) {
+                        this._smap.setView(orgViewCenter);
+                    }
+                }
+
                 const trackDate = moment(trackingData.date?.split(' ')[0]);
 
                 card.setTitle(`${title} - <b>${trackDate.format('YYYY.MM.DD')}</b> - begin: ${trackingData.start} end: ${trackingData.end}`);
 
-                let geojsonFeatires: object[] = [];
                 const positionSort = new Map<number, GeolocationCoordinates>();
                 const sighPostionTrack = new Map<number, TourSightingData>();
 
                 // add sightings ---------------------------------------------------------------------------------------
 
                 if (trackingData.sightings.length > 0) {
-                    this._badge.setContent(trackingData.sightings.length);
+                    if (this._badge) {
+                        this._badge.setContent(trackingData.sightings.length);
+                    }
                 }
 
                 for (const sighting of trackingData.sightings) {
@@ -325,54 +237,51 @@ export class ToursMap extends BasePage {
                 const coordList: number[][] = [];
 
                 let index = 0;
-                let start: GeolocationCoordinates;
-                let end: GeolocationCoordinates;
-
-                const boatDirection: object[] = [];
+                let start: GeolocationCoordinates|null = null;
+                let end: GeolocationCoordinates|null = null;
 
                 for (const [timestamp, value] of positionListObj) {
                     if (index === 0) {
                         start = value;
                     }
 
-                    // hold point for sighting -------------------------------------------------------------------------
+                    if (value.longitude && value.latitude) {
+                        // hold point for sighting ---------------------------------------------------------------------
 
-                    for (const [sightingid, sighting] of sighPostionTrack) {
-                        if (timestamp >= sighting.timestamp_start && timestamp <= sighting.timestamp_end) {
-                            sighting.points.push([value.longitude, value.latitude]);
+                        for (const [sightingid, sighting] of sighPostionTrack) {
+                            if (timestamp >= sighting.timestamp_start && timestamp <= sighting.timestamp_end) {
+                                sighting.points.push([value.longitude, value.latitude]);
+                            }
+
+                            sighPostionTrack.set(sightingid, sighting);
                         }
 
-                        sighPostionTrack.set(sightingid, sighting);
-                    }
+                        // add coord -----------------------------------------------------------------------------------
 
-                    // add coord ---------------------------------------------------------------------------------------
+                        coordList.push([value.longitude, value.latitude]);
 
-                    coordList.push([value.longitude, value.latitude]);
-
-                    // add boat direction ------------------------------------------------------------------------------
-                    end = value;
-
-                    if (index > 0 && (index % 400 === 0)) {
-                        boatDirection.push({
-                            type: 'Feature',
-                            properties: {
-                                pointtype: 'boat',
-                                start: [end.longitude, end.latitude],
-                                end: [value.longitude, value.latitude]
-                            },
-                            geometry: {
-                                type: 'Point',
-                                coordinates: [value.longitude, value.latitude]
+                        // add boat direction --------------------------------------------------------------------------
+                        if (index > 0 && (index % 400 === 0) && end) {
+                            if (this._smap) {
+                                this._smap.addRawObject({
+                                    type: 'Feature',
+                                    properties: {
+                                        pointtype: 'boat',
+                                        start: [end.longitude, end.latitude],
+                                        end: [value.longitude, value.latitude]
+                                    },
+                                    geometry: {
+                                        type: 'Point',
+                                        coordinates: [value.longitude, value.latitude]
+                                    }
+                                });
                             }
-                        });
+                        }
+
+                        end = value;
+                        index++;
                     }
-
-                    index++;
                 }
-
-                // add boat directions ---------------------------------------------------------------------------------
-
-                geojsonFeatires = geojsonFeatires.concat(boatDirection);
 
                 // create track for sighting ---------------------------------------------------------------------------
 
@@ -382,16 +291,18 @@ export class ToursMap extends BasePage {
                         continue;
                     }
 
-                    geojsonFeatires.push({
-                        type: 'Feature',
-                        properties: {
-                            pointtype: `route_${sighting.pointtype}`
-                        },
-                        geometry: {
-                            type: 'LineString',
-                            coordinates: sighting.points
-                        }
-                    });
+                    if (this._smap) {
+                        this._smap.addRawObject({
+                            type: 'Feature',
+                            properties: {
+                                pointtype: `route_${sighting.pointtype}`
+                            },
+                            geometry: {
+                                type: 'LineString',
+                                coordinates: sighting.points
+                            }
+                        });
+                    }
 
                     const speciesEntry = mspecies.get(sighting.species_id);
                     let speciesName = '';
@@ -446,229 +357,59 @@ export class ToursMap extends BasePage {
                         }
                     }
 
-                    geojsonFeatires.push({
-                        type: 'Feature',
-                        properties: {
-                            pointtype: sighting.pointtype,
-                            id: sightingId,
-                            content:
-                                `<b>Species</b>: ${speciesName}<br>` +
-                                `<b>Group-Size</b>: ${sighting.species_count}<br>` +
-                                `<b>Distance (Miles)</b>: ${UtilDistanceCoast.meterToM(floatDistance, true)}<br>` +
-                                `<b>Date/Time</b>: ${speStartTimeStr}<br>` +
-                                `<b>Position</b>: ${latStr} - ${lonStr}<br>${images}<br>` +
-                                `${extendedStr}`
-                        },
-                        geometry: {
-                            type: 'Point',
-                            coordinates: sighting.points[0]
-                        }
-                    });
+                    if (this._smap) {
+                        this._smap.addSighting(
+                            sighting.pointtype,
+                            sightingId,
+                            `<b>Species</b>: ${speciesName}<br>` +
+                            `<b>Group-Size</b>: ${sighting.species_count}<br>` +
+                            `<b>Distance (Miles)</b>: ${UtilDistanceCoast.meterToM(floatDistance, true)}<br>` +
+                            `<b>Date/Time</b>: ${speStartTimeStr}<br>` +
+                            `<b>Position</b>: ${latStr} - ${lonStr}<br>${images}<br>` +
+                            `${extendedStr}`,
+                            sighting.points[0]
+                        );
+                    }
                 }
 
                 // add line routes -------------------------------------------------------------------------------------
 
-                geojsonFeatires.push({
-                    type: 'Feature',
-                    properties: {
-                        pointtype: 'route'
-                    },
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: coordList
-                    }
-                });
+                if (this._smap) {
+                    this._smap.addLineRoute(coordList);
+                }
 
                 // add start -------------------------------------------------------------------------------------------
 
-                const startTime = moment(start.timestamp);
+                if (start && this._smap && start.longitude && start.latitude) {
+                    const startTime = moment(start.timestamp);
 
-                geojsonFeatires.push({
-                    type: 'Feature',
-                    properties: {
-                        pointtype: 'start',
-                        content: `Tour-Start at: <b>${startTime.format('YYYY.MM.DD HH:mm:ss')}</b>`
-                    },
-                    geometry: {
-                        type: 'Point',
-                        coordinates: [start.longitude, start.latitude]
-                    }
-                });
+                    this._smap.addSighting(
+                        SightingMapObjectType.Start,
+                        'start',
+                        `Tour-Start at: <b>${startTime.format('YYYY.MM.DD HH:mm:ss')}</b>`,
+                        [start.longitude, start.latitude]
+                    );
+                }
 
                 // add end ---------------------------------------------------------------------------------------------
 
-                const endTime = moment(end.timestamp);
+                if (end && this._smap && end.longitude && end.latitude) {
+                    const endTime = moment(end.timestamp);
 
-                geojsonFeatires.push({
-                    type: 'Feature',
-                    properties: {
-                        pointtype: 'end',
-                        content: `Tour-End at: <b>${endTime.format('YYYY.MM.DD HH:mm:ss')}</b>`
-                    },
-                    geometry: {
-                        type: 'Point',
-                        coordinates: [end.longitude, end.latitude]
-                    }
-                });
+                    this._smap.addSighting(
+                        SightingMapObjectType.End,
+                        'end',
+                        `Tour-End at: <b>${endTime.format('YYYY.MM.DD HH:mm:ss')}</b>`,
+                        [end.longitude, end.latitude]
+                    );
+                }
 
                 // build geojson object --------------------------------------------------------------------------------
 
-                const geojsonObject = {
-                    type: 'FeatureCollection',
-                    crs: {
-                        type: 'name',
-                        properties: {
-                            name: 'EPSG:4326'
-                        }
-                    },
-                    features: geojsonFeatires
-                };
-
-                const geoJsonObj = new GeoJSON();
-                const features = geoJsonObj.readFeatures(geojsonObject, {
-                    featureProjection: 'EPSG:3857'
-                });
-
-                const vectorSource = new VectorSource({
-                    features
-                });
-
-                const styleFunction = (feature: Feature): Style[] => {
-                    const styles: Style[] = [];
-
-                    const props = feature.getProperties() || {};
-
-                    if (props.pointtype) {
-                        switch (props.pointtype) {
-                            // eslint-disable-next-line no-lone-blocks
-                            case 'route': {
-                                styles.push(new Style({
-                                    stroke: new Stroke({
-                                        width: 2
-                                    }),
-                                    fill: new Fill({
-                                        color: 'rgba(255,0,0,0.5)'
-                                    })
-                                }));
-                            } break;
-
-                            // eslint-disable-next-line no-lone-blocks
-                            case 'route_odontoceti': {
-                                styles.push(new Style({
-                                    stroke: new Stroke({
-                                        width: 10,
-                                        color: '#85C1E9'
-                                    })
-                                }));
-                            } break;
-
-                            // eslint-disable-next-line no-lone-blocks
-                            case 'route_mysticeti': {
-                                styles.push(new Style({
-                                    stroke: new Stroke({
-                                        width: 10,
-                                        color: '#2471A3'
-                                    })
-                                }));
-                            } break;
-
-                            // eslint-disable-next-line no-lone-blocks
-                            case 'start': {
-                                styles.push(new Style({
-                                    image: new Circle({
-                                        radius: 7,
-                                        fill: new Fill({color: '#69e356'}),
-                                        stroke: new Stroke({
-                                            color: 'black',
-                                            width: 1
-                                        })
-                                    })
-                                }));
-                            } break;
-
-                            // eslint-disable-next-line no-lone-blocks
-                            case 'end': {
-                                styles.push(new Style({
-                                    image: new Circle({
-                                        radius: 7,
-                                        fill: new Fill({color: 'red'}),
-                                        stroke: new Stroke({
-                                            color: 'black',
-                                            width: 1
-                                        })
-                                    })
-                                }));
-                            } break;
-
-                            case 'boat': {
-                                const pstart = props.start as number[];
-                                const pend = props.end as number[];
-
-                                const dx = pend[0] - pstart[0];
-                                const dy = pend[1] - pstart[1];
-                                const rotation = Math.atan2(dy, dx);
-
-                                styles.push(new Style({
-                                    geometry: new Point(fromLonLat(pstart)),
-                                    image: new Icon({
-                                        src: 'images/boat.png',
-                                        anchor: [0.75, 0.5],
-                                        rotateWithView: false,
-                                        rotation: -rotation,
-                                        size: [752, 752],
-                                        scale: 0.08
-                                    })
-                                }));
-                            } break;
-
-                            // eslint-disable-next-line no-lone-blocks
-                            case 'mysticeti': {
-                                styles.push(new Style({
-                                    image: new Icon({
-                                        src: 'images/marker-mysticeti.png',
-                                        rotateWithView: false,
-                                        size: [500, 500],
-                                        scale: 0.1
-                                    })
-                                }));
-                            } break;
-
-                            // eslint-disable-next-line no-lone-blocks
-                            case 'odontoceti': {
-                                styles.push(new Style({
-                                    image: new Icon({
-                                        src: 'images/marker-odontoceti.png',
-                                        rotateWithView: false,
-                                        size: [500, 500],
-                                        scale: 0.1
-                                    })
-                                }));
-                            } break;
-
-                            // eslint-disable-next-line no-lone-blocks
-                            case 'testudines': {
-                                styles.push(new Style({
-                                    image: new Icon({
-                                        src: 'images/marker-testudines.png',
-                                        rotateWithView: false,
-                                        size: [500, 500],
-                                        scale: 0.1
-                                    })
-                                }));
-                            } break;
-                        }
-                    }
-
-
-                    return styles;
-                };
-
-                const vectorLayer = new VectorLayer({
-                    source: vectorSource,
-                    style: styleFunction
-                });
-
-                this._map.addLayer(vectorLayer);
+                if (this._smap !== null) {
+                    // this._smap.addRawObject(geojsonFeatires);
+                    await this._smap.refrech();
+                }
             }
         };
 

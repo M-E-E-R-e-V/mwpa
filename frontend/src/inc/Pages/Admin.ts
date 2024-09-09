@@ -22,7 +22,7 @@ export class Admin extends BasePage {
      * loadContent
      */
     public override async loadContent(): Promise<void> {
-
+        console.log('Content');
     }
 
 }
