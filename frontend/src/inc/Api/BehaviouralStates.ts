@@ -33,9 +33,10 @@ export class BehaviouralStates {
 
         if (result && result.statusCode) {
             switch (result.statusCode) {
-                case StatusCodes.OK:
+                case StatusCodes.OK: {
                     const response = result as BehaviouralStatesResponse;
                     return response.list;
+                }
 
                 case StatusCodes.UNAUTHORIZED:
                     throw new UnauthorizedError();
@@ -44,4 +45,5 @@ export class BehaviouralStates {
 
         return null;
     }
+
 }

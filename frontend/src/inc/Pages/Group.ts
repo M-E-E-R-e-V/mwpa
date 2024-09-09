@@ -51,7 +51,7 @@ export class Group extends BasePage {
             this._groupModal.resetValues();
             this._groupModal.setTitle('Add new Group');
 
-            const orgs = await OrganizationAPI.getOrganization();
+            const orgs = await OrganizationAPI.getOrganizations();
 
             if (orgs !== null) {
                 this._groupModal.setOrganizations(orgs);
@@ -184,7 +184,7 @@ export class Group extends BasePage {
                             this._groupModal.setName(group.description);
                             this._groupModal.setRole(group.role);
 
-                            const orgs = await OrganizationAPI.getOrganization();
+                            const orgs = await OrganizationAPI.getOrganizations();
 
                             if (orgs !== null) {
                                 this._groupModal.setOrganizations(orgs);

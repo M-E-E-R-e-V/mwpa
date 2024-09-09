@@ -27,7 +27,7 @@ export class Users extends BasePage {
      * page name
      * @protected
      */
-    protected _name: string = 'admin-users';
+    protected override _name: string = 'admin-users';
 
     /**
      * users dialog
@@ -56,7 +56,7 @@ export class Users extends BasePage {
             this._usersDialog.resetValues();
             this._usersDialog.setTitle('Add User');
 
-            if (groups.list) {
+            if (groups && groups.list) {
                 this._usersDialog.setMainGroupList(groups.list);
             }
 
@@ -121,7 +121,7 @@ export class Users extends BasePage {
     /**
      * loadContent
      */
-    public async loadContent(): Promise<void> {
+    public override async loadContent(): Promise<void> {
         const filter: UserListFilter = {
             filter: {
                 show_disabled: false
@@ -167,14 +167,23 @@ export class Users extends BasePage {
             // eslint-disable-next-line no-new
             const thDisabled = new Th(trhead, new LangText('Disabled'));
             const filterDisabled = new Switch(thDisabled, 'filterDisabled', 'Show all');
-            filterDisabled.setEnable(filter.filter.show_disabled);
+
+            if (filter.filter && filter.filter.show_disabled !== undefined) {
+                filterDisabled.setEnable(filter.filter.show_disabled);
+            }
+
             filterDisabled.getElement().css({
                 'margin-bottom': '0'
             });
 
             filterDisabled.setChangeFn((value) => {
-                filter.filter.show_disabled = value;
-                this._onLoadTable();
+                if (filter.filter) {
+                    filter.filter.show_disabled = value;
+                }
+
+                if (this._onLoadTable) {
+                    this._onLoadTable();
+                }
             });
 
             // eslint-disable-next-line no-new
@@ -203,7 +212,7 @@ export class Users extends BasePage {
 
                     let groupName = 'Unknown';
 
-                    if (groups.list) {
+                    if (groups && groups.list) {
                         for (const agroup of groups.list) {
                             if (agroup.id === user.main_groupid) {
                                 groupName = agroup.description;
@@ -248,7 +257,7 @@ export class Users extends BasePage {
                             this._usersDialog.setFullname(user.fullname);
                             this._usersDialog.setEMail(user.email);
 
-                            if (groups.list) {
+                            if (groups && groups.list) {
                                 this._usersDialog.setMainGroupList(groups.list);
                             }
 

@@ -35,6 +35,20 @@ export type OrganizationListResponse = DefaultReturn & {
     list?: OrganizationFullEntry[];
 };
 
+/**
+ * Organization get request
+ */
+export type OrganizationGetRequest = {
+    id: number;
+};
+
+/**
+ * Organization response
+ */
+export type OrganizationResponse = DefaultReturn & {
+    data?: OrganizationFullEntry;
+};
+
 export type OrganizationTrackingAreaOrgAndType = {
     organization_id: number;
     area_type: string;
@@ -103,9 +117,9 @@ export class Organization {
     }
 
     /**
-     * getOrganization
+     * getOrganizations
      */
-    public static async getOrganization(): Promise<OrganizationFullEntry[] | null> {
+    public static async getOrganizations(): Promise<OrganizationFullEntry[] | null> {
         const result = await NetFetch.getData('/json/organization/list');
 
         if (result && result.statusCode) {
@@ -117,7 +131,38 @@ export class Organization {
                         return tresult.list;
                     }
 
-                    throw new Error('Grouplist is empty return!');
+                    throw new Error('Organization-List is empty return!');
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Return a Organization by id
+     * @param {number} orgId
+     * @returns {OrganizationFullEntry|null}
+     */
+    public static async getOrganization(orgId: number): Promise<OrganizationFullEntry | null> {
+        const req: OrganizationGetRequest = {
+            id: orgId
+        };
+
+        const result = await NetFetch.postData('/json/organization/get', req);
+
+        if (result && result.statusCode) {
+            const tresult = result as OrganizationResponse;
+
+            switch (tresult.statusCode) {
+                case StatusCodes.OK:
+                    if (tresult.data) {
+                        return tresult.data;
+                    }
+
+                    throw new Error('Organization is empty return!');
 
                 case StatusCodes.UNAUTHORIZED:
                     throw new UnauthorizedError();

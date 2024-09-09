@@ -36,7 +36,7 @@ export class Tours extends BasePage {
      * page name
      * @protected
      */
-    protected _name: string = Tours.NAME;
+    protected override _name: string = Tours.NAME;
 
     /**
      * tour dialog
@@ -69,7 +69,7 @@ export class Tours extends BasePage {
     /**
      * loadContent
      */
-    public async loadContent(): Promise<void> {
+    public override async loadContent(): Promise<void> {
         const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
         const card = new Card(new ContentCol(row1, ContentColSize.col12));
 
@@ -199,7 +199,9 @@ export class Tours extends BasePage {
                     if (entry.count_trackings > 0) {
                         const badgeTracking = new Badge(tdTrackingCount, `${entry.count_trackings}`, BadgeType.info);
                         badgeTracking.getElement().on('click', () => {
-                            this._loadPageFn(new ToursMap(entry.id));
+                            if (this._loadPageFn) {
+                                this._loadPageFn(new ToursMap(entry.id));
+                            }
                         });
 
                         badgeTracking.getElement().css({
@@ -239,7 +241,9 @@ export class Tours extends BasePage {
                     abtnMenu.addMenuItem(
                         'Show Map',
                         (): void => {
-                            this._loadPageFn(new ToursMap(entry.id));
+                            if (this._loadPageFn) {
+                                this._loadPageFn(new ToursMap(entry.id));
+                            }
                         },
                         IconFa.hockeypuck
                     );
@@ -265,7 +269,7 @@ export class Tours extends BasePage {
             if (tours) {
                 card.setTitle(`Tours (${tours.count})`);
 
-                await onLoadtours(tours.list!, tours.devices!, tours.creaters);
+                await onLoadtours(tours.list!, tours.devices!, tours.creaters ?? []);
 
                 jQuery(window).on('scroll', async() => {
                     const h = jQuery(window).height()!;

@@ -17,7 +17,8 @@ export class UtilLocation {
 
     /**
      * ddToDm
-     * @param coord
+     * @param {number} coord
+     * @param {boolean} isLat
      */
     public static ddToDm(coord: number, isLat: boolean): UtilLocationDM {
         let direction = '';
@@ -47,18 +48,14 @@ export class UtilLocation {
     public static strToGeolocationCoordinates(str: string): GeolocationCoordinates|null {
         let gcValue: GeolocationCoordinates|null = null;
 
-        if (typeof str === 'string') {
-            try {
-                gcValue = JSON.parse(str!);
-            } catch (e) {
-                console.log(e);
-                return null;
-            }
+        try {
+            gcValue = JSON.parse(str!);
 
             return gcValue as GeolocationCoordinates;
+        } catch (e) {
+            console.log(e);
+            return null;
         }
-
-        return null;
     }
 
     /**
@@ -67,7 +64,11 @@ export class UtilLocation {
      * @returns {Coordinate}
      */
     public static geoLocationToOlCoordinates(geo: GeolocationCoordinates): Coordinate {
-        return [geo.longitude, geo.latitude];
+        if (geo.longitude && geo.latitude) {
+            return [geo.longitude, geo.latitude];
+        }
+
+        return [0, 0];
     }
 
 }
