@@ -40,6 +40,7 @@ import {ExternalReceiver as ExternalReceiverDB} from './inc/Db/MariaDb/Entity/Ex
 import {Group as GroupDB} from './inc/Db/MariaDb/Entity/Group';
 import {Organization as OrganizationDB} from './inc/Db/MariaDb/Entity/Organization';
 import {OrganizationTrackingArea as OrganizationTrackingAreaDB} from './inc/Db/MariaDb/Entity/OrganizationTrackingArea';
+import {Settings as SettingsDB} from './inc/Db/MariaDb/Entity/Settings';
 import {Sighting as SightingDB} from './inc/Db/MariaDb/Entity/Sighting';
 import {SightingExtended as SightingExtendedDB} from './inc/Db/MariaDb/Entity/SightingExtended';
 import {SightingTour as SightingTourDB} from './inc/Db/MariaDb/Entity/SightingTour';
@@ -142,7 +143,8 @@ import {DepthService} from './inc/Service/DepthService';
                 BehaviouralStatesDB,
                 DevicesDB,
                 ExternalReceiverDB,
-                SightingExtendedDB
+                SightingExtendedDB,
+                SettingsDB
             ],
             migrations: [
             ],

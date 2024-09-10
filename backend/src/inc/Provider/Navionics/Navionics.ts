@@ -1,4 +1,5 @@
 import got from 'got';
+import {UtilIsInSea} from '../../Utils/UtilIsInSea';
 
 export type NavionicsQuickinfoMarineResponse = {
     items: {
@@ -31,6 +32,11 @@ export class Navionics {
     protected _apiEndpoint: string = 'https://webapp.navionics.com/api/v2';
 
     public async getWaterDepth(lat: number, lon: number): Promise<NavionicsDepth|null> {
+        if (!UtilIsInSea.isInSea(lon, lat)) {
+            console.log('Navionics::getWaterDepth: Error: coordinate not in the sea!');
+            return null;
+        }
+
         try {
             const response = await got({
                 url: `${this._apiEndpoint}/quickinfo/marine/${lat}/${lon}?dpu=meters&scl=false&z=14&sd=30`,
