@@ -7,7 +7,7 @@ import {
     SidebarMenuItemBadge,
     SidebarMenuTree
 } from 'bambooo';
-import moment from 'moment/moment';
+import moment from 'moment';
 import {Coordinate} from 'ol/coordinate';
 import {fromLonLat} from 'ol/proj';
 import {Organization as OrganizationAPI} from '../../Api/Organization';

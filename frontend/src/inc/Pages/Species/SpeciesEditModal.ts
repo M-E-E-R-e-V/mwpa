@@ -1,17 +1,12 @@
 import {
     FormGroup,
     InputBottemBorderOnly2,
-    InputType,
+    InputType, LangText,
     ModalDialog,
     ModalDialogType,
     SelectBottemBorderOnly2
 } from 'bambooo';
 import {SpeciesGroupEntry} from '../../Api/SpeciesGroup';
-
-/**
- * SpeciesEditModalButtonClickFn
- */
-type SpeciesEditModalButtonClickFn = () => void;
 
 /**
  * SpeciesEditModal
@@ -43,12 +38,6 @@ export class SpeciesEditModal extends ModalDialog {
     protected _selectSpeciesGroup: SelectBottemBorderOnly2;
 
     /**
-     * click save fn
-     * @protected
-     */
-    protected _onSaveClick: SpeciesEditModalButtonClickFn|null = null;
-
-    /**
      * constructor
      * @param elementObject
      */
@@ -67,14 +56,10 @@ export class SpeciesEditModal extends ModalDialog {
         const groupSpeciesGroup = new FormGroup(bodyCard, 'Specie-Group');
         this._selectSpeciesGroup = new SelectBottemBorderOnly2(groupSpeciesGroup);
 
-        jQuery('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>').appendTo(this._footer);
-        const btnSave = jQuery('<button type="button" class="btn btn-primary">Save</button>').appendTo(this._footer);
+        // buttons -----------------------------------------------------------------------------------------------------
 
-        btnSave.on('click', (): void => {
-            if (this._onSaveClick !== null) {
-                this._onSaveClick();
-            }
-        });
+        this.addButtonClose(new LangText('Close'));
+        this.addButtonSave(new LangText('Save changes'), true);
     }
 
     /**
@@ -161,14 +146,6 @@ export class SpeciesEditModal extends ModalDialog {
         this.setId(null);
         this.setName('');
         this.setSpeciesGroup(0);
-    }
-
-    /**
-     * setOnSave
-     * @param onSave
-     */
-    public setOnSave(onSave: SpeciesEditModalButtonClickFn): void {
-        this._onSaveClick = onSave;
     }
 
 }

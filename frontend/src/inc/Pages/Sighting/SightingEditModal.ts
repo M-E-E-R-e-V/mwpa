@@ -8,18 +8,13 @@ import {LocationInput} from '../../Widget/LocationInput';
 import {
     FormGroup,
     FormRow,
-    InputBottemBorderOnly2, InputType,
+    InputBottemBorderOnly2, InputType, LangText,
     ModalDialog,
     ModalDialogType,
     SelectBottemBorderOnly2,
     Switch,
     Textarea
 } from 'bambooo';
-
-/**
- * SightingEditModalButtonClickFn
- */
-type SightingEditModalButtonClickFn = () => void;
 
 /**
  * SightingEditModal
@@ -143,12 +138,6 @@ export class SightingEditModal extends ModalDialog {
     protected _textareaNote: Textarea;
 
     /**
-     * on save click
-     * @protected
-     */
-    protected _onSaveClick: SightingEditModalButtonClickFn|null = null;
-
-    /**
      * constructor
      * @param elementObject
      */
@@ -237,14 +226,8 @@ export class SightingEditModal extends ModalDialog {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        jQuery('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>').appendTo(this._footer);
-        const btnSave = jQuery('<button type="button" class="btn btn-primary">Save changes</button>').appendTo(this._footer);
-
-        btnSave.on('click', (): void => {
-            if (this._onSaveClick !== null) {
-                this._onSaveClick();
-            }
-        });
+        this.addButtonClose(new LangText('Close'));
+        this.addButtonSave(new LangText('Save changes'), true);
     }
 
     /**
@@ -604,14 +587,6 @@ export class SightingEditModal extends ModalDialog {
         this.setOther('');
         this.setOtherBoats('');
         this.setNote('');
-    }
-
-    /**
-     * setOnSave
-     * @param onSave
-     */
-    public setOnSave(onSave: SightingEditModalButtonClickFn): void {
-        this._onSaveClick = onSave;
     }
 
 }

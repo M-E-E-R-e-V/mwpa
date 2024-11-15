@@ -1,17 +1,12 @@
 import {
     FormGroup, FormRow,
-    InputBottemBorderOnly2, InputType,
+    InputBottemBorderOnly2, InputType, LangText,
     ModalDialog,
     ModalDialogType,
     SelectBottemBorderOnly2,
     Switch
 } from 'bambooo';
 import {GroupEntry} from '../../Api/Group';
-
-/**
- * UsersEditModalButtonClickFn
- */
-type UsersEditModalButtonClickFn = () => void;
 
 /**
  * UsersEditModal
@@ -85,12 +80,6 @@ export class UsersEditModal extends ModalDialog {
     protected _switchIsDisabled: Switch;
 
     /**
-     * click save fn
-     * @protected
-     */
-    protected _onSaveClick: UsersEditModalButtonClickFn|null = null;
-
-    /**
      * constructor
      * @param elementObject
      */
@@ -138,14 +127,10 @@ export class UsersEditModal extends ModalDialog {
         const groupIsDisabled = new FormGroup(rowOpt.createCol(4), 'Is Disabled');
         this._switchIsDisabled = new Switch(groupIsDisabled, 'userisdisabled');
 
-        jQuery('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>').appendTo(this._footer);
-        const btnSave = jQuery('<button type="button" class="btn btn-primary">Save</button>').appendTo(this._footer);
+        // buttons -----------------------------------------------------------------------------------------------------
 
-        btnSave.on('click', (): void => {
-            if (this._onSaveClick !== null) {
-                this._onSaveClick();
-            }
-        });
+        this.addButtonClose(new LangText('Close'));
+        this.addButtonSave(new LangText('Save changes'), true);
     }
 
     /**
@@ -339,14 +324,6 @@ export class UsersEditModal extends ModalDialog {
         this.setMainGroup(0);
         this.setIsAdmin(false);
         this.setIsDisabled(false);
-    }
-
-    /**
-     * setOnSave
-     * @param onSave
-     */
-    public setOnSave(onSave: UsersEditModalButtonClickFn): void {
-        this._onSaveClick = onSave;
     }
 
 }

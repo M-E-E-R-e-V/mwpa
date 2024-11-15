@@ -34,12 +34,12 @@ export class MapCache {
             const mapCacheDir = UtilImageUploadPath.getMapCacheDirector(useServer, z, x);
 
             if (mapCacheDir !== null) {
-                const serverUrl =  MapCache.MAP_SERVER.get(useServer)!;
+                const serverUrl = MapCache.MAP_SERVER.get(useServer)!;
                 const tileUrl = serverUrl
-                    .replace('{z}', z)
-                    .replace('{x}', x)
-                    .replace('{y}', y)
-                    .replace('{f}', fileformat);
+                .replace('{z}', z)
+                .replace('{x}', x)
+                .replace('{y}', y)
+                .replace('{f}', fileformat);
 
                 const tileFile = Path.join(mapCacheDir, `${y}.${fileformat}`);
 
@@ -49,7 +49,7 @@ export class MapCache {
 
                 try {
                     const response = await got(tileUrl, {
-                        responseType: 'buffer',
+                        responseType: 'buffer'
                     });
 
                     // Schreibe den Buffer in eine Datei
@@ -62,6 +62,17 @@ export class MapCache {
                     return fs.readFileSync(tileFile);
                 }
             }
+        }
+
+        return null;
+    }
+
+    @Get('/mapcachewms/:server/')
+    public async getWms(
+        @Session() session: any
+    ): Promise<Buffer | null> {
+        if ((session.user !== undefined) && session.user.isLogin) {
+
         }
 
         return null;

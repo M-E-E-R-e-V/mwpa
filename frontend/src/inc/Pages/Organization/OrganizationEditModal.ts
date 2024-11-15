@@ -1,9 +1,5 @@
-import {FormGroup, FormRow, InputBottemBorderOnly2, ModalDialog, ModalDialogType} from 'bambooo';
+import {FormGroup, FormRow, InputBottemBorderOnly2, LangText, ModalDialog, ModalDialogType} from 'bambooo';
 
-/**
- * OrgEditModalButtonClickFn
- */
-export type OrgEditModalButtonClickFn = () => void;
 
 export class OrganizationEditModal extends ModalDialog {
 
@@ -44,12 +40,6 @@ export class OrganizationEditModal extends ModalDialog {
     protected _inputLat: InputBottemBorderOnly2;
 
     /**
-     * on save click
-     * @protected
-     */
-    protected _onSaveClick: OrgEditModalButtonClickFn|null = null;
-
-    /**
      * constructor
      * @param elementObject
      */
@@ -76,14 +66,10 @@ export class OrganizationEditModal extends ModalDialog {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        jQuery('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>').appendTo(this._footer);
-        const btnSave = jQuery('<button type="button" class="btn btn-primary">Save changes</button>').appendTo(this._footer);
+        // buttons -----------------------------------------------------------------------------------------------------
 
-        btnSave.on('click', (): void => {
-            if (this._onSaveClick !== null) {
-                this._onSaveClick();
-            }
-        });
+        this.addButtonClose(new LangText('Close'));
+        this.addButtonSave(new LangText('Save changes'), true);
     }
 
     /**
@@ -191,14 +177,6 @@ export class OrganizationEditModal extends ModalDialog {
         this.setLocation('');
         this.setLon('');
         this.setLat('');
-    }
-
-    /**
-     * setOnSave
-     * @param onSave
-     */
-    public setOnSave(onSave: OrgEditModalButtonClickFn): void {
-        this._onSaveClick = onSave;
     }
 
 }

@@ -60,6 +60,12 @@ export class SightingMap extends Element {
     protected _tooltip_popup: any;
 
     /**
+     * Layer Switcher
+     * @protected
+     */
+    protected _layerSwitcher: LayerSwitcher | undefined;
+
+    /**
      * Popover
      * @protected
      */
@@ -187,13 +193,6 @@ export class SightingMap extends Element {
                 multiWorld: true
             })
         });
-
-        const layerSwitcher = new LayerSwitcher({
-            reverse: true,
-            groupSelectStyle: 'group'
-        });
-
-        this._map.addControl(layerSwitcher);
     }
 
     /**
@@ -242,6 +241,21 @@ export class SightingMap extends Element {
             }
 
             this._popover = undefined;
+        }
+    }
+
+    protected _printLayerSwitcher(): void {
+        if (this._map) {
+            if (this._layerSwitcher) {
+                this._map.removeControl(this._layerSwitcher);
+            }
+
+            this._layerSwitcher = new LayerSwitcher({
+                reverse: true,
+                groupSelectStyle: 'group'
+            });
+
+            this._map.addControl(this._layerSwitcher);
         }
     }
 
@@ -435,7 +449,10 @@ export class SightingMap extends Element {
             'sigthing_idee_es_layer'
         ];
 
-        this._map.getLayers().forEach((layer) => {
+        const layers = this._map.getLayers();
+        console.log(layers);
+
+        layers.forEach((layer) => {
             if (!this._map) {
                 return;
             }
@@ -452,10 +469,16 @@ export class SightingMap extends Element {
 
             if (layerName) {
                 if (layerNameList.indexOf(layerName) > -1) {
-                    this._map.removeLayer(layer);
+                    const removeLayer = layers.remove(layer);
+
+                    if (removeLayer === undefined) {
+                        console.log(`Layer not found: ${layerName}`);
+                    }
                 }
             }
         });
+
+        console.log(this._map.getLayers());
 
         // Bathymetriemap ----------------------------------------------------------------------------------------------
 
@@ -581,6 +604,9 @@ export class SightingMap extends Element {
 
             this._map.addLayer(heatmaplayer);
         }
+
+        // reprint layer switcher
+        this._printLayerSwitcher();
     }
 
     public async addAreaByJson(jsonFileUrl: string, title: string, name: string, visible: boolean = false): Promise<void> {
@@ -634,6 +660,10 @@ export class SightingMap extends Element {
         vectorLayer.setVisible(visible);
 
         this._map.addLayer(vectorLayer);
+    }
+
+    public clearFeatureList(): void {
+        this._geojsonFeatures = [];
     }
 
 }

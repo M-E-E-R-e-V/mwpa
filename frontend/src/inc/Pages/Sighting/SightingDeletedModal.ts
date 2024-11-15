@@ -1,9 +1,4 @@
-import {FormGroup, FormRow, ModalDialog, ModalDialogType, Textarea} from 'bambooo';
-
-/**
- * SightingDeletedModalButtonClickFn
- */
-type SightingDeletedModalButtonClickFn = () => void;
+import {FormGroup, FormRow, LangText, ModalDialog, ModalDialogType, Textarea} from 'bambooo';
 
 /**
  * Sighting deleted modal dialog.
@@ -23,12 +18,6 @@ export class SightingDeletedModal extends ModalDialog {
     protected _descriptionArea: Textarea;
 
     /**
-     * on save click
-     * @protected
-     */
-    protected _onSaveClick: SightingDeletedModalButtonClickFn|null = null;
-
-    /**
      * Constructor from Dialog.
      * @param {Element} elementObject
      */
@@ -43,14 +32,8 @@ export class SightingDeletedModal extends ModalDialog {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        jQuery('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>').appendTo(this._footer);
-        const btnSave = jQuery('<button type="button" class="btn btn-primary">Save changes</button>').appendTo(this._footer);
-
-        btnSave.on('click', (): void => {
-            if (this._onSaveClick !== null) {
-                this._onSaveClick();
-            }
-        });
+        this.addButtonClose(new LangText('Close'));
+        this.addButtonSave(new LangText('Save changes'), true);
     }
 
     /**
@@ -90,14 +73,6 @@ export class SightingDeletedModal extends ModalDialog {
     public override resetValues(): void {
         this.setId(null);
         this.setDescription('');
-    }
-
-    /**
-     * setOnSave
-     * @param onSave
-     */
-    public setOnSave(onSave: SightingDeletedModalButtonClickFn): void {
-        this._onSaveClick = onSave;
     }
 
 }
