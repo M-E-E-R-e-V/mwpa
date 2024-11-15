@@ -1,11 +1,13 @@
-import {FormGroup, InputBottemBorderOnly2, ModalDialog, ModalDialogType, SelectBottemBorderOnly2} from 'bambooo';
+import {
+    FormGroup,
+    InputBottemBorderOnly2,
+    LangText,
+    ModalDialog,
+    ModalDialogType,
+    SelectBottemBorderOnly2
+} from 'bambooo';
 import {GroupRoles} from '../../Api/Group';
 import {OrganizationFullEntry} from '../../Api/Organization';
-
-/**
- * Click event
- */
-export type GroupEditModalButtonClickFn = () => void;
 
 /**
  * Group edit modal
@@ -35,12 +37,6 @@ export class GroupEditModal extends ModalDialog {
      * @protected
      */
     protected _selectOrganization: SelectBottemBorderOnly2;
-
-    /**
-     * on save click
-     * @protected
-     */
-    protected _onSaveClick: GroupEditModalButtonClickFn|null = null;
 
     /**
      * constructor
@@ -74,14 +70,8 @@ export class GroupEditModal extends ModalDialog {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        jQuery('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>').appendTo(this._footer);
-        const btnSave = jQuery('<button type="button" class="btn btn-primary">Save changes</button>').appendTo(this._footer);
-
-        btnSave.on('click', (): void => {
-            if (this._onSaveClick !== null) {
-                this._onSaveClick();
-            }
-        });
+        this.addButtonClose(new LangText('Close'));
+        this.addButtonSave(new LangText('Save changes'), true);
     }
 
     /**
@@ -174,14 +164,6 @@ export class GroupEditModal extends ModalDialog {
      */
     public getOrganization(): number {
         return parseInt(this._selectOrganization.getSelectedValue(), 10) || 0;
-    }
-
-    /**
-     * setOnSave
-     * @param onSave
-     */
-    public setOnSave(onSave: GroupEditModalButtonClickFn): void {
-        this._onSaveClick = onSave;
     }
 
 }

@@ -1,10 +1,5 @@
-import {FormGroup, ModalDialog, ModalDialogType, SelectBottemBorderOnly2} from 'bambooo';
+import {FormGroup, LangText, ModalDialog, ModalDialogType, SelectBottemBorderOnly2} from 'bambooo';
 import {SpeciesEntry} from '../../Api/Species';
-
-/**
- * SpeciesMergeModalButtonClickFn
- */
-type SpeciesMergeModalButtonClickFn = () => void;
 
 /**
  * SpeciesMergeModal
@@ -24,12 +19,6 @@ export class SpeciesMergeModal extends ModalDialog {
     protected _specieDestinationSelect: SelectBottemBorderOnly2;
 
     /**
-     * click save fn
-     * @protected
-     */
-    protected _onSaveClick: SpeciesMergeModalButtonClickFn|null = null;
-
-    /**
      * constructor
      * @param elementObject
      */
@@ -44,14 +33,10 @@ export class SpeciesMergeModal extends ModalDialog {
         const groupDstSpecie = new FormGroup(bodyCard, 'Specie destination');
         this._specieDestinationSelect = new SelectBottemBorderOnly2(groupDstSpecie);
 
-        jQuery('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>').appendTo(this._footer);
-        const btnSave = jQuery('<button type="button" class="btn btn-primary">Save</button>').appendTo(this._footer);
+        // buttons -----------------------------------------------------------------------------------------------------
 
-        btnSave.on('click', (): void => {
-            if (this._onSaveClick !== null) {
-                this._onSaveClick();
-            }
-        });
+        this.addButtonClose(new LangText('Close'));
+        this.addButtonSave(new LangText('Save changes'), true);
     }
 
     /**
@@ -119,14 +104,6 @@ export class SpeciesMergeModal extends ModalDialog {
     public override resetValues(): void {
         this._specieSourceSelect.setSelectedValue('0');
         this._specieDestinationSelect.setSelectedValue('0');
-    }
-
-    /**
-     * setOnSave
-     * @param onSave
-     */
-    public setOnSave(onSave: SpeciesMergeModalButtonClickFn): void {
-        this._onSaveClick = onSave;
     }
 
 }

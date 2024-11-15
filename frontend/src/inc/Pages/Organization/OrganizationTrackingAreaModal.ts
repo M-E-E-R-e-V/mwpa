@@ -1,4 +1,4 @@
-import {ButtonDefault, ModalDialog, ModalDialogType} from 'bambooo';
+import {ButtonDefault, LangText, ModalDialog, ModalDialogType} from 'bambooo';
 import {Map as OlMap, View} from 'ol';
 import {GeoJSON} from 'ol/format';
 import {Draw, Modify, Snap} from 'ol/interaction';
@@ -7,11 +7,6 @@ import VectorLayer from 'ol/layer/Vector';
 import {fromLonLat} from 'ol/proj';
 import {OSM} from 'ol/source';
 import VectorSource from 'ol/source/Vector';
-
-/**
- * OrganizationTrackingAreaModalButtonClickFn
- */
-type OrganizationTrackingAreaModalButtonClickFn = () => void;
 
 /**
  * OrganizationTrackingAreaModal
@@ -66,12 +61,6 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
      * @protected
      */
     protected _startDrawing: boolean = false;
-
-    /**
-     * on save click
-     * @protected
-     */
-    protected _onSaveClick: OrganizationTrackingAreaModalButtonClickFn|null = null;
 
     /**
      * All marked points
@@ -163,14 +152,8 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        jQuery('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>').appendTo(this._footer);
-        const btnSave = jQuery('<button type="button" class="btn btn-primary">Save changes</button>').appendTo(this._footer);
-
-        btnSave.on('click', (): void => {
-            if (this._onSaveClick !== null) {
-                this._onSaveClick();
-            }
-        });
+        this.addButtonClose(new LangText('Close'));
+        this.addButtonSave(new LangText('Save changes'), true);
     }
 
     private _startDraw(): void {
@@ -312,14 +295,6 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
         this._createDraw();
         this._id = null;
         this._orgId = null;
-    }
-
-    /**
-     * setOnSave
-     * @param onSave
-     */
-    public setOnSave(onSave: OrganizationTrackingAreaModalButtonClickFn): void {
-        this._onSaveClick = onSave;
     }
 
 }
