@@ -299,5 +299,5 @@ import {DepthService} from './inc/Service/DepthService';
     // listen, start express server
     mServer.listen();
 
-    DepthService.getInstance().start().then();
+    // DepthService.getInstance().start().then();
 })();
