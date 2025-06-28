@@ -1,9 +1,18 @@
-import {ButtonDefault, Card, LangText} from 'bambooo';
+import {ButtonDefault, Card, FormGroup, FormRow, LangText, SearchWidget, Icon} from 'bambooo';
+import {Species as SpeciesAPI} from '../../Api/Species';
+import {DateRangeButton} from '../../Widget/DateRangeButton';
+import {InputGroup} from '../../Widget/InputGroup';
 
 /**
  * Sighting Filter Card
  */
 export class SightingFilter extends Card {
+
+    /**
+     * Species
+     * @protected
+     */
+    protected _selectSpecies: SearchWidget;
 
     /**
      * Constructor
@@ -21,26 +30,61 @@ export class SightingFilter extends Card {
             this.hide();
         });
 
-        //const bodyFilterCard = jQuery('<div class="card-body"/>').appendTo(this.getBodyElement());
-        //const rowFilterTime = new FormRow(bodyFilterCard);
-       // const groupFilterPeriod = new FormGroup(rowFilterTime.createCol(1), 'Period');
-        /*const selectFilterPeriod = new InputBottemBorderOnly2(
-            groupFilterPeriod,
-            undefined,
-            InputType.daterange,
-            {
-                ranges: {
-                    'Today': 'today',
-                    Yesterday': 'yesterday',
-                    'Last 7 Days': 'last7days',
-                    'Last 30 Days': 'last30days',
-                    'This Month': 'thismonth',
-                    'Last Month': 'lastmonth'
+        const bodyFilterCard = jQuery('<div class="card-body"/>').appendTo(this.getBodyElement());
+
+        const rowFilterLine = new FormRow(bodyFilterCard);
+        const groupFilterPeriod = new FormGroup(rowFilterLine.createCol(1), 'Period');
+        const inputGroup = new InputGroup(groupFilterPeriod);
+        const drb = new DateRangeButton(inputGroup);
+        drb.show();
+
+        const groupFilterSpecies = new FormGroup(rowFilterLine.createCol(1), new LangText('Species'));
+        this._selectSpecies = new SearchWidget(groupFilterSpecies);
+        this._selectSpecies.setOnTemplateSelection((entryData): any => {
+            const span = jQuery('<span />');
+
+            // eslint-disable-next-line no-new
+            new Icon(span, 'fa fa-solid fa-tags');
+
+            span.append(` <span>${entryData.text}</span>`);
+
+            return span;
+        });
+
+        this._selectSpecies.setRequestTransport(async(
+            params,
+            success,
+            failure
+        ): Promise<void> => {
+            if (params.data.term) {
+                try {
+                    const list = [];
+
+                    const species = await SpeciesAPI.getList();
+
+                    if (species) {
+                        for (const tspecies of species) {
+                            if (tspecies.name.toLowerCase().indexOf(params.data.term.toLowerCase()) !== -1) {
+                                list.push({
+                                    id: tspecies.id,
+                                    test: tspecies.name
+                                });
+                            }
+                        }
+                    }
+
+                    success({
+                        results: list,
+                        pagination: {
+                            more: false
+                        }
+                    });
+                } catch (e) {
+                    failure(undefined, 'not found', '');
+                    console.log(e);
                 }
             }
-        );
-
-        selectFilterPeriod.show();*/
+        });
     }
 
 }
