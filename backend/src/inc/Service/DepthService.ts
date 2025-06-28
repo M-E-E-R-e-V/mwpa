@@ -50,6 +50,16 @@ export class DepthService {
 
         for (const sighting of list) {
             if (sighting.location_begin) {
+                let sec = new SightingExtendedDB();
+                sec.sighting_id = sighting.id;
+                sec.name = 'depth_contour';
+                sec.data = '';
+
+                let sea = new SightingExtendedDB();
+                sea.sighting_id = sighting.id;
+                sea.name = 'depth_area';
+                sea.data = '';
+
                 try {
                     const data = JSON.parse(sighting.location_begin) as GeolocationCoordinates;
 
@@ -57,32 +67,21 @@ export class DepthService {
                         const depth = await navionics.getWaterDepth(data.latitude, data.longitude);
 
                         if (depth) {
-                            const sec = new SightingExtendedDB();
-                            sec.sighting_id = sighting.id;
-                            sec.name = 'depth_contour';
-
                             if (depth.depth_contour) {
                                 sec.data = `${depth.depth_contour}`;
                             }
 
-                            await MariaDbHelper.getConnection().manager.save(sec);
-
-                            const sea = new SightingExtendedDB();
-                            sea.sighting_id = sighting.id;
-                            sea.name = 'depth_area';
-
                             if (depth.depth_area) {
                                 sea.data = `${JSON.stringify(depth.depth_area)}`;
                             }
-
-                            await MariaDbHelper.getConnection().manager.save(sea);
                         }
-
-                        console.log(depth);
                     }
                 } catch (e) {
                     console.log(e);
                 }
+
+                sec = await MariaDbHelper.getConnection().manager.save(sec);
+                sea = await MariaDbHelper.getConnection().manager.save(sea);
             }
         }
     }

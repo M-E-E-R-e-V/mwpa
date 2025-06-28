@@ -16,3 +16,4 @@
 /frontend/assets
 
 /node_modules
+/.env

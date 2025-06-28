@@ -25,7 +25,8 @@
     "moment": "^2.29.4",
     "ol": "^7.3.0",
     "ol-layerswitcher": "^4.1.1",
-    "vts": "git+https://github.com/OpenSourcePKG/vts.git"
+    "vts": "git+https://github.com/OpenSourcePKG/vts.git",
+    "select2": "^4.1.0-rc.0"
   },
   "devDependencies": {
     "@popperjs/core": "^2.11.7",
