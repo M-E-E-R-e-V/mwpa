@@ -1,6 +1,7 @@
-import {BackendApp, ConfigOptions, DefaultArgs, HttpService, SchemaDefaultArgs} from 'figtree';
+import {BackendApp, ConfigOptions, DefaultArgs, HttpService, MariaDBService, SchemaDefaultArgs} from 'figtree';
 import {Schema} from 'vts';
 import {MWPAConfig} from '../Config/MWPAConfig.js';
+import {MWPADbLoader} from '../Db/MariaDb/MWPADbLoader.js';
 import {RouteLoader} from '../Routes/RouteLoader.js';
 
 /**
@@ -46,6 +47,7 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
      * @protected
      */
     protected async _initServices(): Promise<void> {
+        this._serviceManager.add(new MariaDBService(MWPADbLoader));
         this._serviceManager.add(new HttpService(RouteLoader));
     }
 
