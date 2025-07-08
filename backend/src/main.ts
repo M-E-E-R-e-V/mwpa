@@ -1,9 +1,7 @@
-import * as bodyParser from 'body-parser';
+/*import * as bodyParser from 'body-parser';
 import * as fs from 'fs';
-import minimist from 'minimist';
 import * as Path from 'path';
 import session from 'express-session';
-import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
 import {OfficeReport as OfficeReportController} from './app/Export/OfficeReport';
 import {Im2020} from './app/Import/Im2020';
@@ -31,8 +29,9 @@ import {Vehicle as VehicleMainController} from './app/Main/Vehicle';
 import {Vehicle as VehicleMobileController} from './app/Mobile/Vehicle';
 import {VehicleDriver as VehicleDriverMainController} from './app/Main/VehicleDriver';
 import {VehicleDriver as VehicleDriverMobileController} from './app/Mobile/VehicleDriver';
-import {CalcAutoFill022022} from './app/Utils/CalcAutoFill022022';
-import {Config} from './inc/Config/Config';
+import {CalcAutoFill022022} from './app/Utils/CalcAutoFill022022';*/
+import {Backend} from './Application/Backend.js';
+/*import {Config} from './inc/Config/Config';
 import {DBSetup} from './inc/Db/MariaDb/DBSetup';
 import {BehaviouralStates as BehaviouralStatesDB} from './inc/Db/MariaDb/Entity/BehaviouralStates';
 import {EncounterCategories as EncounterCategoriesDB} from './inc/Db/MariaDb/Entity/EncounterCategories';
@@ -57,13 +56,16 @@ import {Devices as DevicesDB} from './inc/Db/MariaDb/Entity/Devices';
 import {MariaDbHelper} from './inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from './inc/Logger/Logger';
 import {Server} from './inc/Server/Server';
-import {DepthService} from './inc/Service/DepthService';
+import {DepthService} from './inc/Service/DepthService';*/
 
 /**
- * main application
+ * Main application
  */
 (async(): Promise<void> => {
-    const argv = minimist(process.argv.slice(2));
+    const backend = new Backend();
+    await backend.start();
+
+    /*const argv = minimist(process.argv.slice(2));
     let configfile = Path.join(__dirname, '/config.json');
     let importfile: string|null = null;
     let calcfile: string|null = null;
@@ -299,5 +301,5 @@ import {DepthService} from './inc/Service/DepthService';
     // listen, start express server
     mServer.listen();
 
-    // DepthService.getInstance().start().then();
+    // DepthService.getInstance().start().then();*/
 })();

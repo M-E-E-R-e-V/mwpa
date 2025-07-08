@@ -1,22 +1,19 @@
 {
-  "compileOnSave": true,
   "compilerOptions": {
-    "module": "commonjs",
-    "strict": true,
-    "outDir": "dist",
-    "sourceMap": true,
-    "removeComments": true,
-    "experimentalDecorators": true,
-    "target": "ES6",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
     "emitDecoratorMetadata": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
     "esModuleInterop": true,
-    "types": [
-      "node"
-    ]
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "module": "NodeNext",
+    "outDir": "dist",
+    "removeComments": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "ES2022"
   },
   "include": [
     "./src/**/*.ts"
-  ]
+  ],
 }
