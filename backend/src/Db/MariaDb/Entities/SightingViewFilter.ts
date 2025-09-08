@@ -1,11 +1,15 @@
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {DBBaseEntityUnid} from 'figtree';
+import {Column, Entity} from 'typeorm';
 
+/**
+ * Sighting view filter
+ */
 @Entity({name: 'sighting_view_filter'})
-export class SightingViewFilter extends BaseEntity {
+export class SightingViewFilter extends DBBaseEntityUnid {
 
-    @PrimaryGeneratedColumn('uuid')
-    public unid!: string;
-
+    /**
+     * Title
+     */
     @Column({
         type: 'varchar',
         length: 250,
@@ -13,11 +17,17 @@ export class SightingViewFilter extends BaseEntity {
     })
     public title!: string;
 
+    /**
+     * postition
+     */
     @Column({
         default: 0
     })
     public position!: number;
 
+    /**
+     * Settings
+     */
     @Column({
         type: 'text',
         default: ''

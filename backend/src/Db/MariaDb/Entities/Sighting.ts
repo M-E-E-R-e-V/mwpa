@@ -1,4 +1,5 @@
-import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import {DBBaseEntityId} from 'figtree';
+import {Column, Entity, Index} from 'typeorm';
 
 export enum SightingType {
     NORMAL = 0,
@@ -13,10 +14,7 @@ export enum SightingType {
 @Entity({
     name: 'sighting'
 })
-export class Sighting extends BaseEntity {
-
-    @PrimaryGeneratedColumn()
-    public id!: number;
+export class Sighting extends DBBaseEntityId {
 
     @Index()
     @Column()
@@ -101,40 +99,70 @@ export class Sighting extends BaseEntity {
     })
     public tour_id!: number;
 
+    /**
+     * Tour fid
+     */
     @Index()
     @Column()
     public tour_fid!: string;
 
+    /**
+     * Tour start
+     */
     @Column()
     public tour_start!: string;
 
+    /**
+     * Tour end
+     */
     @Column()
     public tour_end!: string;
 
+    /**
+     * duration from
+     */
     @Column()
     public duration_from!: string;
 
+    /**
+     * duration until
+     */
     @Column()
     public duration_until!: string;
 
+    /**
+     * Location begin
+     */
     @Column({
         type: 'text'
     })
     public location_begin!: string;
 
+    /**
+     * Location end
+     */
     @Column({
         type: 'text'
     })
     public location_end!: string;
 
+    /**
+     * photo taken
+     */
     @Column({
         default: 0
     })
     public photo_taken!: number;
 
+    /**
+     * Distance coast
+     */
     @Column()
     public distance_coast!: string;
 
+    /**
+     * Distance coast estimation gps
+     */
     @Column({
         default: 0
     })
@@ -158,76 +186,118 @@ export class Sighting extends BaseEntity {
     })
     public species_count!: number;
 
+    /**
+     * juveniles
+     */
     @Column({
         default: 0
     })
     public juveniles!: number;
 
+    /**
+     * calves
+     */
     @Column({
         default: 0
     })
     public calves!: number;
 
+    /**
+     * newborns
+     */
     @Column({
         default: 0
     })
     public newborns!: number;
 
+    /**
+     * behaviours
+     */
     @Column({
         default: ''
     })
     public behaviours!: string;
 
+    /**
+     * subgroups
+     */
     @Column({
         default: 0
     })
     public subgroups!: number;
 
+    /**
+     * group structure id
+     */
     @Column({
         default: 0
     })
     public group_structure_id!: number;
 
+    /**
+     * reaction id
+     */
     @Index()
     @Column()
     public reaction_id!: number;
 
+    /**
+     * freq behaviour
+     */
     @Column({
         type: 'text',
         default: ''
     })
     public freq_behaviour!: string;
 
+    /**
+     * recognizable animals
+     */
     @Column({
         type: 'text',
         default: ''
     })
     public recognizable_animals!: string;
 
+    /**
+     * other species
+     */
     @Column({
         type: 'text',
         default: ''
     })
     public other_species!: string;
 
+    /**
+     * other
+     */
     @Column({
         type: 'text',
         default: ''
     })
     public other!: string;
 
+    /**
+     * other vehicle
+     */
     @Column({
         type: 'text',
         default: ''
     })
     public other_vehicle!: string;
 
+    /**
+     * note
+     */
     @Column({
         type: 'text',
         default: ''
     })
     public note!: string;
 
+    /**
+     * hash
+     */
     @Index()
     @Column({
         type: 'varchar',
@@ -236,9 +306,15 @@ export class Sighting extends BaseEntity {
     })
     public hash!: string;
 
+    /**
+     * hash import count
+     */
     @Column()
     public hash_import_count!: number;
 
+    /**
+     * source import file
+     */
     @Column({
         type: 'varchar',
         length: 256,
@@ -255,24 +331,36 @@ export class Sighting extends BaseEntity {
     })
     public organization_id!: number;
 
+    /**
+     * sighting type
+     */
     @Index()
     @Column({
         default: 0
     })
     public sighting_type!: number;
 
+    /**
+     * deleted
+     */
     @Index()
     @Column({
         default: false
     })
     public deleted!: boolean;
 
+    /**
+     * deleted description
+     */
     @Column({
         type: 'text',
         default: null
     })
     public deletedDescription!: string;
 
+    /**
+     * syncblock
+     */
     @Index()
     @Column({
         default: false

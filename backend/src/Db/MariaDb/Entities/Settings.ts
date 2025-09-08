@@ -1,11 +1,15 @@
-import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import {DBBaseEntityUnid} from 'figtree';
+import {Column, Entity, Index} from 'typeorm';
 
+/**
+ * Settings
+ */
 @Entity({name: 'settings'})
-export class Settings extends BaseEntity {
+export class Settings extends DBBaseEntityUnid {
 
-    @PrimaryGeneratedColumn('uuid')
-    public unid!: string;
-
+    /**
+     * Name
+     */
     @Index()
     @Column({
         type: 'varchar',
@@ -14,6 +18,9 @@ export class Settings extends BaseEntity {
     })
     public name!: string;
 
+    /**
+     * Data
+     */
     @Column({
         type: 'text',
         default: ''

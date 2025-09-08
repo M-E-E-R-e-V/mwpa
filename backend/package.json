@@ -26,7 +26,6 @@
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.1",
     "@types/express-session": "^1.18.1",
-    "@types/node": "^20.17.32",
     "@types/node-forge": "github:stefanwerfling/node-forge-types",
     "@types/node-schedule": "^2.1.0",
     "@types/uuid": "^10.0.0",
@@ -43,7 +42,6 @@
     "bcrypt": "^6.0.0",
     "exceljs": "^4.3.0",
     "express": "^5.1.0",
-    "figtree": "git+https://github.com/stefanwerfling/figtree.git",
     "got": "^11.8.2",
     "minimist": "^1.2.5",
     "moment": "^2.30.1",
@@ -51,6 +49,8 @@
     "mysql": "^2.18.1",
     "node-schedule": "^2.1.1",
     "node-xlsx": "^0.21.0",
-    "vts": "git+https://github.com/OpenSourcePKG/vts.git"
+    "vts": "git+https://github.com/OpenSourcePKG/vts.git",
+    "figtree": "git+https://github.com/stefanwerfling/figtree.git",
+    "mwpa_schemas": "file:../schemas"
   }
 }

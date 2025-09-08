@@ -1,0 +1,24 @@
+{
+  "projects": [
+    {
+      "name": "MWPA",
+      "schemaPath": "./schemas/schemas.json",
+      "code": {
+        "schemaPrefix": "Schema",
+        "createTypes": true,
+        "createIndex": true,
+        "codeComment": true,
+        "codeIndent": "    "
+      },
+      "autoGenerate": true,
+      "destinationPath": "./schemas/src",
+      "destinationClear": true
+    }
+  ],
+  "server": {
+    "port": 5173
+  },
+  "browser": {
+    "open": true
+  }
+}
