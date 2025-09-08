@@ -1,4 +1,5 @@
-import {BaseEntity, Entity, PrimaryGeneratedColumn, Index, Column} from 'typeorm';
+import {DBBaseEntityId} from 'figtree';
+import {Entity, Index, Column} from 'typeorm';
 
 /**
  * Area Types
@@ -8,10 +9,7 @@ export enum TrackingAreaType {
 }
 
 @Entity({name: 'organization_tracking_area'})
-export class OrganizationTrackingArea extends BaseEntity {
-
-    @PrimaryGeneratedColumn()
-    public id!: number;
+export class OrganizationTrackingArea extends DBBaseEntityId {
 
     /**
      * sighting by organization
@@ -22,6 +20,9 @@ export class OrganizationTrackingArea extends BaseEntity {
     })
     public organization_id!: number;
 
+    /**
+     * Area type
+     */
     @Index()
     @Column({
         type: 'varchar',
@@ -30,6 +31,9 @@ export class OrganizationTrackingArea extends BaseEntity {
     })
     public area_type!: string;
 
+    /**
+     * Geo json str
+     */
     @Column({
         type: 'text',
         default: ''
