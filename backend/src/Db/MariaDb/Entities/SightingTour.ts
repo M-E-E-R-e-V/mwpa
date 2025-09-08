@@ -1,31 +1,26 @@
-import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import {DBBaseEntityId} from 'figtree';
+import {Column, Entity, Index} from 'typeorm';
 
 /**
  * SightingTour
  * all sigthings are assigned to a tour
  */
 @Entity({name: 'sighting_tour'})
-export class SightingTour extends BaseEntity {
+export class SightingTour extends DBBaseEntityId {
 
     /**
-     * id for sighting tour
+     * Tour fid
      */
-    @PrimaryGeneratedColumn()
-        // @ts-ignore
-    id: number;
-
     @Index()
     @Column()
-        // @ts-ignore
-    tour_fid: string;
+    public tour_fid!: string;
 
     /**
      * user create this entry
      */
     @Index()
     @Column()
-        // @ts-ignore
-    creater_id: number;
+    public creater_id!: number;
 
     /**
      * create datetime
@@ -34,8 +29,7 @@ export class SightingTour extends BaseEntity {
     @Column({
         default: 0
     })
-        // @ts-ignore
-    create_datetime: number;
+    public create_datetime!: number;
 
     /**
      * update datetime
@@ -44,24 +38,21 @@ export class SightingTour extends BaseEntity {
     @Column({
         default: 0
     })
-        // @ts-ignore
-    update_datetime: number;
+    public update_datetime!: number;
 
     /**
      * vehicle id
      */
     @Index()
     @Column()
-        // @ts-ignore
-    vehicle_id: number;
+    public vehicle_id!: number;
 
     /**
      * vehicle driver
      */
     @Index()
     @Column()
-        // @ts-ignore
-    vehicle_driver_id: number;
+    public vehicle_driver_id!: number;
 
     /**
      * beaufort wind
@@ -70,23 +61,25 @@ export class SightingTour extends BaseEntity {
     @Column({
         default: ''
     })
-        // @ts-ignore
-    beaufort_wind: string;
+    public beaufort_wind!: string;
 
     /**
      * date
      */
     @Column()
-        // @ts-ignore
-    date: string;
+    public date!: string;
 
+    /**
+     * Tour start
+     */
     @Column()
-        // @ts-ignore
-    tour_start: string;
+    public tour_start!: string;
 
+    /**
+     * Tour stop
+     */
     @Column()
-        // @ts-ignore
-    tour_end: string;
+    public tour_end!: string;
 
     /**
      * tour by organization
@@ -95,8 +88,7 @@ export class SightingTour extends BaseEntity {
     @Column({
         default: 0
     })
-        // @ts-ignore
-    organization_id: number;
+    public organization_id!: number;
 
     /**
      * open = 1,
@@ -106,8 +98,7 @@ export class SightingTour extends BaseEntity {
     @Column({
         default: 0
     })
-        // @ts-ignore
-    status: number;
+    public status!: number;
 
     /**
      * json list with person names of the boat
@@ -116,9 +107,11 @@ export class SightingTour extends BaseEntity {
     @Column({
         default: ''
     })
-        // @ts-ignore
-    record_by_persons: string;
+    public record_by_persons!: string;
 
+    /**
+     * Device id
+     */
     @Index()
     @Column({
         default: 0

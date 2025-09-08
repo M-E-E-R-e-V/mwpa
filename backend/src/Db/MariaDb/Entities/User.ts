@@ -1,14 +1,15 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, Index} from 'typeorm';
+import {DBBaseEntityId} from 'figtree';
+import {Entity, Column, Index} from 'typeorm';
 
 /**
  * User Entity
  */
 @Entity({name: 'user'})
-export class User extends BaseEntity {
+export class User extends DBBaseEntityId {
 
-    @PrimaryGeneratedColumn()
-    public id!: number;
-
+    /**
+     * Username
+     */
     @Index()
     @Column({
         type: 'varchar',
@@ -16,6 +17,9 @@ export class User extends BaseEntity {
     })
     public username!: string;
 
+    /**
+     * Full name
+     */
     @Column({
         type: 'varchar',
         length: 255,
@@ -23,12 +27,21 @@ export class User extends BaseEntity {
     })
     public full_name!: string;
 
+    /**
+     * Password (hash)
+     */
     @Column()
     public password!: string;
 
+    /**
+     * Pin for app
+     */
     @Column()
     public pin!: string;
 
+    /**
+     * EMail
+     */
     @Index()
     @Column({
         type: 'varchar',
@@ -37,12 +50,18 @@ export class User extends BaseEntity {
     })
     public email!: string;
 
+    /**
+     * Main groupid
+     */
     @Index()
     @Column({
         default: 0
     })
     public main_groupid!: number;
 
+    /**
+     * Is admin
+     */
     @Index()
     @Column({
         type: 'boolean',
@@ -50,6 +69,9 @@ export class User extends BaseEntity {
     })
     public isAdmin!: boolean;
 
+    /**
+     * Disable
+     */
     @Index()
     @Column({
         type: 'boolean',

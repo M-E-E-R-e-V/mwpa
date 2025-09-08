@@ -1,0 +1,396 @@
+{
+  "fs": {
+    "unid": "root",
+    "name": "root",
+    "istoggle": true,
+    "icon": "root",
+    "type": "root",
+    "entrys": [
+      {
+        "unid": "bdedfbfc-c3c6-4016-a871-79b518e676cb",
+        "name": "Config",
+        "type": "folder",
+        "icon": "folder",
+        "istoggle": true,
+        "entrys": [
+          {
+            "unid": "48f2afb4-e1b1-41fc-a9c4-a46edce20064",
+            "name": "BackendConfigOptions",
+            "type": "file",
+            "icon": "file",
+            "istoggle": false,
+            "entrys": [],
+            "schemas": [
+              {
+                "unid": "0f84b73c-93bf-42e7-af82-d78575c3abb7",
+                "name": "BackendConfigOptions",
+                "extend": {
+                  "type": "cf3c56f2-a0a5-42bb-812d-cec317d21f18",
+                  "options": {
+                    "not_export": false,
+                    "ignore_additional_items": false
+                  }
+                },
+                "pos": {
+                  "x": 126,
+                  "y": 84
+                },
+                "fields": [
+                  {
+                    "unid": "bb742d8b-3f36-4f77-aaa2-2abcaa9daea7",
+                    "name": "datadir",
+                    "type": {
+                      "type": "or",
+                      "optional": false,
+                      "array": false,
+                      "types": [
+                        {
+                          "type": "string",
+                          "optional": false,
+                          "array": false,
+                          "types": []
+                        },
+                        {
+                          "type": "null",
+                          "optional": false,
+                          "array": false,
+                          "types": []
+                        }
+                      ]
+                    },
+                    "description": ""
+                  }
+                ],
+                "description": ""
+              }
+            ],
+            "enums": [],
+            "links": [
+              {
+                "unid": "3fe67b7d-4b30-44cf-9db1-92670ab25c46",
+                "pos": {
+                  "x": 1672,
+                  "y": 85
+                },
+                "link_unid": "e39f54d3-0add-45fc-96b1-2c7815c6f679"
+              },
+              {
+                "unid": "59e86243-cad6-41bb-b98e-7f6351038ef1",
+                "pos": {
+                  "x": 496,
+                  "y": 489
+                },
+                "link_unid": "cf3c56f2-a0a5-42bb-812d-cec317d21f18"
+              },
+              {
+                "unid": "5183939d-9ba1-4743-996f-afe020e5307a",
+                "pos": {
+                  "x": 1158,
+                  "y": 444
+                },
+                "link_unid": "5c2e4fd7-62ed-46be-afe6-2a9cb05fe3a2"
+              },
+              {
+                "unid": "72febad6-8aef-4189-84fa-ca550ecc42bf",
+                "pos": {
+                  "x": 1160,
+                  "y": 629
+                },
+                "link_unid": "dbcb39be-f755-4dbf-b147-e58a58b7903f"
+              },
+              {
+                "unid": "3b5a9f5d-520d-467f-ae62-aaa4ec9a8493",
+                "pos": {
+                  "x": 1029,
+                  "y": 325
+                },
+                "link_unid": "3ec71c52-2bda-42d6-be26-a499170b09fd"
+              }
+            ]
+          },
+          {
+            "unid": "271f1c2f-72c2-4697-8689-dafc85010db1",
+            "name": "MWPAEnv",
+            "type": "file",
+            "icon": "file",
+            "istoggle": false,
+            "entrys": [],
+            "schemas": [],
+            "enums": [
+              {
+                "unid": "acdd01d5-cc0c-4a87-8c0b-203620c84c20",
+                "name": "ENV_MWPA",
+                "pos": {
+                  "x": 197,
+                  "y": 100
+                },
+                "values": [
+                  {
+                    "unid": "cfde2f66-d792-42af-b342-6dab5ec42867",
+                    "name": "MWPA_DATA_DIR",
+                    "value": "MPWA_DATA_DIR"
+                  }
+                ],
+                "description": ""
+              }
+            ],
+            "links": []
+          }
+        ],
+        "schemas": [],
+        "enums": [],
+        "links": []
+      },
+      {
+        "unid": "b8a764c4-fcb0-49f9-a6c8-d2a7112d3fb4",
+        "name": "Routes",
+        "type": "folder",
+        "icon": "folder",
+        "istoggle": true,
+        "entrys": [
+          {
+            "unid": "df594b3e-a20e-4e9f-981e-324443cfe517",
+            "name": "Main",
+            "type": "folder",
+            "icon": "folder",
+            "istoggle": true,
+            "entrys": [
+              {
+                "unid": "f145f5e9-ee8f-4df4-96ad-5ab9bc89bc47",
+                "name": "BehaviouralStates",
+                "type": "folder",
+                "icon": "folder",
+                "istoggle": false,
+                "entrys": [
+                  {
+                    "unid": "4e699be9-7b6c-4cfa-9810-7e4fc850db36",
+                    "name": "BehaviouralStates",
+                    "type": "file",
+                    "icon": "file",
+                    "istoggle": false,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "67f3b424-0ac1-4378-b284-8c503a0c3292",
+                        "name": "BehaviouralStatesResponse",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 153,
+                          "y": 376
+                        },
+                        "fields": [
+                          {
+                            "unid": "026a04e2-7a08-41a8-a4f7-484ac633f817",
+                            "name": "list",
+                            "type": {
+                              "type": "b0b1973d-4644-4580-b8d3-25e8a802ebd1",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "b0b1973d-4644-4580-b8d3-25e8a802ebd1",
+                        "name": "BehaviouralStateEntry",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 667,
+                          "y": 503
+                        },
+                        "fields": [
+                          {
+                            "unid": "3b50a47a-e060-4139-ab63-27469f42b138",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Id of behavioural state"
+                          },
+                          {
+                            "unid": "cdddd2bb-f5fa-4564-b032-b345b07d3ede",
+                            "name": "name",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Behavioural state name"
+                          },
+                          {
+                            "unid": "41ded40e-d90c-4108-b79c-e53e87ecf471",
+                            "name": "description",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Behavioural state description"
+                          },
+                          {
+                            "unid": "cb110587-8aa2-4fa5-99a5-ff273bac3984",
+                            "name": "isdeleted",
+                            "type": {
+                              "type": "boolean",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "If the behavior tag is marked as deleted, you can only view it but no longer use it."
+                          }
+                        ],
+                        "description": ""
+                      }
+                    ],
+                    "enums": [],
+                    "links": [
+                      {
+                        "unid": "f233aea7-6232-4a1d-abea-af0dfb513391",
+                        "pos": {
+                          "x": 994,
+                          "y": 357
+                        },
+                        "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                      }
+                    ]
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
+              }
+            ],
+            "schemas": [],
+            "enums": [],
+            "links": []
+          },
+          {
+            "unid": "43330efa-2a2c-45b8-af30-0cb7a9d08e75",
+            "name": "Map",
+            "type": "folder",
+            "icon": "folder",
+            "istoggle": false,
+            "entrys": [
+              {
+                "unid": "8b7a1256-9b13-49c6-8f84-b6b411e7facd",
+                "name": "MapCache",
+                "type": "file",
+                "icon": "file",
+                "istoggle": false,
+                "entrys": [],
+                "schemas": [
+                  {
+                    "unid": "b149303e-442d-4f5e-b7d1-783e6772c7d8",
+                    "name": "MapCacheRequest",
+                    "extend": {
+                      "type": "object",
+                      "options": {
+                        "not_export": false,
+                        "ignore_additional_items": false
+                      }
+                    },
+                    "pos": {
+                      "x": 137,
+                      "y": 64
+                    },
+                    "fields": [
+                      {
+                        "unid": "a8664bdd-ee7e-478a-ac26-36481b9833ae",
+                        "name": "server",
+                        "type": {
+                          "type": "string",
+                          "optional": false,
+                          "array": false,
+                          "types": []
+                        },
+                        "description": "Server name for request"
+                      },
+                      {
+                        "unid": "88ddba32-ec0b-40b3-9122-7a7ec3b2aa60",
+                        "name": "z",
+                        "type": {
+                          "type": "string",
+                          "optional": false,
+                          "array": false,
+                          "types": []
+                        },
+                        "description": ""
+                      },
+                      {
+                        "unid": "b802129b-d806-4ba5-85c9-47fa7a85358a",
+                        "name": "x",
+                        "type": {
+                          "type": "string",
+                          "optional": false,
+                          "array": false,
+                          "types": []
+                        },
+                        "description": ""
+                      },
+                      {
+                        "unid": "eab91150-4d73-4a86-83fd-dd51b0c80613",
+                        "name": "y",
+                        "type": {
+                          "type": "string",
+                          "optional": false,
+                          "array": false,
+                          "types": []
+                        },
+                        "description": ""
+                      },
+                      {
+                        "unid": "3fcaed28-9ba1-480d-9a1f-2c3e949711b3",
+                        "name": "fileformat",
+                        "type": {
+                          "type": "string",
+                          "optional": false,
+                          "array": false,
+                          "types": []
+                        },
+                        "description": ""
+                      }
+                    ],
+                    "description": "Path variables for map cache call"
+                  }
+                ],
+                "enums": [],
+                "links": []
+              }
+            ],
+            "schemas": [],
+            "enums": [],
+            "links": []
+          }
+        ],
+        "schemas": [],
+        "enums": [],
+        "links": []
+      }
+    ],
+    "schemas": [],
+    "enums": []
+  },
+  "editor": {
+    "controls_width": 561
+  }
+}

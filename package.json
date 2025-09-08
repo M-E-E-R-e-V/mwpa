@@ -13,22 +13,27 @@
   "author": "Stefan Werfling",
   "license": "GPL-3.0-only",
   "workspaces": [
+    "schemas",
     "backend",
     "frontend"
   ],
   "dependencies": {
     "husky": "^9.0.11",
-    "jscanify": "^1.4.0"
+    "jscanify": "^1.4.0",
+    "npm-gui": "^4.0.4"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin-ts": "^3.0.0",
-    "@types/node": "^20.17.16",
+    "@types/node": "^22.15.18",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
     "eslint": "^9.19.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "npm-check-updates": "^17.1.14",
-    "typescript": "^5.7.3"
-  }
+    "figtree": "git+https://github.com/stefanwerfling/figtree.git",
+    "npm-check-updates": "^18.0.1",
+    "typescript": "^5.8.3",
+    "vtseditor": "github:stefanwerfling/vtseditor"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

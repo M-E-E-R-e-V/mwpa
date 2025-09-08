@@ -1,16 +1,11 @@
-import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import {DBBaseEntityId} from 'figtree';
+import {Column, Entity, Index} from 'typeorm';
 
 /**
  * Species Entity
  */
 @Entity({name: 'species'})
-export class Species extends BaseEntity {
-
-    /**
-     * id of specie
-     */
-    @PrimaryGeneratedColumn()
-    public id!: number;
+export class Species extends DBBaseEntityId {
 
     /**
      * ott id
@@ -51,7 +46,6 @@ export class Species extends BaseEntity {
     @Column({
         default: false
     })
-        // @ts-ignore
-    isdeleted: boolean;
+    public isdeleted!: boolean;
 
 }

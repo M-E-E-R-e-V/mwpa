@@ -1,15 +1,22 @@
-import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import {DBBaseEntityUnid} from 'figtree';
+import {Column, Entity, Index} from 'typeorm';
 
+/**
+ * Sighting extended
+ */
 @Entity({name: 'sighting_extended'})
-export class SightingExtended extends BaseEntity {
+export class SightingExtended extends DBBaseEntityUnid {
 
-    @PrimaryGeneratedColumn('uuid')
-    public unid!: string;
-
+    /**
+     * Sighting id
+     */
     @Index()
     @Column()
     public sighting_id!: number;
 
+    /**
+     * Name
+     */
     @Index()
     @Column({
         type: 'varchar',
@@ -18,6 +25,9 @@ export class SightingExtended extends BaseEntity {
     })
     public name!: string;
 
+    /**
+     * Data
+     */
     @Column({
         type: 'text',
         default: ''

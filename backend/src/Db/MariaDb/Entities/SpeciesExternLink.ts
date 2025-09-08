@@ -1,23 +1,24 @@
-import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import {DBBaseEntityId} from 'figtree';
+import {Column, Entity, Index} from 'typeorm';
 
 /**
  * SpeciesExternLink
  */
 @Entity({name: 'species_extern_link'})
-export class SpeciesExternLink extends BaseEntity {
+export class SpeciesExternLink extends DBBaseEntityId {
 
     /**
-     * id of receiver
+     * External receiver id
      */
-    @PrimaryGeneratedColumn()
-    public id!: number;
-
     @Index()
     @Column({
         default: 0
     })
     public external_receiver_id!: number;
 
+    /**
+     * Species id
+     */
     @Index()
     @Column({
         default: 0
@@ -34,6 +35,9 @@ export class SpeciesExternLink extends BaseEntity {
     })
     public externid!: string;
 
+    /**
+     * Externname
+     */
     @Column({
         type: 'varchar',
         length: 512,

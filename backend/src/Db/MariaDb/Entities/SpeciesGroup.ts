@@ -1,16 +1,11 @@
-import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import {DBBaseEntityId} from 'figtree';
+import {Column, Entity, Index} from 'typeorm';
 
 /**
  * Species Group
  */
 @Entity({name: 'species_group'})
-export class SpeciesGroup extends BaseEntity {
-
-    /**
-     * id of specie group
-     */
-    @PrimaryGeneratedColumn()
-    public id!: number;
+export class SpeciesGroup extends DBBaseEntityId {
 
     /**
      * name of species group
@@ -22,6 +17,9 @@ export class SpeciesGroup extends BaseEntity {
     })
     public name!: string;
 
+    /**
+     * Color Hex
+     */
     @Column({
         type: 'varchar',
         length: 25

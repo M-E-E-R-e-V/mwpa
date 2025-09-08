@@ -1,13 +1,11 @@
-import {BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import {DBBaseEntityUnid} from 'figtree';
+import {Column, Entity, Index} from 'typeorm';
 
 /**
  * SightingTourTracking
  */
 @Entity({name: 'sighting_tour_tracking'})
-export class SightingTourTracking extends BaseEntity {
-
-    @PrimaryGeneratedColumn('uuid')
-    public unid!: string;
+export class SightingTourTracking extends DBBaseEntityUnid {
 
     /**
      * create datetime
@@ -27,6 +25,9 @@ export class SightingTourTracking extends BaseEntity {
     })
     public sighting_tour_id!: number;
 
+    /**
+     * position
+     */
     @Column({
         type: 'text',
         default: ''
