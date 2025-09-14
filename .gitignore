@@ -3,6 +3,8 @@
 /data/
 /config.json
 
+/schemas/dist
+
 /backend/node_modules
 /backend/package-lock.json
 /backend/dist
@@ -17,3 +19,4 @@
 
 /node_modules
 /.env
+/.cache/

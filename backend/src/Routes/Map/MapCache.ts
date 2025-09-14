@@ -1,8 +1,11 @@
 import {Router} from 'express';
 import {DefaultRoute} from 'figtree';
-import {SchemaMapCacheRequest} from '../../Schemas/Routes/Map/MapCache.js';
+import {SchemaMapCacheRequest} from 'mwpa_schemas';
 import {Tile} from './Tile/Tile.js';
 
+/**
+ * MapCache
+ */
 export class MapCache extends DefaultRoute {
 
     /**

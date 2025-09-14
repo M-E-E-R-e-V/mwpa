@@ -5,8 +5,8 @@ import {Body, BodyParam, JsonController, Post, Session, UploadedFile} from 'rout
 import {v4 as uuidv4} from 'uuid';
 import {Const} from '../../inc/Const';
 import {Devices as DevicesDB} from '../../inc/Db/MariaDb/Entity/Devices';
-import {Sighting as SightingDB, SightingType} from '../../inc/Db/MariaDb/Entity/Sighting';
-import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/SightingTour';
+import {Sighting as SightingDB, SightingType} from '../../Db/MariaDb/Entities/Sighting.js';
+import {SightingTour as SightingTourDB} from '../../Db/MariaDb/Entities/SightingTour.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from '../../inc/Logger/Logger';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';

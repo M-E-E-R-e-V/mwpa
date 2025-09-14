@@ -51,6 +51,7 @@
     "node-xlsx": "^0.21.0",
     "vts": "git+https://github.com/OpenSourcePKG/vts.git",
     "figtree": "git+https://github.com/stefanwerfling/figtree.git",
+    "rbac-simple": "git+https://github.com/OpenSourcePKG/rbac-simple.git",
     "mwpa_schemas": "file:../schemas"
   }
 }

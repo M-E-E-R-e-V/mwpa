@@ -1,7 +1,7 @@
 import {Get, JsonController, Session} from 'routing-controllers';
 import {
     OrganizationTrackingArea as OrganizationTrackingAreaDB, TrackingAreaType
-} from '../../inc/Db/MariaDb/Entity/OrganizationTrackingArea';
+} from '../../Db/MariaDb/Entities/OrganizationTrackingArea.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';

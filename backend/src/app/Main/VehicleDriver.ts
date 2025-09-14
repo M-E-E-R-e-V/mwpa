@@ -1,9 +1,9 @@
 import {Get, JsonController, Session} from 'routing-controllers';
-import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
+import {User as UserDB} from '../../Db/MariaDb/Entities/User.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
-import {VehicleDriver as VehicleDriverDB} from '../../inc/Db/MariaDb/Entity/VehicleDriver';
+import {VehicleDriver as VehicleDriverDB} from '../../Db/MariaDb/Entities/VehicleDriver.js';
 
 /**
  * VehicleDriverEntry

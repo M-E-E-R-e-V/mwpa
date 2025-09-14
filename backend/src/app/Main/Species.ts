@@ -1,7 +1,7 @@
 import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
-import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
-import {Species as SpeciesDB} from '../../inc/Db/MariaDb/Entity/Species';
-import {SpeciesGroup} from '../../inc/Db/MariaDb/Entity/SpeciesGroup';
+import {Sighting as SightingDB} from '../../Db/MariaDb/Entities/Sighting.js';
+import {Species as SpeciesDB} from '../../Db/MariaDb/Entities/Species.js';
+import {SpeciesGroup} from '../../Db/MariaDb/Entities/SpeciesGroup.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';

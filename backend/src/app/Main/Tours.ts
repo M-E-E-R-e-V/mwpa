@@ -1,11 +1,11 @@
 import fs from 'fs';
 import {Body, JsonController, Post, Session} from 'routing-controllers';
 import {Devices as DevicesDB} from '../../inc/Db/MariaDb/Entity/Devices';
-import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
-import {SightingExtended as SightingExtendedDB} from '../../inc/Db/MariaDb/Entity/SightingExtended';
-import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/SightingTour';
-import {SightingTourTracking as SightingTourTrackingDB} from '../../inc/Db/MariaDb/Entity/SightingTourTracking';
-import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
+import {Sighting as SightingDB} from '../../Db/MariaDb/Entities/Sighting.js';
+import {SightingExtended as SightingExtendedDB} from '../../Db/MariaDb/Entities/SightingExtended.js';
+import {SightingTour as SightingTourDB} from '../../Db/MariaDb/Entities/SightingTour.js';
+import {SightingTourTracking as SightingTourTrackingDB} from '../../Db/MariaDb/Entities/SightingTourTracking.js';
+import {User as UserDB} from '../../Db/MariaDb/Entities/User.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';

@@ -1,8 +1,8 @@
 import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
-import {Organization as OrganizationDB} from '../../inc/Db/MariaDb/Entity/Organization';
+import {Organization as OrganizationDB} from '../../Db/MariaDb/Entities/Organization.js';
 import {
     OrganizationTrackingArea as OrganizationTrackingAreaDB
-} from '../../inc/Db/MariaDb/Entity/OrganizationTrackingArea';
+} from '../../Db/MariaDb/Entities/OrganizationTrackingArea.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';

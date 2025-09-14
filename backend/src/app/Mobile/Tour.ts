@@ -1,10 +1,10 @@
 import {JsonController, Session} from 'routing-controllers';
-import {Group as GroupDB} from '../../inc/Db/MariaDb/Entity/Group';
-import {Organization as OrganizationDB} from '../../inc/Db/MariaDb/Entity/Organization';
-import {SightingTour as SightingTourDB} from '../../inc/Db/MariaDb/Entity/SightingTour';
-import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
-import {Vehicle as VehicleDB} from '../../inc/Db/MariaDb/Entity/Vehicle';
-import {VehicleDriver as VehicleDriverDB} from '../../inc/Db/MariaDb/Entity/VehicleDriver';
+import {Group as GroupDB} from '../../Db/MariaDb/Entities/Group.js';
+import {Organization as OrganizationDB} from '../../Db/MariaDb/Entities/Organization.js';
+import {SightingTour as SightingTourDB} from '../../Db/MariaDb/Entities/SightingTour.js';
+import {User as UserDB} from '../../Db/MariaDb/Entities/User.js';
+import {Vehicle as VehicleDB} from '../../Db/MariaDb/Entities/Vehicle.js';
+import {VehicleDriver as VehicleDriverDB} from '../../Db/MariaDb/Entities/VehicleDriver.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';

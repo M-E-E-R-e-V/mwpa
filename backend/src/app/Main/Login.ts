@@ -1,7 +1,7 @@
 import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
-import {Group as GroupDB} from '../../inc/Db/MariaDb/Entity/Group';
-import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
-import {UserGroups as UserGroupsDB} from '../../inc/Db/MariaDb/Entity/UserGroups';
+import {Group as GroupDB} from '../../Db/MariaDb/Entities/Group.js';
+import {User as UserDB} from '../../Db/MariaDb/Entities/User.js';
+import {UserGroups as UserGroupsDB} from '../../Db/MariaDb/Entities/UserGroups.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from '../../inc/Logger/Logger';
 import {SessionUserData} from '../../inc/Server/Session';

@@ -6,11 +6,11 @@ import {Body, ContentType, Get, JsonController, Param, Post, Session} from 'rout
 import {In} from 'typeorm';
 import {BehaviouralStates as BehaviouralStatesDB} from '../../inc/Db/MariaDb/Entity/BehaviouralStates';
 import {EncounterCategories as EncounterCategoriesDB} from '../../inc/Db/MariaDb/Entity/EncounterCategories';
-import {Sighting as SightingDB} from '../../inc/Db/MariaDb/Entity/Sighting';
-import {Species as SpeciesDB} from '../../inc/Db/MariaDb/Entity/Species';
-import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
-import {Vehicle as VehicleDB} from '../../inc/Db/MariaDb/Entity/Vehicle';
-import {VehicleDriver as VehicleDriverDB} from '../../inc/Db/MariaDb/Entity/VehicleDriver';
+import {Sighting as SightingDB} from '../../Db/MariaDb/Entities/Sighting.js';
+import {Species as SpeciesDB} from '../../Db/MariaDb/Entities/Species.js';
+import {User as UserDB} from '../../Db/MariaDb/Entities/User.js';
+import {Vehicle as VehicleDB} from '../../Db/MariaDb/Entities/Vehicle.js';
+import {VehicleDriver as VehicleDriverDB} from '../../Db/MariaDb/Entities/VehicleDriver.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {Logger} from '../../inc/Logger/Logger';
 import {Stormglass} from '../../inc/Provider/Stormglass/Stormglass';

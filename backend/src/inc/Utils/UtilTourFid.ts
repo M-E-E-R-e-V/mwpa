@@ -1,5 +1,5 @@
 import {SightingMobile} from '../../app/Mobile/Sightings';
-import {Sighting} from '../Db/MariaDb/Entity/Sighting';
+import {Sighting} from '../../Db/MariaDb/Entities/Sighting.js';
 
 /**
  * UtilTourFid
