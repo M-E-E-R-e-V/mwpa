@@ -1,6 +1,6 @@
 import {Job, scheduleJob} from 'node-schedule';
-import {Sighting as SightingDB} from '../Db/MariaDb/Entity/Sighting';
-import {SightingExtended as SightingExtendedDB} from '../Db/MariaDb/Entity/SightingExtended';
+import {Sighting as SightingDB} from '../../Db/MariaDb/Entities/Sighting.js';
+import {SightingExtended as SightingExtendedDB} from '../../Db/MariaDb/Entities/SightingExtended.js';
 import {MariaDbHelper} from '../Db/MariaDb/MariaDbHelper';
 import {Navionics} from '../Provider/Navionics/Navionics';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';

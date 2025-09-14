@@ -1,6 +1,5 @@
 import {Config, ConfigBackend} from 'figtree';
-import {BackendConfigOptions, SchemaBackendConfigOptions} from '../Schemas/Config/BackendConfigOptions.js';
-import {ENV_MWPA} from '../Schemas/Config/MWPAEnv.js';
+import {BackendConfigOptions, ENV_MWPA, SchemaBackendConfigOptions} from 'mwpa_schemas';
 
 /**
  * MWPA Config

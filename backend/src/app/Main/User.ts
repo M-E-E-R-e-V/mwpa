@@ -1,8 +1,8 @@
 import * as bcrypt from 'bcrypt';
 import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
-import {Group as GroupDB} from '../../inc/Db/MariaDb/Entity/Group';
-import {Organization as OrganizationDB} from '../../inc/Db/MariaDb/Entity/Organization';
-import {User as UserDB} from '../../inc/Db/MariaDb/Entity/User';
+import {Group as GroupDB} from '../../Db/MariaDb/Entities/Group.js';
+import {Organization as OrganizationDB} from '../../Db/MariaDb/Entities/Organization.js';
+import {User as UserDB} from '../../Db/MariaDb/Entities/User.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';

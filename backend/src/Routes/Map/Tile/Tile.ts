@@ -1,8 +1,8 @@
 import {Response} from 'express';
 import {FileHelper, HttpFileStream, Logger, StringHelper} from 'figtree';
 import got from 'got';
+import {MapCacheRequest} from 'mwpa_schemas';
 import Path from 'path';
-import {MapCacheRequest} from '../../../Schemas/Routes/Map/MapCache.js';
 import {UtilUploadPath} from '../../../Utils/UtilUploadPath.js';
 
 /**

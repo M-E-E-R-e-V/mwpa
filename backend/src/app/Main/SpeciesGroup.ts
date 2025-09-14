@@ -1,5 +1,5 @@
 import {Get, JsonController, Session} from 'routing-controllers';
-import {SpeciesGroup as SpeciesGroupDB} from '../../inc/Db/MariaDb/Entity/SpeciesGroup';
+import {SpeciesGroup as SpeciesGroupDB} from '../../Db/MariaDb/Entities/SpeciesGroup.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';

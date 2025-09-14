@@ -1,8 +1,8 @@
 import {In} from 'typeorm';
-import {Group as GroupDB} from '../Db/MariaDb/Entity/Group';
-import {Organization as OrganizationDB} from '../Db/MariaDb/Entity/Organization';
-import {User as UserDB} from '../Db/MariaDb/Entity/User';
-import {UserGroups as UserGroupsDB} from '../Db/MariaDb/Entity/UserGroups';
+import {Group as GroupDB} from '../../Db/MariaDb/Entities/Group.js';
+import {Organization as OrganizationDB} from '../../Db/MariaDb/Entities/Organization.js';
+import {User as UserDB} from '../../Db/MariaDb/Entities/User.js';
+import {UserGroups as UserGroupsDB} from '../../Db/MariaDb/Entities/UserGroups.js';
 import {MariaDbHelper} from '../Db/MariaDb/MariaDbHelper';
 
 /**

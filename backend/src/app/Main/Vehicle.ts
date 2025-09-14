@@ -1,5 +1,5 @@
 import {Get, JsonController, Session} from 'routing-controllers';
-import {Vehicle as VehicleDB} from '../../inc/Db/MariaDb/Entity/Vehicle';
+import {Vehicle as VehicleDB} from '../../Db/MariaDb/Entities/Vehicle.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';

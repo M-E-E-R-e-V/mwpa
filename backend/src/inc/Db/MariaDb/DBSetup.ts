@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
-import {Group as GroupDB} from './Entity/Group';
-import {User as UserDB} from './Entity/User';
+import {Group as GroupDB} from '../../../Db/MariaDb/Entities/Group.js';
+import {User as UserDB} from '../../../Db/MariaDb/Entities/User.js';
 import {MariaDbHelper} from './MariaDbHelper';
 
 /**

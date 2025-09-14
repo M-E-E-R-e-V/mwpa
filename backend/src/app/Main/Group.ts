@@ -1,6 +1,6 @@
 import {Body, Get, JsonController, Post, Session} from 'routing-controllers';
-import {Group as GroupDB} from '../../inc/Db/MariaDb/Entity/Group';
-import {Organization as OrganizationDB} from '../../inc/Db/MariaDb/Entity/Organization';
+import {Group as GroupDB} from '../../Db/MariaDb/Entities/Group.js';
+import {Organization as OrganizationDB} from '../../Db/MariaDb/Entities/Organization.js';
 import {MariaDbHelper} from '../../inc/Db/MariaDb/MariaDbHelper';
 import {DefaultReturn} from '../../inc/Routes/DefaultReturn';
 import {StatusCodes} from '../../inc/Routes/StatusCodes';
