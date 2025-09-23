@@ -284,7 +284,7 @@
                 "name": "EncounterCategories",
                 "type": "folder",
                 "icon": "folder",
-                "istoggle": true,
+                "istoggle": false,
                 "entrys": [
                   {
                     "unid": "57d0abd8-5ea9-42a0-89db-7447cd65c961",
@@ -393,6 +393,225 @@
                         "pos": {
                           "x": 912,
                           "y": 42
+                        },
+                        "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                      }
+                    ]
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
+              },
+              {
+                "unid": "a9f7d158-62a6-46a5-8e06-d087a9784520",
+                "name": "Group",
+                "type": "folder",
+                "icon": "folder",
+                "istoggle": true,
+                "entrys": [
+                  {
+                    "unid": "d17e3ff2-4114-4f5e-91d9-d47c93844778",
+                    "name": "Group",
+                    "type": "file",
+                    "icon": "file",
+                    "istoggle": false,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "e52672d3-698f-4575-9cec-5ea1195bb16a",
+                        "name": "GroupEntry",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 660,
+                          "y": 460
+                        },
+                        "fields": [
+                          {
+                            "unid": "23ff769a-fa02-495a-812a-0fb66f609e33",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "3cba844b-8232-4e23-be4c-9b690d1d9a33",
+                            "name": "role",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "029bb237-e983-49b3-8c06-ff629a0188cb",
+                            "name": "organization_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b1a54757-1cd2-4620-98e3-3fffe7318a61",
+                            "name": "description",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "01bdce16-2239-4a33-ab30-fdaca08c7291",
+                        "name": "GroupOrganization",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 614,
+                          "y": 642
+                        },
+                        "fields": [
+                          {
+                            "unid": "b8de58a0-63c7-4779-af78-d2ccbdad0074",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "bc8cccfc-6871-4f47-82ee-a867c6081976",
+                            "name": "name",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "8725f15b-a272-4986-a229-d0f6e1c5bd40",
+                            "name": "location",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e3bcac46-aaff-49c1-88c6-8aad53e9889e",
+                            "name": "lat",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "733fddeb-1839-4380-a942-f3a7e815d598",
+                            "name": "lon",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "9e45b0d1-cb0e-4a6a-b35c-df35433e1262",
+                            "name": "country",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "dd34e2bb-3281-477c-adcc-ef267eb7c3e1",
+                        "name": "GroupListResponse",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 102,
+                          "y": 341
+                        },
+                        "fields": [
+                          {
+                            "unid": "597884f9-8d6b-4865-8c03-c6ded3c48141",
+                            "name": "list",
+                            "type": {
+                              "type": "e52672d3-698f-4575-9cec-5ea1195bb16a",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "64ac2ba4-bdff-47c9-a4eb-1b40f3628740",
+                            "name": "organizationList",
+                            "type": {
+                              "type": "01bdce16-2239-4a33-ab30-fdaca08c7291",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      }
+                    ],
+                    "enums": [],
+                    "links": [
+                      {
+                        "unid": "30f326fd-429f-42af-af2b-3270775c9af0",
+                        "pos": {
+                          "x": 783,
+                          "y": 165
                         },
                         "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
                       }
@@ -515,6 +734,6 @@
     "enums": []
   },
   "editor": {
-    "controls_width": 747
+    "controls_width": 541
   }
 }
