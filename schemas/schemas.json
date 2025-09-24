@@ -149,6 +149,369 @@
         "istoggle": true,
         "entrys": [
           {
+            "unid": "11ce6063-842f-4393-97f0-d3955dad163a",
+            "name": "Base",
+            "type": "folder",
+            "icon": "folder",
+            "istoggle": false,
+            "entrys": [
+              {
+                "unid": "7e00d556-192d-4db1-990e-bf95b39bd817",
+                "name": "Login",
+                "type": "folder",
+                "icon": "folder",
+                "istoggle": false,
+                "entrys": [
+                  {
+                    "unid": "19653d3c-c14b-4443-84ec-8bf1400515f2",
+                    "name": "Login",
+                    "type": "file",
+                    "icon": "file",
+                    "istoggle": false,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "24621cc4-85a2-46e1-8940-07205d02f81b",
+                        "name": "LoginIsLoginResponse",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 208,
+                          "y": 394
+                        },
+                        "fields": [
+                          {
+                            "unid": "1b40dad0-2439-4468-b468-19e01de1fec0",
+                            "name": "status",
+                            "type": {
+                              "type": "boolean",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "8767d992-e1aa-4df6-8513-1490e54261cc",
+                        "name": "LogoutResponse",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 207.3124468934273,
+                          "y": 489.1046434053043
+                        },
+                        "fields": [
+                          {
+                            "unid": "dbcea8f0-b98c-474a-add1-5802cc8ba8a6",
+                            "name": "success",
+                            "type": {
+                              "type": "boolean",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "ae910201-4ede-4a9a-ac6a-6ea71e424af2",
+                        "name": "LoginResponse",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 210,
+                          "y": 574
+                        },
+                        "fields": [
+                          {
+                            "unid": "42a36f77-d82c-4d9d-8e7b-ead36d74ca56",
+                            "name": "success",
+                            "type": {
+                              "type": "boolean",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d8fe1c00-5898-4d51-ac16-0144b32cab37",
+                            "name": "error",
+                            "type": {
+                              "type": "or",
+                              "optional": false,
+                              "array": false,
+                              "types": [
+                                {
+                                  "type": "string",
+                                  "optional": false,
+                                  "array": false,
+                                  "types": []
+                                },
+                                {
+                                  "type": "null",
+                                  "optional": false,
+                                  "array": false,
+                                  "types": []
+                                }
+                              ]
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "9e320aad-4f80-4dd0-8e55-0658b3144681",
+                        "name": "LoginRequest",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 212,
+                          "y": 697
+                        },
+                        "fields": [
+                          {
+                            "unid": "3dc8daaa-c5ee-48b3-9184-061a24a08a7f",
+                            "name": "email",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "4dc9c139-0d1f-48c6-a348-0c6b362674d1",
+                            "name": "password",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
+              },
+              {
+                "unid": "025be5b3-e419-4264-8d26-59931ad5707d",
+                "name": "Session",
+                "type": "folder",
+                "icon": "folder",
+                "istoggle": false,
+                "entrys": [
+                  {
+                    "unid": "c5049c12-dea7-4093-801c-c3b06a39d5a9",
+                    "name": "MWPASession",
+                    "type": "file",
+                    "icon": "file",
+                    "istoggle": false,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "d3e7accd-f218-4696-9da4-c8b8817525b7",
+                        "name": "MWPASessionData",
+                        "extend": {
+                          "type": "aca01792-5cae-442b-bc86-a31f2dca34b9",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 177,
+                          "y": 345
+                        },
+                        "fields": [
+                          {
+                            "unid": "88ed0e9c-5a36-46ba-a68b-b41db3a4a4ee",
+                            "name": "user",
+                            "type": {
+                              "type": "5c4a3d46-d84f-4887-bdfb-03daaf0e7885",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "5c4a3d46-d84f-4887-bdfb-03daaf0e7885",
+                        "name": "MWPASessionUserData",
+                        "extend": {
+                          "type": "27862143-9440-4044-bef7-77b72c45a2b1",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 645,
+                          "y": 508
+                        },
+                        "fields": [
+                          {
+                            "unid": "99cd3b97-ba16-4fbd-b465-13f1cd5d422c",
+                            "name": "isAdmin",
+                            "type": {
+                              "type": "boolean",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d5808e60-fcbc-47c6-804c-30e6afeaca0f",
+                            "name": "isMobileLogin",
+                            "type": {
+                              "type": "boolean",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "935667a7-ad36-4342-a748-978ba6839d7e",
+                            "name": "userid",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "f5e2c6ff-dbf3-4bc2-9cb0-005723d37a3c",
+                            "name": "deviceIdentity",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "device identity is set by mobile login"
+                          },
+                          {
+                            "unid": "66ed2503-21ea-4275-b35a-c5219c7baf64",
+                            "name": "main_group_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "main user group id"
+                          },
+                          {
+                            "unid": "5f6b2465-c7eb-44ba-b67d-408d31a2ebd7",
+                            "name": "main_organization_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "main organization id"
+                          },
+                          {
+                            "unid": "6032df25-0ace-4a31-9373-9fcaed75ca25",
+                            "name": "groups",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "a list with all group ids by user"
+                          },
+                          {
+                            "unid": "89ef147e-0212-4497-8789-8c77366dd345",
+                            "name": "organizations",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "a list with all organization ids by user"
+                          }
+                        ],
+                        "description": ""
+                      }
+                    ],
+                    "enums": [],
+                    "links": [
+                      {
+                        "unid": "c6930439-0727-41f7-8213-e69cabfe7ea1",
+                        "pos": {
+                          "x": 1166,
+                          "y": 331
+                        },
+                        "link_unid": "27862143-9440-4044-bef7-77b72c45a2b1"
+                      },
+                      {
+                        "unid": "93a8dcb7-4a75-4172-85da-ea2f986ca96e",
+                        "pos": {
+                          "x": 851,
+                          "y": 129
+                        },
+                        "link_unid": "aca01792-5cae-442b-bc86-a31f2dca34b9"
+                      }
+                    ]
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
+              }
+            ],
+            "schemas": [],
+            "enums": [],
+            "links": []
+          },
+          {
             "unid": "df594b3e-a20e-4e9f-981e-324443cfe517",
             "name": "Main",
             "type": "folder",
@@ -160,7 +523,7 @@
                 "name": "BehaviouralStates",
                 "type": "folder",
                 "icon": "folder",
-                "istoggle": true,
+                "istoggle": false,
                 "entrys": [
                   {
                     "unid": "4e699be9-7b6c-4cfa-9810-7e4fc850db36",
@@ -408,7 +771,7 @@
                 "name": "Group",
                 "type": "folder",
                 "icon": "folder",
-                "istoggle": true,
+                "istoggle": false,
                 "entrys": [
                   {
                     "unid": "d17e3ff2-4114-4f5e-91d9-d47c93844778",
@@ -621,6 +984,187 @@
                 "schemas": [],
                 "enums": [],
                 "links": []
+              },
+              {
+                "unid": "75751466-4f71-425a-99cb-b728e8a3726c",
+                "name": "Organization",
+                "type": "folder",
+                "icon": "folder",
+                "istoggle": false,
+                "entrys": [
+                  {
+                    "unid": "c7aab178-2ddc-4451-aaa6-41d055662f33",
+                    "name": "Organiztation",
+                    "type": "file",
+                    "icon": "file",
+                    "istoggle": false,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "1fe4453f-9f17-48be-ac44-52740d38bece",
+                        "name": "OrganizationEntry",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 1246,
+                          "y": 347
+                        },
+                        "fields": [
+                          {
+                            "unid": "e029c751-851e-49a5-bdea-2f274a255a93",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "66aa55d7-ff5b-4821-8402-4dc93d9eeb4a",
+                            "name": "description",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "b928dbcb-d40c-4624-86bb-f5ce65e23fd4",
+                        "name": "OrganizationUserListResponse",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 290,
+                          "y": 269
+                        },
+                        "fields": [
+                          {
+                            "unid": "a677493b-0b06-4b0d-98d7-6e441abb0c0a",
+                            "name": "list",
+                            "type": {
+                              "type": "1fe4453f-9f17-48be-ac44-52740d38bece",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "fbfb302b-fd63-46ed-9b9e-3e714c7a1fc7",
+                        "name": "OrganizationFullEntry",
+                        "extend": {
+                          "type": "1fe4453f-9f17-48be-ac44-52740d38bece",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 748,
+                          "y": 495
+                        },
+                        "fields": [
+                          {
+                            "unid": "9ed2a660-16e5-49d2-9c97-690ecc5b79c9",
+                            "name": "location",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "1e91fea1-583b-4848-bc5e-495575096cd2",
+                            "name": "lat",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "51b3bbee-a8e7-4670-938f-f6b2689a6a18",
+                            "name": "lon",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "7538516c-2dc0-45b8-85e4-5a9f917fc0bd",
+                            "name": "country",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "271c055a-8033-4766-97f7-304853bc6503",
+                        "name": "OrganizationListResponse",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 289,
+                          "y": 407
+                        },
+                        "fields": [],
+                        "description": ""
+                      }
+                    ],
+                    "enums": [],
+                    "links": [
+                      {
+                        "unid": "591c9ece-30b5-4358-98c0-96704afe5eb5",
+                        "pos": {
+                          "x": 1083,
+                          "y": 225
+                        },
+                        "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                      }
+                    ]
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
               }
             ],
             "schemas": [],
@@ -632,7 +1176,7 @@
             "name": "Map",
             "type": "folder",
             "icon": "folder",
-            "istoggle": false,
+            "istoggle": true,
             "entrys": [
               {
                 "unid": "8b7a1256-9b13-49c6-8f84-b6b411e7facd",
@@ -734,6 +1278,6 @@
     "enums": []
   },
   "editor": {
-    "controls_width": 541
+    "controls_width": 455
   }
 }
