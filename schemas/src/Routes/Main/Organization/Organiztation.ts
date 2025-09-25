@@ -51,6 +51,7 @@ export type OrganizationFullEntry = ExtractSchemaResultType<typeof SchemaOrganiz
  * Schema of OrganizationListResponse
  */
 export const SchemaOrganizationListResponse = SchemaDefaultReturn.extend({
+    list: Vts.optional(Vts.array(SchemaOrganizationFullEntry)),
 }, {
     description: '',
 });
@@ -59,3 +60,31 @@ export const SchemaOrganizationListResponse = SchemaDefaultReturn.extend({
  * Type of schema OrganizationListResponse
  */
 export type OrganizationListResponse = ExtractSchemaResultType<typeof SchemaOrganizationListResponse>;
+
+/**
+ * Schema of OrganizationGetRequest
+ */
+export const SchemaOrganizationGetRequest = Vts.object({
+    id: Vts.number(),
+}, {
+    description: '',
+});
+
+/**
+ * Type of schema OrganizationGetRequest
+ */
+export type OrganizationGetRequest = ExtractSchemaResultType<typeof SchemaOrganizationGetRequest>;
+
+/**
+ * Schema of OrganizationResponse
+ */
+export const SchemaOrganizationResponse = SchemaDefaultReturn.extend({
+    data: Vts.optional(SchemaOrganizationFullEntry),
+}, {
+    description: '',
+});
+
+/**
+ * Type of schema OrganizationResponse
+ */
+export type OrganizationResponse = ExtractSchemaResultType<typeof SchemaOrganizationResponse>;
