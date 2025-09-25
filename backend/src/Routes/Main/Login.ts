@@ -2,14 +2,13 @@ import * as bcrypt from 'bcrypt';
 import {Router} from 'express';
 import {DefaultRoute, DefaultRouteCheckUserIsLogin} from 'figtree';
 import {
-    LoginRequest,
-    MWPASessionUserData,
+    LoginIsLoginResponse,
+    LoginRequest, LoginResponse, LogoutResponse,
     SchemaLoginIsLoginResponse,
     SchemaLoginRequest,
     SchemaLoginResponse, SchemaLogoutResponse,
     SchemaMWPASessionData
 } from 'mwpa_schemas';
-import {LoginIsLoginResponse, LoginResponse, LogoutResponse} from '../../app/Main/Login.js';
 import {GroupRepository} from '../../Db/MariaDb/Repositories/GroupRepository.js';
 import {UserGroupsRepository} from '../../Db/MariaDb/Repositories/UserGroupsRepository.js';
 import {UserRepository} from '../../Db/MariaDb/Repositories/UserRepository.js';
@@ -18,7 +17,7 @@ import {Logger} from '../../inc/Logger/Logger.js';
 /**
  * Login
  */
-class Login extends DefaultRoute {
+export class Login extends DefaultRoute {
 
     /**
      * Return the express router
@@ -55,7 +54,8 @@ class Login extends DefaultRoute {
         this._post(
             '/json/login',
             false,
-            async(request, response, data): Promise<LoginResponse> => {
+            async(_request,
+                _response, data): Promise<LoginResponse> => {
                 if (!data.session) {
                     return {
                         success: false,
@@ -182,7 +182,11 @@ class Login extends DefaultRoute {
         this._get(
             '/json/logout',
             true,
-            async(request, response, data): Promise<LogoutResponse> => {
+            async(
+                _request,
+                _response,
+                data
+            ): Promise<LogoutResponse> => {
                 if (!data.session) {
                     return {
                         success: false
@@ -220,5 +224,3 @@ class Login extends DefaultRoute {
     }
 
 }
-
-export default Login;
