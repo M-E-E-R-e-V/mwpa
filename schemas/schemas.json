@@ -160,7 +160,7 @@
                 "name": "Login",
                 "type": "folder",
                 "icon": "folder",
-                "istoggle": false,
+                "istoggle": true,
                 "entrys": [
                   {
                     "unid": "19653d3c-c14b-4443-84ec-8bf1400515f2",
@@ -335,7 +335,7 @@
                 "name": "Session",
                 "type": "folder",
                 "icon": "folder",
-                "istoggle": false,
+                "istoggle": true,
                 "entrys": [
                   {
                     "unid": "c5049c12-dea7-4093-801c-c3b06a39d5a9",
@@ -356,8 +356,8 @@
                           }
                         },
                         "pos": {
-                          "x": 177,
-                          "y": 345
+                          "x": 150,
+                          "y": 330
                         },
                         "fields": [
                           {
@@ -385,8 +385,8 @@
                           }
                         },
                         "pos": {
-                          "x": 645,
-                          "y": 508
+                          "x": 141,
+                          "y": 463
                         },
                         "fields": [
                           {
@@ -486,16 +486,16 @@
                       {
                         "unid": "c6930439-0727-41f7-8213-e69cabfe7ea1",
                         "pos": {
-                          "x": 1166,
-                          "y": 331
+                          "x": 673,
+                          "y": 388
                         },
                         "link_unid": "27862143-9440-4044-bef7-77b72c45a2b1"
                       },
                       {
                         "unid": "93a8dcb7-4a75-4172-85da-ea2f986ca96e",
                         "pos": {
-                          "x": 851,
-                          "y": 129
+                          "x": 680,
+                          "y": 254
                         },
                         "link_unid": "aca01792-5cae-442b-bc86-a31f2dca34b9"
                       }
@@ -990,8 +990,200 @@
                 "name": "Organization",
                 "type": "folder",
                 "icon": "folder",
-                "istoggle": false,
+                "istoggle": true,
                 "entrys": [
+                  {
+                    "unid": "eb7dd964-97fc-4a71-8db7-ce82661e1885",
+                    "name": "OrganizationTrackingArea",
+                    "type": "file",
+                    "icon": "file",
+                    "istoggle": false,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "56c8792c-a36a-4703-bf81-69d4706f1afe",
+                        "name": "OrganizationTrackingAreaRequest",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 221,
+                          "y": 146
+                        },
+                        "fields": [
+                          {
+                            "unid": "2e6e845b-8b8c-4f7a-aa49-23df08d5fcc5",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b15f09ac-4720-495b-ab7c-11809d77ce24",
+                            "name": "organization",
+                            "type": {
+                              "type": "4d35bc77-1921-42c6-b5f4-d435eca2fa56",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "4d35bc77-1921-42c6-b5f4-d435eca2fa56",
+                        "name": "OrganizationTrackingAreaRequestOrg",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 758,
+                          "y": 80
+                        },
+                        "fields": [
+                          {
+                            "unid": "5b9915a6-3942-4321-a79a-01ead898e30c",
+                            "name": "organization_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "3d9ebc49-3f01-4db0-b428-ccf00aba2ec2",
+                            "name": "area_type",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "4a75fc30-0d71-42f6-9e22-84df07679acc",
+                        "name": "OrganizationTrackingAreaEntry",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 772,
+                          "y": 432
+                        },
+                        "fields": [
+                          {
+                            "unid": "0b984221-355f-4856-a178-59b0fa0f949c",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "10d21645-35a7-499a-a32e-365dcecb0361",
+                            "name": "organization_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "4be6480b-4144-45e1-8273-520ee0010e0f",
+                            "name": "area_type",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "a7440800-3474-4116-af5e-5b639c336041",
+                            "name": "geojsonstr",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "0750e099-ba5c-4d92-a349-9ebda5d14cd4",
+                        "name": "OrganizationTrackingAreaRespose",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 209,
+                          "y": 325
+                        },
+                        "fields": [
+                          {
+                            "unid": "a9dfcf60-ce2a-4cc4-9840-ed22b58db291",
+                            "name": "data",
+                            "type": {
+                              "type": "4a75fc30-0d71-42f6-9e22-84df07679acc",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      }
+                    ],
+                    "enums": [],
+                    "links": [
+                      {
+                        "unid": "9a6a8a7a-b300-4750-90ae-11086c115bba",
+                        "pos": {
+                          "x": 1063,
+                          "y": 210
+                        },
+                        "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                      }
+                    ]
+                  },
                   {
                     "unid": "c7aab178-2ddc-4451-aaa6-41d055662f33",
                     "name": "Organiztation",
@@ -1142,10 +1334,80 @@
                           }
                         },
                         "pos": {
-                          "x": 289,
-                          "y": 407
+                          "x": 292,
+                          "y": 394
                         },
-                        "fields": [],
+                        "fields": [
+                          {
+                            "unid": "c7b73994-597e-4d40-8223-6b11aec356fc",
+                            "name": "list",
+                            "type": {
+                              "type": "fbfb302b-fd63-46ed-9b9e-3e714c7a1fc7",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "e5b5fa7a-945a-47ff-b91b-c3dad737b564",
+                        "name": "OrganizationGetRequest",
+                        "extend": {
+                          "type": "object",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 297,
+                          "y": 541
+                        },
+                        "fields": [
+                          {
+                            "unid": "b8a8ac94-b44e-436a-9612-e27200325ed9",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
+                        "description": ""
+                      },
+                      {
+                        "unid": "70c8e171-dca1-4eba-96d2-5a01c8d1e454",
+                        "name": "OrganizationResponse",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+                          "options": {
+                            "not_export": false,
+                            "ignore_additional_items": false
+                          }
+                        },
+                        "pos": {
+                          "x": 305,
+                          "y": 663
+                        },
+                        "fields": [
+                          {
+                            "unid": "277ed7ac-ebd7-475e-8453-6097d8272780",
+                            "name": "data",
+                            "type": {
+                              "type": "fbfb302b-fd63-46ed-9b9e-3e714c7a1fc7",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ],
                         "description": ""
                       }
                     ],
@@ -1278,6 +1540,6 @@
     "enums": []
   },
   "editor": {
-    "controls_width": 455
+    "controls_width": 557
   }
 }
