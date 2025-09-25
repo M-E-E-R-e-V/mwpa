@@ -2,7 +2,7 @@ import {HttpRouteLoader, IDefaultRoute, SwaggerUIRoute} from 'figtree';
 import {BehaviouralStates} from './Main/BehaviouralStates.js';
 import {EncounterCategories} from './Main/EncounterCategories.js';
 import {Group} from './Main/Group.js';
-import Login from './Main/Login.js';
+import {Login} from './Main/Login.js';
 import {MapCache} from './Map/MapCache.js';
 
 /**
