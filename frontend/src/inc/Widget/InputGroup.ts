@@ -1,12 +1,12 @@
-import {Element} from 'bambooo';
+import {Component, ComponentType} from 'bambooo';
 
-export class InputGroup extends Element {
+export class InputGroup extends Component<HTMLDivElement> {
 
-    public constructor(element: any|Element) {
+    public constructor(element: ComponentType) {
         super();
 
         const telement = this._getAnyElement(element);
-        this._element = jQuery('<div class="input-group" />').appendTo(telement);
+        this._element = jQuery<HTMLDivElement>('<div class="input-group" />').appendTo(telement);
     }
 
 }

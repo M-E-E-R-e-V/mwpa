@@ -1,14 +1,14 @@
-import {Badge, BadgeType, Element, UtilColor} from 'bambooo';
+import {Badge, BadgeType, Component, ComponentType, UtilColor} from 'bambooo';
 import {SpeciesEntryGroup} from '../Api/Species';
 
 /**
  * SpeciesGroupDisplay
  */
-export class SpeciesGroupDisplay extends Element {
+export class SpeciesGroupDisplay extends Component<HTMLSpanElement> {
 
     protected _badge;
 
-    public constructor(element: Element|any, group: SpeciesEntryGroup) {
+    public constructor(element: ComponentType, group: SpeciesEntryGroup) {
         super();
 
         this._badge = new Badge(

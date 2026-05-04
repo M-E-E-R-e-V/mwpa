@@ -1,6 +1,5 @@
 import {Response} from 'express';
 import {FileHelper, HttpFileStream, Logger, StringHelper} from 'figtree';
-import got from 'got';
 import {MapCacheRequest} from 'mwpa_schemas';
 import Path from 'path';
 import {UtilUploadPath} from '../../../Utils/UtilUploadPath.js';
@@ -43,11 +42,14 @@ export class Tile {
                     .replace('{f}', request.fileformat);
 
                     try {
-                        const downloadResponse = await got(tileUrl, {
-                            responseType: 'buffer'
-                        });
+                        const downloadResponse = await fetch(tileUrl);
 
-                        await FileHelper.create(tileFile, downloadResponse.body);
+                        if (!downloadResponse.ok) {
+                            throw new Error(`HTTP ${downloadResponse.status} ${downloadResponse.statusText}`);
+                        }
+
+                        const buffer = Buffer.from(await downloadResponse.arrayBuffer());
+                        await FileHelper.create(tileFile, buffer);
                     } catch (error) {
                         Logger.getLogger().error(StringHelper.sprintf(`Faild to download: ${tileUrl} - %e`, error));
                     }

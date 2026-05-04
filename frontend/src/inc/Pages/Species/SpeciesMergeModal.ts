@@ -1,4 +1,4 @@
-import {FormGroup, LangText, ModalDialog, ModalDialogType, SelectBottemBorderOnly2} from 'bambooo';
+import {ComponentType, FormGroup, LangText, ModalDialog, ModalDialogType, SelectBottemBorderOnly2} from 'bambooo';
 import {SpeciesEntry} from '../../Api/Species';
 
 /**
@@ -22,7 +22,7 @@ export class SpeciesMergeModal extends ModalDialog {
      * constructor
      * @param elementObject
      */
-    public constructor(elementObject: Element) {
+    public constructor(elementObject: ComponentType) {
         super(elementObject, 'speciesmergemodaldialog', ModalDialogType.large);
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);

@@ -1,4 +1,4 @@
-import {StatusCodes} from 'figtree';
+import {StatusCodes} from 'figtree-schemas';
 import {EncounterCategorieEntry, EncounterCategoriesResponse} from 'mwpa_schemas';
 import {EncounterCategoriesRepository} from '../../../Db/MariaDb/Repositories/EncounterCategoriesRepository.js';
 

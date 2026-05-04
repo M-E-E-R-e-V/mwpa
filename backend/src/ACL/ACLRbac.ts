@@ -1,31 +1,11 @@
 import {ACLRbac as TACLRbac} from 'figtree';
+import {MwpaRights, RightService, Role} from 'mwpa_schemas';
 import {Rbac} from 'rbac-simple';
-
-/**
- * Role
- */
-export const enum Role {
-    root = 'root',
-    user = 'user'
-}
-
-/**
- * Right
- */
-export const enum Right {
-    backend = 'backend',
-    frontend = 'frontend',
-    mobile = 'mobile',
-    service = 'service',
-    service_status = 'service_status',
-    service_start = 'service_start',
-    service_stop = 'service_stop',
-}
 
 /**
  * ACL Rbac
  */
-export class ACLRbac extends TACLRbac<Role, Right> {
+export class ACLRbac extends TACLRbac<Role, MwpaRights> {
 
     /**
      * ROLES
@@ -39,19 +19,13 @@ export class ACLRbac extends TACLRbac<Role, Right> {
      * RIGHTS
      */
     public static RIGHTS = {
-        [Right.backend]: {
-            [Right.service]: {
-                [Right.service_status]: {},
-                [Right.service_start]: {},
-                [Right.service_stop]: {}
-            },
+        [RightService.service]: {
+            [RightService.service_status]: {},
+            [RightService.service_start]: {},
+            [RightService.service_stop]: {},
+            [RightService.service_invoke]: {}
         },
-        [Right.frontend]: {
 
-        },
-        [Right.mobile]: {
-
-        }
     };
 
     /**
@@ -59,14 +33,9 @@ export class ACLRbac extends TACLRbac<Role, Right> {
      */
     public static ASSOCIATIONS = {
         [Role.root]: [
-            Right.backend,
-            Right.frontend,
-            Right.mobile,
+            RightService.service,
         ],
-        [Role.user]: [
-            Right.frontend,
-            Right.mobile,
-        ]
+        [Role.user]: []
     };
 
     /**
@@ -75,7 +44,7 @@ export class ACLRbac extends TACLRbac<Role, Right> {
     public constructor() {
         super();
 
-        this._rbac = new Rbac<Role, Right>(
+        this._rbac = new Rbac<Role, MwpaRights>(
             ACLRbac.ROLES,
             ACLRbac.RIGHTS,
             ACLRbac.ASSOCIATIONS

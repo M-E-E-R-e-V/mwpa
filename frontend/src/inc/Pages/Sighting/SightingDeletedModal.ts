@@ -1,4 +1,4 @@
-import {FormGroup, FormRow, LangText, ModalDialog, ModalDialogType, Textarea} from 'bambooo';
+import {ComponentType, FormGroup, FormRow, LangText, ModalDialog, ModalDialogType, Textarea} from 'bambooo';
 
 /**
  * Sighting deleted modal dialog.
@@ -21,7 +21,7 @@ export class SightingDeletedModal extends ModalDialog {
      * Constructor from Dialog.
      * @param {Element} elementObject
      */
-    public constructor(elementObject: Element) {
+    public constructor(elementObject: ComponentType) {
         super(elementObject, 'sightingdeletemodaldialog', ModalDialogType.large);
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);

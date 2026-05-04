@@ -1,6 +1,6 @@
 {
   "logging": {
-    "debugging": true
+    "level": "debug"
   },
   "db": {
     "mysql": {

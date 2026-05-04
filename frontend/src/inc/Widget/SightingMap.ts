@@ -1,4 +1,4 @@
-import {Element} from 'bambooo';
+import {Component} from 'bambooo';
 import {Feature, Map as OlMap, Overlay, View} from 'ol';
 import LayerSwitcher from 'ol-layerswitcher';
 import {Coordinate} from 'ol/coordinate';
@@ -39,7 +39,7 @@ export type SightingMapLoadOptions = {
 /**
  * SightingMap
  */
-export class SightingMap extends Element {
+export class SightingMap extends Component<HTMLDivElement> {
 
     /**
      * map object
@@ -162,7 +162,7 @@ export class SightingMap extends Element {
      * @param {any} aelement
      */
     public constructor(aelement?: any) {
-        super(jQuery('<div></div>').appendTo(aelement));
+        super(jQuery<HTMLDivElement>('<div></div>').appendTo(aelement));
     }
 
     /**

@@ -698,7 +698,8 @@ export class Sighting extends BasePage {
                                         'sightimage',
                                         ModalDialogType.xlarge,
                                         `Image for Sighting #${entry.id}`,
-                                        aImage,
+                                        // @ts-ignore
+                                        JQuery<HTMLImageElement>(aImage),
                                         (_, modal: DialogInfo) => {
                                             modal.hide();
                                         }

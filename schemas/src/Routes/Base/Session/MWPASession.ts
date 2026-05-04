@@ -1,5 +1,5 @@
 import {ExtractSchemaResultType, Vts} from 'vts';
-import {SchemaSessionUserData, SchemaSessionData} from 'figtree';
+import {SchemaSessionUserData, SchemaSessionData} from 'figtree-schemas';
 
 /**
  * Schema of MWPASessionUserData

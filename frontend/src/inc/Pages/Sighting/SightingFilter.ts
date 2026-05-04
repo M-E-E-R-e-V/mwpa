@@ -1,4 +1,4 @@
-import {ButtonDefault, Card, FormGroup, FormRow, LangText, SearchWidget, Icon} from 'bambooo';
+import {ButtonDefault, Card, FormGroup, FormRow, LangText, SearchWidget, Icon, ComponentType} from 'bambooo';
 import {Species as SpeciesAPI} from '../../Api/Species';
 import {DateRangeButton} from '../../Widget/DateRangeButton';
 import {InputGroup} from '../../Widget/InputGroup';
@@ -18,7 +18,7 @@ export class SightingFilter extends Card {
      * Constructor
      * @param elementObject
      */
-    public constructor(elementObject: any) {
+    public constructor(elementObject: ComponentType) {
         super(elementObject);
 
         this.setTitle(new LangText('Filter'));

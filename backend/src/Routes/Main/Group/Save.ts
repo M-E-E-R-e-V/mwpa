@@ -1,5 +1,6 @@
-import {DefaultReturn, StatusCodes} from 'figtree';
-import {GroupEntry} from '../../../app/Main/Group.js';
+import {DefaultReturn, StatusCodes} from 'figtree-schemas';
+import {Vts} from 'vts';
+import {GroupEntry} from 'mwpa_schemas';
 import {Group as GroupDB} from '../../../Db/MariaDb/Entities/Group.js';
 import {GroupRepository} from '../../../Db/MariaDb/Repositories/GroupRepository.js';
 
@@ -13,7 +14,14 @@ export class Save {
      * @param {GroupEntry} entry
      * @return {DefaultReturn}
      */
-    public static async saveGroup(entry: GroupEntry): Promise<DefaultReturn> {
+    public static async saveGroup(entry?: GroupEntry): Promise<DefaultReturn> {
+        if (Vts.isUndefined(entry)) {
+            return {
+                statusCode: StatusCodes.INTERNAL_ERROR,
+                msg: 'Request incomplete'
+            };
+        }
+
         let aGroup: GroupDB|null = null;
 
         if (entry.id !== 0) {

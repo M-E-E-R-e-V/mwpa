@@ -1,4 +1,5 @@
 import {
+    ComponentType,
     FormGroup, FormRow,
     InputBottemBorderOnly2, InputType, LangText,
     ModalDialog,
@@ -83,7 +84,7 @@ export class UsersEditModal extends ModalDialog {
      * constructor
      * @param elementObject
      */
-    public constructor(elementObject: Element) {
+    public constructor(elementObject: ComponentType) {
         super(elementObject, 'usersmodaldialog', ModalDialogType.large);
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);

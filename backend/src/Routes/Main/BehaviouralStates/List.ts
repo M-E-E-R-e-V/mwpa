@@ -1,5 +1,5 @@
+import {StatusCodes} from 'figtree-schemas';
 import {BehaviouralStatesResponse, BehaviouralStateEntry} from 'mwpa_schemas';
-import {StatusCodes} from 'figtree';
 import {BehaviouralStatesRepository} from '../../../Db/MariaDb/Repositories/BehaviouralStatesRepository.js';
 
 /**

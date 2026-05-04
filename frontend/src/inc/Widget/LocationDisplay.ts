@@ -1,13 +1,13 @@
-import {Tooltip, Element} from 'bambooo';
+import {Tooltip, Component, ComponentType} from 'bambooo';
 import moment from 'moment';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';
 import {UtilLocation} from '../Utils/UtilLocation';
 
 export type LocationDisplayButtonClickFn = () => void;
 
-export class LocationDisplay extends Element {
+export class LocationDisplay extends Component<HTMLDListElement> {
 
-    public constructor(element: Element, value: string|GeolocationCoordinates, onClick?: LocationDisplayButtonClickFn) {
+    public constructor(element: ComponentType, value: string|GeolocationCoordinates, onClick?: LocationDisplayButtonClickFn) {
         super();
 
         let gcValue: GeolocationCoordinates|null = null;
@@ -43,7 +43,7 @@ export class LocationDisplay extends Element {
 
         const telement = this._getAnyElement(element);
 
-        this._element = jQuery('<dl class="row"></dl>').appendTo(telement);
+        this._element = jQuery<HTMLDListElement>('<dl class="row"></dl>').appendTo(telement);
 
         const iconDt = jQuery('<dt class="col-sm-1"><i class="fas fa-map-marker-alt mr-1"></i></dt>');
         iconDt.appendTo(this._element);

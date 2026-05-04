@@ -1,4 +1,4 @@
-import {ButtonDefault, LangText, ModalDialog, ModalDialogType} from 'bambooo';
+import {ButtonDefault, ComponentType, LangText, ModalDialog, ModalDialogType} from 'bambooo';
 import {Map as OlMap, View} from 'ol';
 import {GeoJSON} from 'ol/format';
 import {Draw, Modify, Snap} from 'ol/interaction';
@@ -72,7 +72,7 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
      * constructor
      * @param elementObject
      */
-    public constructor(elementObject: Element) {
+    public constructor(elementObject: ComponentType) {
         super(elementObject, 'organizationtrackingareamodal', ModalDialogType.large);
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);

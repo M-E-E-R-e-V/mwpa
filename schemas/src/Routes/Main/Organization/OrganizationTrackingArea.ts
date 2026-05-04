@@ -1,5 +1,5 @@
 import {ExtractSchemaResultType, Vts} from 'vts';
-import {SchemaDefaultReturn} from 'figtree';
+import {SchemaDefaultReturn} from 'figtree-schemas';
 
 /**
  * Schema of OrganizationTrackingAreaRequestOrg
@@ -49,15 +49,15 @@ export const SchemaOrganizationTrackingAreaEntry = Vts.object({
 export type OrganizationTrackingAreaEntry = ExtractSchemaResultType<typeof SchemaOrganizationTrackingAreaEntry>;
 
 /**
- * Schema of OrganizationTrackingAreaRespose
+ * Schema of OrganizationTrackingAreaResponse
  */
-export const SchemaOrganizationTrackingAreaRespose = SchemaDefaultReturn.extend({
+export const SchemaOrganizationTrackingAreaResponse = SchemaDefaultReturn.extend({
     data: Vts.optional(SchemaOrganizationTrackingAreaEntry),
 }, {
     description: '',
 });
 
 /**
- * Type of schema OrganizationTrackingAreaRespose
+ * Type of schema OrganizationTrackingAreaResponse
  */
-export type OrganizationTrackingAreaRespose = ExtractSchemaResultType<typeof SchemaOrganizationTrackingAreaRespose>;
+export type OrganizationTrackingAreaResponse = ExtractSchemaResultType<typeof SchemaOrganizationTrackingAreaResponse>;

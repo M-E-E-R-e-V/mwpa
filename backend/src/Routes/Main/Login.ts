@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import {Router} from 'express';
-import {DefaultRoute, DefaultRouteCheckUserIsLogin} from 'figtree';
+import {DefaultRoute, Logger} from 'figtree';
 import {
     LoginIsLoginResponse,
     LoginRequest, LoginResponse, LogoutResponse,
@@ -9,10 +9,11 @@ import {
     SchemaLoginResponse, SchemaLogoutResponse,
     SchemaMWPASessionData
 } from 'mwpa_schemas';
+import {checkMWPAUserIsLogin, isMWPAUserLogin} from '../AuthCheck.js';
+import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {GroupRepository} from '../../Db/MariaDb/Repositories/GroupRepository.js';
 import {UserGroupsRepository} from '../../Db/MariaDb/Repositories/UserGroupsRepository.js';
 import {UserRepository} from '../../Db/MariaDb/Repositories/UserRepository.js';
-import {Logger} from '../../inc/Logger/Logger.js';
 
 /**
  * Login
@@ -33,14 +34,8 @@ export class Login extends DefaultRoute {
             async(
                 req
             ): Promise<LoginIsLoginResponse> => {
-                if (DefaultRouteCheckUserIsLogin(req, false)) {
-                    return {
-                        status: true
-                    };
-                }
-
                 return {
-                    status: false
+                    status: isMWPAUserLogin(req)
                 };
             },
             {
@@ -99,7 +94,7 @@ export class Login extends DefaultRoute {
                 );
 
                 if (user === null) {
-                    Logger.log(`Login faild: user not found: ${body.email}`);
+                    Logger.getLogger().info(`Login faild: user not found: ${body.email}`);
 
                     return {
                         success: false,
@@ -112,7 +107,7 @@ export class Login extends DefaultRoute {
                 const bresult = await bcrypt.compare(body.password, user.password);
 
                 if (!bresult) {
-                    Logger.log(`Login faild: wrong password by email: ${body.email}`);
+                    Logger.getLogger().info(`Login faild: wrong password by email: ${body.email}`);
 
                     return {
                         success: false,
@@ -162,7 +157,7 @@ export class Login extends DefaultRoute {
                     groups: groups
                 };
 
-                Logger.log(`Login success by session: ${data.session.id}`);
+                Logger.getLogger().info(`Login success by session: ${data.session.id}`);
 
                 return {
                     success: true,
@@ -173,7 +168,8 @@ export class Login extends DefaultRoute {
                 description: 'Login a user and update the session',
                 bodySchema: SchemaLoginRequest,
                 responseBodySchema: SchemaLoginResponse,
-                sessionSchema: SchemaMWPASessionData
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit
             }
         );
 
@@ -181,7 +177,7 @@ export class Login extends DefaultRoute {
 
         this._get(
             '/json/logout',
-            true,
+            checkMWPAUserIsLogin,
             async(
                 _request,
                 _response,
@@ -214,7 +210,8 @@ export class Login extends DefaultRoute {
             {
                 description: 'Logout and rest the session to empty',
                 bodySchema: SchemaLogoutResponse,
-                sessionSchema: SchemaMWPASessionData
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit
             }
         );
 
