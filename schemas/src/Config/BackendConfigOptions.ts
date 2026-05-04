@@ -1,11 +1,11 @@
 import {ExtractSchemaResultType, Vts} from 'vts';
-import {SchemaConfigBackendOptions} from 'figtree';
+import {SchemaConfigBackendOptions} from 'figtree-schemas';
 
 /**
  * Schema of BackendConfigOptions
  */
 export const SchemaBackendConfigOptions = SchemaConfigBackendOptions.extend({
-    datadir: Vts.or([Vts.string(), Vts.null()]),
+    datadir: Vts.or([Vts.string(), Vts.null()], {}),
 }, {
     description: '',
 });

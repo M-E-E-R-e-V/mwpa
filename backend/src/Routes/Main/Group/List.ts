@@ -1,4 +1,4 @@
-import {StatusCodes} from 'figtree';
+import {StatusCodes} from 'figtree-schemas';
 import {GroupEntry, GroupListResponse, GroupOrganization} from 'mwpa_schemas';
 import {GroupRepository} from '../../../Db/MariaDb/Repositories/GroupRepository.js';
 import {OrganizationRepository} from '../../../Db/MariaDb/Repositories/OrganizationRepository.js';

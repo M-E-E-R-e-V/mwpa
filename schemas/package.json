@@ -2,7 +2,7 @@
   "author": "Stefan Werfling",
   "dependencies": {
     "vts": "git+https://github.com/OpenSourcePKG/vts.git",
-    "figtree": "git+https://github.com/stefanwerfling/figtree.git"
+    "figtree-schemas": "git+https://github.com/stefanwerfling/figtree-schemas.git"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin-ts": "^3.0.0",

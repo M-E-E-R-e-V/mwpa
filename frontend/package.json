@@ -25,8 +25,8 @@
     "moment": "^2.29.4",
     "ol": "^7.3.0",
     "ol-layerswitcher": "^4.1.1",
-    "vts": "git+https://github.com/OpenSourcePKG/vts.git",
-    "select2": "^4.1.0-rc.0"
+    "select2": "^4.1.0-rc.0",
+    "vts": "git+https://github.com/OpenSourcePKG/vts.git"
   },
   "devDependencies": {
     "@popperjs/core": "^2.11.7",
@@ -55,7 +55,9 @@
     "gulp-html-to-js": "^0.0.7",
     "gulp-minify": "^3.1.0",
     "gulp-rename": "^2.0.0",
+    "natural-compare-lite": "^1.4.0",
     "ts-loader": "^9.4.2",
+    "tsutils": "^3.21.0",
     "typescript": "^5.8.3",
     "webpack": "^5.78.0",
     "webpack-cli": "^5.0.1"

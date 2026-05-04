@@ -1,5 +1,6 @@
 import {Router} from 'express';
 import {DefaultRoute} from 'figtree';
+import {checkMWPAUserIsLogin} from '../AuthCheck.js';
 import {SchemaEncounterCategoriesResponse} from 'mwpa_schemas';
 import {List} from './EncounterCategories/List.js';
 
@@ -15,7 +16,7 @@ export class EncounterCategories extends DefaultRoute {
     public getExpressRouter(): Router {
         this._get(
             '/json/behaviouralstates/list',
-            true,
+            checkMWPAUserIsLogin,
             async() => {
                 return List.getList();
             },

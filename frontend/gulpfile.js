@@ -9,9 +9,48 @@ const webpack = require('webpack');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpackConfig = require('./webpack.config.js');
 const {exec} = require('child_process');
+const fs = require('fs');
 
 const currentPath = './';
+const collectionPath = './../';
 const assetsPath = `${currentPath}assets/`;
+
+function funcFindNodeModules(nodesModuleName, subdir) {
+    const pathIn =  `${currentPath}node_modules/${nodesModuleName}`;
+
+    try {
+        // Query the entry
+        const stats = fs.lstatSync(pathIn);
+
+        // Is it a directory?
+        if (stats.isDirectory()) {
+            console.log(`Return path: ${pathIn}/${subdir}`);
+            return `${pathIn}/${subdir}`;
+        }
+    }
+    catch (e) {
+        // ...
+    }
+
+    const pathOut =  `${collectionPath}node_modules/${nodesModuleName}`;
+
+    try {
+        // Query the entry
+        const stats = fs.lstatSync(pathOut);
+
+        // Is it a directory?
+        if (stats.isDirectory()) {
+            console.log(`Return path: ${pathOut}/${subdir}`);
+            return `${pathOut}/${subdir}`;
+        }
+    }
+    catch (e) {
+        // ...
+    }
+
+    console.log(`Error: Path not found for module: ${nodesModuleName}`);
+    throw new Error(`Path not found for module: ${nodesModuleName}`);
+}
 
 /**
  * copy-data
@@ -33,7 +72,7 @@ gulp.task('copy-data', async() => {
     };
 
     return gulp.src([
-        `${currentPath}node_modules/admin-lte/plugins/**/*`
+            funcFindNodeModules('admin-lte', 'plugins/**/*')
         ])
         .pipe(gulp.dest(`${assetsPath}plugins`))
 
@@ -41,23 +80,28 @@ gulp.task('copy-data', async() => {
 
         // single files
         gulp.src([
-            `${currentPath}node_modules/admin-lte/dist/js/adminlte.js`
+            funcFindNodeModules('admin-lte', 'dist/js/adminlte.js')
         ])
         .pipe(gulp.dest(assetsPath))
 
         &&
 
         gulp.src([
-            `${currentPath}node_modules/ionicons-css/dist/**/*`
+            funcFindNodeModules('ionicons-css', 'dist/**/*')
         ])
         .pipe(gulp.dest(`${assetsPath}ionicons-css`))
 
         &&
 
         gulp.src([
-            `${currentPath}node_modules/admin-lte/dist/css/**/*`,
-            `${currentPath}node_modules/ol/ol.css`,
-            `${currentPath}node_modules/ol-layerswitcher/dist/ol-layerswitcher.css`,
+            funcFindNodeModules('admin-lte', 'dist/css/**/*'),
+        ])
+        .pipe(gulp.dest(`${assetsPath}css`))
+
+        &&
+
+        gulp.src([
+            funcFindNodeModules('bambooo', 'bambooo.css'),
         ])
         .pipe(gulp.dest(`${assetsPath}css`))
 

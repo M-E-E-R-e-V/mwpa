@@ -1,5 +1,5 @@
 import {ExtractSchemaResultType, Vts} from 'vts';
-import {SchemaDefaultReturn} from 'figtree';
+import {SchemaDefaultReturn} from 'figtree-schemas';
 
 /**
  * Schema of GroupEntry

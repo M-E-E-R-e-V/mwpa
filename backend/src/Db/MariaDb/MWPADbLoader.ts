@@ -15,10 +15,13 @@ import {SightingTourTracking} from './Entities/SightingTourTracking.js';
 import {SightingViewFilter} from './Entities/SightingViewFilter.js';
 import {Species} from './Entities/Species.js';
 import {SpeciesExternLink} from './Entities/SpeciesExternLink.js';
+import {SpeciesGroup} from './Entities/SpeciesGroup.js';
 import {User} from './Entities/User.js';
 import {UserGroups} from './Entities/UserGroups.js';
 import {Vehicle} from './Entities/Vehicle.js';
 import {VehicleDriver} from './Entities/VehicleDriver.js';
+
+type EntityClass = new(...args: any[]) => any;
 
 /**
  * MWPA DB Loader
@@ -27,10 +30,9 @@ export class MWPADbLoader extends DBLoader {
 
     /**
      * load Entities
-     * @return {MixedList<Function | string | EntitySchema>}
+     * @return {MixedList<EntityClass | string | EntitySchema>}
      */
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    public static async loadEntities(): Promise<MixedList<Function | string | EntitySchema>> {
+    public static async loadEntities(): Promise<MixedList<EntityClass | string | EntitySchema>> {
         return [
             BehaviouralStates,
             Devices,
@@ -47,6 +49,7 @@ export class MWPADbLoader extends DBLoader {
             SightingViewFilter,
             Species,
             SpeciesExternLink,
+            SpeciesGroup,
             User,
             UserGroups,
             Vehicle,
@@ -56,10 +59,9 @@ export class MWPADbLoader extends DBLoader {
 
     /**
      * load Migrations
-     * @return {MixedList<Function | string> }
+     * @return {MixedList<EntityClass | string>}
      */
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    public static loadMigrations(): MixedList<Function | string> {
+    public static loadMigrations(): MixedList<EntityClass | string> {
         return [];
     }
 

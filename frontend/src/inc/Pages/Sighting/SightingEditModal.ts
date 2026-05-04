@@ -6,6 +6,7 @@ import {VehicleDriverEntry} from '../../Api/VehicleDriver';
 import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
 import {LocationInput} from '../../Widget/LocationInput';
 import {
+    ComponentType,
     FormGroup,
     FormRow,
     InputBottemBorderOnly2, InputType, LangText,
@@ -141,7 +142,7 @@ export class SightingEditModal extends ModalDialog {
      * constructor
      * @param elementObject
      */
-    public constructor(elementObject: Element) {
+    public constructor(elementObject: ComponentType) {
         super(elementObject, 'sightingmodaldialog', ModalDialogType.large);
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);

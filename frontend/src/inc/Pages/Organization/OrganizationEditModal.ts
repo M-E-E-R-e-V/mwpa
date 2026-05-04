@@ -1,4 +1,12 @@
-import {FormGroup, FormRow, InputBottemBorderOnly2, LangText, ModalDialog, ModalDialogType} from 'bambooo';
+import {
+    ComponentType,
+    FormGroup,
+    FormRow,
+    InputBottemBorderOnly2,
+    LangText,
+    ModalDialog,
+    ModalDialogType
+} from 'bambooo';
 
 
 export class OrganizationEditModal extends ModalDialog {
@@ -43,7 +51,7 @@ export class OrganizationEditModal extends ModalDialog {
      * constructor
      * @param elementObject
      */
-    public constructor(elementObject: Element) {
+    public constructor(elementObject: ComponentType) {
         super(elementObject, 'organizationmodal', ModalDialogType.large);
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);

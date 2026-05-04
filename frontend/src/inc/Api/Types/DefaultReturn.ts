@@ -7,6 +7,6 @@ import {StatusCodes} from '../Status/StatusCodes';
  * DefaultReturn
  */
 export type DefaultReturn = {
-    statusCode: number|StatusCodes;
+    statusCode: string|StatusCodes;
     msg?: string;
 };

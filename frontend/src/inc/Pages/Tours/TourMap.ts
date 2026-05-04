@@ -177,7 +177,7 @@ export class ToursMap extends BasePage {
 
                 if (trackingData.sightings.length > 0) {
                     if (this._badge) {
-                        this._badge.setContent(trackingData.sightings.length);
+                        this._badge.setContent(`${trackingData.sightings.length}`);
                     }
                 }
 

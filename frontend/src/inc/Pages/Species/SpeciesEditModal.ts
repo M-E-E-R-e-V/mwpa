@@ -1,4 +1,5 @@
 import {
+    ComponentType,
     FormGroup,
     InputBottemBorderOnly2,
     InputType, LangText,
@@ -41,7 +42,7 @@ export class SpeciesEditModal extends ModalDialog {
      * constructor
      * @param elementObject
      */
-    public constructor(elementObject: Element) {
+    public constructor(elementObject: ComponentType) {
         super(elementObject, 'speciesmodaldialog', ModalDialogType.large);
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);

@@ -25,7 +25,8 @@ export class UserGroupsRepository extends DBRepository<UserGroups> {
      * @return {UserGroups[]}
      */
     public async findAllBy(userId: number): Promise<UserGroups[]> {
-        return this._repository.find({
+        const repository = await this._repository;
+        return repository.find({
             where: {
                 user_id: userId
             }

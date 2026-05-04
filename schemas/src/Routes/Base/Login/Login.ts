@@ -33,7 +33,7 @@ export type LogoutResponse = ExtractSchemaResultType<typeof SchemaLogoutResponse
  */
 export const SchemaLoginResponse = Vts.object({
     success: Vts.boolean(),
-    error: Vts.or([Vts.string(), Vts.null()]),
+    error: Vts.or([Vts.string(), Vts.null()], {}),
 }, {
     description: '',
 });

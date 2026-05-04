@@ -63,12 +63,10 @@ When I started my trip with the M.E.E.R e.V. association, I got to know the scie
 ## Help the project
 
 - help the association [M.E.E.R e.V.](https://m-e-e-r.de/)
-- you can program, you have ideas, then help us here, foke us and improve the code :) or write to us, we like to listen.
-- how can you still help? 
+- you can program, you have ideas, then help us here, fork us and improve the code :) or write to us, we like to listen.
+- how can you still help?
   - [Buy us a coffee](https://www.buymeacoffee.com/mwpa)
   - Donate (see on [M.E.E.R e.V.](https://m-e-e-r.de/) page)
-  - Donate crypto coins
-    - for Networks: [ETH](https://ethereum.org/en/), [BSC](https://www.binance.com/en), [Polygon](https://polygon.technology/): ```0x0bF915d5fbD65e42bd2DeD3d056752938F7174a7```
 
 ## About MWPA
 MWPA is an NodeJs backend application for data collection and with frontend web application for easy-to-use. 

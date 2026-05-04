@@ -26,7 +26,8 @@ export class UserRepository extends DBRepository<User> {
      * @return {User | null}
      */
     public async getUserByEMail(email: string, disable: boolean = false): Promise<User | null> {
-        return this._repository.findOne({
+        const repository = await this._repository;
+        return repository.findOne({
             where: {
                 email: email,
                 disable: disable

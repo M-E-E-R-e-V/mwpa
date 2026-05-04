@@ -1,12 +1,12 @@
-import {Badge, BadgeType, DialogInfo, Element, ModalDialogType} from 'bambooo';
+import {Badge, BadgeType, Component, ComponentType, DialogInfo, ModalDialogType} from 'bambooo';
 import {EncounterCategorieEntry} from '../Api/EncounterCategories';
 import {SightingsEntry} from '../Api/Sightings';
 
-export class ReactionDisplay extends Element {
+export class ReactionDisplay extends Component<HTMLSpanElement> {
 
     protected _badge;
 
-    public constructor(element: Element, sighting: SightingsEntry, mencates: Map<number, EncounterCategorieEntry>) {
+    public constructor(element: ComponentType, sighting: SightingsEntry, mencates: Map<number, EncounterCategorieEntry>) {
         super();
 
         let reactionName = 'not set';

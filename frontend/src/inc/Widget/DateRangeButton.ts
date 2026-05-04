@@ -1,25 +1,26 @@
-import {Element} from 'bambooo';
+import {ComponentType, Component} from 'bambooo';
 import moment from 'moment';
 
 export interface InputDateRanges {
     [key: string]: string|any;
 }
 
-export class DateRangeButton extends Element {
+export class DateRangeButton extends Component<HTMLButtonElement> {
 
     protected _label: any;
 
-    public constructor(element: any|Element) {
+    public constructor(element: ComponentType) {
         super();
 
         const telement = this._getAnyElement(element);
-        this._element = jQuery('<button type="button" class="btn btn-default float-right" />').appendTo(telement);
+        this._element = jQuery<HTMLButtonElement>('<button type="button" class="btn btn-default float-right" />').appendTo(telement);
         this._element.append('<i class="far fa-calendar-alt"></i> Date Range picker <i class="fas fa-caret-down"></i>');
         this._label = jQuery('<span></span>').appendTo(this._element);
 
         const start = moment().subtract(29, 'days');
         const end = moment();
 
+        // @ts-ignore
         this._element.daterangepicker({
             startDate: start,
             endDate: end,

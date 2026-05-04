@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "vtseditor": {
+      "type": "http",
+      "url": "http://localhost:5174/mcp"
+    }
+  }
+}

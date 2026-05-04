@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "Mammals watchig process analyse",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "npm-check-updates": "cd ./schemas/ && npm-check-updates && cd ../backend/ && npm-check-updates && cd ../frontend/ && npm-check-updates",
+    "compile": "cd ./schemas/ && npm run compile && cd ../backend/ && npm run compile && cd ../frontend/ && gulp default",
+    "update-bambooo": "cd ./frontend && npm run update-bambooo",
+    "update-figtree": "cd ./backend/ && npm run update-figtree",
+    "update-vtseditor": "npm install git+https://github.com/stefanwerfling/vtseditor.git --force"
   },
   "repository": {
     "type": "git",
@@ -30,7 +34,7 @@
     "eslint": "^9.19.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "figtree": "git+https://github.com/stefanwerfling/figtree.git",
+    "figtree": "git+https://github.com/stefanwerfling/figtree.git#claude",
     "npm-check-updates": "^18.0.1",
     "typescript": "^5.8.3",
     "vtseditor": "github:stefanwerfling/vtseditor"

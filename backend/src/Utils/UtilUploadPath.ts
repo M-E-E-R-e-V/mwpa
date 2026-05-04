@@ -9,6 +9,7 @@ export class UtilUploadPath {
 
     public static DIRECTORY_SIGHTING = 'sighting';
     public static DIRECTORY_MAPCACHE = 'mapcache';
+    public static DIRECTORY_OFFICE_REPORT = 'office_report';
 
     /**
      * Return the data directory for MWPA
@@ -48,6 +49,27 @@ export class UtilUploadPath {
             }
 
             return sightingUidDir;
+        }
+
+        return null;
+    }
+
+    /**
+     * Return the directory holding office-report XLSX templates.
+     * Used by the OfficeReport export route.
+     * @return {string|null}
+     */
+    public static async getOfficeReportDirectory(): Promise<string|null> {
+        const datadir = await this.getDataDirectory();
+
+        if (datadir) {
+            const reportDir = Path.join(datadir, this.DIRECTORY_OFFICE_REPORT);
+
+            if (!await DirHelper.directoryExist(reportDir)) {
+                await DirHelper.mkdir(reportDir, true);
+            }
+
+            return reportDir;
         }
 
         return null;

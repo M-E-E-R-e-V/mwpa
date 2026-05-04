@@ -1,4 +1,5 @@
 import {
+    ComponentType,
     FormGroup,
     InputBottemBorderOnly2,
     LangText,
@@ -40,9 +41,9 @@ export class GroupEditModal extends ModalDialog {
 
     /**
      * constructor
-     * @param elementObject
+     * @param {ComponentType} elementObject
      */
-    public constructor(elementObject: Element) {
+    public constructor(elementObject: ComponentType) {
         super(elementObject, 'groupmodal', ModalDialogType.large);
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);

@@ -1,9 +1,9 @@
-import {Badge, BadgeType, Element, UtilColor} from 'bambooo';
+import {Badge, BadgeType, Component, UtilColor} from 'bambooo';
 import {SightingsEntry} from '../Api/Sightings';
 import {SpeciesEntry} from '../Api/Species';
 import {UtilOttLink} from '../Utils/UtilOttLink';
 
-export class SpeciesDisplay extends Element {
+export class SpeciesDisplay extends Component<HTMLSpanElement> {
 
     protected _badge;
 
