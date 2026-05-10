@@ -11,6 +11,7 @@ import {
     Th,
     Tr
 } from 'bambooo';
+import {Acl as AclAPI} from '../Api/Acl';
 import {Group as GroupAPI, GroupEntry, GroupOrganization} from '../Api/Group';
 import {Organization as OrganizationAPI} from '../Api/Organization';
 import {Lang} from '../Lang';
@@ -51,12 +52,16 @@ export class Group extends BasePage {
             this._groupModal.resetValues();
             this._groupModal.setTitle('Add new Group');
 
-            const orgs = await OrganizationAPI.getOrganizations();
+            const [orgs, roles] = await Promise.all([
+                OrganizationAPI.getOrganizations(),
+                AclAPI.getRoles()
+            ]);
 
             if (orgs !== null) {
                 this._groupModal.setOrganizations(orgs);
             }
 
+            this._groupModal.setAclRolesCatalog(roles);
             this._groupModal.show();
             return false;
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
@@ -64,11 +69,8 @@ export class Group extends BasePage {
         // save --------------------------------------------------------------------------------------------------------
 
         this._groupModal.setOnSave(async(): Promise<void> => {
-            let tid = this._groupModal.getId();
-
-            if (tid === null) {
-                tid = 0;
-            }
+            const editingId = this._groupModal.getId();
+            const tid = editingId ?? 0;
 
             try {
                 const groupEntry: GroupEntry = {
@@ -79,6 +81,16 @@ export class Group extends BasePage {
                 };
 
                 if (await GroupAPI.saveGroup(groupEntry)) {
+                    /*
+                     * Access roles are persisted in a separate join table.
+                     * We can only update them on existing groups — `saveGroup`
+                     * doesn't return the new id, so on add the user must re-open
+                     * the modal once the group exists.
+                     */
+                    if (editingId !== null) {
+                        await AclAPI.saveGroupRoles(editingId, this._groupModal.getAclRoles());
+                    }
+
                     this._groupModal.hide();
 
                     if (this._onLoadTable) {
@@ -184,13 +196,22 @@ export class Group extends BasePage {
                             this._groupModal.setName(group.description);
                             this._groupModal.setRole(group.role);
 
-                            const orgs = await OrganizationAPI.getOrganizations();
+                            const [orgs, roles, groupsRoles] = await Promise.all([
+                                OrganizationAPI.getOrganizations(),
+                                AclAPI.getRoles(),
+                                AclAPI.getGroupsRoles()
+                            ]);
 
                             if (orgs !== null) {
                                 this._groupModal.setOrganizations(orgs);
                             }
 
                             this._groupModal.setOrganization(group.organization_id);
+                            this._groupModal.setAclRolesCatalog(roles);
+
+                            const assigned = groupsRoles.find((g) => g.group_id === group.id);
+                            this._groupModal.setAclRoles(assigned?.role_ids ?? []);
+
                             this._groupModal.show();
                         },
                         IconFa.edit

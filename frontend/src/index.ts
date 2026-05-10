@@ -11,9 +11,11 @@ import {User as UserAPI} from './inc/Api/User';
 import {Lang} from './inc/Lang';
 import {Admin as AdminPage} from './inc/Pages/Admin';
 import {BasePage} from './inc/Pages/BasePage';
+import {Devices as DevicesPage} from './inc/Pages/Devices';
 import {Group as GroupPage} from './inc/Pages/Group';
 import {Organization} from './inc/Pages/Organization';
 import {Profil} from './inc/Pages/Profil';
+import {Roles as RolesPage} from './inc/Pages/Roles';
 import {Sighting as SightingPage} from './inc/Pages/Sighting';
 import {Species as SpeciesPage} from './inc/Pages/Species';
 import {Tours as ToursPage} from './inc/Pages/Tours';
@@ -21,6 +23,7 @@ import {Users as UsersPage} from './inc/Pages/Users';
 import {Vehicle} from './inc/Pages/Vehicle';
 import {Lang_DE} from './langs/Lang_DE';
 import {Lang_EN} from './langs/Lang_EN';
+import {Lang_ES} from './langs/Lang_ES';
 
 /**
  * SideMenuEntrySub
@@ -108,6 +111,8 @@ type SideMenuEntry = {
         langNavbarLink.addLang(new Lang_EN(), changeLang);
         // germany
         langNavbarLink.addLang(new Lang_DE(), changeLang);
+        // spain
+        langNavbarLink.addLang(new Lang_ES(), changeLang);
 
         const userSelectLang = Lang.getStoreLangSelect();
 
@@ -178,6 +183,14 @@ type SideMenuEntry = {
                             }
                         },
                         {
+                            title: 'Roles',
+                            icon: 'fa-solid fa-user-shield',
+                            name: 'admin-roles',
+                            onClick: (): void => {
+                                loadPage(new RolesPage());
+                            }
+                        },
+                        {
                             title: 'Organization',
                             icon: 'fa-solid fa-globe',
                             name: 'admin-organization',
@@ -214,7 +227,7 @@ type SideMenuEntry = {
                             icon: 'fa-solid fa-server',
                             name: 'admin-devices',
                             onClick: (): void => {
-                                //loadPage(new Species());
+                                loadPage(new DevicesPage());
                             }
                         }
                     ]

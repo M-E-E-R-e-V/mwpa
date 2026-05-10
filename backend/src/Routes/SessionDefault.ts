@@ -15,5 +15,7 @@ export const defaultMWPASessionInit = async(): Promise<MWPASessionUserData> => (
     main_group_id: 0,
     main_organization_id: 0,
     groups: [],
-    organizations: []
+    organizations: [],
+    role: '',
+    rights: []
 });

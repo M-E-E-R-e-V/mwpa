@@ -32,8 +32,8 @@ export class SightingTourRepository extends DBRepository<SightingTour> {
                 date: 'DESC',
                 tour_start: 'DESC'
             },
-            skip,
-            take
+            skip: skip,
+            take: take
         });
     }
 
@@ -49,6 +49,26 @@ export class SightingTourRepository extends DBRepository<SightingTour> {
             where: {
                 tour_fid: tourFid,
                 device_id: deviceId
+            }
+        });
+    }
+
+    /**
+     * Return all tours run by a given (vehicle, driver) on a given date.
+     * Used by the sighting save endpoint to auto-link a sighting to its tour.
+     * Times are compared in caller (string match works for HH:mm but not "9:00" vs "10:00").
+     * @param {number} vehicleId
+     * @param {number} vehicleDriverId
+     * @param {string} date
+     * @return {SightingTour[]}
+     */
+    public async findByCrewAndDate(vehicleId: number, vehicleDriverId: number, date: string): Promise<SightingTour[]> {
+        const repository = await this._repository;
+        return repository.find({
+            where: {
+                vehicle_id: vehicleId,
+                vehicle_driver_id: vehicleDriverId,
+                date: date
             }
         });
     }

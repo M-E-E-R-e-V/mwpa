@@ -11,6 +11,7 @@ import {
 } from 'mwpa_schemas';
 import {checkMWPAUserIsLogin, isMWPAUserLogin} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
+import {resolveSessionRolesAndRights} from '../SessionRights.js';
 import {GroupRepository} from '../../Db/MariaDb/Repositories/GroupRepository.js';
 import {UserGroupsRepository} from '../../Db/MariaDb/Repositories/UserGroupsRepository.js';
 import {UserRepository} from '../../Db/MariaDb/Repositories/UserRepository.js';
@@ -67,7 +68,8 @@ export class Login extends DefaultRoute {
                     main_organization_id: 0,
                     groups: [],
                     organizations: [],
-                    role: ''
+                    role: '',
+                    rights: []
                 };
 
                 // -----------------------------------------------------------------------------------------------------
@@ -141,6 +143,10 @@ export class Login extends DefaultRoute {
                     }
                 }
 
+                // resolve roles + rights from groups -------------------------------------------------------------------
+
+                const {role, rights} = await resolveSessionRolesAndRights(groups, user.isAdmin);
+
                 // update session --------------------------------------------------------------------------------------
 
                 // eslint-disable-next-line require-atomic-updates
@@ -151,7 +157,8 @@ export class Login extends DefaultRoute {
                     isMobileLogin: false,
                     main_group_id: user.main_groupid,
                     deviceIdentity: '',
-                    role: '',
+                    role: role,
+                    rights: rights,
                     organizations: organizations,
                     main_organization_id: mainGroupOrganizationId,
                     groups: groups
@@ -198,6 +205,7 @@ export class Login extends DefaultRoute {
                     main_group_id: 0,
                     deviceIdentity: '',
                     role: '',
+                    rights: [],
                     organizations: [],
                     main_organization_id: 0,
                     groups: []

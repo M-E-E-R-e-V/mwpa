@@ -5,8 +5,10 @@ import {
     LangText,
     ModalDialog,
     ModalDialogType,
+    Multiple,
     SelectBottemBorderOnly2
 } from 'bambooo';
+import {RoleEntry} from '../../Api/Acl';
 import {GroupRoles} from '../../Api/Group';
 import {OrganizationFullEntry} from '../../Api/Organization';
 
@@ -40,6 +42,12 @@ export class GroupEditModal extends ModalDialog {
     protected _selectOrganization: SelectBottemBorderOnly2;
 
     /**
+     * Multi-select for RBAC roles (groups_roles).
+     * @protected
+     */
+    protected _selectAclRoles: Multiple;
+
+    /**
      * constructor
      * @param {ComponentType} elementObject
      */
@@ -68,6 +76,9 @@ export class GroupEditModal extends ModalDialog {
             key: '0',
             value: 'None set'
         });
+
+        const groupAclRoles = new FormGroup(bodyCard, 'Access roles');
+        this._selectAclRoles = new Multiple(groupAclRoles);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
@@ -116,6 +127,7 @@ export class GroupEditModal extends ModalDialog {
         this.setRole(GroupRoles.guide);
         this._selectOrganization.clearValues();
         this.setOrganization(0);
+        this._selectAclRoles.clearValues();
     }
 
     /**
@@ -165,6 +177,35 @@ export class GroupEditModal extends ModalDialog {
      */
     public getOrganization(): number {
         return parseInt(this._selectOrganization.getSelectedValue(), 10) || 0;
+    }
+
+    /**
+     * Populate the access-roles multi-select with the catalog of available roles.
+     * @param {RoleEntry[]} roles
+     */
+    public setAclRolesCatalog(roles: RoleEntry[]): void {
+        this._selectAclRoles.clearValues();
+        for (const role of roles) {
+            this._selectAclRoles.addValue({key: `${role.id}`, value: role.name});
+        }
+    }
+
+    /**
+     * Set which RBAC roles the group is currently assigned.
+     * @param {number[]} roleIds
+     */
+    public setAclRoles(roleIds: number[]): void {
+        this._selectAclRoles.setValue(roleIds.map((id) => `${id}`));
+    }
+
+    /**
+     * Return the selected RBAC role ids.
+     * @returns {number[]}
+     */
+    public getAclRoles(): number[] {
+        return this._selectAclRoles.getValue()
+        .map((s) => parseInt(s, 10))
+        .filter((n) => !Number.isNaN(n) && n > 0);
     }
 
 }

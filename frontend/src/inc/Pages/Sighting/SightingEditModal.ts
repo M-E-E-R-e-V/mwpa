@@ -1,10 +1,12 @@
 import moment from 'moment';
 import {EncounterCategorieEntry} from '../../Api/EncounterCategories';
 import {SpeciesEntry} from '../../Api/Species';
+import {Tours as ToursAPI} from '../../Api/Tours';
 import {VehicleEntry} from '../../Api/Vehicle';
 import {VehicleDriverEntry} from '../../Api/VehicleDriver';
 import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
-import {LocationInput} from '../../Widget/LocationInput';
+import {LocationPickerInput} from '../../Widget/LocationPickerInput';
+import {LocationPickerModal} from '../../Widget/LocationPickerModal';
 import {
     ComponentType,
     FormGroup,
@@ -76,17 +78,15 @@ export class SightingEditModal extends ModalDialog {
      */
     protected _inputDurationUntil: InputBottemBorderOnly2;
 
-    /**
-     * input position begins
-     * @member {LocationInput}
-     */
-    protected _inputPositionBegin: LocationInput;
+    protected _inputPositionBegin: LocationPickerInput;
 
-    /**
-     * input position end
-     * @member {LocationInput}
-     */
-    protected _inputPositionEnd: LocationInput;
+    protected _inputPositionEnd: LocationPickerInput;
+
+    protected _locationPicker: LocationPickerModal;
+
+    protected _tourId: number|null = null;
+
+    protected _routeCache: number[][]|null = null;
 
     /**
      * input distance coast
@@ -187,12 +187,24 @@ export class SightingEditModal extends ModalDialog {
         this._inputDurationUntil = new InputBottemBorderOnly2(groupDurationUntil, 'durationuntil', InputType.time);
 
         const groupPositionBegin = new FormGroup(bodyCard, 'Position begin');
-        this._inputPositionBegin = new LocationInput(groupPositionBegin, 'positionbegin', InputType.text);
-        this._inputPositionBegin.setReadOnly(true);
+        this._inputPositionBegin = new LocationPickerInput(groupPositionBegin, 'positionbegin');
 
         const grouPositionEnd = new FormGroup(bodyCard, 'Position end');
-        this._inputPositionEnd = new LocationInput(grouPositionEnd, 'positionend', InputType.text);
-        this._inputPositionEnd.setReadOnly(true);
+        this._inputPositionEnd = new LocationPickerInput(grouPositionEnd, 'positionend');
+
+        this._locationPicker = new LocationPickerModal(elementObject);
+
+        const openPicker = (input: LocationPickerInput): void => {
+            input.setOnRequestPicker((current, accept) => {
+                this._locationPicker.resetValues();
+                this._locationPicker.open(current, null, (newValue) => {
+                    accept(newValue);
+                });
+                this._loadRouteIntoPicker().catch(() => undefined);
+            });
+        };
+        openPicker(this._inputPositionBegin);
+        openPicker(this._inputPositionEnd);
 
         const groupDistanceCoast = new FormGroup(bodyCard, 'Distance to nearest coast (nm)');
         this._inputDistanceCoast = new InputBottemBorderOnly2(groupDistanceCoast, 'distancecoast', InputType.number);
@@ -244,6 +256,44 @@ export class SightingEditModal extends ModalDialog {
      */
     public setId(id: number|null): void {
         this._id = id;
+    }
+
+    public setTourId(tourId: number|null): void {
+        if (tourId !== this._tourId) {
+            this._routeCache = null;
+        }
+        this._tourId = tourId;
+    }
+
+    protected async _loadRouteIntoPicker(): Promise<void> {
+        if (this._tourId === null) {
+            return;
+        }
+
+        if (this._routeCache === null) {
+            const tracking = await ToursAPI.getTrackingList(this._tourId);
+            if (!tracking) {
+                return;
+            }
+
+            const sorted = new Map<number, GeolocationCoordinates>();
+            for (const raw of tracking.positions) {
+                try {
+                    const pos = JSON.parse(raw) as GeolocationCoordinates;
+                    if (pos.timestamp && pos.longitude !== undefined && pos.latitude !== undefined) {
+                        sorted.set(pos.timestamp, pos);
+                    }
+                } catch {
+                    /* skip malformed entries — tracking has lots of legacy strings */
+                }
+            }
+
+            this._routeCache = [...sorted].sort(([a], [b]) => a - b).map(
+                ([, v]) => [v.longitude!, v.latitude!]
+            );
+        }
+
+        this._locationPicker.setRoute(this._routeCache);
     }
 
     /**
@@ -572,6 +622,7 @@ export class SightingEditModal extends ModalDialog {
      */
     public override resetValues(): void {
         this.setId(null);
+        this.setTourId(null);
         this.setVehicle(0);
         this.setVehicleDriver(0);
         this.setDateSight(moment(new Date()).format('YYYY.MM.DD'));

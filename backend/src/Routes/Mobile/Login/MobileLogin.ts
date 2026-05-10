@@ -7,6 +7,7 @@ import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesReposit
 import {GroupRepository} from '../../../Db/MariaDb/Repositories/GroupRepository.js';
 import {UserGroupsRepository} from '../../../Db/MariaDb/Repositories/UserGroupsRepository.js';
 import {UserRepository} from '../../../Db/MariaDb/Repositories/UserRepository.js';
+import {resolveSessionRolesAndRights} from '../../SessionRights.js';
 
 /**
  * Session shape the mobile-login handler updates. Mirrors MWPASessionData.user from schemas.
@@ -23,6 +24,7 @@ export type MobileLoginSession = {
         groups: number[];
         organizations: number[];
         role?: string;
+        rights?: string[];
     };
 };
 
@@ -67,7 +69,8 @@ export class MobileLogin {
             main_organization_id: 0,
             groups: [],
             organizations: [],
-            role: ''
+            role: '',
+            rights: []
         };
 
         const user = await UserRepository.getInstance().getUserByEMail(body.email, false);
@@ -115,6 +118,8 @@ export class MobileLogin {
             }
         }
 
+        const {role, rights} = await resolveSessionRolesAndRights(groups, user.isAdmin);
+
         session.user = {
             userid: user.id,
             isLogin: true,
@@ -123,9 +128,10 @@ export class MobileLogin {
             deviceIdentity: body.deviceIdentity,
             main_group_id: user.main_groupid,
             main_organization_id: mainOrganizationId,
-            groups,
-            organizations,
-            role: ''
+            groups: groups,
+            organizations: organizations,
+            role: role,
+            rights: rights
         };
 
         // upsert Devices row

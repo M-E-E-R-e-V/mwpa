@@ -1,5 +1,5 @@
 import {ACLRbac as TACLRbac} from 'figtree';
-import {MwpaRights, RightService, Role} from 'mwpa_schemas';
+import {MwpaRights, RightService, RightSightings, RightUsers, Role} from 'mwpa_schemas';
 import {Rbac} from 'rbac-simple';
 
 /**
@@ -25,7 +25,19 @@ export class ACLRbac extends TACLRbac<Role, MwpaRights> {
             [RightService.service_stop]: {},
             [RightService.service_invoke]: {}
         },
-
+        [RightSightings.sightings]: {
+            [RightSightings.sightings_read]: {},
+            [RightSightings.sightings_write]: {},
+            [RightSightings.sightings_mobile_read]: {},
+            [RightSightings.sightings_mobile_write]: {}
+        },
+        [RightUsers.users]: {
+            [RightUsers.users_read]: {},
+            [RightUsers.users_write]: {},
+            [RightUsers.users_delete]: {},
+            [RightUsers.users_roles_read]: {},
+            [RightUsers.users_roles_write]: {}
+        },
     };
 
     /**
@@ -34,8 +46,12 @@ export class ACLRbac extends TACLRbac<Role, MwpaRights> {
     public static ASSOCIATIONS = {
         [Role.root]: [
             RightService.service,
+            RightSightings.sightings,
+            RightUsers.users
         ],
-        [Role.user]: []
+        [Role.user]: [
+            RightSightings.sightings_read
+        ]
     };
 
     /**

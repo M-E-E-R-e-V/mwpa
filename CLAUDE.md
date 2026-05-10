@@ -81,6 +81,10 @@ For new routes, always use the MWPA-specific helpers:
 
 For multipart endpoints, attach a `parser` in the route description (e.g. `multer({storage: multer.memoryStorage()}).single('file')`) — figtree's `DefaultRoute._post(...)` mounts it as middleware so `req.file.buffer` is populated. See `Routes/Mobile/Sightings.ts` `/mobile/sighting/image/save` for the canonical example.
 
+### Binary / direct-write responses
+
+When a handler writes to `res` itself (file download, image stream, anything without a JSON body), it MUST return `{type: HandlerResultType.handled}` (from `figtree-schemas`). Otherwise `DefaultRoute._all` sees no `responseBodySchema` and calls `res.sendStatus(204)` after the headers were already sent, which triggers `ERR_HTTP_HEADERS_SENT` and a cascading 500 inside figtree's error handler. Canonical examples: `Routes/Map/MapCache.ts`, `Routes/Main/Sightings.ts` (Excel + GetImage), `Routes/Export/OfficeReport.ts`.
+
 ### Repositories
 
 Repositories extend `DBRepository<Entity>` (figtree) and expose a `getInstance()` returning `super.getSingleInstance(Entity)`. `REGISTER_NAME` must be set. Custom queries go on the subclass; default CRUD comes from the base class. Add new repositories alongside `Db/MariaDb/Repositories/`.

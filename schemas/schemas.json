@@ -11,7 +11,7 @@
         "name": "ACL",
         "type": "folder",
         "icon": "folder",
-        "istoggle": false,
+        "istoggle": true,
         "entrys": [
           {
             "unid": "96e36c0f-85fc-46b0-b6f8-548dc510e450",
@@ -85,8 +85,8 @@
                 "unid": "a479578c-5ad0-4a2e-b67f-a8d8eb469a26",
                 "name": "RightUsers",
                 "pos": {
-                  "x": 343,
-                  "y": 343
+                  "x": 400,
+                  "y": 351
                 },
                 "values": [
                   {
@@ -108,6 +108,16 @@
                     "unid": "60d7569c-4973-4ecc-b1c4-d5036832e5ec",
                     "name": "users_delete",
                     "value": "users_delete"
+                  },
+                  {
+                    "unid": "a93fb7d6-91ac-4dc3-a6f8-d6b4d7f18f3d",
+                    "name": "users_roles_read",
+                    "value": "users_roles_read"
+                  },
+                  {
+                    "unid": "a7754345-1c07-4e1a-969b-0eda57e2d019",
+                    "name": "users_roles_write",
+                    "value": "users_roles_write"
                   }
                 ],
                 "description": ""
@@ -178,8 +188,8 @@
                 "unid": "df743aca-d0d5-4e56-94f7-f6851246cff4",
                 "name": "RightUser",
                 "pos": {
-                  "x": 350,
-                  "y": 615
+                  "x": 354,
+                  "y": 705
                 },
                 "values": [
                   {
@@ -420,7 +430,7 @@
             "name": "Base",
             "type": "folder",
             "icon": "folder",
-            "istoggle": false,
+            "istoggle": true,
             "entrys": [
               {
                 "unid": "7e00d556-192d-4db1-990e-bf95b39bd817",
@@ -743,6 +753,28 @@
                               "types": []
                             },
                             "description": "a list with all organization ids by user"
+                          },
+                          {
+                            "unid": "eff58506-ddf4-4f46-8b9e-6320a60d4f35",
+                            "name": "role",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Resolved role name (from groups → users_roles); empty when no role applies."
+                          },
+                          {
+                            "unid": "32bab4be-e366-4e30-9e3b-31f877f6c073",
+                            "name": "rights",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "All right keys the user has — derived from groups → roles → users_role_rights at login."
                           }
                         ],
                         "description": ""
@@ -783,7 +815,7 @@
             "name": "Main",
             "type": "folder",
             "icon": "folder",
-            "istoggle": false,
+            "istoggle": true,
             "entrys": [
               {
                 "unid": "f145f5e9-ee8f-4df4-96ad-5ab9bc89bc47",
@@ -1602,6 +1634,116 @@
                               "types": []
                             },
                             "description": ""
+                          },
+                          {
+                            "unid": "f56763e7-2184-4c44-ba6f-f43e4910f60b",
+                            "name": "province",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Provincia of the company seat — feeds AROC datos GENERALES."
+                          },
+                          {
+                            "unid": "971c4e23-7dec-44fd-90e9-8eb0c4bc8828",
+                            "name": "island",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Isla — feeds AROC datos GENERALES."
+                          },
+                          {
+                            "unid": "acb79ad5-cbf6-49bc-a926-71b6c75aa244",
+                            "name": "port",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Puerto — feeds AROC datos GENERALES."
+                          },
+                          {
+                            "unid": "badc5597-1010-49f2-9051-47dc2cb3a416",
+                            "name": "email",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Contact e-mail of the company — AROC datos GENERALES."
+                          },
+                          {
+                            "unid": "a74df49f-a7f8-40a8-ac0c-62b4c12e6ba2",
+                            "name": "web",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Public web address of the company — AROC datos GENERALES."
+                          },
+                          {
+                            "unid": "2aae9726-ae7c-4b43-b14b-6346a948e639",
+                            "name": "aroc_reference",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "AROC authorization reference (Referencia) — written into datos GENERALES B5."
+                          },
+                          {
+                            "unid": "1e735504-5b9f-4b2e-806f-7609f43e1ab8",
+                            "name": "aroc_region",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "AROC region code (CAN/RES/AND)."
+                          },
+                          {
+                            "unid": "b34b5005-cdfd-40f2-92dc-27a935686cf1",
+                            "name": "aroc_number",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "AROC authorization number (Número)."
+                          },
+                          {
+                            "unid": "a37a4c5e-a1f2-4bc0-80aa-da99418330a9",
+                            "name": "aroc_year",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Year of the AROC authorization. 0 = unset."
+                          },
+                          {
+                            "unid": "e024b6e5-cc94-42ae-860d-6c76c3e04691",
+                            "name": "aroc_authorized_boats",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Number of authorized boats under the AROC reference. 0 = unset."
                           }
                         ],
                         "description": ""
@@ -3645,7 +3787,7 @@
                 "unid": "bad3719c-85aa-400b-b844-0b71d81fac24",
                 "name": "Sightings",
                 "type": "folder",
-                "istoggle": false,
+                "istoggle": true,
                 "entrys": [
                   {
                     "unid": "d94e2e7a-bfc3-4d6f-9db7-062869acf7c5",
@@ -4061,8 +4203,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 1100,
-                          "y": 100
+                          "x": 1119,
+                          "y": 137
                         },
                         "fields": [
                           {
@@ -4141,8 +4283,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 600,
-                          "y": 100
+                          "x": 768,
+                          "y": 22
                         },
                         "fields": [
                           {
@@ -4177,6 +4319,83 @@
                               "types": []
                             },
                             "description": ""
+                          },
+                          {
+                            "unid": "049b3b68-24b8-4136-a938-f2e2ff7199f6",
+                            "name": "period_from",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "ISO date YYYY-MM-DD; lower bound for sighting date (inclusive)"
+                          },
+                          {
+                            "unid": "d015b8dd-f52c-4cc2-9eb9-40a5fe12b6fe",
+                            "name": "period_to",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "ISO date YYYY-MM-DD; upper bound for sighting date (inclusive)"
+                          },
+                          {
+                            "unid": "3c82a76d-55bb-46f6-9351-78b3a75b881c",
+                            "name": "species_id",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Filter by species id"
+                          },
+                          {
+                            "unid": "09666f1f-f3d1-46bc-ba05-26bf9a607bc0",
+                            "name": "organization_id",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Filter by organization id"
+                          },
+                          {
+                            "unid": "a7c147e5-0649-49cf-ad86-2d8ea9f0a69e",
+                            "name": "vehicle_id",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Filter by vehicle id"
+                          },
+                          {
+                            "unid": "0ada8efc-22e2-4724-8aa4-7d6b22e2c652",
+                            "name": "vehicle_driver_id",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Filter by vehicle driver id"
+                          },
+                          {
+                            "unid": "778f20be-028b-414c-afc5-80d30380a921",
+                            "name": "search",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Free-text search applied as LIKE on note + recognizable_animals"
                           }
                         ]
                       },
@@ -4188,8 +4407,8 @@
                           "type": "9a088f3c-9a19-46f3-898e-1fd60a9fc0b4"
                         },
                         "pos": {
-                          "x": 600,
-                          "y": 400
+                          "x": 451,
+                          "y": 424
                         },
                         "fields": [
                           {
@@ -4450,8 +4669,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 1100,
-                          "y": 600
+                          "x": 873,
+                          "y": 615
                         },
                         "fields": [
                           {
@@ -4508,8 +4727,8 @@
                           "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
                         },
                         "pos": {
-                          "x": 600,
-                          "y": 600
+                          "x": 750,
+                          "y": 910
                         },
                         "fields": [
                           {
@@ -4585,6 +4804,232 @@
                             "description": ""
                           }
                         ]
+                      },
+                      {
+                        "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+                        "name": "SightingSaveRequest",
+                        "description": "Update payload for an existing sighting (admin only). All fields are required; pass empty string / 0 to clear.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 1202,
+                          "y": 516
+                        },
+                        "fields": [
+                          {
+                            "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "33f93358-e484-403b-93e3-037437a59d13",
+                            "name": "vehicle_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+                            "name": "vehicle_driver_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+                            "name": "beaufort_wind",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+                          },
+                          {
+                            "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+                            "name": "date",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+                            "name": "tour_start",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+                            "name": "tour_end",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+                            "name": "duration_from",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+                            "name": "duration_until",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+                            "name": "location_begin",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+                          },
+                          {
+                            "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+                            "name": "location_end",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+                          },
+                          {
+                            "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+                            "name": "species_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+                            "name": "species_count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+                            "name": "reaction_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+                            "name": "other",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+                            "name": "other_vehicle",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+                            "name": "note",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "a5c3541e-980a-4a08-9934-33d90dd151d1",
+                        "name": "SightingYearsResponse",
+                        "description": "",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 100,
+                          "y": 1050
+                        },
+                        "fields": [
+                          {
+                            "unid": "140f53c2-ed74-4036-bad1-b1789c741523",
+                            "name": "years",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
                       }
                     ],
                     "enums": [],
@@ -4606,6 +5051,609 @@
                         }
                       }
                     ]
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
+              },
+              {
+                "unid": "3e150cbf-a407-4ccb-8a92-0d081e1c5f1a",
+                "name": "Acl",
+                "type": "folder",
+                "istoggle": true,
+                "entrys": [
+                  {
+                    "unid": "fc9672b4-22eb-4325-8ee3-92c5f78c85d9",
+                    "name": "Acl",
+                    "type": "file",
+                    "istoggle": true,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "4307b2cf-0cd5-42ed-a78d-8b8dba77cb59",
+                        "name": "UsersRolesEntry",
+                        "description": "",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 100,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "e9ff5022-8dd5-4404-8638-76b3c5802ecd",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "f924df06-72c7-43a2-886f-754d83f8e564",
+                            "name": "name",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "0169bffb-3a70-463b-90cb-aa65fcf773bf",
+                        "name": "UsersRolesListResponse",
+                        "description": "",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 350,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "32c2e263-26df-40fe-b068-a259f926420a",
+                            "name": "list",
+                            "type": {
+                              "type": "4307b2cf-0cd5-42ed-a78d-8b8dba77cb59",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "465dd1d4-0e4b-4138-b9e4-740bfecdf17a",
+                        "name": "UsersRoleSaveRequest",
+                        "description": "",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 600,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "23153475-290e-4788-8a64-2a58e0b81524",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b53f1831-4a0a-4276-9c4a-fff2b1b2bb40",
+                            "name": "name",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "e074015f-28fa-4c16-83b7-fcec0bfd3fa4",
+                        "name": "UsersRightsEntry",
+                        "description": "",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 100,
+                          "y": 350
+                        },
+                        "fields": [
+                          {
+                            "unid": "b4bebe5b-3c06-474b-9d81-9b0ef794c7ea",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "34e53286-ee10-424b-9657-1e54d77a48f5",
+                            "name": "key",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "e66060ca-7261-4fac-8f62-6934f999bb79",
+                        "name": "UsersRightsListResponse",
+                        "description": "",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 350,
+                          "y": 350
+                        },
+                        "fields": [
+                          {
+                            "unid": "5a251f62-bb47-404f-a6a5-a716a137f7d9",
+                            "name": "list",
+                            "type": {
+                              "type": "e074015f-28fa-4c16-83b7-fcec0bfd3fa4",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "526ef133-00ab-4043-9ad5-561d59871e82",
+                        "name": "RoleRightsRequest",
+                        "description": "",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 100,
+                          "y": 600
+                        },
+                        "fields": [
+                          {
+                            "unid": "3c468000-e3c3-4758-9796-7edefe024f06",
+                            "name": "role_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "3bc36153-84c0-4ab0-9111-9968a5c210c5",
+                        "name": "RoleRightEntry",
+                        "description": "",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 350,
+                          "y": 600
+                        },
+                        "fields": [
+                          {
+                            "unid": "bf177636-2561-43bf-a61a-275bd533e7d3",
+                            "name": "right_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "208428bb-92af-4c82-83d8-74fd90049ec2",
+                            "name": "hasRight",
+                            "type": {
+                              "type": "boolean",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "c7a20764-fbd9-471a-8669-f79eed1fdb93",
+                        "name": "RoleRightsListResponse",
+                        "description": "",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 600,
+                          "y": 600
+                        },
+                        "fields": [
+                          {
+                            "unid": "88e9e877-b1af-4eb1-b6cd-958bff3b2f1e",
+                            "name": "list",
+                            "type": {
+                              "type": "3bc36153-84c0-4ab0-9111-9968a5c210c5",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "61452b30-d870-4897-b784-37895a8fb061",
+                        "name": "RoleRightsSaveRequest",
+                        "description": "",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 850,
+                          "y": 600
+                        },
+                        "fields": [
+                          {
+                            "unid": "4a2248b6-d10a-4401-8e08-d39af8fe3746",
+                            "name": "role_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "841ca6e0-bd0b-487e-84c2-fc8ff755b15b",
+                            "name": "list",
+                            "type": {
+                              "type": "3bc36153-84c0-4ab0-9111-9968a5c210c5",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "93ef42ca-bcec-454a-83a4-d93dadb04068",
+                        "name": "GroupsRolesEntry",
+                        "description": "",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 100,
+                          "y": 850
+                        },
+                        "fields": [
+                          {
+                            "unid": "5c0d8991-9f2f-4b62-945a-7dd53896e35c",
+                            "name": "group_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "2a321160-1162-4985-ad66-5a1663605f26",
+                            "name": "role_ids",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "7ad292c3-eee9-418c-b96d-52506c5a178b",
+                        "name": "GroupsRolesListResponse",
+                        "description": "",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 350,
+                          "y": 850
+                        },
+                        "fields": [
+                          {
+                            "unid": "42927826-ed50-49b0-9c3a-1bc304421070",
+                            "name": "list",
+                            "type": {
+                              "type": "93ef42ca-bcec-454a-83a4-d93dadb04068",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "fbb04f26-905d-4ba3-b258-1c77059ac3c6",
+                        "name": "GroupsRolesSaveRequest",
+                        "description": "",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 600,
+                          "y": 850
+                        },
+                        "fields": [
+                          {
+                            "unid": "26041f0f-1fac-4c75-aa0c-afda88625d9c",
+                            "name": "group_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "f227dd12-127b-48a1-a8e8-f4d83c0bcabf",
+                            "name": "role_ids",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
+              },
+              {
+                "unid": "5395a5dd-2051-4636-9488-f4ca7176adaa",
+                "name": "Devices",
+                "type": "folder",
+                "istoggle": true,
+                "entrys": [
+                  {
+                    "unid": "9c48da9c-57b7-40e6-800a-e5660e908482",
+                    "name": "Devices",
+                    "type": "file",
+                    "istoggle": true,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "e6083f79-b3a6-48eb-a3b0-bcd09672b80c",
+                        "name": "DevicesEntry",
+                        "description": "",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 97,
+                          "y": 86
+                        },
+                        "fields": [
+                          {
+                            "unid": "477b224f-638e-4179-98ed-3be9624884da",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "7f5319f6-ed9f-4720-bad9-f480717ff427",
+                            "name": "identity",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Mobile-side device identifier (UUID-ish)."
+                          },
+                          {
+                            "unid": "7089b189-cbdb-40e9-8ae2-63d348e5fd73",
+                            "name": "description",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "023e89dc-c937-4248-94d9-936a737cac16",
+                            "name": "user_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "fa3a8628-275d-4af5-b4d9-b0e1f9a6c308",
+                            "name": "user_name",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "13a35db7-caec-48f6-b846-d31d338138d6",
+                            "name": "user_email",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "88fe0947-fee4-4e62-ad84-e78fdb7699a6",
+                            "name": "organization_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "12da4532-8ec2-48ff-b9a5-fefe30afba4f",
+                            "name": "organization_name",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "53abbd0c-230a-43a0-8b03-ecab03da990b",
+                            "name": "create_datetime",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "a25d13ce-cc1f-4315-8e99-4691cd22de56",
+                            "name": "update_datetime",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d5c674a8-78e8-4bde-90f4-ea7c52cdeece",
+                            "name": "sighting_count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "fb3d59f3-ffa9-4add-9a9d-3d66528e2308",
+                            "name": "tour_count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "be7d3360-ca46-427e-82a8-201c9d1e488c",
+                            "name": "last_sighting_datetime",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Most recent sighting upload timestamp from this device; 0 if none."
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "9d650d28-8207-4633-9589-04020e5fcfe0",
+                        "name": "DevicesListResponse",
+                        "description": "",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 512,
+                          "y": 243
+                        },
+                        "fields": [
+                          {
+                            "unid": "e8b1f868-ea1d-4aaa-aaf4-01fb77f2a7b6",
+                            "name": "list",
+                            "type": {
+                              "type": "e6083f79-b3a6-48eb-a3b0-bcd09672b80c",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
                   }
                 ],
                 "schemas": [],
@@ -4718,7 +5766,7 @@
             "unid": "82bd59f8-53b6-49c2-a274-f6def72bb9dd",
             "name": "Mobile",
             "type": "folder",
-            "istoggle": true,
+            "istoggle": false,
             "entrys": [
               {
                 "unid": "072584d3-1e38-4dc9-bfa8-10f19724ff17",
@@ -4844,7 +5892,7 @@
                         "link_unid": "9e320aad-4f80-4dd0-8e55-0658b3144681",
                         "pos": {
                           "x": 600,
-                          "y": 50
+                          "y": 62
                         }
                       }
                     ]
@@ -5866,8 +6914,8 @@
                       "type": "object"
                     },
                     "pos": {
-                      "x": 100,
-                      "y": 100
+                      "x": 108,
+                      "y": 15
                     },
                     "fields": [
                       {
@@ -5877,6 +6925,100 @@
                           "type": "number",
                           "optional": false,
                           "array": false,
+                          "types": []
+                        },
+                        "description": ""
+                      },
+                      {
+                        "unid": "d9486f60-e273-42bc-a0e4-c32ef0c4dc28",
+                        "name": "year",
+                        "type": {
+                          "type": "number",
+                          "optional": true,
+                          "array": false,
+                          "types": []
+                        },
+                        "description": "Restrict the export to sightings whose date falls within this calendar year. Omit for all years."
+                      },
+                      {
+                        "unid": "b629c151-016c-4a5b-b85b-f3b5478c0e0d",
+                        "name": "vehicle_id",
+                        "type": {
+                          "type": "number",
+                          "optional": true,
+                          "array": false,
+                          "types": []
+                        },
+                        "description": "Restrict the export to one vehicle (boat). Required by AROC: 1 file per boat per semester. Omit to include all boats."
+                      },
+                      {
+                        "unid": "ed8bb23c-b408-4684-98d9-1b1a51e6e96b",
+                        "name": "semester",
+                        "type": {
+                          "type": "number",
+                          "optional": true,
+                          "array": false,
+                          "types": []
+                        },
+                        "description": "Half-year filter: 1 = Jan–Jun, 2 = Jul–Dec. Combine with year. Omit for the full year."
+                      }
+                    ]
+                  },
+                  {
+                    "unid": "e805a9d5-df79-43fc-a5c3-4584ed48f89c",
+                    "name": "ExternalReceiverEntry",
+                    "description": "One row of the external_receiver table — used by the AROC-report receiver picker.",
+                    "extend": {
+                      "type": "object"
+                    },
+                    "pos": {
+                      "x": 650,
+                      "y": 249
+                    },
+                    "fields": [
+                      {
+                        "unid": "46011026-cc24-4db6-a8ce-ff49a03ef37f",
+                        "name": "id",
+                        "type": {
+                          "type": "number",
+                          "optional": false,
+                          "array": false,
+                          "types": []
+                        },
+                        "description": ""
+                      },
+                      {
+                        "unid": "b1eb6d55-d84d-4c49-80bc-f8fd71412375",
+                        "name": "name",
+                        "type": {
+                          "type": "string",
+                          "optional": false,
+                          "array": false,
+                          "types": []
+                        },
+                        "description": ""
+                      }
+                    ]
+                  },
+                  {
+                    "unid": "8722a061-d0ee-45db-8ef9-277dacbb6b74",
+                    "name": "ExternalReceiverListResponse",
+                    "description": "Response of GET /json/officereport/receivers — used to fill the receiver dropdown.",
+                    "extend": {
+                      "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                    },
+                    "pos": {
+                      "x": 105,
+                      "y": 285
+                    },
+                    "fields": [
+                      {
+                        "unid": "755a1ed3-d39c-4bf4-bbee-a63104a1436a",
+                        "name": "list",
+                        "type": {
+                          "type": "e805a9d5-df79-43fc-a5c3-4584ed48f89c",
+                          "optional": true,
+                          "array": true,
                           "types": []
                         },
                         "description": ""
@@ -5902,8 +7044,8 @@
     "enums": []
   },
   "editor": {
-    "controls_width": 470,
-    "active_entry_unid": "31618cb3-66c5-47d7-9d36-814f8dd4f958",
-    "active_entry_table_unid": "0580c8a0-d068-4c3b-a89c-ec7511f40894"
+    "controls_width": 465,
+    "active_entry_unid": "bb3597cf-93b9-483e-a827-94939fab4bf8",
+    "active_entry_table_unid": "0a375d21-3eda-432e-ad7c-a9ed60f4b522"
   }
 }
