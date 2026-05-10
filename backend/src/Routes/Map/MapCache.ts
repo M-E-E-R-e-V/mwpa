@@ -1,5 +1,6 @@
 import {Router} from 'express';
 import {DefaultRoute} from 'figtree';
+import {DefaultHandlerReturn, HandlerResultType} from 'figtree-schemas';
 import {SchemaMapCacheRequest} from 'mwpa_schemas';
 import {Tile} from './Tile/Tile.js';
 
@@ -17,16 +18,13 @@ export class MapCache extends DefaultRoute {
         this._get(
             '/mapcache/:server/:z/:x/:y.:fileformat',
             false,
-            async(
-                req,
-                res,
-                data
-            ) => {
+            async(_req, res, data): Promise<DefaultHandlerReturn> => {
                 await Tile.loadTile(data.params!, res);
+                return {type: HandlerResultType.handled};
             },
             {
                 description: 'Return map cache (tile) by any provider.',
-                pathSchema: SchemaMapCacheRequest,
+                pathSchema: SchemaMapCacheRequest
             }
         );
 

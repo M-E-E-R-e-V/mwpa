@@ -66,7 +66,7 @@ export class Organization extends BasePage {
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Organization', () => {
             this._orgModal.resetValues();
-            this._orgModal.setTitle('Add new Organization');
+            this._orgModal.setTitle(new LangText('Add new Organization'));
             this._orgModal.show();
             return false;
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
@@ -122,7 +122,17 @@ export class Organization extends BasePage {
                     country: this._orgModal.getCountry(),
                     location: this._orgModal.getLocation(),
                     lat: this._orgModal.getLat(),
-                    lon: this._orgModal.getLon()
+                    lon: this._orgModal.getLon(),
+                    province: this._orgModal.getProvince(),
+                    island: this._orgModal.getIsland(),
+                    port: this._orgModal.getPort(),
+                    email: this._orgModal.getEmail(),
+                    web: this._orgModal.getWeb(),
+                    aroc_reference: this._orgModal.getArocReference(),
+                    aroc_region: this._orgModal.getArocRegion(),
+                    aroc_number: this._orgModal.getArocNumber(),
+                    aroc_year: this._orgModal.getArocYear(),
+                    aroc_authorized_boats: this._orgModal.getArocAuthorizedBoats()
                 };
 
                 if (await OrganizationAPI.saveOrganization(orgEntry)) {
@@ -218,13 +228,23 @@ export class Organization extends BasePage {
 
                     btnRMenu.addMenuItem('Edit', async(): Promise<void> => {
                         this._orgModal.resetValues();
-                        this._orgModal.setTitle('Edit Organization');
+                        this._orgModal.setTitle(new LangText('Edit Organization'));
                         this._orgModal.setId(org.id);
                         this._orgModal.setName(org.description);
                         this._orgModal.setCountry(org.country);
                         this._orgModal.setLocation(org.location);
                         this._orgModal.setLon(org.lon);
                         this._orgModal.setLat(org.lat);
+                        this._orgModal.setProvince(org.province);
+                        this._orgModal.setIsland(org.island);
+                        this._orgModal.setPort(org.port);
+                        this._orgModal.setEmail(org.email);
+                        this._orgModal.setWeb(org.web);
+                        this._orgModal.setArocReference(org.aroc_reference);
+                        this._orgModal.setArocRegion(org.aroc_region);
+                        this._orgModal.setArocNumber(org.aroc_number);
+                        this._orgModal.setArocYear(org.aroc_year);
+                        this._orgModal.setArocAuthorizedBoats(org.aroc_authorized_boats);
                         this._orgModal.show();
                     }, IconFa.edit);
 

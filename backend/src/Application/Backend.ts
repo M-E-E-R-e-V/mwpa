@@ -4,7 +4,11 @@ import {Schema} from 'vts';
 import {ACLRbac} from '../ACL/ACLRbac.js';
 import {MWPAConfig} from '../Config/MWPAConfig.js';
 import {MWPADbLoader} from '../Db/MariaDb/MWPADbLoader.js';
+import {SyncRolesRightsSetup} from '../Db/MariaDb/Setup/SyncRolesRightsSetup.js';
+import {TruncateSightingExtendedSetup} from '../Db/MariaDb/Setup/TruncateSightingExtendedSetup.js';
 import {RouteLoader} from '../Routes/RouteLoader.js';
+import {DepthService} from '../Service/DepthService.js';
+import {WeatherService} from '../Service/WeatherService.js';
 
 /**
  * Backend
@@ -53,11 +57,17 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
 
         this._serviceManager.add(
             new MariaDBService(
-                MWPADbLoader
+                MWPADbLoader,
+                undefined,
+                undefined,
+                undefined,
+                [new SyncRolesRightsSetup(), new TruncateSightingExtendedSetup()]
             )
         );
 
         this._serviceManager.add(new HttpService(RouteLoader));
+        this._serviceManager.add(new DepthService());
+        this._serviceManager.add(new WeatherService());
     }
 
 }

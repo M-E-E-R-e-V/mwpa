@@ -1,10 +1,11 @@
-import {DBLoader} from 'figtree';
+import {DBLoader, DbSetupState} from 'figtree';
 import {EntitySchema, MixedList} from 'typeorm';
 import {BehaviouralStates} from './Entities/BehaviouralStates.js';
 import {Devices} from './Entities/Devices.js';
 import {EncounterCategories} from './Entities/EncounterCategories.js';
 import {ExternalReceiver} from './Entities/ExternalReceiver.js';
 import {Group} from './Entities/Group.js';
+import {GroupsRoles} from './Entities/GroupsRoles.js';
 import {Organization} from './Entities/Organization.js';
 import {OrganizationTrackingArea} from './Entities/OrganizationTrackingArea.js';
 import {Settings} from './Entities/Settings.js';
@@ -18,6 +19,9 @@ import {SpeciesExternLink} from './Entities/SpeciesExternLink.js';
 import {SpeciesGroup} from './Entities/SpeciesGroup.js';
 import {User} from './Entities/User.js';
 import {UserGroups} from './Entities/UserGroups.js';
+import {UsersRights} from './Entities/UsersRights.js';
+import {UsersRoleRights} from './Entities/UsersRoleRights.js';
+import {UsersRoles} from './Entities/UsersRoles.js';
 import {Vehicle} from './Entities/Vehicle.js';
 import {VehicleDriver} from './Entities/VehicleDriver.js';
 
@@ -34,11 +38,14 @@ export class MWPADbLoader extends DBLoader {
      */
     public static async loadEntities(): Promise<MixedList<EntityClass | string | EntitySchema>> {
         return [
+            // figtree-internal: tracks which 'once'-mode DBSetupHooks have already run.
+            DbSetupState,
             BehaviouralStates,
             Devices,
             EncounterCategories,
             ExternalReceiver,
             Group,
+            GroupsRoles,
             Organization,
             OrganizationTrackingArea,
             Settings,
@@ -52,6 +59,9 @@ export class MWPADbLoader extends DBLoader {
             SpeciesGroup,
             User,
             UserGroups,
+            UsersRights,
+            UsersRoleRights,
+            UsersRoles,
             Vehicle,
             VehicleDriver
         ];

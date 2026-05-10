@@ -1,5 +1,6 @@
 import {Response} from 'express';
-import {FileHelper, HttpFileStream, Logger, StringHelper} from 'figtree';
+import {FileHelper, Logger, StringHelper} from 'figtree';
+import fs from 'fs/promises';
 import {MapCacheRequest} from 'mwpa_schemas';
 import Path from 'path';
 import {UtilUploadPath} from '../../../Utils/UtilUploadPath.js';
@@ -57,9 +58,10 @@ export class Tile {
             }
 
             if (await FileHelper.fileExist(tileFile)) {
-                if (HttpFileStream.responseFile(tileFile, 'application/octet-stream', response)) {
-                    return;
-                }
+                const buffer = await fs.readFile(tileFile);
+                response.setHeader('Content-Type', `image/${request.fileformat}`);
+                response.end(buffer);
+                return;
             }
 
             response.status(404).send('File not found');

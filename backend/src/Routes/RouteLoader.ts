@@ -1,5 +1,7 @@
 import {HttpRouteLoader, IDefaultRoute, SwaggerUIRoute} from 'figtree';
+import {Acl} from './Main/Acl.js';
 import {BehaviouralStates} from './Main/BehaviouralStates.js';
+import {Devices} from './Main/Devices.js';
 import {EncounterCategories} from './Main/EncounterCategories.js';
 import {Group} from './Main/Group.js';
 import {Login} from './Main/Login.js';
@@ -37,7 +39,9 @@ export class RouteLoader extends HttpRouteLoader {
             SwaggerUIRoute.getInstance(),
             new Login(),
             new MapCache(),
+            new Acl(),
             new BehaviouralStates(),
+            new Devices(),
             new EncounterCategories(),
             new Group(),
             new Organization(),

@@ -17,6 +17,13 @@ export type SightingsFilter = {
     };
     limit?: number;
     offset?: number;
+    period_from?: string;
+    period_to?: string;
+    species_id?: number;
+    organization_id?: number;
+    vehicle_id?: number;
+    vehicle_driver_id?: number;
+    search?: string;
 };
 
 /**
@@ -86,6 +93,29 @@ export type SightingDeleteRequest = {
     description: string;
 };
 
+/**
+ * SightingSaveRequest
+ */
+export type SightingSaveRequest = {
+    id: number;
+    vehicle_id: number;
+    vehicle_driver_id: number;
+    beaufort_wind: string;
+    date: string;
+    tour_start?: string;
+    tour_end?: string;
+    duration_from?: string;
+    duration_until?: string;
+    location_begin: string;
+    location_end?: string;
+    species_id: number;
+    species_count: number;
+    reaction_id: number;
+    other?: string;
+    other_vehicle?: string;
+    note?: string;
+};
+
 export type SightingGPSUpdateData = {
     notHaveLocation: number[];
     notHaveTimestamp: number[];
@@ -135,6 +165,26 @@ export class Sightings {
     }
 
     /**
+     * save
+     * @param sighting
+     */
+    public static async save(sighting: SightingSaveRequest): Promise<boolean> {
+        const result = await NetFetch.postData('/json/sightings/save', sighting);
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return true;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * delete
      * @param sighting
      */
@@ -177,6 +227,26 @@ export class Sightings {
         const result = await NetFetch.postData('/json/sightings/weather', sighting);
 
         console.log(result);
+    }
+
+    /**
+     * Distinct calendar years (DESC) covered by non-deleted sightings.
+     * Returns an empty array on any non-OK response (UNAUTHORIZED still throws).
+     */
+    public static async getYears(): Promise<number[]> {
+        const result = await NetFetch.getData('/json/sightings/years');
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return (result.years as number[] | undefined) ?? [];
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return [];
     }
 
 }

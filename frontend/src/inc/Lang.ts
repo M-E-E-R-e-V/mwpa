@@ -1,6 +1,7 @@
 import {LangDefine} from 'bambooo';
 import {Lang_DE} from '../langs/Lang_DE';
 import {Lang_EN} from '../langs/Lang_EN';
+import {Lang_ES} from '../langs/Lang_ES';
 
 /**
  * Lang
@@ -21,6 +22,7 @@ export class Lang {
     public static init(): void {
         Lang.addStore(new Lang_EN());
         Lang.addStore(new Lang_DE());
+        Lang.addStore(new Lang_ES());
     }
 
     /**

@@ -15,13 +15,11 @@ export class EncounterCategories extends DefaultRoute {
      */
     public getExpressRouter(): Router {
         this._get(
-            '/json/behaviouralstates/list',
+            '/json/encountercategories/list',
             checkMWPAUserIsLogin,
-            async() => {
-                return List.getList();
-            },
+            async() => List.getList(),
             {
-                description: '.',
+                description: 'List of encounter categories.',
                 responseBodySchema: SchemaEncounterCategoriesResponse
             }
         );

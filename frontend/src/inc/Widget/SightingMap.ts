@@ -6,6 +6,7 @@ import {FeatureLike} from 'ol/Feature';
 import {EsriJSON, GeoJSON} from 'ol/format';
 import {Point} from 'ol/geom';
 import {Heatmap} from 'ol/layer';
+import BaseLayer from 'ol/layer/Base';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import {fromLonLat, ProjectionLike} from 'ol/proj';
@@ -450,33 +451,29 @@ export class SightingMap extends Component<HTMLDivElement> {
         ];
 
         const layers = this._map.getLayers();
-        console.log(layers);
 
+        /*
+         * Collect first, then remove. Calling layers.remove() inside layers.forEach()
+         * skips one entry per match (OL Collection iteration walks by index and
+         * remove shifts the array), so without staging this every refrech() leaks
+         * a layer back into the LayerSwitcher — visible as duplicate legend entries.
+         */
+        const toRemove: BaseLayer[] = [];
         layers.forEach((layer) => {
-            if (!this._map) {
-                return;
-            }
-
-            if (layer === undefined || layer === null) {
-                return;
-            }
-
-            if (layer.get === undefined) {
+            if (!layer || layer.get === undefined) {
                 return;
             }
 
             const layerName = layer.get('name');
 
-            if (layerName) {
-                if (layerNameList.indexOf(layerName) > -1) {
-                    const removeLayer = layers.remove(layer);
-
-                    if (removeLayer === undefined) {
-                        console.log(`Layer not found: ${layerName}`);
-                    }
-                }
+            if (layerName && layerNameList.indexOf(layerName) > -1) {
+                toRemove.push(layer);
             }
         });
+
+        for (const layer of toRemove) {
+            layers.remove(layer);
+        }
 
         console.log(this._map.getLayers());
 

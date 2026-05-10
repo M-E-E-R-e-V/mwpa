@@ -52,7 +52,7 @@ export class SpeciesRepository extends DBRepository<Species> {
             id: row.species_id,
             name: row.species_name,
             ott_id: row.species_ott_id,
-            isdeleted: row.species_isdeleted,
+            isdeleted: Boolean(row.species_isdeleted),
             species_groupid: row.group_id ?? 0,
             group_name: row.group_name ?? '',
             group_color: row.group_color ?? ''

@@ -13,6 +13,8 @@ export const SchemaMWPASessionUserData = SchemaSessionUserData.extend({
     main_organization_id: Vts.number({description: 'main organization id'}),
     groups: Vts.array(Vts.number({description: 'a list with all group ids by user'})),
     organizations: Vts.array(Vts.number({description: 'a list with all organization ids by user'})),
+    role: Vts.string({description: 'Resolved role name (from groups → users_roles); empty when no role applies.'}),
+    rights: Vts.array(Vts.string({description: 'All right keys the user has — derived from groups → roles → users_role_rights at login.'})),
 }, {
     description: '',
 });

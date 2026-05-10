@@ -56,7 +56,7 @@ export class Tracking {
         const sightList: ToursTrackingSightingData[] = [];
 
         for (const sighting of sightings) {
-            const species = sighting.species_id !== undefined ? speciesMap.get(sighting.species_id) : undefined;
+            const species = sighting.species_id === undefined ? undefined : speciesMap.get(sighting.species_id);
             let pointtype = 'none';
             let speciesName = '';
 
@@ -72,6 +72,7 @@ export class Tracking {
             }
 
             let files: string[] = [];
+            // eslint-disable-next-line no-await-in-loop
             const sightingDir = await UtilUploadPath.getSightingDirectory(sighting.unid);
 
             if (sightingDir) {
@@ -82,23 +83,31 @@ export class Tracking {
                 }
             }
 
-            const extendeds = await SightingExtendedRepository.getInstance().findBySighting(sighting.id);
-            const extendedList: ToursTrackingSightingExtended[] = extendeds.map((ext) => ({
-                unid: ext.unid,
-                name: ext.name,
-                data: ext.data
-            }));
+            // sighting_extended switched from key/value rows to structured
+            // columns; synthesise the legacy {unid,name,data} shape that
+            // the frontend's TourMap still expects.
+            // eslint-disable-next-line no-await-in-loop
+            const ext = await SightingExtendedRepository.getInstance().findOneBySighting(sighting.id);
+            const extendedList: ToursTrackingSightingExtended[] = [];
+
+            if (ext && ext.depth_m !== null) {
+                extendedList.push({
+                    unid: ext.unid,
+                    name: 'depth_contour',
+                    data: `${ext.depth_m}`
+                });
+            }
 
             sightList.push({
                 id: sighting.id,
                 location_begin: sighting.location_begin,
                 location_end: sighting.location_end,
-                pointtype,
+                pointtype: pointtype,
                 species_id: sighting.species_id,
                 species_name: speciesName,
                 species_count: sighting.species_count,
                 distance_coast: sighting.distance_coast,
-                files,
+                files: files,
                 extended: extendedList
             });
         }

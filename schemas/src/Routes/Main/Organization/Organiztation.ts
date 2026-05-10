@@ -38,6 +38,16 @@ export const SchemaOrganizationFullEntry = SchemaOrganizationEntry.extend({
     lat: Vts.string(),
     lon: Vts.string(),
     country: Vts.string(),
+    province: Vts.string({description: 'Provincia of the company seat — feeds AROC datos GENERALES.'}),
+    island: Vts.string({description: 'Isla — feeds AROC datos GENERALES.'}),
+    port: Vts.string({description: 'Puerto — feeds AROC datos GENERALES.'}),
+    email: Vts.string({description: 'Contact e-mail of the company — AROC datos GENERALES.'}),
+    web: Vts.string({description: 'Public web address of the company — AROC datos GENERALES.'}),
+    aroc_reference: Vts.string({description: 'AROC authorization reference (Referencia) — written into datos GENERALES B5.'}),
+    aroc_region: Vts.string({description: 'AROC region code (CAN/RES/AND).'}),
+    aroc_number: Vts.string({description: 'AROC authorization number (Número).'}),
+    aroc_year: Vts.number({description: 'Year of the AROC authorization. 0 = unset.'}),
+    aroc_authorized_boats: Vts.number({description: 'Number of authorized boats under the AROC reference. 0 = unset.'}),
 }, {
     description: '',
 });

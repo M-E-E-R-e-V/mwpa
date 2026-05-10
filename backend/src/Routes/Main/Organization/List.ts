@@ -23,7 +23,17 @@ export class List {
                 location: org.location,
                 lat: org.lat,
                 lon: org.lon,
-                country: org.country
+                country: org.country,
+                province: org.province,
+                island: org.island,
+                port: org.port,
+                email: org.email,
+                web: org.web,
+                aroc_reference: org.aroc_reference,
+                aroc_region: org.aroc_region,
+                aroc_number: org.aroc_number,
+                aroc_year: org.aroc_year,
+                aroc_authorized_boats: org.aroc_authorized_boats
             });
         }
 

@@ -48,7 +48,9 @@ export class List {
     }
 
     /**
-     * Paginated sighting list. Non-admins see only sightings from their organizations.
+     * Paginated sighting list. Non-admins see only sightings from their organizations;
+     * the optional filter fields (period, species, vehicle, driver, organization, free-text)
+     * are AND-combined on top.
      * @param {number} userId
      * @param {boolean} isAdmin
      * @param {SightingsFilter} filter
@@ -66,7 +68,16 @@ export class List {
             order,
             filter?.offset,
             filter?.limit,
-            orgIds
+            orgIds,
+            {
+                period_from: filter?.period_from,
+                period_to: filter?.period_to,
+                species_id: filter?.species_id,
+                organization_id: filter?.organization_id,
+                vehicle_id: filter?.vehicle_id,
+                vehicle_driver_id: filter?.vehicle_driver_id,
+                search: filter?.search
+            }
         );
 
         const speciesList = await SpeciesList.getSpeciesList();

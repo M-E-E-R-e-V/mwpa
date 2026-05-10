@@ -26,6 +26,16 @@ export type OrganizationFullEntry = OrganizationEntry & {
     lat: string;
     lon: string;
     country: string;
+    province: string;
+    island: string;
+    port: string;
+    email: string;
+    web: string;
+    aroc_reference: string;
+    aroc_region: string;
+    aroc_number: string;
+    aroc_year: number;
+    aroc_authorized_boats: number;
 };
 
 /**

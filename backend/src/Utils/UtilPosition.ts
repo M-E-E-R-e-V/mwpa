@@ -1,16 +1,21 @@
 /**
  * Format selector for {@link UtilPosition.getStr}.
  *
- * NOTE: the LatDec/LonDec cases in old-backend swap latitude and longitude
- * (LatDec returns longitude, LonDec returns latitude). The port keeps that
- * swap so generated XLSX reports match the legacy output. Don't "fix" without
- * also updating the callers.
+ * Historical note: the legacy old-backend implementation of LatDec/LonDec
+ * actually returned the *opposite* axis (LatDec → longitude, LonDec →
+ * latitude). XLSX consumers had been wired around that swap for years.
+ * Fixed 2026-05-08: LatDec now returns the latitude, LonDec the longitude.
+ * The Excel sheet documents the change in its second "Info" tab; the
+ * OfficeReport export was updated in lockstep so its column meaning stays
+ * the same.
  */
 export enum UtilPositionToStr {
     Lat,
     LatDec,
+    LatDM,
     Lon,
     LonDec,
+    LonDM,
     Both
 }
 
@@ -39,12 +44,16 @@ export class UtilPosition {
                         return `${UtilPosition.getDMS(data.longitude, true)}`;
 
                     case UtilPositionToStr.LatDec:
-                        // Legacy swap — returns longitude. See note on enum.
-                        return `${data.longitude}`;
+                        return `${data.latitude}`;
 
                     case UtilPositionToStr.LonDec:
-                        // Legacy swap — returns latitude. See note on enum.
-                        return `${data.latitude}`;
+                        return `${data.longitude}`;
+
+                    case UtilPositionToStr.LatDM:
+                        return `${UtilPosition.getDM(data.latitude, false)}`;
+
+                    case UtilPositionToStr.LonDM:
+                        return `${UtilPosition.getDM(data.longitude, true)}`;
 
                     default:
                         return `${UtilPosition.getDMS(data.latitude, false)} - ${UtilPosition.getDMS(data.longitude, true)}`;
@@ -78,6 +87,25 @@ export class UtilPosition {
         const seconds = ((absDD - degrees - minutes / 60) * 3600).toFixed(2);
 
         return `${hemisphere}: ${degrees}° ${minutes}' ${seconds}"`;
+    }
+
+    /**
+     * Format a decimal degree value as DM (Degrees + decimal Minutes) with hemisphere
+     * suffix, e.g. "28° 7.40' N". Two decimal places on the minutes.
+     * @param {number} dd
+     * @param {boolean} isLong
+     * @return {string}
+     */
+    public static getDM(dd: number, isLong: boolean): string {
+        const hemisphere = isLong
+            ? (dd < 0 ? 'W' : 'E')
+            : (dd < 0 ? 'S' : 'N');
+
+        const absDD = Math.abs(dd);
+        const degrees = UtilPosition._truncate(absDD);
+        const minutes = ((absDD - degrees) * 60).toFixed(2);
+
+        return `${degrees}° ${minutes}' ${hemisphere}`;
     }
 
 }

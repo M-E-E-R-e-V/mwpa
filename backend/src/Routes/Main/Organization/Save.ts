@@ -37,6 +37,16 @@ export class Save {
         org.location = entry.location;
         org.lat = entry.lat;
         org.lon = entry.lon;
+        org.province = entry.province;
+        org.island = entry.island;
+        org.port = entry.port;
+        org.email = entry.email;
+        org.web = entry.web;
+        org.aroc_reference = entry.aroc_reference;
+        org.aroc_region = entry.aroc_region;
+        org.aroc_number = entry.aroc_number;
+        org.aroc_year = entry.aroc_year;
+        org.aroc_authorized_boats = entry.aroc_authorized_boats;
 
         await OrganizationRepository.getInstance().save(org);
 

@@ -16,6 +16,8 @@ export enum RightUsers {
     'users_read' = 'users_read',
     'users_write' = 'users_write',
     'users_delete' = 'users_delete',
+    'users_roles_read' = 'users_roles_read',
+    'users_roles_write' = 'users_roles_write',
 }
 
 /**

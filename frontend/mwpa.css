@@ -30,3 +30,281 @@
   bottom: 0.9em;
   cursor: pointer;
 }
+
+/**
+ * Bambooo .table-wrapper defaults to 100vh - 250px which still leaves a tiny page
+ * scrollbar in the AdminLTE shell. Subtract a bit more so the table-wrapper alone
+ * scrolls and the page itself never does.
+ */
+.table-wrapper {
+  max-height: calc(100vh - 290px);
+}
+
+/**
+ * Sighting filter card: compact spacing — single-row layout, smaller form-group margins,
+ * tighter labels. Keeps the standard .card chrome but trims the visual weight.
+ */
+.sighting-filter .card-body {
+  padding: 0.75rem 1rem;
+}
+.sighting-filter .form-group {
+  margin-bottom: 0.5rem;
+}
+.sighting-filter label {
+  font-size: 0.8rem;
+  margin-bottom: 0.15rem;
+  color: #6c757d;
+}
+
+/**
+ * Quick-search slot in the card-header. Floats next to .card-title (which is also
+ * float:left in AdminLTE) so the input sits just right of the page title with a
+ * small gap, while .card-tools stays floated to the right.
+ */
+.card-header > .sighting-quick-search {
+  float: left;
+  margin-left: 1rem;
+  /* match the title's vertical baseline so the input doesn't visually drift up/down */
+  margin-top: -0.25rem;
+}
+.card-header > .sighting-quick-search .form-control {
+  width: 260px;
+  height: calc(1.5em + 0.5rem + 2px);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+}
+
+/**
+ * Crossfilter / dc.js dashboard above the SightingMap. Layout: header with
+ * status text + reset, full-width time bar, then a row of three category
+ * charts. SVG charts get their width from the container — the row uses flex
+ * so charts share horizontal space evenly.
+ */
+.sighting-dashboard {
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: 4px;
+  background: #fff;
+  padding: 0.5rem 0.5rem 0.25rem;
+}
+.sighting-dashboard-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.sighting-dashboard-status {
+  flex: 1 1 auto;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+.sighting-dashboard-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+.sighting-dashboard-row > .sighting-dashboard-chart {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.sighting-dashboard-chart {
+  overflow: hidden;
+}
+
+/* dc.js core styles, inlined (originally node_modules/dc/dist/style/dc.css). */
+.dc-chart path.dc-symbol, .dc-legend g.dc-legend-item.fadeout {
+  fill-opacity: 0.5;
+  stroke-opacity: 0.5;
+}
+.dc-chart rect.bar {
+  stroke: none;
+  cursor: pointer;
+}
+.dc-chart rect.bar:hover, .dc-chart rect.bar:focus {
+  fill-opacity: .5;
+}
+.dc-chart rect.deselected {
+  stroke: none;
+  fill: #ccc;
+}
+.dc-chart .axis path, .dc-chart .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.dc-chart .axis text {
+  font: 10px sans-serif;
+}
+.dc-chart .grid-line, .dc-chart .axis .grid-line, .dc-chart .grid-line line, .dc-chart .axis .grid-line line {
+  fill: none;
+  stroke: #ccc;
+  shape-rendering: crispEdges;
+}
+.dc-chart .brush rect.selection {
+  fill: #4682b4;
+  fill-opacity: .125;
+}
+.dc-chart .brush .custom-brush-handle {
+  fill: #eee;
+  stroke: #666;
+  cursor: ew-resize;
+}
+.dc-chart g.row rect {
+  fill-opacity: 0.8;
+  cursor: pointer;
+}
+.dc-chart g.row rect:hover, .dc-chart g.row rect:focus {
+  fill-opacity: 0.6;
+}
+.dc-chart g.row text {
+  fill: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+.dc-chart g.dc-tooltip path {
+  fill: none;
+  stroke: #808080;
+  stroke-opacity: .8;
+}
+.dc-chart g.axis text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/**
+ * Auswertung tab — 2x2 grid of d3 cards.
+ */
+.sighting-analytics {
+  padding: 0.5rem;
+}
+.sighting-analytics-status {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+.sighting-analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.sighting-analytics-card {
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: 4px;
+  background: #fff;
+  padding: 0.5rem;
+}
+.sighting-analytics-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #444;
+}
+.sighting-analytics-body {
+  width: 100%;
+  min-height: 240px;
+  overflow: hidden;
+}
+.sighting-analytics-body svg text {
+  fill: #333;
+}
+
+/**
+ * Jahresvergleich tab — single big line plot with hover-tooltip overlay.
+ */
+.sighting-yearcompare {
+  padding: 0.5rem;
+  position: relative;
+}
+.sighting-yearcompare-status {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+.sighting-yearcompare-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.25rem;
+  color: #444;
+}
+.sighting-yearcompare-chart {
+  position: relative;
+  width: 100%;
+  min-height: 380px;
+}
+.sighting-yearcompare-calendar {
+  width: 100%;
+  overflow-x: auto;
+}
+.sighting-yearcompare-tooltip {
+  position: absolute;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 3px;
+  padding: 4px 8px;
+  font-size: 11px;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,.1);
+  z-index: 10;
+  white-space: nowrap;
+}
+/* --------------------------------------------------------------------------
+ * Print stylesheet — Data Page sub-tab on the Sighting page
+ *
+ * Before calling window.print() the page sets `<body class="mwpa-print-mode">`
+ * and tags the panes it wants visible with `.print-include`. The visibility
+ * rules apply ON SCREEN too — D3 measures container width via jQuery.width()
+ * and OL needs a real on-screen canvas, neither of which works while
+ * Bootstrap's inactive panes stay at `display: none`. After printing the
+ * page strips both classes and the layout returns to normal.
+ * -------------------------------------------------------------------------- */
+body.mwpa-print-mode .tab-content > .tab-pane.print-include {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+body.mwpa-print-mode .tab-content > .tab-pane:not(.print-include) {
+  display: none !important;
+}
+
+/* OL canvas needs an explicit, printable height — let it span 16 cm so a
+ * landscape A4 fits comfortably with chart context above/below it. */
+body.mwpa-print-mode .ol-viewport,
+body.mwpa-print-mode .ol-viewport > div {
+  height: 16cm !important;
+  max-height: 16cm !important;
+}
+
+@media print {
+  body.mwpa-print-mode .main-header,
+  body.mwpa-print-mode .main-sidebar,
+  body.mwpa-print-mode .control-sidebar,
+  body.mwpa-print-mode .main-footer,
+  body.mwpa-print-mode .nav-tabs,
+  body.mwpa-print-mode .ol-control,
+  body.mwpa-print-mode .layer-switcher,
+  body.mwpa-print-mode .sighting-export {
+    display: none !important;
+  }
+
+  body.mwpa-print-mode .content-wrapper {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.mwpa-print-mode .tab-content > .tab-pane.print-include {
+    page-break-after: always;
+  }
+
+  body.mwpa-print-mode .tab-content > .tab-pane.print-include:last-of-type {
+    page-break-after: auto;
+  }
+
+  /* Keep map tiles and chart backgrounds in print */
+  body.mwpa-print-mode * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

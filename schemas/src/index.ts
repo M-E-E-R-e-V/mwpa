@@ -179,7 +179,43 @@ export {
     SightingWeatherRequest,
     SchemaSightingImageGetRequest,
     SightingImageGetRequest,
+    SchemaSightingSaveRequest,
+    SightingSaveRequest,
+    SchemaSightingYearsResponse,
+    SightingYearsResponse,
 } from './Routes/Main/Sightings/Sightings.js';
+export {
+    SchemaUsersRolesEntry,
+    UsersRolesEntry,
+    SchemaUsersRolesListResponse,
+    UsersRolesListResponse,
+    SchemaUsersRoleSaveRequest,
+    UsersRoleSaveRequest,
+    SchemaUsersRightsEntry,
+    UsersRightsEntry,
+    SchemaUsersRightsListResponse,
+    UsersRightsListResponse,
+    SchemaRoleRightsRequest,
+    RoleRightsRequest,
+    SchemaRoleRightEntry,
+    RoleRightEntry,
+    SchemaRoleRightsListResponse,
+    RoleRightsListResponse,
+    SchemaRoleRightsSaveRequest,
+    RoleRightsSaveRequest,
+    SchemaGroupsRolesEntry,
+    GroupsRolesEntry,
+    SchemaGroupsRolesListResponse,
+    GroupsRolesListResponse,
+    SchemaGroupsRolesSaveRequest,
+    GroupsRolesSaveRequest,
+} from './Routes/Main/Acl/Acl.js';
+export {
+    SchemaDevicesEntry,
+    DevicesEntry,
+    SchemaDevicesListResponse,
+    DevicesListResponse,
+} from './Routes/Main/Devices/Devices.js';
 export {
     SchemaMapCacheRequest,
     MapCacheRequest,
@@ -251,4 +287,8 @@ export {
 export {
     SchemaOfficeReportFilter,
     OfficeReportFilter,
+    SchemaExternalReceiverEntry,
+    ExternalReceiverEntry,
+    SchemaExternalReceiverListResponse,
+    ExternalReceiverListResponse,
 } from './Routes/Export/OfficeReport.js';

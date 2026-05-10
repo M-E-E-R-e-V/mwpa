@@ -49,7 +49,7 @@ export class VehicleDriverRepository extends DBRepository<VehicleDriver> {
         return rows.map((row) => ({
             id: row.vehicle_driver_id,
             description: row.vehicle_driver_description,
-            isdeleted: row.vehicle_driver_isdeleted,
+            isdeleted: Boolean(row.vehicle_driver_isdeleted),
             user_id: row.vehicle_driver_user_id,
             user_full_name: row.user_full_name ?? ''
         }));

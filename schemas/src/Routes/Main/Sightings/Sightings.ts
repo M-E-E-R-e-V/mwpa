@@ -28,6 +28,13 @@ export const SchemaSightingsFilter = Vts.object({
     order: Vts.optional(SchemaSightingsFilterOrder),
     limit: Vts.optional(Vts.number()),
     offset: Vts.optional(Vts.number()),
+    period_from: Vts.optional(Vts.string({description: 'ISO date YYYY-MM-DD; lower bound for sighting date (inclusive)'})),
+    period_to: Vts.optional(Vts.string({description: 'ISO date YYYY-MM-DD; upper bound for sighting date (inclusive)'})),
+    species_id: Vts.optional(Vts.number({description: 'Filter by species id'})),
+    organization_id: Vts.optional(Vts.number({description: 'Filter by organization id'})),
+    vehicle_id: Vts.optional(Vts.number({description: 'Filter by vehicle id'})),
+    vehicle_driver_id: Vts.optional(Vts.number({description: 'Filter by vehicle driver id'})),
+    search: Vts.optional(Vts.string({description: 'Free-text search applied as LIKE on note + recognizable_animals'})),
 }, {
     description: '',
 });
@@ -157,3 +164,48 @@ export const SchemaSightingImageGetRequest = Vts.object({
  * Type of schema SightingImageGetRequest
  */
 export type SightingImageGetRequest = ExtractSchemaResultType<typeof SchemaSightingImageGetRequest>;
+
+/**
+ * Schema of SightingSaveRequest
+ * Update payload for an existing sighting (admin only). All fields are required; pass empty string / 0 to clear.
+ */
+export const SchemaSightingSaveRequest = Vts.object({
+    id: Vts.number(),
+    vehicle_id: Vts.number(),
+    vehicle_driver_id: Vts.number(),
+    beaufort_wind: Vts.string({description: 'Stored in beaufort_wind_n column. May contain decimals like "1.5".'}),
+    date: Vts.string(),
+    tour_start: Vts.optional(Vts.string()),
+    tour_end: Vts.optional(Vts.string()),
+    duration_from: Vts.optional(Vts.string()),
+    duration_until: Vts.optional(Vts.string()),
+    location_begin: Vts.string({description: 'JSON-stringified GeolocationCoordinates ("null" or "" for unset).'}),
+    location_end: Vts.optional(Vts.string({description: 'JSON-stringified GeolocationCoordinates ("null" or "" for unset).'})),
+    species_id: Vts.number(),
+    species_count: Vts.number(),
+    reaction_id: Vts.number(),
+    other: Vts.optional(Vts.string()),
+    other_vehicle: Vts.optional(Vts.string()),
+    note: Vts.optional(Vts.string()),
+}, {
+    description: 'Update payload for an existing sighting (admin only). All fields are required; pass empty string / 0 to clear.',
+});
+
+/**
+ * Type of schema SightingSaveRequest
+ */
+export type SightingSaveRequest = ExtractSchemaResultType<typeof SchemaSightingSaveRequest>;
+
+/**
+ * Schema of SightingYearsResponse
+ */
+export const SchemaSightingYearsResponse = SchemaDefaultReturn.extend({
+    years: Vts.optional(Vts.array(Vts.number())),
+}, {
+    description: '',
+});
+
+/**
+ * Type of schema SightingYearsResponse
+ */
+export type SightingYearsResponse = ExtractSchemaResultType<typeof SchemaSightingYearsResponse>;
