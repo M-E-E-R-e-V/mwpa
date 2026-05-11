@@ -56,6 +56,23 @@ export type SightingMovementListResponse = DefaultReturn & {
 };
 
 /**
+ * MovementConfig — persisted rebuild tunables. Same field names as the
+ * backend MovementConfigEntry. All fields required on save; the loader
+ * fills defaults when reading a partial row.
+ */
+export type MovementConfigEntry = {
+    default_lead_minutes: number;
+    default_trail_minutes: number;
+    prefer_sighting_duration: boolean;
+    outlier_speed_kmh: number;
+    default_local_tz: string;
+};
+
+export type MovementConfigResponse = DefaultReturn & {
+    config?: MovementConfigEntry;
+};
+
+/**
  * SightingMovement API helper.
  *
  * Backend lazily computes the movement on sighting save / mobile tracking
@@ -117,6 +134,71 @@ export class SightingMovement {
         }
 
         throw new Error('Rebuild failed (no response).');
+    }
+
+    /**
+     * Read the current MovementConfig (admin only). Throws on auth
+     * problems or missing payload so the modal can show a banner;
+     * otherwise returns the effective values.
+     */
+    public static async getConfig(): Promise<MovementConfigEntry> {
+        const result = await NetFetch.getData('/json/sighting/movement/config');
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    if ((result as MovementConfigResponse).config) {
+                        return (result as MovementConfigResponse).config!;
+                    }
+                    throw new Error('Config response missing payload.');
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+
+                case StatusCodes.FORBIDDEN:
+                    throw new Error('Forbidden — admin role required.');
+
+                default:
+                    if (result.msg) {
+                        throw new Error(result.msg);
+                    }
+            }
+        }
+
+        throw new Error('Config read failed (no response).');
+    }
+
+    /**
+     * Persist a new MovementConfig (admin only). Backend validates each
+     * field and returns the saved values; any validation problem is
+     * thrown as an Error with the backend's `msg` so the modal can
+     * surface it directly.
+     */
+    public static async saveConfig(config: MovementConfigEntry): Promise<MovementConfigEntry> {
+        const result = await NetFetch.postData('/json/sighting/movement/config', config);
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    if ((result as MovementConfigResponse).config) {
+                        return (result as MovementConfigResponse).config!;
+                    }
+                    throw new Error('Config response missing payload.');
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+
+                case StatusCodes.FORBIDDEN:
+                    throw new Error('Forbidden — admin role required.');
+
+                default:
+                    if (result.msg) {
+                        throw new Error(result.msg);
+                    }
+            }
+        }
+
+        throw new Error('Config save failed (no response).');
     }
 
 }

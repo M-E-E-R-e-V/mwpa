@@ -195,6 +195,10 @@ export {
     SightingMovementListRequest,
     SchemaSightingMovementListResponse,
     SightingMovementListResponse,
+    SchemaMovementConfigEntry,
+    MovementConfigEntry,
+    SchemaMovementConfigResponse,
+    MovementConfigResponse,
 } from './Routes/Main/Sightings/SightingMovement.js';
 export {
     SchemaUsersRolesEntry,

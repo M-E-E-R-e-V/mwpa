@@ -78,6 +78,16 @@ export class SightingMovementService {
     }
 
     /**
+     * Hand out the underlying config reader so the admin routes can
+     * read + write the persisted MovementConfig through the same cache
+     * the service itself uses (a save here invalidates the cache, so
+     * the next rebuild picks up the new values without a restart).
+     */
+    public getConfigReader(): SightingMovementConfig {
+        return this._config;
+    }
+
+    /**
      * Recompute the movement + segments for a single sighting. Logs and
      * swallows errors so callers in user-facing paths (Sighting/Save)
      * don't block on derived analytics.

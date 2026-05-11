@@ -2,6 +2,10 @@ import {Router} from 'express';
 import {DefaultRoute, Logger} from 'figtree';
 import {DefaultReturn, SchemaDefaultReturn, StatusCodes} from 'figtree-schemas';
 import {
+    MovementConfigEntry,
+    MovementConfigResponse,
+    SchemaMovementConfigEntry,
+    SchemaMovementConfigResponse,
     SchemaMWPASessionData,
     SchemaSightingMovementListRequest,
     SchemaSightingMovementListResponse,
@@ -151,6 +155,59 @@ export class SightingMovement extends DefaultRoute {
             {
                 description: 'Rebuild SightingMovement + SightingMovementTrack for every non-deleted sighting (admin only). State-changing despite GET because the admin triggers it from the browser; idempotent, so safe to call repeatedly. Synchronous — large datasets may take a while; check the backend log for progress.',
                 responseBodySchema: SchemaDefaultReturn,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._get(
+            '/json/sighting/movement/config',
+            checkMWPAUserIsLogin,
+            async(_req, _res, data): Promise<MovementConfigResponse> => {
+                if (!data.session?.user?.isAdmin) {
+                    return {statusCode: StatusCodes.FORBIDDEN};
+                }
+
+                const config = await SightingMovementService.getInstance().getConfigReader().get();
+                return {statusCode: StatusCodes.OK, config};
+            },
+            {
+                description: 'Read the persisted MovementConfig (admin only). Returns the effective values — defaults filled in for any missing key in the settings row.',
+                responseBodySchema: SchemaMovementConfigResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._post(
+            '/json/sighting/movement/config',
+            checkMWPAUserIsLogin,
+            async(_req, _res, data): Promise<MovementConfigResponse> => {
+                if (!data.session?.user?.isAdmin) {
+                    return {statusCode: StatusCodes.FORBIDDEN};
+                }
+
+                const body = data.body as MovementConfigEntry | undefined;
+                if (!body) {
+                    return {statusCode: StatusCodes.INTERNAL_ERROR, msg: 'Request body missing'};
+                }
+
+                try {
+                    await SightingMovementService.getInstance().getConfigReader().save(body);
+                } catch (e) {
+                    return {
+                        statusCode: StatusCodes.INTERNAL_ERROR,
+                        msg: `Config rejected: ${(e as Error).message}`
+                    };
+                }
+
+                const config = await SightingMovementService.getInstance().getConfigReader().get();
+                return {statusCode: StatusCodes.OK, config};
+            },
+            {
+                description: 'Persist MovementConfig (admin only). Validates lead/trail/outlier are non-negative numbers and default_local_tz is an IANA zone; returns the saved values on success.',
+                bodySchema: SchemaMovementConfigEntry,
+                responseBodySchema: SchemaMovementConfigResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,
             }

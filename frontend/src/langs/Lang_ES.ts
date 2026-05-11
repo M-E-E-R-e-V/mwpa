@@ -175,7 +175,19 @@ export class Lang_ES implements LangDefine {
         'Rebuilding movements…': 'Recalculando movimientos…',
         'Rebuild done': 'Recálculo finalizado',
         'Rebuild failed': 'Recálculo fallido',
-        'Movement tracks': 'Trayectos de movimiento'
+        'Movement tracks': 'Trayectos de movimiento',
+        'Movement settings': 'Ajustes de movimiento',
+        'Lead buffer (minutes before sighting start)': 'Margen anterior (minutos antes del inicio del avistamiento)',
+        'Trail buffer (minutes after sighting end)': 'Margen posterior (minutos después del fin del avistamiento)',
+        'Apply lead/trail around recorded duration (off = strict)':
+            'Aplicar margen anterior/posterior a la duración registrada (off = estricto)',
+        'Outlier speed threshold (km/h, segments above are bad)':
+            'Umbral de velocidad anómala (km/h, los tramos por encima se descartan)',
+        'Local timezone for legacy HH:MM (IANA, e.g. Atlantic/Canary)':
+            'Zona horaria local para HH:MM antiguo (IANA, p. ej. Atlantic/Canary)',
+        'Settings saved': 'Ajustes guardados',
+        'Load failed': 'Carga fallida',
+        'Save failed': 'Guardado fallido'
     };
 
     /**

@@ -5513,6 +5513,100 @@
                             "description": "Movements for the requested sightings (subset)."
                           }
                         ]
+                      },
+                      {
+                        "unid": "8be34039-f961-4f67-9482-97a018dea166",
+                        "name": "MovementConfigEntry",
+                        "description": "Movement-rebuild tunables. Sourced from / written to the `sighting_movement.config` row in the `settings` table. All fields are required on save; the loader fills in defaults when reading a partial row.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 484,
+                          "y": 938
+                        },
+                        "fields": [
+                          {
+                            "unid": "274b3c95-be2b-4b8e-ba12-44eea17dc566",
+                            "name": "default_lead_minutes",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Minutes added before the recorded sighting start, so the rendered track shows the boat's approach. Non-negative."
+                          },
+                          {
+                            "unid": "47e7116f-c344-4b15-9be2-a737889f4fa6",
+                            "name": "default_trail_minutes",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Minutes added after the recorded sighting end. Non-negative."
+                          },
+                          {
+                            "unid": "70c701a7-6336-4dae-a639-b8dfc65a952a",
+                            "name": "prefer_sighting_duration",
+                            "type": {
+                              "type": "boolean",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "When true, lead/trail buffer is applied around the recorded duration. When false, the recorded duration is used strictly."
+                          },
+                          {
+                            "unid": "7f3567c2-c291-4f2a-97e0-b7b2a4b1ad17",
+                            "name": "outlier_speed_kmh",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "GPS-jump detector — segment speeds above this value are flagged as `bad` quality and excluded from aggregates. Positive."
+                          },
+                          {
+                            "unid": "e68639bf-2b39-45f9-89b5-674cbf37054e",
+                            "name": "default_local_tz",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "IANA timezone used to interpret legacy `duration_from`/`duration_until` HH:MM strings on sightings without a GPS-fix timestamp (e.g. `Atlantic/Canary`). Must be a zone moment-timezone recognises."
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "f8281142-c3a6-45e9-bd64-6cf611a1bd82",
+                        "name": "MovementConfigResponse",
+                        "description": "Response body of GET /json/sighting/movement/config and POST /json/sighting/movement/config — current persisted config plus the default statusCode/msg envelope.",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 26,
+                          "y": 708
+                        },
+                        "fields": [
+                          {
+                            "unid": "43d12c00-815e-432b-8e10-4de0783b87e0",
+                            "name": "config",
+                            "type": {
+                              "type": "8be34039-f961-4f67-9482-97a018dea166",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Current persisted config. Omitted on error responses (FORBIDDEN / INTERNAL_ERROR)."
+                          }
+                        ]
                       }
                     ],
                     "enums": [],
@@ -5536,7 +5630,7 @@
                 "unid": "3e150cbf-a407-4ccb-8a92-0d081e1c5f1a",
                 "name": "Acl",
                 "type": "folder",
-                "istoggle": true,
+                "istoggle": false,
                 "entrys": [
                   {
                     "unid": "fc9672b4-22eb-4325-8ee3-92c5f78c85d9",
@@ -7532,6 +7626,6 @@
   "editor": {
     "controls_width": 465,
     "active_entry_unid": "f78e33d4-c164-4986-bf7e-22da115f26d5",
-    "active_entry_table_unid": "65168769-cd8d-4f82-957d-fa6964f84727"
+    "active_entry_table_unid": "8be34039-f961-4f67-9482-97a018dea166"
   }
 }
