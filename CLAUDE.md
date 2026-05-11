@@ -47,7 +47,7 @@ npm run gulp-build-webpack -w mwpa_frontend
 
 Local dev infra: `docker compose up -d mariadb` brings up MariaDB on `127.0.0.1:3306` (root/test, db `mwpa`, see `.env`). The backend itself runs locally, not in Compose. Start it with `node backend/dist/main.js --config=config.dev.json` after `npm run compile`. The HTTP server binds to `https://localhost:3000` with a self-signed in-memory cert — use `curl -k` or accept the cert in the browser.
 
-The figtree logger tries to write to `/var/log/mwpa/`; on a dev machine without that directory writable, it logs `EACCES` once and falls back to console — harmless.
+The figtree logger writes to `config.logging.dirname` (set to `../data/logs` in `config.dev.json` so it sits under the gitignored `data/` and the dev boot doesn't try to mkdir `/var/log/mwpa/`). Override in `config.json` for production.
 
 There is **no test suite** in the repo at this time.
 
