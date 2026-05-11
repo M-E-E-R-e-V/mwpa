@@ -1,5 +1,5 @@
 import {Logger} from 'figtree';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {Sighting} from '../../Db/MariaDb/Entities/Sighting.js';
 import {SightingMovement} from '../../Db/MariaDb/Entities/SightingMovement.js';
 import {SightingMovementTrack} from '../../Db/MariaDb/Entities/SightingMovementTrack.js';
@@ -405,13 +405,12 @@ export class SightingMovementService {
      *     sighting was recorded on, independent of any HH:MM / TZ
      *     ambiguity.
      *  2. `duration_from` + `duration_until` parsed against
-     *     `sighting.date`. Used for CSV-imported sightings that lack
-     *     the GPS timestamp. **Caveat:** HH:MM strings carry no
-     *     timezone, so `moment()` falls back to the Node process TZ —
-     *     in Docker that's typically UTC. If the data was recorded in
-     *     a non-UTC zone (e.g. Atlantic/Canary in DST), the window
-     *     ends up off by the offset. Track this path explicitly if
-     *     a sighting renders in the wrong stretch of the tour.
+     *     `sighting.date` in `config.default_local_tz` (default
+     *     `Atlantic/Canary`). Used for CSV-imported sightings that lack
+     *     the GPS timestamp. Pre-2026-05-11 this path parsed in the
+     *     Node-process TZ (UTC in Docker), which silently shifted the
+     *     window by 1h during DST and landed tracks in the wrong stretch
+     *     of the tour. The configured zone makes that deterministic.
      *
      * `create_datetime` is **not** a fallback: it records when the row
      * was inserted (= mobile sync time, often hours after the actual
@@ -450,14 +449,16 @@ export class SightingMovementService {
             return {from: ts - lead, to: ts + trail};
         }
 
-        // Legacy path: HH:MM strings. TZ-quirky — see the doc comment.
+        // Legacy path: HH:MM strings interpreted in config.default_local_tz.
         const fromExact = SightingMovementService._parseDateTime(
             sighting.date,
-            sighting.duration_from
+            sighting.duration_from,
+            config.default_local_tz
         );
         const toExact = SightingMovementService._parseDateTime(
             sighting.date,
-            sighting.duration_until
+            sighting.duration_until,
+            config.default_local_tz
         );
 
         if (fromExact === null || toExact === null || toExact < fromExact) {
@@ -471,15 +472,16 @@ export class SightingMovementService {
 
     /**
      * Combine a YYYY-MM-DD date with a HH:MM time-of-day into a
-     * Unix-seconds timestamp using the server's local timezone. Returns
-     * null if either input is empty or unparseable.
+     * Unix-seconds timestamp, treating the wall-clock time as local to
+     * `timezone` (an IANA zone like `Atlantic/Canary`). Returns null if
+     * either input is empty or unparseable.
      */
-    private static _parseDateTime(date: string, hhmm: string): number | null {
+    private static _parseDateTime(date: string, hhmm: string, timezone: string): number | null {
         if (!date || !hhmm) {
             return null;
         }
 
-        const m = moment(`${date.trim()} ${hhmm.trim()}`, 'YYYY-MM-DD HH:mm', true);
+        const m = moment.tz(`${date.trim()} ${hhmm.trim()}`, 'YYYY-MM-DD HH:mm', true, timezone);
         if (!m.isValid()) {
             return null;
         }

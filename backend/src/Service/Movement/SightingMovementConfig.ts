@@ -1,3 +1,4 @@
+import moment from 'moment-timezone';
 import {Logger} from 'figtree';
 import {SettingsRepository} from '../../Db/MariaDb/Repositories/SettingsRepository.js';
 
@@ -47,6 +48,21 @@ export type MovementConfig = {
      */
     outlier_speed_kmh: number;
 
+    /**
+     * IANA timezone used to interpret legacy `duration_from` /
+     * `duration_until` HH:MM strings on sightings that lack a
+     * `location_*.timestamp` (CSV imports / pre-2026 mobile rows).
+     * The mobile GPS-fix path is unaffected — it works in UTC ms.
+     *
+     * MWPA operates out of the Canary Islands, so the recorded HH:MM
+     * is local wall-clock time; parsing it in this zone produces the
+     * correct UTC instant in both standard time and DST. The fallback
+     * pre-2026-05-11 was the Node process TZ (UTC in Docker), which
+     * silently shifted the window by 1h in DST months and landed
+     * tracks in the wrong stretch of the tour.
+     */
+    default_local_tz: string;
+
 };
 
 /**
@@ -62,7 +78,8 @@ export const DEFAULT_MOVEMENT_CONFIG: MovementConfig = {
     default_lead_minutes: 5,
     default_trail_minutes: 5,
     prefer_sighting_duration: true,
-    outlier_speed_kmh: 50
+    outlier_speed_kmh: 50,
+    default_local_tz: 'Atlantic/Canary'
 };
 
 const SETTINGS_KEY = 'sighting_movement.config';
@@ -145,6 +162,10 @@ export class SightingMovementConfig {
                 outlier_speed_kmh: SightingMovementConfig._asPositiveNumber(
                     parsed.outlier_speed_kmh,
                     DEFAULT_MOVEMENT_CONFIG.outlier_speed_kmh
+                ),
+                default_local_tz: SightingMovementConfig._asTimezone(
+                    parsed.default_local_tz,
+                    DEFAULT_MOVEMENT_CONFIG.default_local_tz
                 )
             };
         } catch (e) {
@@ -161,6 +182,21 @@ export class SightingMovementConfig {
         return Number.isFinite(n) && n >= 0 ? n : fallback;
     }
 
+    /**
+     * Accept a string that moment-timezone recognises as an IANA zone
+     * (e.g. `Atlantic/Canary`, `UTC`, `Europe/Berlin`). Anything else
+     * — including empty strings, non-strings, or typos like
+     * `Atlantic/Canaries` — falls back so a malformed settings row
+     * can't break the entire movement rebuild.
+     */
+    private static _asTimezone(value: unknown, fallback: string): string {
+        if (typeof value !== 'string' || value.trim() === '') {
+            return fallback;
+        }
+        const trimmed = value.trim();
+        return moment.tz.zone(trimmed) !== null ? trimmed : fallback;
+    }
+
     private static _validate(config: MovementConfig): void {
         if (!Number.isFinite(config.default_lead_minutes) || config.default_lead_minutes < 0) {
             throw new Error('default_lead_minutes must be a non-negative finite number');
@@ -170,6 +206,9 @@ export class SightingMovementConfig {
         }
         if (!Number.isFinite(config.outlier_speed_kmh) || config.outlier_speed_kmh <= 0) {
             throw new Error('outlier_speed_kmh must be a positive finite number');
+        }
+        if (typeof config.default_local_tz !== 'string' || moment.tz.zone(config.default_local_tz) === null) {
+            throw new Error(`default_local_tz must be a valid IANA timezone, got "${String(config.default_local_tz)}"`);
         }
     }
 
