@@ -49,6 +49,7 @@ import {SightingMap, SightingMapObjectType} from '../Widget/SightingMap';
 import {SightingYearCompare} from '../Widget/SightingYearCompare';
 import {SpeciesDisplay} from '../Widget/SpeciesDisplay';
 import {BasePage} from './BasePage';
+import {MovementSettingsModal} from './Sighting/MovementSettingsModal';
 import {SightingDeletedModal} from './Sighting/SightingDeletedModal';
 import {SightingEditModal} from './Sighting/SightingEditModal';
 import {SightingFilter, SightingFilterValues} from './Sighting/SightingFilter';
@@ -96,6 +97,7 @@ export class Sighting extends BasePage {
 
     protected _sightingDialog: SightingEditModal;
     protected _sightingDeletedDialog: SightingDeletedModal;
+    protected _movementSettingsDialog: MovementSettingsModal;
     protected _map: SightingMap|null = null;
 
     public constructor() {
@@ -106,6 +108,10 @@ export class Sighting extends BasePage {
         );
 
         this._sightingDeletedDialog = new SightingDeletedModal(
+            this._wrapper.getContentWrapper().getContent().getElement()
+        );
+
+        this._movementSettingsDialog = new MovementSettingsModal(
             this._wrapper.getContentWrapper().getContent().getElement()
         );
 
@@ -398,6 +404,40 @@ export class Sighting extends BasePage {
             }
         };
 
+        // Admin-only: edit the persisted MovementConfig (lead/trail/outlier/tz).
+        // Fetched fresh on each open so a hand-edit to the settings row from
+        // another path (admin SQL, another browser tab) doesn't get clobbered.
+        const movementSettingsLabel = new LangText('Movement settings');
+        const openMovementSettings = async(): Promise<void> => {
+            try {
+                const cfg = await SightingMovementAPI.getConfig();
+                this._movementSettingsDialog.setTitle(new LangText('Movement settings'));
+                this._movementSettingsDialog.setConfig(cfg);
+                this._movementSettingsDialog.show();
+            } catch (err) {
+                this._toast.fire({
+                    icon: 'error',
+                    title: `${Lang.i().l('Load failed') ?? 'Load failed'}: ${(err as Error).message}`
+                });
+            }
+        };
+
+        this._movementSettingsDialog.setOnSave(async(): Promise<void> => {
+            try {
+                await SightingMovementAPI.saveConfig(this._movementSettingsDialog.getConfig());
+                this._toast.fire({
+                    icon: 'success',
+                    title: Lang.i().l('Settings saved') ?? 'Settings saved'
+                });
+                this._movementSettingsDialog.hide();
+            } catch (err) {
+                this._toast.fire({
+                    icon: 'error',
+                    title: `${Lang.i().l('Save failed') ?? 'Save failed'}: ${(err as Error).message}`
+                });
+            }
+        });
+
         // In-header quick-search — sibling of .card-title in the card-header so AdminLTE's
         // float layout puts it directly right of the title (and left of the tools menu).
         const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
@@ -632,6 +672,9 @@ export class Sighting extends BasePage {
             btnMenu.addMenuItem(rebuildMovementsLabel, () => {
                 triggerRebuildMovements().catch(() => undefined);
             }, 'fa fa-route');
+            btnMenu.addMenuItem(movementSettingsLabel, () => {
+                openMovementSettings().catch(() => undefined);
+            }, 'fa fa-cog');
         }
 
         this._map = new SightingMap(mapContainer);

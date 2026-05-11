@@ -175,7 +175,19 @@ export class Lang_DE implements LangDefine {
         'Rebuilding movements…': 'Bewegungen werden neu berechnet…',
         'Rebuild done': 'Neuberechnung fertig',
         'Rebuild failed': 'Neuberechnung fehlgeschlagen',
-        'Movement tracks': 'Bewegungs-Tracks'
+        'Movement tracks': 'Bewegungs-Tracks',
+        'Movement settings': 'Bewegungs-Einstellungen',
+        'Lead buffer (minutes before sighting start)': 'Vorlauf-Puffer (Minuten vor Sichtungsbeginn)',
+        'Trail buffer (minutes after sighting end)': 'Nachlauf-Puffer (Minuten nach Sichtungsende)',
+        'Apply lead/trail around recorded duration (off = strict)':
+            'Vor-/Nachlauf um aufgezeichnete Dauer anwenden (aus = strikt)',
+        'Outlier speed threshold (km/h, segments above are bad)':
+            'Ausreißer-Geschwindigkeit (km/h, höhere Segmente werden verworfen)',
+        'Local timezone for legacy HH:MM (IANA, e.g. Atlantic/Canary)':
+            'Lokale Zeitzone für Legacy-HH:MM (IANA, z. B. Atlantic/Canary)',
+        'Settings saved': 'Einstellungen gespeichert',
+        'Load failed': 'Laden fehlgeschlagen',
+        'Save failed': 'Speichern fehlgeschlagen'
     };
 
     /**

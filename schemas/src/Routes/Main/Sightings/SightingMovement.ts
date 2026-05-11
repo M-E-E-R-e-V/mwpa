@@ -88,3 +88,37 @@ export const SchemaSightingMovementListResponse = SchemaDefaultReturn.extend({
  * Type of schema SightingMovementListResponse
  */
 export type SightingMovementListResponse = ExtractSchemaResultType<typeof SchemaSightingMovementListResponse>;
+
+/**
+ * Schema of MovementConfigEntry
+ * Movement-rebuild tunables. Sourced from / written to the `sighting_movement.config` row in the `settings` table. All fields are required on save; the loader fills in defaults when reading a partial row.
+ */
+export const SchemaMovementConfigEntry = Vts.object({
+    default_lead_minutes: Vts.number({description: 'Minutes added before the recorded sighting start, so the rendered track shows the boat\'s approach. Non-negative.'}),
+    default_trail_minutes: Vts.number({description: 'Minutes added after the recorded sighting end. Non-negative.'}),
+    prefer_sighting_duration: Vts.boolean({description: 'When true, lead/trail buffer is applied around the recorded duration. When false, the recorded duration is used strictly.'}),
+    outlier_speed_kmh: Vts.number({description: 'GPS-jump detector — segment speeds above this value are flagged as `bad` quality and excluded from aggregates. Positive.'}),
+    default_local_tz: Vts.string({description: 'IANA timezone used to interpret legacy `duration_from`/`duration_until` HH:MM strings on sightings without a GPS-fix timestamp (e.g. `Atlantic/Canary`). Must be a zone moment-timezone recognises.'}),
+}, {
+    description: 'Movement-rebuild tunables. Sourced from / written to the `sighting_movement.config` row in the `settings` table. All fields are required on save; the loader fills in defaults when reading a partial row.',
+});
+
+/**
+ * Type of schema MovementConfigEntry
+ */
+export type MovementConfigEntry = ExtractSchemaResultType<typeof SchemaMovementConfigEntry>;
+
+/**
+ * Schema of MovementConfigResponse
+ * Response body of GET /json/sighting/movement/config and POST /json/sighting/movement/config — current persisted config plus the default statusCode/msg envelope.
+ */
+export const SchemaMovementConfigResponse = SchemaDefaultReturn.extend({
+    config: Vts.optional(SchemaMovementConfigEntry),
+}, {
+    description: 'Response body of GET /json/sighting/movement/config and POST /json/sighting/movement/config — current persisted config plus the default statusCode/msg envelope.',
+});
+
+/**
+ * Type of schema MovementConfigResponse
+ */
+export type MovementConfigResponse = ExtractSchemaResultType<typeof SchemaMovementConfigResponse>;
