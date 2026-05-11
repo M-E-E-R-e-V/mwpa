@@ -9,6 +9,7 @@ export const SchemaOfficeReportFilter = Vts.object({
     year: Vts.optional(Vts.number({description: 'Restrict the export to sightings whose date falls within this calendar year. Omit for all years.'})),
     vehicle_id: Vts.optional(Vts.number({description: 'Restrict the export to one vehicle (boat). Required by AROC: 1 file per boat per semester. Omit to include all boats.'})),
     semester: Vts.optional(Vts.number({description: 'Half-year filter: 1 = Jan–Jun, 2 = Jul–Dec. Combine with year. Omit for the full year.'})),
+    organization_id: Vts.optional(Vts.number({description: 'Restrict the export to sightings belonging to this organization. Combine with vehicle_id to scope further. Omit to include all organizations the caller has access to.'})),
 }, {
     description: '',
 });

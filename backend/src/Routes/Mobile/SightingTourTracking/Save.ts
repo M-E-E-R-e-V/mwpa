@@ -5,6 +5,7 @@ import {SightingTourTracking as SightingTourTrackingDB} from '../../../Db/MariaD
 import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {SightingTourTrackingRepository} from '../../../Db/MariaDb/Repositories/SightingTourTrackingRepository.js';
+import {SightingMovementService} from '../../../Service/Movement/SightingMovementService.js';
 import {MobileV1StatusCode} from '../MobileV1.js';
 
 /**
@@ -50,6 +51,10 @@ export class Save {
             groupedByTour.set(entry.tour_fid, list);
         }
 
+        // Tours whose track gained new points — sighting movements for these
+        // tours need to be recomputed once the sync is done.
+        const affectedTourIds = new Set<number>();
+
         for (const [tourFid, entries] of groupedByTour) {
             const tour = await SightingTourRepository.getInstance().findByTourFidAndDevice(tourFid, device.id);
 
@@ -77,7 +82,30 @@ export class Save {
                 countAdd++;
             }
 
+            if (countAdd > 0) {
+                affectedTourIds.add(tour.id);
+            }
+
             Logger.getLogger().info(`Mobile/SightingTourTracking::save: added ${countAdd}/${entries.length} for tour_fid: ${tourFid}`);
+        }
+
+        // Fire-and-forget rebuild of movements for every tour that gained
+        // points. Done after the response is sent (we don't await) so the
+        // mobile sync stays fast — service handles its own errors.
+        if (affectedTourIds.size > 0) {
+            const service = SightingMovementService.getInstance();
+            for (const tourId of affectedTourIds) {
+                service.rebuildForTour(tourId).then((stats) => {
+                    Logger.getLogger().info(
+                        `Mobile/SightingTourTracking::save: movement rebuild for tour ${tourId}: ${stats.processed} ok, ${stats.failed} failed`
+                    );
+                }).catch((err: unknown) => {
+                    Logger.getLogger().error(
+                        `Mobile/SightingTourTracking::save: movement rebuild for tour ${tourId} crashed`,
+                        err as Error
+                    );
+                });
+            }
         }
 
         return {

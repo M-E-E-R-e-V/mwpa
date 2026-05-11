@@ -5,6 +5,7 @@ import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepos
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {Sighting} from '../../../Db/MariaDb/Entities/Sighting.js';
 import {SightingTour} from '../../../Db/MariaDb/Entities/SightingTour.js';
+import {SightingMovementService} from '../../../Service/Movement/SightingMovementService.js';
 
 /**
  * Normalise an HH:mm-ish time so string comparison works for ranges that span
@@ -109,6 +110,10 @@ export class Save {
         Save._applyFields(sighting, request, owningTour);
 
         await SightingRepository.getInstance().save(sighting);
+
+        // Refresh derived movement data. The service swallows its own
+        // errors so a derived-data hiccup never blocks a user save.
+        await SightingMovementService.getInstance().rebuildForSighting(sighting.id);
 
         return {
             statusCode: StatusCodes.OK

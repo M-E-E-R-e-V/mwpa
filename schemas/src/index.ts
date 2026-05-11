@@ -81,6 +81,8 @@ export {
     VehicleEntry,
     SchemaVehicleListResponse,
     VehicleListResponse,
+    SchemaVehicleDeleteRequest,
+    VehicleDeleteRequest,
 } from './Routes/Main/Vehicle/Vehicle.js';
 export {
     SchemaVehicleDriverEntryUser,
@@ -184,6 +186,16 @@ export {
     SchemaSightingYearsResponse,
     SightingYearsResponse,
 } from './Routes/Main/Sightings/Sightings.js';
+export {
+    SchemaSightingMovementTrackEntry,
+    SightingMovementTrackEntry,
+    SchemaSightingMovementEntry,
+    SightingMovementEntry,
+    SchemaSightingMovementListRequest,
+    SightingMovementListRequest,
+    SchemaSightingMovementListResponse,
+    SightingMovementListResponse,
+} from './Routes/Main/Sightings/SightingMovement.js';
 export {
     SchemaUsersRolesEntry,
     UsersRolesEntry,

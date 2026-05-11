@@ -2,6 +2,7 @@ import {DefaultReturn, StatusCodes} from 'figtree-schemas';
 import {Vts} from 'vts';
 import {SightingDeleteRequest} from 'mwpa_schemas';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
+import {SightingMovementService} from '../../../Service/Movement/SightingMovementService.js';
 
 /**
  * Delete
@@ -35,6 +36,12 @@ export class Delete {
         sighting.deletedDescription = request.description;
 
         await SightingRepository.getInstance().save(sighting);
+
+        // Drop the derived movement row + segments so the map stops
+        // showing tracks for a sighting that no longer exists. The
+        // service handles its own errors and detects the `deleted=true`
+        // state internally.
+        await SightingMovementService.getInstance().rebuildForSighting(sighting.id);
 
         return {
             statusCode: StatusCodes.OK

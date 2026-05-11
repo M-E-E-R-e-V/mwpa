@@ -30,6 +30,7 @@ import {fromLonLat} from 'ol/proj';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
+import {SightingMovement as SightingMovementAPI} from '../Api/SightingMovement';
 import {Sightings as SightingsAPI, SightingsEntry, SightingsFilter} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
 import {User as UserAPI} from '../Api/User';
@@ -310,8 +311,13 @@ export class Sighting extends BasePage {
             for (const v of vehicles) {
                 mvehicles.set(v.id, v);
             }
-            this._sightingDialog.setVehicleList(vehicles);
-            filter.setVehicleList(vehicles);
+
+            // Operational pickers (new sighting modal + top filter) only get
+            // active boats. mvehicles above still holds every vehicle so old
+            // rows referencing a retired boat keep rendering its name.
+            const activeVehicles = vehicles.filter((v) => v.in_use && !v.isdeleted);
+            this._sightingDialog.setVehicleList(activeVehicles);
+            filter.setVehicleList(activeVehicles);
         }
 
         if (drivers) {
@@ -352,6 +358,45 @@ export class Sighting extends BasePage {
         btnMenu.addMenuItem(new LangText('Filter'), () => {
             filter.show();
         }, 'fa fa-filter');
+
+        // Admin-only: trigger a full rebuild of derived movement data
+        // (sighting_movement + sighting_movement_track). Synchronous on the
+        // server side, so the button stays in a "running" state until the
+        // server returns counts. Filter for admin happens after the
+        // currentuser lookup further down — see below.
+        const rebuildMovementsLabel = new LangText('Rebuild movements');
+        const triggerRebuildMovements = async(): Promise<void> => {
+            const confirmed = window.confirm(
+                Lang.i().l('Rebuild every sighting\'s movement track now? This may take a while.')
+                ?? 'Rebuild every sighting\'s movement track now? This may take a while.'
+            );
+            if (!confirmed) {
+                return;
+            }
+
+            this._toast.fire({
+                icon: 'info',
+                title: Lang.i().l('Rebuilding movements…') ?? 'Rebuilding movements…'
+            });
+
+            try {
+                const msg = await SightingMovementAPI.rebuildAll();
+                this._toast.fire({
+                    icon: 'success',
+                    title: `${Lang.i().l('Rebuild done') ?? 'Rebuild done'} (${msg})`
+                });
+
+                // Refresh the page so the new tracks show up on the map.
+                if (this._onLoadTable) {
+                    await this._onLoadTable();
+                }
+            } catch (err) {
+                this._toast.fire({
+                    icon: 'error',
+                    title: `${Lang.i().l('Rebuild failed') ?? 'Rebuild failed'}: ${(err as Error).message}`
+                });
+            }
+        };
 
         // In-header quick-search — sibling of .card-title in the card-header so AdminLTE's
         // float layout puts it directly right of the title (and left of the tools menu).
@@ -404,7 +449,108 @@ export class Sighting extends BasePage {
                 this._addSightingToMap(entry, mspecies);
             }
 
+            // Refresh the movements layer with the filtered set — but
+            // only if the user has opened it. Otherwise we keep the
+            // fetch deferred.
+            await refreshMovementsForEntries(filtered);
+
             await this._map.refrech();
+        };
+
+        /**
+         * Chunked fetch + append. Keeps the browser responsive when the
+         * filtered set is large — without this, a 5000-sighting filter
+         * crashes the UI thread during GeoJSON parse + OL feature
+         * insertion. 100 ids per request is enough to keep DB round-trips
+         * low without producing megabytes per response.
+         */
+        const MOVEMENT_CHUNK_SIZE = 100;
+
+        /**
+         * A monotonically increasing sequence the chunked-load flow uses
+         * as a race-guard: if the user toggles the layer or changes the
+         * dashboard filter mid-load, every in-flight chunk that doesn't
+         * match the current sequence number gets dropped on arrival.
+         */
+        let movementFetchSeq = 0;
+
+        const sleepZero = (): Promise<void> => new Promise<void>((resolve) => {
+            // Yield to the event loop between chunks so the page stays
+            // interactive (scroll, layer toggle, etc.). setTimeout(0) is
+            // good enough — we don't need a frame-aligned yield.
+            setTimeout(resolve, 0);
+        });
+
+        /**
+         * Wipe the movements layer and re-populate it for `entries`
+         * incrementally. The page calls this on layer toggle-on, on
+         * dashboard filter change, and after a "load all" backfill. Each
+         * chunk's features get appended as soon as they arrive so the
+         * user sees tracks growing on the map instead of waiting for the
+         * whole set.
+         */
+        const refreshMovementsForEntries = async(entries: SightingsEntry[]): Promise<void> => {
+            if (!this._map || !this._map.isMovementsLayerVisible()) {
+                return;
+            }
+
+            const seq = ++movementFetchSeq;
+            this._map.clearMovementTracks();
+
+            const ids = entries.map((e) => e.id);
+            for (let i = 0; i < ids.length; i += MOVEMENT_CHUNK_SIZE) {
+                const chunk = ids.slice(i, i + MOVEMENT_CHUNK_SIZE);
+
+                try {
+                    const movements = await SightingMovementAPI.getList(chunk);
+
+                    if (seq !== movementFetchSeq) {
+                        // A newer refresh started while this chunk was in
+                        // flight — drop the result, the newer flow will
+                        // repopulate everything from scratch.
+                        return;
+                    }
+
+                    if (this._map) {
+                        this._map.setMovementTracks(movements, true);
+                    }
+                } catch (err) {
+                    console.warn('[Sighting] movement fetch failed', err);
+                }
+
+                await sleepZero();
+            }
+        };
+
+        /**
+         * Append movements for a single new page of sightings (no clear).
+         * Cheaper than `refreshMovementsForEntries` during infinite
+         * scroll: we know the prior chunks are still valid, just need
+         * tracks for the rows the user just brought in.
+         */
+        const appendMovementsForEntries = async(entries: SightingsEntry[]): Promise<void> => {
+            if (!this._map || !this._map.isMovementsLayerVisible()) {
+                return;
+            }
+            if (entries.length === 0) {
+                return;
+            }
+
+            const seq = movementFetchSeq;
+
+            try {
+                const movements = await SightingMovementAPI.getList(entries.map((e) => e.id));
+
+                if (seq !== movementFetchSeq) {
+                    return;
+                }
+
+                if (this._map) {
+                    this._map.setMovementTracks(movements, true);
+                }
+            } catch (err) {
+                console.warn('[Sighting] movement append failed', err);
+            }
         };
 
         dashboard.setLookups({species: mspecies, vehicles: mvehicles});
@@ -452,6 +598,12 @@ export class Sighting extends BasePage {
                         }
                         loadedCount += more.list.length;
 
+                        // Backfill brought in N new sightings — append
+                        // tracks for those only (the existing chunks are
+                        // still valid). Skips silently when the layer is
+                        // hidden, so closed-layer "load all" stays cheap.
+                        await appendMovementsForEntries(more.list);
+
                         if (this._map) {
                             await this._map.refrech();
                         }
@@ -472,6 +624,14 @@ export class Sighting extends BasePage {
                 parseFloat(currentuser.organization.lon),
                 parseFloat(currentuser.organization.lat)
             ]);
+        }
+
+        // Admin-only menu entry. We add it here (after the user-info lookup)
+        // rather than at card-build time so non-admins don't see a no-op item.
+        if (currentuser?.user?.isAdmin) {
+            btnMenu.addMenuItem(rebuildMovementsLabel, () => {
+                triggerRebuildMovements().catch(() => undefined);
+            }, 'fa fa-route');
         }
 
         this._map = new SightingMap(mapContainer);
@@ -496,6 +656,23 @@ export class Sighting extends BasePage {
         await this._map.addAreaByJson('map_areas/ES7020123.json', 'ES7020123', 'sigthing_ES7020123_layer');
         await this._map.addAreaByJson('map_areas/ES7020122.json', 'ES7020122', 'sigthing_ES7020122_layer');
         await this._map.addAreaByJson('map_areas/ES0000526.json', 'ES0000526', 'sigthing_ES0000526_layer');
+
+        // Lazy-fetch movements only when the user opens the layer in
+        // the LayerSwitcher. Visibility changes also fire when the layer
+        // gets unchecked — we drop the source content in that case so
+        // turning it back on always re-fetches the current visible set.
+        this._map.setOnMovementsVisibilityChange((visible) => {
+            if (!this._map) {
+                return;
+            }
+
+            if (!visible) {
+                this._map.clearMovementTracks();
+                return;
+            }
+
+            refreshMovementsForEntries(loadedEntries).catch(() => undefined);
+        });
 
         navContainer.find(`a[href="#${mapTabId}"]`).on('shown.bs.tab', () => {
             if (!this._map) {
@@ -968,6 +1145,12 @@ export class Sighting extends BasePage {
                     for (const entry of response.list) {
                         loadedEntries.push(entry);
                     }
+
+                    // If the user already has the movements layer open,
+                    // append tracks for the newly arrived page only —
+                    // cheaper than re-fetching for the whole accumulated
+                    // set on every infinite-scroll tick.
+                    await appendMovementsForEntries(response.list);
 
                     totalCount = response.count;
                     loadedCount += response.list.length;

@@ -8,6 +8,7 @@ import {SightingTour as SightingTourDB} from '../../../Db/MariaDb/Entities/Sight
 import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
+import {SightingMovementService} from '../../../Service/Movement/SightingMovementService.js';
 import {Users} from '../../../Users/Users.js';
 import {UtilSighting} from '../../../Utils/UtilSighting.js';
 import {UtilTourFid} from '../../../Utils/UtilTourFid.js';
@@ -159,6 +160,10 @@ export class Save {
         sighting = await SightingRepository.getInstance().save(sighting);
 
         Logger.getLogger().info(`Mobile/Sightings::save: saved unid: ${sighting.unid} id: ${sighting.id}`);
+
+        // Refresh derived movement data for this sighting. Service catches
+        // its own errors so this never breaks the mobile sync contract.
+        await SightingMovementService.getInstance().rebuildForSighting(sighting.id);
 
         return {
             statusCode: MobileV1StatusCode.OK,
