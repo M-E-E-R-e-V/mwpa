@@ -1,151 +1,277 @@
-<p align="center">NOTE: This document is under development. Please check regularly for updates!</p>
-
 <h1 align="center">
-
-![MWPA](doc/public/whale-ico.png)
-
-MWPA
-
+  <a href="https://m-e-e-r.de/">
+    <img src="doc/public/whale-ico.png" width="120" alt="MWPA" />
+  </a>
+  <br />
+  MWPA
+  <br />
+  <sub><em>Mammal Watching. Processing. Analysing.</em></sub>
 </h1>
 
-<p align="center">Mammal watching. Processing. Analysing.</p>
-<p align="center">Processing and analysing data gathered by mammal watching.</p>
-<div align="center">
+<p align="center">
+  Open-source platform for opportunistic cetacean observation:
+  a <strong>mobile app</strong> for on-board recording, a
+  <strong>web frontend</strong> for review &amp; analysis, and a
+  <strong>backend</strong> built around the scientific workflow of
+  <a href="https://m-e-e-r.de/">M.E.E.R. e.V.</a> off La&nbsp;Gomera.
+</p>
 
-[![Gitter](https://badges.gitter.im/Mammals-watchig-process-analyse/Main.svg)](https://gitter.im/Mammals-watchig-process-analyse/Main?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-[![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/stefanwerfling/mwpa)](https://lgtm.com/projects/g/stefanwerfling/mwpa)
-[![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/stefanwerfling/mwpa)](https://lgtm.com/projects/g/stefanwerfling/mwpa)
-[![License: GPL v3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Liberapay](https://img.shields.io/liberapay/patrons/StefanWerf.svg?logo=liberapay)](https://liberapay.com/StefanWerf/donate)
-</div>
+<p align="center">
+  <a href="https://www.gnu.org/licenses/gpl-3.0">
+    <img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="License: GPL v3.0" />
+  </a>
+  <a href="https://nodejs.org/">
+    <img src="https://img.shields.io/badge/node-%E2%89%A518.x-339933?logo=node.js&logoColor=white" alt="Node 18+" />
+  </a>
+  <a href="https://www.typescriptlang.org/">
+    <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript strict" />
+  </a>
+  <a href="https://mariadb.org/">
+    <img src="https://img.shields.io/badge/db-MariaDB-003545?logo=mariadb&logoColor=white" alt="MariaDB" />
+  </a>
+  <a href="https://gitter.im/Mammals-watchig-process-analyse/Main">
+    <img src="https://badges.gitter.im/Mammals-watchig-process-analyse/Main.svg" alt="Gitter chat" />
+  </a>
+  <a href="https://liberapay.com/StefanWerf/donate">
+    <img src="https://img.shields.io/liberapay/patrons/StefanWerf.svg?logo=liberapay" alt="Liberapay patrons" />
+  </a>
+</p>
 
-MWPA provides the acquisition of scientific observational data, an easy-to-use user interface for viewing, confirming and reviewing the data.
-This includes the backend for data collection, the frontend and a mobile phone app for snycronization.
-The recorded ones relate to mammals and their observations.
-The aim is to record the observations cleanly and quickly. For this purpose, the old data is processed again and imported.
-<h1 align="center">
+<p align="center">
+  <a href="doc/data-collection.en.md">English data guide</a>
+  ·
+  <a href="doc/data-collection.de.md">Deutsche Anleitung</a>
+  ·
+  <a href="doc/data-collection.es.md">Guía en español</a>
+  ·
+  <a href="https://github.com/M-E-E-R-e-V/mwpa/wiki">Wiki</a>
+  ·
+  <a href="https://swe.stoplight.io/docs/mwpa/">API docs</a>
+</p>
 
-[![collect data](doc/public/2017-1022_Fabian-Datenaufnahme-Gomera-300x200.jpg)](https://m-e-e-r.de/)
+---
 
-</h1>
+<p align="center">
+  <img src="doc/screenshots/mwpa_screenshot_sighting1.png" width="49%" alt="Sighting list" />
+  <img src="doc/screenshots/mwpa_screenshot_tour_map.png" width="49%" alt="Map view" />
+</p>
 
-You can also access the dev chatroom on our [Gitter Channel](https://gitter.im/Mammals-watchig-process-analyse/Main).
+## Contents
 
-# Index
+- [What MWPA does](#what-mwpa-does)
+- [Quick start](#quick-start)
+- [Architecture](#architecture)
+- [Features](#features)
+- [Tech stack](#tech-stack)
+- [Data &amp; scientific use](#data--scientific-use)
+- [Documentation](#documentation)
+- [Project status](#project-status)
+- [Contributing &amp; community](#contributing--community)
+- [Citing MWPA](#citing-mwpa)
+- [Supervisors](#supervisors)
+- [License](#license)
 
-1. [Motivation](#motivation)
-2. [Help the project](#help-the-project)
-3. [About MWPA](#about_mwpa)
-   * 3.1 [About Backend ](#1-about-backend)
-     * 3.1.2 [Importer Verions](#importer-verions)
-     * 3.1.2 [Commandline arguments](#commandline-arguments)
-     * 3.1.3 [Backend dependencies](#backend-dependencies)
-     * 3.1.4 [Database documentation](#database-documentation)
-   * 3.2 [About Frontend](#2-about-frontend)
-     * 3.2.1 [Frontend dependencies](#frontend-dependencies)
-     * 3.2.2 [Screenshots](#screenshots)
-   * 3.3 [About Mobile App](#3-about-mobile-app)
-4. [Getting Started](#getting-started)
-   * Wiki --> [more here](https://github.com/M-E-E-R-e-V/mwpa/wiki)
-5. [Project supervisor](#project-supervisor)
-6. [License](#license)
+## What MWPA does
 
-## Motivation
+> Whale- and dolphin-watching tours generate huge amounts of valuable observation data. Most of it used to disappear in paper logbooks or a sprawling Access database. MWPA brings that data into one place so it can be reviewed, exported, and analysed.
 
-When I started my trip with the M.E.E.R e.V. association, I got to know the scientific work on La Gomera. It was overwhelmed to get so close to the marine mammals (adventure). I recognized the value of this work. The association M.E.E.R e.V. has dedicated itself to the promotion of environmental protection, science and education, in particular the protection of the cetaceans (whales and dolphins) and their marine habitat as well as the research of the cetaceans off La Gomera (Canary Islands). Working with the people was wonderful and important. I was asked whether we could do something and because of the old software for collecting the data. After a long time passed by the pandemic, we finally got back to the topic. I would like to take on this task on a voluntary basis to the best of my ability and time. :)
+The platform sits on top of the long-running research programme of [M.E.E.R. e.V.](https://m-e-e-r.de/) (Marine Education, Environment, Research e.V.) for cetacean monitoring off La Gomera (Canary Islands, Spain).
 
-<h1 align="center">
+**Three audiences, one dataset:**
 
-[![M.E.E.R e.V.](doc/public/MEER-Logo.svg)](https://m-e-e-r.de/)
+- **Observers on board** record sightings (species, group size, behaviour, photos, GPS track) on the mobile app — even without network.
+- **Reviewers in the office** verify, correct and complete records via the web frontend.
+- **Researchers / authorities** export curated subsets for analysis or as regulatory deliverables (e.g. AROC).
 
-</h1>
+## Quick start
 
-## Help the project
+> Prerequisites: Node.js 18+, npm, Docker (for MariaDB).
 
-- help the association [M.E.E.R e.V.](https://m-e-e-r.de/)
-- you can program, you have ideas, then help us here, fork us and improve the code :) or write to us, we like to listen.
-- how can you still help?
-  - [Buy us a coffee](https://www.buymeacoffee.com/mwpa)
-  - Donate (see on [M.E.E.R e.V.](https://m-e-e-r.de/) page)
+```bash
+# 1. Clone with submodules (the in-house bambooo widget library is one)
+git clone --recurse-submodules https://github.com/stefanwerfling/mwpa.git
+cd mwpa
 
-## About MWPA
-MWPA is an NodeJs backend application for data collection and with frontend web application for easy-to-use. 
-The backend will exchange the data with the frontend via a rest-json API. The mobile app can synchronize the data via another rest-json API with the backend.
+# 2. Bring up the database
+docker compose up -d mariadb
 
-### 1. About Backend 
+# 3. Install everything (npm workspaces)
+npm install
 
-- User administration
-- Data properties management (specifications, management, ... and much more)
-- Data collection and analysis
-- Export for scientific programs
-- Import old data
-- API management for Mobile App
+# 4. Build: schemas -> backend -> frontend
+npm run compile
 
-#### Importer Verions
+# 5. Start the backend (binds https://localhost:3000 with a self-signed cert)
+node backend/dist/main.js --config=config.dev.json
+```
 
-- IM2020: Import file 2020 is a prepared file with fixed columns. The import can only be carried out once with this file.
+Open the web app at <https://localhost:3000> (accept the self-signed certificate). The mobile app lives in a [separate repository](https://github.com/M-E-E-R-e-V/mwpa-app).
 
-#### Commandline arguments
-See the example for starting the express server.
+For deployment, configuration, the IM2020 legacy importer and the AROC report workflow see the [project wiki](https://github.com/M-E-E-R-e-V/mwpa/wiki).
 
-```--config```
-  
-  - Path to config file
+## Architecture
 
-```--import```
-  
-  - Path to IM2020 import file
+```text
+┌──────────────────────┐   sync     ┌──────────────────────┐
+│  Mobile App (Flutter)│ ─────────► │                      │
+│  offline-first       │            │                      │
+└──────────────────────┘            │  Express + figtree   │
+                                    │  (TypeScript)        │
+┌──────────────────────┐   REST     │                      │
+│  Web Frontend (SPA)  │ ◄────────► │  /json/*  /mobile/*  │
+│  AdminLTE + bambooo  │            │                      │
+└──────────────────────┘            └──────────┬───────────┘
+                                               │ TypeORM
+                                               ▼
+                                    ┌──────────────────────┐
+                                    │       MariaDB        │
+                                    │  observations, tracks│
+                                    │  derived analytics   │
+                                    └──────────────────────┘
+                                               ▲
+                                               │ enrich
+                                    ┌──────────┴───────────┐
+                                    │ Background services  │
+                                    │ depth · weather ·    │
+                                    │ movement analytics   │
+                                    └──────────────────────┘
+```
 
-#### Backend dependencies
+The repo is an **npm workspaces monorepo** with three packages that build in order:
 
-- [NodeJS](https://nodejs.org/en/)
-- [Express Server](https://expressjs.com/)
-- [MariaDB](https://mariadb.org/)
+| Package | Role |
+|---|---|
+| [`schemas/`](schemas/) | Runtime types &amp; validators (using `vts`), generated from `schemas/schemas.json` via [vtseditor](https://github.com/stefanwerfling/vtseditor). Shared by backend &amp; frontend. |
+| [`backend/`](backend/) | Node.js Express app on the [`figtree`](https://github.com/stefanwerfling/figtree) framework — services, repositories, REST routes. |
+| [`frontend/`](frontend/) | Browser SPA — webpack bundle, AdminLTE 3 + jQuery + Bootstrap 4 + the in-house [`bambooo`](https://github.com/stefanwerfling/bambooo) widget library. |
 
-#### Database documentation
-> [MWPA Database documentation on dbdiagram.io](https://dbdiagram.io/d/5dfa98f1edf08a25543f3bcc)
+## Features
 
-#### API documentation
-> [MWPA API documentation on stoplight.io](https://swe.stoplight.io/docs/mwpa/)
+### For observers (mobile)
 
-### 2. About Frontend
+- Offline-first sighting recording — species, group size, behaviour, photos
+- Continuous GPS tracking during the tour
+- Background sync once a network is available
 
-- User login
-- Adminsitration
-- Lists viewing/Filtering/Data editing
+### For reviewers (web)
 
-#### Frontend dependencies
+- Sighting list with multi-column sort, in-header search, infinite scroll
+- Map view with sighting markers + computed movement tracks (toggleable layer)
+- Dashboard with crossfilter (date, species, organisation, vehicle, driver)
+- Per-sighting analytics, year-on-year comparison, behavioural summaries
+- Edit modal with photo gallery and validation against the shared schema
 
-- [AdminLTE](https://github.com/ColorlibHQ/AdminLTE)
-- [JQuery](https://jquery.com/)
-- [Bootstraps](https://getbootstrap.com/)
+### For administrators
 
-#### Screenshots
+- Users, groups &amp; roles (RBAC via `rbac-simple`)
+- Vehicles, drivers, organisations, species &amp; species groups
+- Encounter categories, behavioural states, external receivers (AROC)
+- Bulk re-derivation of analytics (e.g. movement tracks)
+
+### For researchers
+
+- Excel export with column picker &amp; coordinate-format selector (decimal / DMS / DM / all) — includes an Info sheet documenting the active filter
+- AROC office-report export (filled `PLANTILLA_AVISTAMIENTOS_AROC.xlsx`, one file per boat per half-year)
+- Printable Data Page (Map + Analytics + Year comparison) via the browser's PDF export
+- Derived **movement tracks** per sighting: distance, speed, heading, turning-angle, with GPS-jump flag
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Language | TypeScript (`NodeNext` ESM in backend, webpack bundle in frontend) |
+| Backend framework | [figtree](https://github.com/stefanwerfling/figtree) (Express + service-manager + DBRepository + RouteLoader) |
+| ORM | TypeORM on MariaDB |
+| Schema validation | [vts](https://github.com/stefanwerfling/vts) generated from JSON via [vtseditor](https://github.com/stefanwerfling/vtseditor) |
+| Auth | Express session + custom RBAC (`mwpa_schemas` rights) |
+| Frontend UI | AdminLTE 3, jQuery, Bootstrap 4, [bambooo](https://github.com/stefanwerfling/bambooo) widgets |
+| Maps | OpenLayers + `ol-layerswitcher`, OSM tile cache |
+| Analytics | d3 + dc.js (crossfilter), in-page charts and dashboards |
+| Office exports | `node-xlsx` (sightings list), `JSZip` direct-XML patch (AROC template) |
+| Mobile | Flutter ([separate repo](https://github.com/M-E-E-R-e-V/mwpa-app)) |
+| Local infra | Docker Compose (MariaDB) |
+
+## Data &amp; scientific use
+
+A separate guide describes **how data is collected**, **what every field means**, **how the derived movement tracks are computed**, and **how to use the dataset for scientific analysis** — including a reproducibility checklist and an honest list of limitations.
+
+- [English](doc/data-collection.en.md) — *Data collection &amp; scientific use*
+- [Deutsch](doc/data-collection.de.md) — *Datenerhebung &amp; wissenschaftliche Nutzung*
+- [Español](doc/data-collection.es.md) — *Recogida de datos y uso científico*
+
+Topics covered:
+
+1. Data sources (mobile app, web frontend, importers, background services)
+2. Domain model — tour ▸ sighting ▸ tracking ▸ extended ▸ movement
+3. Field-by-field reference
+4. Coordinate &amp; time conventions (WGS84 / UTC / local-time caveats)
+5. Derived movement tracks &amp; quality flags
+6. Recommended analyses &amp; their limitations
+7. Reproducibility checklist
+8. Citation guidance
+
+## Documentation
+
+| Resource | What's inside |
+|---|---|
+| [Project wiki](https://github.com/M-E-E-R-e-V/mwpa/wiki) | Installation, deployment, IM2020 importer, AROC workflow |
+| [REST API](https://swe.stoplight.io/docs/mwpa/) | Full endpoint reference (Stoplight) |
+| [Database schema](https://dbdiagram.io/d/5dfa98f1edf08a25543f3bcc) | ER diagram of all entities |
+| [CLAUDE.md](CLAUDE.md) | Developer onboarding (used by Claude Code &amp; humans) |
+
+## Project status
+
+- **Active** — under continuous development. See [issues](https://github.com/stefanwerfling/mwpa/issues) for the current backlog.
+- **Backend migration** — the backend is being ported from `old-backend/` (legacy routing-controllers) to `backend/` (figtree framework). Most main and mobile resources are ported; see `old-backend/` only for unported logic that needs to move over.
+- **Test suite** — *not yet*. Contributions welcome.
+
+The mobile app (Flutter) is in production with M.E.E.R. e.V., so any change touching `/mobile/*` REST endpoints must keep the wire format backward-compatible.
+
+## Contributing &amp; community
+
+You're welcome to:
+
+- File issues / feature requests on [GitHub](https://github.com/stefanwerfling/mwpa/issues)
+- Send pull requests — please follow the existing ESLint rules (4 spaces, single quotes, strict TS) and the [CLAUDE.md](CLAUDE.md) conventions for schemas, routes and migrations
+- Chat on [Gitter](https://gitter.im/Mammals-watchig-process-analyse/Main)
+- Support the underlying NGO at [M.E.E.R. e.V.](https://m-e-e-r.de/) (donations, membership, on-site volunteering)
+- Sponsor development:
+  [Buy me a coffee](https://www.buymeacoffee.com/mwpa) ·
+  [Liberapay](https://liberapay.com/StefanWerf/donate)
+
 <table>
   <tr>
-    <td> 
-      <img src="doc/screenshots/login.png" alt="1" width="360px" >
+    <td align="center" valign="top" width="33%">
+      <a href="https://m-e-e-r.de/">
+        <img src="doc/public/MEER-Logo.svg" width="160" alt="M.E.E.R. e.V." /><br />
+        <sub><b>Scientific partner</b></sub>
+      </a>
+    </td>
+    <td valign="middle">
+      <em>"Working with the people was wonderful and important."</em><br />
+      MWPA exists because of the volunteers of M.E.E.R. e.V., who collect this data
+      under real-world conditions tour after tour. Please support their work.
     </td>
   </tr>
 </table>
 
-### 3. About Mobile App
+## Citing MWPA
 
-- Collecting data (also Offline)
-- Sync to backend
+If you publish work based on data from this system, please:
 
-[More can read here](https://github.com/M-E-E-R-e-V/mwpa-app)
+1. **Acknowledge M.E.E.R. e.V.** as the data provider — [m-e-e-r.de](https://m-e-e-r.de/).
+2. Cite the **collection period** (start / end date of the included sightings), not the tool version.
+3. Contact M.E.E.R. e.V. for a project-specific data-use agreement before publication.
 
-## Getting Started
+See the [data &amp; scientific use guide](doc/data-collection.en.md#citing-the-dataset) for the recommended attribution wording and the reproducibility checklist.
 
-[All information for the installation and configuration can be found in the MWPA wiki.](https://github.com/M-E-E-R-e-V/mwpa/wiki)
+## Supervisors
 
-## Project supervisor
-* Christina Sommer by [M.E.E.R e.V.](https://m-e-e-r.de/)
-* Stefan Werfling by [Pegenau GmbH & Co. KG](https://www.pegenau.de/)
+- Christina Sommer — [M.E.E.R. e.V.](https://m-e-e-r.de/)
+- Stefan Werfling — [Pegenau GmbH &amp; Co. KG](https://www.pegenau.de/)
 
 ## License
 
 [![License: GPL v3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for the full text.
