@@ -4,7 +4,7 @@ import moment from 'moment';
 import Path from 'path';
 import {Logger} from 'figtree';
 import {OfficeReportFilter} from 'mwpa_schemas';
-import {Between, FindOptionsWhere, Raw} from 'typeorm';
+import {Between, FindOptionsWhere, In, Raw} from 'typeorm';
 import {Sighting as SightingDB} from '../../../Db/MariaDb/Entities/Sighting.js';
 import {BehaviouralStates as BehaviouralStatesDB} from '../../../Db/MariaDb/Entities/BehaviouralStates.js';
 import {EncounterCategories as EncounterCategoriesDB} from '../../../Db/MariaDb/Entities/EncounterCategories.js';
@@ -356,10 +356,23 @@ export class CreateExport {
 
         if (vehicleId > 0) {
             baseWhere.vehicle_id = vehicleId;
-        }
+        } else if (organizationId > 0) {
+            // Resolve org → vehicles. `sighting.organization_id` is only filled
+            // by the mobile-save path, so legacy / main-web rows hold 0 and a
+            // direct `s.organization_id = :org` filter never matches anything.
+            // The vehicle's own org column is authoritative.
+            const vehicleRepoForOrg = await VehicleRepository.getInstance().getRepository();
+            const orgVehicles = await vehicleRepoForOrg.find({where: {organization_id: organizationId}});
+            const orgVehicleIds = orgVehicles.map((v) => v.id);
 
-        if (organizationId > 0) {
-            baseWhere.organization_id = organizationId;
+            if (orgVehicleIds.length === 0) {
+                Logger.getLogger().info(
+                    `OfficeReport::createExport: no vehicles found for organization_id=${organizationId}`
+                );
+                return null;
+            }
+
+            baseWhere.vehicle_id = In(orgVehicleIds);
         }
 
         if (year > 0) {
