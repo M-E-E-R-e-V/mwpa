@@ -500,6 +500,9 @@ export class SightingExport extends Component<HTMLDivElement> {
             }
 
             yearSelect.prop('disabled', false);
+            // Trigger refresh so the boat list reflects the auto-picked year
+            // (jQuery `.val()` doesn't fire change on its own).
+            yearSelect.trigger('change');
         }).catch(() => {
             yearSelect.empty();
             yearSelect.append(

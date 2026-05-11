@@ -159,6 +159,12 @@ export class SightingRepository extends DBRepository<Sighting> {
      * date range and (optional) organization. Used by the AROC-report boat picker
      * to narrow the dropdown to boats that actually have data for the selected
      * period — empty filters return every boat that has any sighting ever.
+     *
+     * Org filter joins through `vehicle.organization_id` rather than
+     * `sighting.organization_id`: the sighting column is only populated by the
+     * mobile-save path, so historical / main-web sightings carry 0 and would
+     * never match an explicit org pick. The vehicle's own org column is
+     * authoritative.
      * @param {string | undefined} periodFrom — inclusive lower bound (YYYY-MM-DD)
      * @param {string | undefined} periodTo — inclusive upper bound (YYYY-MM-DD)
      * @param {number | undefined} organizationId — when > 0, restrict to this org
@@ -185,7 +191,8 @@ export class SightingRepository extends DBRepository<Sighting> {
         }
 
         if (organizationId !== undefined && organizationId > 0) {
-            qb.andWhere('s.organization_id = :org', {org: organizationId});
+            qb.innerJoin('vehicle', 'v', 'v.id = s.vehicle_id')
+                .andWhere('v.organization_id = :org', {org: organizationId});
         }
 
         const rows = await qb.getRawMany<{vehicle_id: number | string | null}>();
