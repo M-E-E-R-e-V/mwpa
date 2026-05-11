@@ -6,6 +6,7 @@ import {EncounterCategories} from './Main/EncounterCategories.js';
 import {Group} from './Main/Group.js';
 import {Login} from './Main/Login.js';
 import {Organization} from './Main/Organization.js';
+import {SightingMovement} from './Main/SightingMovement.js';
 import {Sightings} from './Main/Sightings.js';
 import {Species} from './Main/Species.js';
 import {SpeciesGroup} from './Main/SpeciesGroup.js';
@@ -46,6 +47,7 @@ export class RouteLoader extends HttpRouteLoader {
             new Group(),
             new Organization(),
             new Sightings(),
+            new SightingMovement(),
             new Species(),
             new SpeciesGroup(),
             new Tours(),

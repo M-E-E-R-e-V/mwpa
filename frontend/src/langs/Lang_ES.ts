@@ -146,7 +146,36 @@ export class Lang_ES implements LangDefine {
         'Add Organization': 'Añadir organización',
         'Generate PDF': 'Generar PDF',
         'Combines map, analytics and year comparison on a printable sheet. Uses the browser\'s print dialog — pick "Save as PDF" there.':
-            'Combina mapa, análisis y comparación anual en una hoja imprimible. Usa el diálogo de impresión del navegador — seleccione "Guardar como PDF" allí.'
+            'Combina mapa, análisis y comparación anual en una hoja imprimible. Usa el diálogo de impresión del navegador — seleccione "Guardar como PDF" allí.',
+        'All organizations': 'Todas las organizaciones',
+        'Vehicles': 'Embarcaciones',
+        'Vehicle Name': 'Nombre de la embarcación',
+        'Name of vehicle': 'Nombre de la embarcación',
+        'Add Vehicle': 'Añadir embarcación',
+        'Edit Vehicle': 'Editar embarcación',
+        'Delete Vehicle': 'Eliminar embarcación',
+        'Are you sure you want to delete the vehicle? Historical sightings keep their reference, but the vehicle disappears from operational pickers.':
+            '¿Seguro que desea eliminar la embarcación? Los avistamientos históricos conservan la referencia, pero la embarcación desaparece de los selectores operativos.',
+        'Vehicle save success.': 'Embarcación guardada correctamente.',
+        'Vehicle delete success.': 'Embarcación eliminada correctamente.',
+        'Please select an organization.': 'Seleccione una organización.',
+        'Please enter a vehicle name.': 'Introduzca un nombre de embarcación.',
+        'In use (shown in operational pickers)': 'En uso (visible en los selectores)',
+        'Deleted (hidden from admin list)': 'Eliminada (oculta en la lista de administración)',
+        'in use': 'en uso',
+        'not in use': 'fuera de uso',
+        'deleted': 'eliminada',
+        'Status': 'Estado',
+        'Action': 'Acción',
+        'Delete': 'Eliminar',
+        'search name / organization …': 'buscar nombre / organización …',
+        'Rebuild movements': 'Recalcular movimientos',
+        'Rebuild every sighting\'s movement track now? This may take a while.':
+            '¿Recalcular ahora los trayectos de movimiento de todos los avistamientos? Puede llevar un rato.',
+        'Rebuilding movements…': 'Recalculando movimientos…',
+        'Rebuild done': 'Recálculo finalizado',
+        'Rebuild failed': 'Recálculo fallido',
+        'Movement tracks': 'Trayectos de movimiento'
     };
 
     /**

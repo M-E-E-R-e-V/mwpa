@@ -155,6 +155,59 @@ export class SightingRepository extends DBRepository<Sighting> {
     }
 
     /**
+     * Distinct vehicle ids that appear on non-deleted sightings within the given
+     * date range and (optional) organization. Used by the AROC-report boat picker
+     * to narrow the dropdown to boats that actually have data for the selected
+     * period — empty filters return every boat that has any sighting ever.
+     * @param {string | undefined} periodFrom — inclusive lower bound (YYYY-MM-DD)
+     * @param {string | undefined} periodTo — inclusive upper bound (YYYY-MM-DD)
+     * @param {number | undefined} organizationId — when > 0, restrict to this org
+     * @return {number[]}
+     */
+    public async findUsedVehicleIds(
+        periodFrom?: string,
+        periodTo?: string,
+        organizationId?: number
+    ): Promise<number[]> {
+        const repository = await this._repository;
+        const qb = repository
+            .createQueryBuilder('s')
+            .select('DISTINCT s.vehicle_id', 'vehicle_id')
+            .where('s.deleted = :deleted', {deleted: false})
+            .andWhere('s.vehicle_id > 0');
+
+        if (periodFrom !== undefined && periodFrom !== '') {
+            qb.andWhere('s.date >= :from', {from: periodFrom});
+        }
+
+        if (periodTo !== undefined && periodTo !== '') {
+            qb.andWhere('s.date <= :to', {to: periodTo});
+        }
+
+        if (organizationId !== undefined && organizationId > 0) {
+            qb.andWhere('s.organization_id = :org', {org: organizationId});
+        }
+
+        const rows = await qb.getRawMany<{vehicle_id: number | string | null}>();
+
+        const ids: number[] = [];
+
+        for (const row of rows) {
+            if (row.vehicle_id === null || row.vehicle_id === undefined) {
+                continue;
+            }
+
+            const id = typeof row.vehicle_id === 'number' ? row.vehicle_id : Number(row.vehicle_id);
+
+            if (Number.isFinite(id) && id > 0) {
+                ids.push(id);
+            }
+        }
+
+        return ids;
+    }
+
+    /**
      * Paginated list of non-deleted sightings, optionally restricted to a set of organization ids
      * and further narrowed by the user-provided filter criteria.
      *

@@ -32,4 +32,15 @@ export class Vehicle extends DBBaseEntityId {
     })
     public isdeleted!: boolean;
 
+    /**
+     * Whether the vehicle is currently active in use.
+     * Set false to hide it from operational pickers (e.g. tour creation,
+     * AROC report boat dropdown) without soft-deleting historical sightings.
+     * Defaults to true so the column adds cleanly under synchronize=true.
+     */
+    @Column({
+        default: true
+    })
+    public in_use!: boolean;
+
 }

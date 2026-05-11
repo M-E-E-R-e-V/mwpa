@@ -308,6 +308,9 @@ export class CreateExport {
             : 1;
 
         const vehicleId = filter?.vehicle_id && filter.vehicle_id > 0 ? filter.vehicle_id : 0;
+        const organizationId = filter?.organization_id && filter.organization_id > 0
+            ? filter.organization_id
+            : 0;
         const year = filter?.year && Number.isFinite(filter.year) && filter.year > 0
             ? filter.year
             : 0;
@@ -340,12 +343,23 @@ export class CreateExport {
             }
         }
 
+        // Explicit organization filter wins for the GENERALES sheet when the
+        // caller didn't pin a vehicle — otherwise we'd leak the wrong org's
+        // header data into a "all boats of org X" report.
+        if (!organization && organizationId > 0) {
+            organization = await OrganizationRepository.getInstance().findOne(organizationId);
+        }
+
         // --- Sightings query -------------------------------------------------------------
         const sightingRepo = await SightingRepository.getInstance().getRepository();
         const baseWhere: FindOptionsWhere<SightingDB> = {deleted: false};
 
         if (vehicleId > 0) {
             baseWhere.vehicle_id = vehicleId;
+        }
+
+        if (organizationId > 0) {
+            baseWhere.organization_id = organizationId;
         }
 
         if (year > 0) {

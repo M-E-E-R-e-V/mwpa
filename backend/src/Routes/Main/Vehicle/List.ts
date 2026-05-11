@@ -20,7 +20,9 @@ export class List {
             list.push({
                 id: vehicle.id,
                 name: vehicle.description,
-                isdeleted: vehicle.isdeleted
+                isdeleted: vehicle.isdeleted,
+                organization_id: vehicle.organization_id,
+                in_use: vehicle.in_use
             });
         }
 

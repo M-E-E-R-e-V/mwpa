@@ -1,8 +1,8 @@
 /* global JQuery */
 import {Component, UtilDownload} from 'bambooo';
-import {OfficeReport as OfficeReportApi} from '../Api/OfficeReport';
+import {OfficeReport as OfficeReportApi, UsedVehiclesFilter} from '../Api/OfficeReport';
+import {Organization as OrganizationApi} from '../Api/Organization';
 import {Sightings as SightingsApi} from '../Api/Sightings';
-import {Vehicle as VehicleApi} from '../Api/Vehicle';
 import {Lang} from '../Lang';
 
 const escapeHtml = (s: string): string => s
@@ -440,6 +440,21 @@ export class SightingExport extends Component<HTMLDivElement> {
             + '</select>'
         ).appendTo(semesterGroup);
 
+        /*
+         * Organization picker — narrows the report to one organization's sightings.
+         * Combine with the boat picker for a single boat of a single org;
+         * leave on "All organizations" to keep the previous behaviour.
+         */
+        const organizationGroup = jQuery('<div class="form-group"/>').appendTo(body);
+        jQuery(
+            `<label class="form-label">${escapeHtml(lang.l('Organization'))}</label>`
+        ).appendTo(organizationGroup);
+        const organizationSelect = jQuery(
+            '<select class="form-control" style="max-width: 480px" disabled>'
+            + `<option value="">${escapeHtml(lang.l('Loading…'))}</option>`
+            + '</select>'
+        ).appendTo(organizationGroup);
+
         // Boat picker — required for the new AROC template (1 file per boat).
         const vehicleGroup = jQuery('<div class="form-group"/>').appendTo(body);
         jQuery(
@@ -493,28 +508,105 @@ export class SightingExport extends Component<HTMLDivElement> {
             yearSelect.prop('disabled', false);
         });
 
-        VehicleApi.getList().then((vehicles) => {
-            vehicleSelect.empty();
-            vehicleSelect.append(
-                `<option value="">${escapeHtml(lang.l('All boats'))}</option>`
+        OrganizationApi.getOrganizationByUser().then((orgs) => {
+            organizationSelect.empty();
+            organizationSelect.append(
+                `<option value="">${escapeHtml(lang.l('All organizations'))}</option>`
             );
 
-            if (vehicles) {
-                for (const v of vehicles) {
-                    vehicleSelect.append(
-                        `<option value="${v.id}">${escapeHtml(v.name)}</option>`
+            if (orgs) {
+                for (const o of orgs) {
+                    organizationSelect.append(
+                        `<option value="${o.id}">${escapeHtml(o.description)}</option>`
                     );
                 }
             }
 
-            vehicleSelect.prop('disabled', false);
+            organizationSelect.prop('disabled', false);
         }).catch(() => {
-            vehicleSelect.empty();
-            vehicleSelect.append(
-                `<option value="">${escapeHtml(lang.l('All boats'))}</option>`
+            organizationSelect.empty();
+            organizationSelect.append(
+                `<option value="">${escapeHtml(lang.l('All organizations'))}</option>`
             );
-            vehicleSelect.prop('disabled', false);
+            organizationSelect.prop('disabled', false);
         });
+
+        /*
+         * Refresh the boat picker from /json/officereport/used_vehicles using
+         * the currently picked year/semester/organization. Race-guarded via a
+         * monotonically increasing sequence — only the latest in-flight
+         * request is allowed to update the UI, so quickly toggling year +
+         * semester can't leave a stale list on screen. The previously
+         * selected boat is preserved if it's still in the new list,
+         * otherwise the picker falls back to "All boats".
+         */
+        let vehicleFetchSeq = 0;
+        const refreshVehicles = (): void => {
+            const currentVal = String(vehicleSelect.val() ?? '');
+            const seq = ++vehicleFetchSeq;
+
+            const yearVal = parseInt(String(yearSelect.val() ?? ''), 10);
+            const semesterRaw = String(semesterSelect.val() ?? '');
+            const orgVal = parseInt(String(organizationSelect.val() ?? ''), 10);
+
+            const filter: UsedVehiclesFilter = {};
+            if (Number.isFinite(yearVal) && yearVal > 0) {
+                filter.year = yearVal;
+            }
+            if (semesterRaw === '1' || semesterRaw === '2') {
+                filter.semester = semesterRaw === '1' ? 1 : 2;
+            }
+            if (Number.isFinite(orgVal) && orgVal > 0) {
+                filter.organizationId = orgVal;
+            }
+
+            vehicleSelect.prop('disabled', true);
+
+            OfficeReportApi.getUsedVehicles(filter).then((vehicles) => {
+                if (seq !== vehicleFetchSeq) {
+                    return;
+                }
+
+                vehicleSelect.empty();
+                vehicleSelect.append(
+                    `<option value="">${escapeHtml(lang.l('All boats'))}</option>`
+                );
+
+                let preserved = false;
+                for (const v of vehicles) {
+                    vehicleSelect.append(
+                        `<option value="${v.id}">${escapeHtml(v.name)}</option>`
+                    );
+                    if (`${v.id}` === currentVal) {
+                        preserved = true;
+                    }
+                }
+
+                if (preserved) {
+                    vehicleSelect.val(currentVal);
+                } else {
+                    vehicleSelect.val('');
+                }
+
+                vehicleSelect.prop('disabled', false);
+            }).catch(() => {
+                if (seq !== vehicleFetchSeq) {
+                    return;
+                }
+
+                vehicleSelect.empty();
+                vehicleSelect.append(
+                    `<option value="">${escapeHtml(lang.l('All boats'))}</option>`
+                );
+                vehicleSelect.prop('disabled', false);
+            });
+        };
+
+        yearSelect.on('change', refreshVehicles);
+        semesterSelect.on('change', refreshVehicles);
+        organizationSelect.on('change', refreshVehicles);
+
+        refreshVehicles();
 
         OfficeReportApi.getReceivers().then((receivers) => {
             receiverSelect.empty();
@@ -566,6 +658,11 @@ export class SightingExport extends Component<HTMLDivElement> {
             const vehicleVal = parseInt(String(vehicleSelect.val() ?? ''), 10);
             if (Number.isFinite(vehicleVal) && vehicleVal > 0) {
                 params.set('vehicle_id', `${vehicleVal}`);
+            }
+
+            const organizationVal = parseInt(String(organizationSelect.val() ?? ''), 10);
+            if (Number.isFinite(organizationVal) && organizationVal > 0) {
+                params.set('organization_id', `${organizationVal}`);
             }
 
             const receiverVal = parseInt(String(receiverSelect.val() ?? ''), 10);
