@@ -1,6 +1,7 @@
 {
   "logging": {
-    "level": "silly"
+    "level": "silly",
+    "dirname": "../data/logs"
   },
   "db": {
     "mysql": {

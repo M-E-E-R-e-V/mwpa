@@ -12,7 +12,6 @@
     "figtree": "git+https://github.com/stefanwerfling/figtree.git#claude",
     "figtree-schemas": "git+https://github.com/stefanwerfling/figtree-schemas.git",
     "geojson-geometries-lookup": "^0.5.0",
-    "got": "^11.8.2",
     "minimist": "^1.2.5",
     "moment": "^2.30.1",
     "multer": "^1.4.5-lts.1",
