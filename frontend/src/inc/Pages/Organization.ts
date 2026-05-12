@@ -131,7 +131,6 @@ export class Organization extends BasePage {
                     aroc_reference: this._orgModal.getArocReference(),
                     aroc_region: this._orgModal.getArocRegion(),
                     aroc_number: this._orgModal.getArocNumber(),
-                    aroc_year: this._orgModal.getArocYear(),
                     aroc_authorized_boats: this._orgModal.getArocAuthorizedBoats()
                 };
 
@@ -243,7 +242,6 @@ export class Organization extends BasePage {
                         this._orgModal.setArocReference(org.aroc_reference);
                         this._orgModal.setArocRegion(org.aroc_region);
                         this._orgModal.setArocNumber(org.aroc_number);
-                        this._orgModal.setArocYear(org.aroc_year);
                         this._orgModal.setArocAuthorizedBoats(org.aroc_authorized_boats);
                         this._orgModal.show();
                     }, IconFa.edit);

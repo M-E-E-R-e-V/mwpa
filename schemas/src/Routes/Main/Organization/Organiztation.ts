@@ -46,7 +46,6 @@ export const SchemaOrganizationFullEntry = SchemaOrganizationEntry.extend({
     aroc_reference: Vts.string({description: 'AROC authorization reference (Referencia) — written into datos GENERALES B5.'}),
     aroc_region: Vts.string({description: 'AROC region code (CAN/RES/AND).'}),
     aroc_number: Vts.string({description: 'AROC authorization number (Número).'}),
-    aroc_year: Vts.number({description: 'Year of the AROC authorization. 0 = unset.'}),
     aroc_authorized_boats: Vts.number({description: 'Number of authorized boats under the AROC reference. 0 = unset.'}),
 }, {
     description: '',

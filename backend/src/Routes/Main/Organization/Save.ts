@@ -45,7 +45,6 @@ export class Save {
         org.aroc_reference = entry.aroc_reference;
         org.aroc_region = entry.aroc_region;
         org.aroc_number = entry.aroc_number;
-        org.aroc_year = entry.aroc_year;
         org.aroc_authorized_boats = entry.aroc_authorized_boats;
 
         await OrganizationRepository.getInstance().save(org);

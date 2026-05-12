@@ -34,7 +34,6 @@ export type OrganizationFullEntry = OrganizationEntry & {
     aroc_reference: string;
     aroc_region: string;
     aroc_number: string;
-    aroc_year: number;
     aroc_authorized_boats: number;
 };
 

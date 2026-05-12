@@ -97,12 +97,6 @@ export class OrganizationEditModal extends ModalDialog {
     protected _inputArocNumber: InputBottemBorderOnly2;
 
     /**
-     * input AROC year
-     * @protected
-     */
-    protected _inputArocYear: InputBottemBorderOnly2;
-
-    /**
      * input AROC authorized boats
      * @protected
      */
@@ -156,16 +150,13 @@ export class OrganizationEditModal extends ModalDialog {
         this._inputWeb = new InputBottemBorderOnly2(groupWeb, 'web');
 
         const rowAroc1 = new FormRow(bodyCard);
-        const groupArocRegion = new FormGroup(rowAroc1.createCol(3), new LangText('AROC region'));
+        const groupArocRegion = new FormGroup(rowAroc1.createCol(4), new LangText('AROC region'));
         this._inputArocRegion = new InputBottemBorderOnly2(groupArocRegion, 'aroc_region');
 
-        const groupArocNumber = new FormGroup(rowAroc1.createCol(3), new LangText('AROC number'));
+        const groupArocNumber = new FormGroup(rowAroc1.createCol(4), new LangText('AROC number'));
         this._inputArocNumber = new InputBottemBorderOnly2(groupArocNumber, 'aroc_number');
 
-        const groupArocYear = new FormGroup(rowAroc1.createCol(3), new LangText('AROC year'));
-        this._inputArocYear = new InputBottemBorderOnly2(groupArocYear, 'aroc_year', InputType.number);
-
-        const groupArocBoats = new FormGroup(rowAroc1.createCol(3), new LangText('Authorized boats'));
+        const groupArocBoats = new FormGroup(rowAroc1.createCol(4), new LangText('Authorized boats'));
         this._inputArocAuthorizedBoats = new InputBottemBorderOnly2(
             groupArocBoats,
             'aroc_authorized_boats',
@@ -342,17 +333,6 @@ export class OrganizationEditModal extends ModalDialog {
         return this._inputArocNumber.getValue();
     }
 
-    public setArocYear(v: number): void {
-        this._inputArocYear.setValue(v > 0 ? `${v}` : '');
-    }
-
-    public getArocYear(): number {
-        const raw = this._inputArocYear.getValue().trim();
-        if (raw === '') return 0;
-        const n = parseInt(raw, 10);
-        return Number.isFinite(n) && n > 0 ? n : 0;
-    }
-
     public setArocAuthorizedBoats(v: number): void {
         this._inputArocAuthorizedBoats.setValue(v > 0 ? `${v}` : '');
     }
@@ -382,7 +362,6 @@ export class OrganizationEditModal extends ModalDialog {
         this.setArocReference('');
         this.setArocRegion('');
         this.setArocNumber('');
-        this.setArocYear(0);
         this.setArocAuthorizedBoats(0);
     }
 
