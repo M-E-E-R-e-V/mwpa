@@ -456,9 +456,12 @@ export class SightingExport extends Component<HTMLDivElement> {
         ).appendTo(organizationGroup);
 
         // Boat picker — required for the new AROC template (1 file per boat).
+        // No "All boats" option here on purpose: AROC explicitly wants a
+        // single boat per file (B7 "Nombre del barco" is mandatory), and the
+        // backend rejects the request without `vehicle_id`.
         const vehicleGroup = jQuery('<div class="form-group"/>').appendTo(body);
         jQuery(
-            `<label class="form-label">${escapeHtml(lang.l('Boat'))}</label>`
+            `<label class="form-label">${escapeHtml(lang.l('Boat'))}*</label>`
         ).appendTo(vehicleGroup);
         const vehicleSelect = jQuery(
             '<select class="form-control" style="max-width: 480px" disabled>'
@@ -572,7 +575,7 @@ export class SightingExport extends Component<HTMLDivElement> {
 
                 vehicleSelect.empty();
                 vehicleSelect.append(
-                    `<option value="">${escapeHtml(lang.l('All boats'))}</option>`
+                    `<option value="">${escapeHtml(lang.l('— Select a boat —'))}</option>`
                 );
 
                 let preserved = false;
@@ -592,6 +595,7 @@ export class SightingExport extends Component<HTMLDivElement> {
                 }
 
                 vehicleSelect.prop('disabled', false);
+                vehicleSelect.trigger('change');
             }).catch(() => {
                 if (seq !== vehicleFetchSeq) {
                     return;
@@ -599,9 +603,10 @@ export class SightingExport extends Component<HTMLDivElement> {
 
                 vehicleSelect.empty();
                 vehicleSelect.append(
-                    `<option value="">${escapeHtml(lang.l('All boats'))}</option>`
+                    `<option value="">${escapeHtml(lang.l('— Select a boat —'))}</option>`
                 );
                 vehicleSelect.prop('disabled', false);
+                vehicleSelect.trigger('change');
             });
         };
 
@@ -611,6 +616,16 @@ export class SightingExport extends Component<HTMLDivElement> {
 
         refreshVehicles();
 
+        // Download is gated on BOTH a boat being picked (AROC requirement) AND
+        // a receiver being available. Recompute whenever either side changes.
+        let receiversReady = false;
+        const updateDownloadEnabled = (): void => {
+            const vehicleVal = parseInt(String(vehicleSelect.val() ?? ''), 10);
+            const hasBoat = Number.isFinite(vehicleVal) && vehicleVal > 0;
+            downloadBtn.prop('disabled', !(receiversReady && hasBoat));
+        };
+        vehicleSelect.on('change', updateDownloadEnabled);
+
         OfficeReportApi.getReceivers().then((receivers) => {
             receiverSelect.empty();
 
@@ -619,7 +634,8 @@ export class SightingExport extends Component<HTMLDivElement> {
                     `<option value="">${escapeHtml(lang.l('No receivers configured'))}</option>`
                 );
                 receiverSelect.prop('disabled', true);
-                downloadBtn.prop('disabled', true);
+                receiversReady = false;
+                updateDownloadEnabled();
                 return;
             }
 
@@ -631,14 +647,16 @@ export class SightingExport extends Component<HTMLDivElement> {
 
             receiverSelect.val(`${receivers[0].id}`);
             receiverSelect.prop('disabled', false);
-            downloadBtn.prop('disabled', false);
+            receiversReady = true;
+            updateDownloadEnabled();
         }).catch(() => {
             receiverSelect.empty();
             receiverSelect.append(
                 `<option value="">${escapeHtml(lang.l('No receivers configured'))}</option>`
             );
             receiverSelect.prop('disabled', true);
-            downloadBtn.prop('disabled', true);
+            receiversReady = false;
+            updateDownloadEnabled();
         });
 
         // Going through fetch+blob (instead of UtilDownload.download)
@@ -659,14 +677,11 @@ export class SightingExport extends Component<HTMLDivElement> {
             }
 
             const vehicleVal = parseInt(String(vehicleSelect.val() ?? ''), 10);
-            if (Number.isFinite(vehicleVal) && vehicleVal > 0) {
-                params.set('vehicle_id', `${vehicleVal}`);
+            if (!Number.isFinite(vehicleVal) || vehicleVal <= 0) {
+                window.alert(lang.l('Please pick a boat — AROC requires one file per boat.'));
+                return;
             }
-
-            const organizationVal = parseInt(String(organizationSelect.val() ?? ''), 10);
-            if (Number.isFinite(organizationVal) && organizationVal > 0) {
-                params.set('organization_id', `${organizationVal}`);
-            }
+            params.set('vehicle_id', `${vehicleVal}`);
 
             const receiverVal = parseInt(String(receiverSelect.val() ?? ''), 10);
 
@@ -700,9 +715,17 @@ export class SightingExport extends Component<HTMLDivElement> {
                 const blob = await resp.blob();
                 objectUrl = URL.createObjectURL(blob);
 
+                // Pull the suggested filename from the server's
+                // Content-Disposition (AROC - YEAR - HALF - BOAT.xlsx). Fall
+                // back to a generic name only if the header is missing or
+                // doesn't parse.
+                const cd = resp.headers.get('Content-Disposition') ?? '';
+                const cdMatch = cd.match(/filename="([^"]+)"/);
+                const downloadName = cdMatch ? cdMatch[1] : 'AROC.xlsx';
+
                 const link = document.createElement('a');
                 link.href = objectUrl;
-                link.download = 'PLANTILLA_AVISTAMIENTOS_AROC_MEER.xlsx';
+                link.download = downloadName;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);

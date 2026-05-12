@@ -16,7 +16,20 @@ import {VehicleRepository} from '../../Db/MariaDb/Repositories/VehicleRepository
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {CreateExport} from './OfficeReport/CreateExport.js';
 
-const TEMPLATE_DOWNLOAD_NAME = 'PLANTILLA_AVISTAMIENTOS_AROC_MEER.xlsx';
+/**
+ * Build the download file name for a generated AROC report. Format:
+ *   `AROC - <Year|All> - <Semester|All> - <Boat>.xlsx`
+ * Semester label matches the GENERALES sheet's `Periodo` dropdown
+ * (`1er semestre` / `2do semestre`). Boat name is sanitized so OS-reserved
+ * filename characters (path separators, quotes, redirects) don't slip
+ * through into Content-Disposition.
+ */
+function buildDownloadName(year: number, semester: number | undefined, boat: string): string {
+    const yearPart = Number.isFinite(year) && year > 0 ? `${year}` : 'All';
+    const semPart = semester === 1 ? '1er semestre' : semester === 2 ? '2do semestre' : 'All';
+    const safeBoat = boat.replace(/[/\\:*?"<>|]+/g, '_').trim() || 'Boat';
+    return `AROC - ${yearPart} - ${semPart} - ${safeBoat}.xlsx`;
+}
 
 /**
  * Map (year, semester) to an inclusive YYYY-MM-DD range. Mirrors the helper
@@ -149,10 +162,20 @@ export class OfficeReport extends DefaultRoute {
                 const vehicleIdRaw = req.query.vehicle_id;
                 const vehicleId = typeof vehicleIdRaw === 'string' ? parseInt(vehicleIdRaw, 10) : NaN;
 
-                const organizationIdRaw = req.query.organization_id;
-                const organizationId = typeof organizationIdRaw === 'string'
-                    ? parseInt(organizationIdRaw, 10)
-                    : NaN;
+                // AROC requires one file per boat per semester. Without a vehicle
+                // the GENERALES sheet's `Nombre del barco` (B7) is empty and the
+                // file is not conformant — refuse upfront rather than ship a
+                // half-filled report.
+                if (!Number.isFinite(vehicleId) || vehicleId <= 0) {
+                    res.status(parseInt(StatusCodes.BAD_REQUEST, 10))
+                    .send('vehicle_id is required: AROC expects one file per boat per semester');
+                    return {type: HandlerResultType.handled};
+                }
+                const vehicle = await VehicleRepository.getInstance().findOne(vehicleId);
+                if (!vehicle) {
+                    res.status(parseInt(StatusCodes.NOT_FOUND, 10)).send(`vehicle ${vehicleId} not found`);
+                    return {type: HandlerResultType.handled};
+                }
 
                 const semesterRaw = req.query.semester;
                 const semester = typeof semesterRaw === 'string' ? parseInt(semesterRaw, 10) : NaN;
@@ -160,10 +183,7 @@ export class OfficeReport extends DefaultRoute {
                 const buffer = await CreateExport.createExport({
                     external_receiver_id: Number.isFinite(externalReceiverId) ? externalReceiverId : 0,
                     year: Number.isFinite(year) && year > 0 ? year : undefined,
-                    vehicle_id: Number.isFinite(vehicleId) && vehicleId > 0 ? vehicleId : undefined,
-                    organization_id: Number.isFinite(organizationId) && organizationId > 0
-                        ? organizationId
-                        : undefined,
+                    vehicle_id: vehicleId,
                     semester: semester === 1 || semester === 2 ? semester : undefined
                 });
 
@@ -172,8 +192,13 @@ export class OfficeReport extends DefaultRoute {
                     return {type: HandlerResultType.handled};
                 }
 
+                const filename = buildDownloadName(
+                    year,
+                    semester === 1 || semester === 2 ? semester : undefined,
+                    vehicle.description
+                );
                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                res.setHeader('Content-Disposition', `attachment; filename="${TEMPLATE_DOWNLOAD_NAME}"`);
+                res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
                 res.setHeader('Content-Length', `${buffer.length}`);
                 res.end(buffer);
                 return {type: HandlerResultType.handled};

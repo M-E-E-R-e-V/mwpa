@@ -1724,17 +1724,6 @@
                             "description": "AROC authorization number (Número)."
                           },
                           {
-                            "unid": "a37a4c5e-a1f2-4bc0-80aa-da99418330a9",
-                            "name": "aroc_year",
-                            "type": {
-                              "type": "number",
-                              "optional": false,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": "Year of the AROC authorization. 0 = unset."
-                          },
-                          {
                             "unid": "e024b6e5-cc94-42ae-860d-6c76c3e04691",
                             "name": "aroc_authorized_boats",
                             "type": {
@@ -7625,7 +7614,7 @@
   },
   "editor": {
     "controls_width": 465,
-    "active_entry_unid": "f78e33d4-c164-4986-bf7e-22da115f26d5",
-    "active_entry_table_unid": "8be34039-f961-4f67-9482-97a018dea166"
+    "active_entry_unid": "c7aab178-2ddc-4451-aaa6-41d055662f33",
+    "active_entry_table_unid": "fbfb302b-fd63-46ed-9b9e-3e714c7a1fc7"
   }
 }

@@ -137,7 +137,11 @@ export class Organization extends DBBaseEntityId {
     public aroc_number!: string;
 
     /**
-     * Year of the AROC authorization. 0 = unset.
+     * @deprecated Year of the AROC authorization. The office report now
+     * pulls the year straight from the export filter, so this column is no
+     * longer read or written from the UI / API. Kept here to keep production
+     * data intact under `synchronize: true`; remove via an explicit
+     * migration if you want to drop the column.
      */
     @Column({
         type: 'int',

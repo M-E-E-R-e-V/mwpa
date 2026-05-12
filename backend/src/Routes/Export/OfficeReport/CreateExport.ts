@@ -22,7 +22,92 @@ import {UtilUploadPath} from '../../../Utils/UtilUploadPath.js';
 const TEMPLATE_FILENAME = 'PLANTILLA_AVISTAMIENTOS_AROC.xlsx';
 const SHEET_DATA_PATH = 'xl/worksheets/sheet3.xml'; // datos SALIDAS
 const SHEET_GENERAL_PATH = 'xl/worksheets/sheet2.xml'; // datos GENERALES
+const SHEET_LISTA_ESPECIES_PATH = 'xl/worksheets/sheet5.xml'; // ListaEspecies (defined name NOMBRE_COMUN = $B$3:$B$48)
+const SHEET_SHARED_STRINGS_PATH = 'xl/sharedStrings.xml';
 const FIRST_DATA_ROW = 2;
+
+type ArocSpeciesIndex = {
+    /** externid (AROC Taxon-ID from ListaEspecies!C, e.g. "20068") → NOMBRE_COMUN (B). */
+    byExternId: Map<string, string>;
+    /** Lowercased NOMBRE_COMUN → canonical NOMBRE_COMUN, for fallback name-only matches. */
+    byNombreLower: Map<string, string>;
+};
+
+/**
+ * Read the AROC `ListaEspecies` sheet at export time and build the lookup
+ * map that drives column N (Nombre común).
+ *
+ * Why this exists: column P (Nombre científico) is filled by the template via
+ * `IFERROR(VLOOKUP(N, ListaEspecies!$B$3:$D$45, 3, FALSE), "")` — N must match
+ * one of `ListaEspecies!B3:B48` exactly or P stays blank, which AROC interprets
+ * as a data-entry error. Our DB stores `species_extern_link.externname` per
+ * receiver but it's hand-curated and drifted out of sync with the template, so
+ * we treat the template itself as the source of truth and join on
+ * `species_extern_link.externid`, which is meant to hold the AROC Taxon-ID
+ * (column C in ListaEspecies). The lowercased-name map is a defensive fallback
+ * for entries where externid hasn't been filled in.
+ */
+async function loadArocSpeciesIndex(zip: JSZip): Promise<ArocSpeciesIndex> {
+    const empty: ArocSpeciesIndex = {byExternId: new Map(), byNombreLower: new Map()};
+    const sheetFile = zip.file(SHEET_LISTA_ESPECIES_PATH);
+    const ssFile = zip.file(SHEET_SHARED_STRINGS_PATH);
+    if (!sheetFile || !ssFile) {
+        Logger.getLogger().warn('OfficeReport::loadArocSpeciesIndex: ListaEspecies or sharedStrings missing in template');
+        return empty;
+    }
+
+    const sheetXml = await sheetFile.async('string');
+    const ssXml = await ssFile.async('string');
+
+    // Build the sharedStrings table — keep insertion order, since cells reference by index.
+    const sharedStrings: string[] = [];
+    const siRe = /<si>([\s\S]*?)<\/si>/g;
+    let mSi: RegExpExecArray | null;
+    while ((mSi = siRe.exec(ssXml)) !== null) {
+        const texts = Array.from(mSi[1].matchAll(/<t[^>]*>([^<]*)<\/t>/g)).map((x) => x[1]);
+        sharedStrings.push(texts.join(''));
+    }
+
+    // Walk every cell once, decode its value, keep only B/C of rows we care about.
+    const cells = new Map<string, string>();
+    const cellRe = /<c r="([A-Z]+\d+)"([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g;
+    let m: RegExpExecArray | null;
+    while ((m = cellRe.exec(sheetXml)) !== null) {
+        const ref = m[1];
+        const attrs = m[2];
+        const inner = m[3] ?? '';
+        if (inner === '') continue;
+
+        const isShared = / t="s"/.test(attrs);
+        const isInline = / t="inlineStr"/.test(attrs);
+        const isStr = / t="str"/.test(attrs);
+
+        const vMatch = inner.match(/<v>([^<]*)<\/v>/);
+        const tMatch = inner.match(/<t[^>]*>([^<]*)<\/t>/);
+
+        let value: string | undefined;
+        if (isShared && vMatch) {
+            value = sharedStrings[parseInt(vMatch[1], 10)];
+        } else if (isInline && tMatch) {
+            value = tMatch[1];
+        } else if ((isStr || !isShared) && vMatch) {
+            value = vMatch[1];
+        }
+        if (value !== undefined) cells.set(ref, value);
+    }
+
+    const idx: ArocSpeciesIndex = {byExternId: new Map(), byNombreLower: new Map()};
+    for (let row = 3; row <= 48; row++) {
+        const nombre = cells.get(`B${row}`);
+        const externid = cells.get(`C${row}`);
+        if (!nombre || nombre === '') continue;
+        idx.byNombreLower.set(nombre.toLowerCase(), nombre);
+        if (externid && externid !== '' && externid !== 'sin Taxon ID' && externid !== 'no está en la Lista Patrón') {
+            idx.byExternId.set(externid, nombre);
+        }
+    }
+    return idx;
+}
 
 /**
  * MEER behavioural-state name → AROC `Actividad` (column AM) label.
@@ -198,17 +283,50 @@ function xmlEscape(s: string): string {
     .replace(/>/g, '&gt;');
 }
 
-/** Build a `<c>` cell element with an inline string value. */
-function cellStr(ref: string, value: string): string {
-    if (value === '') {
-        return '';
+/** Render a `<c>` cell with the existing style attribute (e.g. ` s="19"`) preserved. */
+function renderCell(ref: string, value: string | number, styleAttr: string): string {
+    if (typeof value === 'number') {
+        return `<c r="${ref}"${styleAttr}><v>${value}</v></c>`;
     }
-    return `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xmlEscape(value)}</t></is></c>`;
+    return `<c r="${ref}"${styleAttr} t="inlineStr"><is><t xml:space="preserve">${xmlEscape(value)}</t></is></c>`;
 }
 
-/** Build a `<c>` cell element with a numeric value. */
-function cellNum(ref: string, value: number): string {
-    return `<c r="${ref}"><v>${value}</v></c>`;
+/** Convert a column letter (e.g. "AO") to its 1-based index, for sorting cells inside a row. */
+function colIndex(ref: string): number {
+    const m = ref.match(/^([A-Z]+)/);
+    if (!m) return 0;
+    let n = 0;
+    for (const ch of m[1]) {
+        n = n * 26 + (ch.charCodeAt(0) - 64);
+    }
+    return n;
+}
+
+/**
+ * Strip shared-formula entries from given columns across the whole sheet.
+ *
+ * The AROC template carries shared-formula chains (`<f t="shared" ref="X2:X66" si="N">…</f>`
+ * with reference cells `<f t="shared" si="N"/>` in subsequent rows). When we
+ * overwrite a master cell with a literal value, every reference cell that
+ * pointed at that si becomes invalid XML and Excel raises the repair dialog.
+ *
+ * For the columns where we plan to write our own values (S/T/AA/AE/AI/AK) we
+ * drop the formula entirely — the cell becomes empty-styled. Our patcher then
+ * fills these with explicit values in the data rows; the remaining rows just
+ * stay blank, which is the same visual result the template intended for rows
+ * without a `Nombre común` in column N.
+ */
+function stripSharedFormulas(xml: string, columns: string[]): string {
+    const colPattern = columns.join('|');
+    const re = new RegExp(
+        `<c r="((?:${colPattern})\\d+)"([^>]*?)>(?:<f[^>]*>[^<]*</f>|<f[^/]*/>)(?:<v[^/]*/>|<v>[^<]*</v>)</c>`,
+        'g'
+    );
+    return xml.replace(re, (_full, ref, attrs) => {
+        // The cell is no longer a formula string: drop t="str".
+        const cleaned = String(attrs).replace(/\s+t="str"/, '');
+        return `<c r="${ref}"${cleaned}/>`;
+    });
 }
 
 /**
@@ -249,36 +367,75 @@ function patchGeneralCell(xml: string, ref: string, value: string | number): str
 }
 
 /**
- * Build one full `<row>` XML element for a sighting row in `datos SALIDAS`.
- * Cells are emitted only for the columns we have data for — empty columns
- * fall back to the workbook's column-default styles (set in `<cols>`).
+ * Patch input-side cells into an existing template row, preserving every
+ * formula-bearing cell we don't touch (A/B/C/D/E/F/G/H/I/O/P keep their
+ * `<f>…</f>` so AROC's auto-derived columns still compute from N and
+ * `datos GENERALES`).
+ *
+ * For each column in `data` we either:
+ *   - replace the existing cell at that ref with a new value cell, keeping
+ *     its `s="…"` style attribute, or
+ *   - append a new value cell at the right column position when the template
+ *     row doesn't have one (rows 2-3 e.g. have no J/K/L/M skeleton).
+ *
+ * Style: we re-use the template's existing `s="…"` when available, otherwise
+ * we leave the style off so Excel falls back to the column default in
+ * `<cols>` (every column in `datos SALIDAS` has a default style set).
  */
-function buildDataRow(rowNum: number, cells: Record<string, string | number>): string {
-    const parts: string[] = [];
-    for (const [col, val] of Object.entries(cells)) {
-        const ref = `${col}${rowNum}`;
-        if (typeof val === 'number') {
-            if (Number.isFinite(val)) {
-                parts.push(cellNum(ref, val));
-            }
-        } else if (val !== '') {
-            parts.push(cellStr(ref, val));
-        }
+function patchSightingRow(rowXml: string, rowNum: number, data: Record<string, string | number>): string {
+    const openMatch = rowXml.match(/^<row[^>]*>/);
+    if (!openMatch) {
+        return rowXml;
     }
-    return `<row r="${rowNum}" spans="1:41">${parts.join('')}</row>`;
+    const openTag = openMatch[0];
+    const inner = rowXml.slice(openTag.length, -'</row>'.length);
+
+    // Parse existing cells into ref -> raw + ref -> style attribute.
+    const cells = new Map<string, string>();
+    const styles = new Map<string, string>();
+
+    const cellRe = /<c r="([A-Z]+\d+)"([^>]*?)(?:\/>|>(?:[^<]|<(?!\/c>))*<\/c>)/g;
+    let m: RegExpExecArray | null;
+    while ((m = cellRe.exec(inner)) !== null) {
+        cells.set(m[1], m[0]);
+        const styleMatch = m[2].match(/\s+s="\d+"/);
+        styles.set(m[1], styleMatch ? styleMatch[0] : '');
+    }
+
+    // Apply our patches, overwriting / inserting cells while preserving styles.
+    for (const [col, val] of Object.entries(data)) {
+        if (val === '' || (typeof val === 'number' && !Number.isFinite(val))) {
+            continue;
+        }
+        const ref = `${col}${rowNum}`;
+        const styleAttr = styles.get(ref) ?? '';
+        cells.set(ref, renderCell(ref, val, styleAttr));
+        styles.set(ref, styleAttr);
+    }
+
+    const sorted = Array.from(cells.entries()).sort(
+        (a, b) => colIndex(a[0]) - colIndex(b[0])
+    );
+
+    return openTag + sorted.map(([, raw]) => raw).join('') + '</row>';
 }
 
 /**
  * CreateExport
  *
- * The new AROC template (`datos SALIDAS` sheet) ships with 10 000 pre-formatted
+ * The AROC template (`datos SALIDAS` sheet) ships with 10 000 pre-formatted
  * rows full of derived-column formulas. exceljs chokes on it — so we open the
- * .xlsx directly via JSZip and patch the raw XML. Cleaner, faster, and we
- * preserve whatever the template provides on rows we don't touch.
+ * .xlsx directly via JSZip and patch the raw XML.
  *
- * The pre-shrunk template kept under `data/office_report/` already has its
- * sheet3 sheetData reduced to just the header row (see the build-time shrink
- * applied 2026-05-10) so re-emitting our data rows here is enough.
+ * Strategy: patch only the input-side cells (J/K/L/M/N/Q/R/S/T/U/V/W/X/Y/Z/
+ * AA/AB/AC/AD/AE/AF/AH/AI?/AJ/AK?/AL/AM/AN/AO) into the existing data rows
+ * so AROC's auto-derived columns (A/B/C/D/E/F/G/H/I/O/P) keep their formulas
+ * and recompute from N + `datos GENERALES`. Before patching we drop the
+ * shared-formula chains in columns we overwrite (S/T/AA/AE/AI/AK) so the
+ * master/reference relationship doesn't break, and we drop `calcChain.xml`
+ * so Excel rebuilds the calc-cache on first save — without it, orphan
+ * references trigger the "We found a problem with some content" repair
+ * dialog and Office discards data validations in the process.
  */
 export class CreateExport {
 
@@ -402,13 +559,12 @@ export class CreateExport {
         let dataXml = await dataSheetFile.async('string');
         let generalXml = await generalSheetFile.async('string');
 
+        const arocSpeciesIndex = await loadArocSpeciesIndex(zip);
+
         // --- Fill `datos GENERALES` ------------------------------------------------------
         if (organization) {
             generalXml = patchGeneralCell(generalXml, 'B5', organization.aroc_region);
             generalXml = patchGeneralCell(generalXml, 'C5', organization.aroc_number);
-            if (organization.aroc_year > 0) {
-                generalXml = patchGeneralCell(generalXml, 'D5', organization.aroc_year);
-            }
             generalXml = patchGeneralCell(generalXml, 'B6', organization.description);
             if (organization.aroc_authorized_boats > 0) {
                 generalXml = patchGeneralCell(generalXml, 'B8', organization.aroc_authorized_boats);
@@ -423,6 +579,9 @@ export class CreateExport {
             generalXml = patchGeneralCell(generalXml, 'B7', vehicle.description);
         }
         if (year > 0) {
+            // Export-year drives both AROC authorization year (D5, "Jahr de la
+            // autorización") and the report header field B14 ("Año del informe").
+            generalXml = patchGeneralCell(generalXml, 'D5', year);
             generalXml = patchGeneralCell(generalXml, 'B14', year);
         }
         const semLabel = semesterLabel(semester);
@@ -431,19 +590,22 @@ export class CreateExport {
         }
         generalXml = patchGeneralCell(generalXml, 'B15', 'WGS84');
 
-        // --- Build `datos SALIDAS` rows --------------------------------------------------
+        // --- Build per-row patch sets ----------------------------------------------------
         // Per AROC "Ayuda" sheet:
         //   N (Nombre común) is the dropdown — `species_extern_link.externname` for the
         //     selected receiver must therefore contain the Spanish common name (NOT
         //     the scientific name). The receiver mapping is admin-configured.
-        //   P (Nombre científico) is auto-filled by template formula from N.
+        //   P (Nombre científico) is auto-filled by template formula from N — we leave
+        //     it alone.
+        //   A/B/C/D/E/F/G/H/I/O are also auto-derived from N + `datos GENERALES` and
+        //     stay untouched so the template keeps recomputing them.
         //   Q (Observador) wants the individual observer's full name, not the org.
         //   J (Fecha) wants DD/MM/YYYY.
         //   AH/AJ values are uppercase SI/NO (no INDET in our model — we always know).
         //   AL/AM values are lowercase per dropdown (atraídos / viajando / …).
         //   AN (Número de barcos máximo) is integer; our `other_vehicle` column is free
         //     text, so try to parse a leading number out of it.
-        const dataRows: string[] = [];
+        const dataByRow = new Map<number, Record<string, string | number>>();
         let rowNum = FIRST_DATA_ROW;
 
         for (const entry of sightings) {
@@ -458,11 +620,37 @@ export class CreateExport {
                 entry.species_id
             );
 
-            const nombreComun = speciesExternLink ? speciesExternLink.externname : '';
+            // N (Nombre común) must match the AROC ListaEspecies dropdown exactly,
+            // otherwise the VLOOKUP in column P returns blank and AROC marks the
+            // row as a data-entry error. Source of truth = the template's own
+            // ListaEspecies sheet; we join primarily via `externid` (AROC Taxon-ID
+            // in ListaEspecies!C) and fall back to a case-insensitive name match
+            // for legacy `externname` rows where the externid was never set.
+            let nombreComun = '';
             if (!speciesExternLink) {
                 Logger.getLogger().info(
                     `OfficeReport::createExport: extern link not found by species ID: ${entry.species_id}`
                 );
+            } else {
+                const byId = arocSpeciesIndex.byExternId.get(speciesExternLink.externid);
+                if (byId) {
+                    nombreComun = byId;
+                } else {
+                    const byName = arocSpeciesIndex.byNombreLower.get(
+                        speciesExternLink.externname.toLowerCase()
+                    );
+                    if (byName) {
+                        nombreComun = byName;
+                    } else {
+                        Logger.getLogger().warn(
+                            'OfficeReport::createExport: species_extern_link '
+                            + `(receiver=${externalReceiverId}, species_id=${entry.species_id}, `
+                            + `externid="${speciesExternLink.externid}", `
+                            + `externname="${speciesExternLink.externname}") `
+                            + 'does not resolve to any AROC ListaEspecies entry — leaving N blank'
+                        );
+                    }
+                }
             }
 
             const observer = userNames.get(entry.creater_id) ?? '';
@@ -493,17 +681,19 @@ export class CreateExport {
             };
 
             if (pos && lonDms && latDms && utm) {
-                // S / T = "Coordenada X/Y DEFINITIVA". Template has no formula here —
-                // we put the WGS84 decimal pair (X = longitude, Y = latitude) so the
-                // AROC office sees a single canonical position without copy-pasting.
-                cells.S = pos.lon;
-                cells.T = pos.lat;
-
                 // U / V = UTM Easting/Northing (metres). AROC convention (Ayuda D9):
                 // X gets a negative sign for western offsets, so we subtract the
                 // 500 000 m false easting. Y stays as standard UTM Northing.
-                cells.U = Math.round((utm.easting - 500000) * 100) / 100;
+                const utmX = Math.round((utm.easting - 500000) * 100) / 100;
+                cells.U = utmX;
                 cells.V = utm.northing;
+
+                // S / T = "Coordenada X/Y DEFINITIVA" — the template formula is
+                // IF(U="",AA,U) / IF(V="",AE,V). We mirror UTM here so the value is
+                // consistent across the report even though we strip the shared
+                // formula (see stripSharedFormulas call below).
+                cells.S = utmX;
+                cells.T = utm.northing;
 
                 cells.W = pos.lon < 0 ? 'O' : 'E';
                 cells.X = lonDms.degrees;
@@ -534,35 +724,101 @@ export class CreateExport {
             }
             cells.AO = entry.note;
 
-            dataRows.push(buildDataRow(rowNum, cells));
+            dataByRow.set(rowNum, cells);
             rowNum++;
+
+            if (rowNum > 10000) {
+                Logger.getLogger().warn(
+                    'OfficeReport::createExport: more than 9999 sightings — template can\'t hold them, truncating'
+                );
+                break;
+            }
         }
 
-        // Replace `<sheetData>` content. The pre-shrunk template keeps row 1 (header)
-        // intact — preserve it and append our data rows after it.
-        const headerMatch = dataXml.match(/<sheetData>(\s*<row r="1"[^>]*>.*?<\/row>)/s);
-        if (headerMatch) {
-            const headerRow = headerMatch[1];
-            dataXml = dataXml.replace(
-                /<sheetData>.*?<\/sheetData>/s,
-                `<sheetData>${headerRow}${dataRows.join('')}</sheetData>`
-            );
-        } else {
-            dataXml = dataXml.replace(
-                /<sheetData>.*?<\/sheetData>/s,
-                `<sheetData>${dataRows.join('')}</sheetData>`
-            );
-        }
+        // Strip shared-formula chains in the columns whose master cells we'll
+        // overwrite. Without this, replacing AI2/AK2/S4/T4/AA4/AE4 (the shared
+        // masters) leaves the `<f t="shared" si="N"/>` references in later rows
+        // dangling, which Office reports as "unreadable content".
+        dataXml = stripSharedFormulas(dataXml, ['S', 'T', 'AA', 'AE', 'AI', 'AK']);
 
-        // Update the dimension attribute so Excel knows the used range.
-        const lastRow = Math.max(rowNum - 1, 1);
-        dataXml = dataXml.replace(
-            /dimension ref="[^"]*"/,
-            `dimension ref="A1:AO${lastRow}"`
-        );
+        // Walk the existing `<row>` elements and patch the rows we have data for.
+        // Everything else (header, untouched data rows further down) stays as is,
+        // including A/B/C/D/E/F/G/H/I/O/P formulas that auto-fill from our N.
+        const patched: string[] = [];
+        let cursor = 0;
+        while (cursor < dataXml.length) {
+            const rowStart = dataXml.indexOf('<row r="', cursor);
+            if (rowStart < 0) {
+                break;
+            }
+            const rowCloseIdx = dataXml.indexOf('</row>', rowStart);
+            if (rowCloseIdx < 0) {
+                break;
+            }
+            const rowEnd = rowCloseIdx + '</row>'.length;
+            patched.push(dataXml.slice(cursor, rowStart));
+
+            const fullRow = dataXml.slice(rowStart, rowEnd);
+            const rowNumMatch = fullRow.match(/^<row r="(\d+)"/);
+            const thisRowNum = rowNumMatch ? parseInt(rowNumMatch[1], 10) : -1;
+            const data = dataByRow.get(thisRowNum);
+            patched.push(data ? patchSightingRow(fullRow, thisRowNum, data) : fullRow);
+
+            cursor = rowEnd;
+        }
+        patched.push(dataXml.slice(cursor));
+        dataXml = patched.join('');
 
         zip.file(SHEET_DATA_PATH, dataXml);
         zip.file(SHEET_GENERAL_PATH, generalXml);
+
+        // Drop calcChain.xml plus its rel + content-type override. The template's
+        // cached formula evaluation order now references cells we either
+        // overwrote with literals or stripped formulas from; leaving it in place
+        // is what triggers Excel's "We found a problem with some content"
+        // repair dialog (and the side effect of Office throwing away data
+        // validations during repair). calcChain is purely a runtime cache —
+        // Excel rebuilds it on the first save.
+        zip.remove('xl/calcChain.xml');
+        const wbRelsPath = 'xl/_rels/workbook.xml.rels';
+        const wbRels = zip.file(wbRelsPath);
+        if (wbRels) {
+            const xml = (await wbRels.async('string'))
+            .replace(/<Relationship[^>]*Target="calcChain\.xml"[^>]*\/>/, '');
+            zip.file(wbRelsPath, xml);
+        }
+        const ctPath = '[Content_Types].xml';
+        const ct = zip.file(ctPath);
+        if (ct) {
+            const xml = (await ct.async('string'))
+            .replace(/<Override[^>]*PartName="\/xl\/calcChain\.xml"[^>]*\/>/, '');
+            zip.file(ctPath, xml);
+        }
+
+        // Force MS Office to fully recompute formulas on first open. Without
+        // `fullCalcOnLoad="1"` Excel trusts the cached `<v/>` values that ship
+        // in the template (which are empty because the template's row 2…10001
+        // had no input data baked in), and column P (Nombre científico VLOOKUP
+        // on our patched N) stays blank until the user manually presses F9.
+        // LibreOffice always recalculates on load, which is why it shows the
+        // expected values without this flag.
+        const wbPath = 'xl/workbook.xml';
+        const wb = zip.file(wbPath);
+        if (wb) {
+            let xml = await wb.async('string');
+            if (/<calcPr[^/]*\/>/.test(xml)) {
+                xml = xml.replace(/<calcPr([^/]*)\/>/, (match, attrs) => {
+                    if (/\bfullCalcOnLoad=/.test(attrs)) {
+                        return match.replace(/fullCalcOnLoad="[^"]*"/, 'fullCalcOnLoad="1"');
+                    }
+                    return `<calcPr${attrs} fullCalcOnLoad="1"/>`;
+                });
+            } else {
+                // No <calcPr/> at all — inject one just before </workbook>.
+                xml = xml.replace('</workbook>', '<calcPr fullCalcOnLoad="1"/></workbook>');
+            }
+            zip.file(wbPath, xml);
+        }
 
         try {
             const out = await zip.generateAsync({
