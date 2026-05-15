@@ -303,6 +303,30 @@ function colIndex(ref: string): number {
 }
 
 /**
+ * Strip cached `<v/>` placeholders from every formula cell in the sheet XML.
+ *
+ * The AROC template ships every formula cell (A/B/C/D/E/F/G/H/I/O/P plus
+ * the shared-formula columns AI/AK) as
+ * `<c r="…" s="…" t="str"><f>…</f><v/></c>` — the cached value is the
+ * empty string because the source workbook had no `Nombre común` (N)
+ * filled in. MS Excel on Windows honours that cached empty string and
+ * displays a blank cell even when we also set `fullCalcOnLoad="1"` on
+ * the workbook; only LibreOffice recomputes unconditionally on load,
+ * which is why the bug doesn't reproduce there. Removing the `<v/>`
+ * leaves the formula intact but without a cached result, forcing Excel
+ * to evaluate it before rendering the cell.
+ *
+ * Safe to apply blanket-wise to `datos SALIDAS`: in this template every
+ * `<v/>` lives inside a formula cell (verified at template ingest), and
+ * our `patchSightingRow` writes either `<v>number</v>` or
+ * `<is><t>…</t></is>`, so it never produces an empty `<v/>` we'd strip
+ * back out.
+ */
+function clearFormulaCellCache(xml: string): string {
+    return xml.replace(/<v\/><\/c>/g, '</c>');
+}
+
+/**
  * Strip shared-formula entries from given columns across the whole sheet.
  *
  * The AROC template carries shared-formula chains (`<f t="shared" ref="X2:X66" si="N">…</f>`
@@ -768,6 +792,12 @@ export class CreateExport {
         }
         patched.push(dataXml.slice(cursor));
         dataXml = patched.join('');
+
+        // Drop the empty `<v/>` cache from every formula cell so Excel on
+        // Windows is forced to evaluate the formulas before rendering. Without
+        // this, column P (and the other auto-derived columns) stay blank on
+        // first open even with `fullCalcOnLoad="1"` — see clearFormulaCellCache.
+        dataXml = clearFormulaCellCache(dataXml);
 
         zip.file(SHEET_DATA_PATH, dataXml);
         zip.file(SHEET_GENERAL_PATH, generalXml);
