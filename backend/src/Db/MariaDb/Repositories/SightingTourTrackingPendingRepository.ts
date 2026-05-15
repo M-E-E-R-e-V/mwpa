@@ -65,4 +65,27 @@ export class SightingTourTrackingPendingRepository extends DBRepositoryUnid<Sigh
         });
     }
 
+    /**
+     * Return distinct (tour_fid, device_id) pairs whose *oldest* pending row is
+     * older than the given cutoff (seconds since epoch). Used by the promotion
+     * cron to find tour_fids that have been waiting long enough for their
+     * sighting and should now be promoted into a synthetic tour.
+     *
+     * @param {number} cutoffSec
+     * @return {{tour_fid: string; device_id: number;}[]}
+     */
+    public async findDistinctOlderThan(cutoffSec: number): Promise<{tour_fid: string; device_id: number;}[]> {
+        const repository = await this._repository;
+        const rows: {tour_fid: string; device_id: number;}[] = await repository
+            .createQueryBuilder('p')
+            .select('p.tour_fid', 'tour_fid')
+            .addSelect('p.device_id', 'device_id')
+            .groupBy('p.tour_fid')
+            .addGroupBy('p.device_id')
+            .having('MIN(p.pending_since) < :cutoff', {cutoff: cutoffSec})
+            .getRawMany();
+
+        return rows.map((r) => ({tour_fid: r.tour_fid, device_id: Number(r.device_id)}));
+    }
+
 }
