@@ -15,6 +15,7 @@ import {SightingMovement} from './Entities/SightingMovement.js';
 import {SightingMovementTrack} from './Entities/SightingMovementTrack.js';
 import {SightingTour} from './Entities/SightingTour.js';
 import {SightingTourTracking} from './Entities/SightingTourTracking.js';
+import {SightingTourTrackingPending} from './Entities/SightingTourTrackingPending.js';
 import {SightingViewFilter} from './Entities/SightingViewFilter.js';
 import {Species} from './Entities/Species.js';
 import {SpeciesExternLink} from './Entities/SpeciesExternLink.js';
@@ -57,6 +58,7 @@ export class MWPADbLoader extends DBLoader {
             SightingMovementTrack,
             SightingTour,
             SightingTourTracking,
+            SightingTourTrackingPending,
             SightingViewFilter,
             Species,
             SpeciesExternLink,
