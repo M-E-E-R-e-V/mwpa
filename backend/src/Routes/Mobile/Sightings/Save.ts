@@ -5,9 +5,12 @@ import {SightingSaveResponse, TypeSighting} from 'mwpa_schemas';
 import {Const} from '../../../Const.js';
 import {Sighting as SightingDB, SightingType} from '../../../Db/MariaDb/Entities/Sighting.js';
 import {SightingTour as SightingTourDB} from '../../../Db/MariaDb/Entities/SightingTour.js';
+import {SightingTourTracking as SightingTourTrackingDB} from '../../../Db/MariaDb/Entities/SightingTourTracking.js';
 import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
+import {SightingTourTrackingPendingRepository} from '../../../Db/MariaDb/Repositories/SightingTourTrackingPendingRepository.js';
+import {SightingTourTrackingRepository} from '../../../Db/MariaDb/Repositories/SightingTourTrackingRepository.js';
 import {SightingMovementService} from '../../../Service/Movement/SightingMovementService.js';
 import {Users} from '../../../Users/Users.js';
 import {UtilSighting} from '../../../Utils/UtilSighting.js';
@@ -56,6 +59,7 @@ export class Save {
         const tourFid = UtilTourFid.createTourFid(body);
 
         let tour = await SightingTourRepository.getInstance().findByTourFidAndDevice(tourFid, device.id);
+        let tourWasJustCreated = false;
 
         if (!tour) {
             tour = new SightingTourDB();
@@ -74,6 +78,17 @@ export class Save {
             tour.record_by_persons = '';
             tour.device_id = device.id;
             tour = await SightingTourRepository.getInstance().save(tour);
+            tourWasJustCreated = true;
+        }
+
+        // If the device buffered tracking points for this tour_fid before the
+        // sighting arrived (Mobile/SightingTourTracking::save → pending bucket),
+        // promote them into the real tracking table now.
+        const promotedTracks = await Save.promotePendingTracks(tourFid, device.id, tour.id);
+        if (promotedTracks > 0 || tourWasJustCreated) {
+            Logger.getLogger().info(
+                `Mobile/Sightings::save: tour_fid: ${tourFid} created=${tourWasJustCreated} promoted=${promotedTracks}`
+            );
         }
 
         const hash = await UtilSighting.createHash(body);
@@ -169,6 +184,66 @@ export class Save {
             statusCode: MobileV1StatusCode.OK,
             unid: sighting.unid
         };
+    }
+
+    /**
+     * Move buffered tracking points for (tour_fid, device) from the pending
+     * bucket into the real tracking table, attached to the given tour id.
+     * Dedupes against the tracking table by `unid` — pending rows whose unid
+     * already exists in tracking are dropped without re-insert. Pending rows
+     * for this (tour_fid, device) are always cleared at the end so a
+     * subsequent sync starts from a clean bucket.
+     *
+     * Triggers a fire-and-forget movement rebuild when at least one row is
+     * promoted, mirroring the behaviour in Mobile/SightingTourTracking::save.
+     *
+     * @param {string} tourFid
+     * @param {number} deviceId
+     * @param {number} sightingTourId
+     * @return {number} number of pending rows promoted into the tracking table
+     */
+    private static async promotePendingTracks(tourFid: string, deviceId: number, sightingTourId: number): Promise<number> {
+        const pendingRepo = SightingTourTrackingPendingRepository.getInstance();
+        const trackRepo = SightingTourTrackingRepository.getInstance();
+
+        const pendingRows = await pendingRepo.findByTourFidAndDevice(tourFid, deviceId);
+        if (pendingRows.length === 0) {
+            return 0;
+        }
+
+        let promoted = 0;
+        for (const pending of pendingRows) {
+            if (await trackRepo.findOne(pending.unid)) {
+                continue;
+            }
+
+            const track = new SightingTourTrackingDB();
+            track.unid = pending.unid;
+            track.create_datetime = pending.create_datetime;
+            track.sighting_tour_id = sightingTourId;
+            track.position = pending.position;
+
+            await trackRepo.save(track);
+            promoted++;
+        }
+
+        await pendingRepo.deleteByTourFidAndDevice(tourFid, deviceId);
+
+        if (promoted > 0) {
+            SightingMovementService.getInstance().rebuildForTour(sightingTourId).then((stats) => {
+                Logger.getLogger().info(
+                    `Mobile/Sightings::save: movement rebuild after promotion for tour ${sightingTourId}: ` +
+                    `${stats.processed} ok, ${stats.failed} failed`
+                );
+            }).catch((err: unknown) => {
+                Logger.getLogger().error(
+                    `Mobile/Sightings::save: movement rebuild after promotion for tour ${sightingTourId} crashed`,
+                    err as Error
+                );
+            });
+        }
+
+        return promoted;
     }
 
 }

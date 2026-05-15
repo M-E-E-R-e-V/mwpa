@@ -2,8 +2,10 @@ import {Logger} from 'figtree';
 import {Vts} from 'vts';
 import {DefaultMobileV1Return, SightingTourTrackingEntry, SightingTourTrackingRequest} from 'mwpa_schemas';
 import {SightingTourTracking as SightingTourTrackingDB} from '../../../Db/MariaDb/Entities/SightingTourTracking.js';
+import {SightingTourTrackingPending as SightingTourTrackingPendingDB} from '../../../Db/MariaDb/Entities/SightingTourTrackingPending.js';
 import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
+import {SightingTourTrackingPendingRepository} from '../../../Db/MariaDb/Repositories/SightingTourTrackingPendingRepository.js';
 import {SightingTourTrackingRepository} from '../../../Db/MariaDb/Repositories/SightingTourTrackingRepository.js';
 import {SightingMovementService} from '../../../Service/Movement/SightingMovementService.js';
 import {MobileV1StatusCode} from '../MobileV1.js';
@@ -17,6 +19,10 @@ export class Save {
      * Persist a batch of tracking points. Entries are grouped by tour_fid; for each group the
      * matching tour is loaded once and missing tracks (by unid) are inserted. Entries with empty
      * unid are skipped.
+     *
+     * If no `SightingTour` exists yet for a given tour_fid, the entries are stored in the
+     * `sighting_tour_tracking_pending` bucket and will be promoted into `sighting_tour_tracking`
+     * later when a sighting with the matching tour_fid is saved (see Mobile/Sightings/Save.ts).
      * @param {string} deviceIdentity
      * @param {SightingTourTrackingRequest} request
      * @return {DefaultMobileV1Return}
@@ -54,39 +60,25 @@ export class Save {
         // Tours whose track gained new points — sighting movements for these
         // tours need to be recomputed once the sync is done.
         const affectedTourIds = new Set<number>();
+        const nowSec = Math.floor(Date.now() / 1000);
 
         for (const [tourFid, entries] of groupedByTour) {
             const tour = await SightingTourRepository.getInstance().findByTourFidAndDevice(tourFid, device.id);
 
-            if (!tour) {
-                Logger.getLogger().info(`Mobile/SightingTourTracking::save: tour not found by tour_fid: ${tourFid}`);
-                continue;
-            }
-
-            let countAdd = 0;
-
-            for (const entry of entries) {
-                const existing = await SightingTourTrackingRepository.getInstance().findOne(entry.unid);
-                if (existing) {
-                    continue;
+            if (tour) {
+                const countAdd = await Save.persistIntoTour(tour.id, entries);
+                if (countAdd > 0) {
+                    affectedTourIds.add(tour.id);
                 }
-
-                const ts = Math.floor(new Date(entry.date).getTime() / 1000);
-                const track = new SightingTourTrackingDB();
-                track.unid = entry.unid;
-                track.create_datetime = Number.isFinite(ts) ? ts : 0;
-                track.sighting_tour_id = tour.id;
-                track.position = entry.location;
-
-                await SightingTourTrackingRepository.getInstance().save(track);
-                countAdd++;
+                Logger.getLogger().info(
+                    `Mobile/SightingTourTracking::save: added ${countAdd}/${entries.length} for tour_fid: ${tourFid}`
+                );
+            } else {
+                const countAdd = await Save.persistIntoPending(tourFid, device.id, nowSec, entries);
+                Logger.getLogger().info(
+                    `Mobile/SightingTourTracking::save: buffered ${countAdd}/${entries.length} pending for tour_fid: ${tourFid}`
+                );
             }
-
-            if (countAdd > 0) {
-                affectedTourIds.add(tour.id);
-            }
-
-            Logger.getLogger().info(`Mobile/SightingTourTracking::save: added ${countAdd}/${entries.length} for tour_fid: ${tourFid}`);
         }
 
         // Fire-and-forget rebuild of movements for every tour that gained
@@ -111,6 +103,87 @@ export class Save {
         return {
             statusCode: MobileV1StatusCode.OK
         };
+    }
+
+    /**
+     * Insert entries into the real tracking table. Dedupes by `unid` against both the
+     * tracking table and the pending bucket so a re-uploaded entry is never duplicated.
+     * @param {number} sightingTourId
+     * @param {SightingTourTrackingEntry[]} entries
+     * @return {number} number of rows inserted
+     */
+    private static async persistIntoTour(sightingTourId: number, entries: SightingTourTrackingEntry[]): Promise<number> {
+        const trackRepo = SightingTourTrackingRepository.getInstance();
+        const pendingRepo = SightingTourTrackingPendingRepository.getInstance();
+        let countAdd = 0;
+
+        for (const entry of entries) {
+            if (await trackRepo.findOne(entry.unid)) {
+                continue;
+            }
+            if (await pendingRepo.findOne(entry.unid)) {
+                // A copy is already buffered — leave it to the promotion step on
+                // the next sighting save to move it into the tracking table.
+                continue;
+            }
+
+            const ts = Math.floor(new Date(entry.date).getTime() / 1000);
+            const track = new SightingTourTrackingDB();
+            track.unid = entry.unid;
+            track.create_datetime = Number.isFinite(ts) ? ts : 0;
+            track.sighting_tour_id = sightingTourId;
+            track.position = entry.location;
+
+            await trackRepo.save(track);
+            countAdd++;
+        }
+
+        return countAdd;
+    }
+
+    /**
+     * Store entries in the pending bucket because no SightingTour exists yet
+     * for their tour_fid. Dedupes by `unid` against both the pending bucket
+     * (idempotent re-uploads) and the real tracking table (in case the tour
+     * appeared between the device's check and save calls).
+     * @param {string} tourFid
+     * @param {number} deviceId
+     * @param {number} nowSec
+     * @param {SightingTourTrackingEntry[]} entries
+     * @return {number} number of rows buffered
+     */
+    private static async persistIntoPending(
+        tourFid: string,
+        deviceId: number,
+        nowSec: number,
+        entries: SightingTourTrackingEntry[]
+    ): Promise<number> {
+        const trackRepo = SightingTourTrackingRepository.getInstance();
+        const pendingRepo = SightingTourTrackingPendingRepository.getInstance();
+        let countAdd = 0;
+
+        for (const entry of entries) {
+            if (await pendingRepo.findOne(entry.unid)) {
+                continue;
+            }
+            if (await trackRepo.findOne(entry.unid)) {
+                continue;
+            }
+
+            const ts = Math.floor(new Date(entry.date).getTime() / 1000);
+            const pending = new SightingTourTrackingPendingDB();
+            pending.unid = entry.unid;
+            pending.tour_fid = tourFid;
+            pending.device_id = deviceId;
+            pending.create_datetime = Number.isFinite(ts) ? ts : 0;
+            pending.position = entry.location;
+            pending.pending_since = nowSec;
+
+            await pendingRepo.save(pending);
+            countAdd++;
+        }
+
+        return countAdd;
     }
 
 }
