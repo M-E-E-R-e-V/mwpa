@@ -174,6 +174,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 - AROC office-report export (filled `PLANTILLA_AVISTAMIENTOS_AROC.xlsx`, one file per boat per half-year)
 - Printable Data Page (Map + Analytics + Year comparison) via the browser's PDF export
 - Derived **movement tracks** per sighting: distance, speed, heading, turning-angle, with GPS-jump flag
+- **Effort-only tours** — legs without sightings are still preserved server-side from the uploaded GPS track, so they appear in sighting-rate and survey-effort analyses
 
 ## Tech stack
 
