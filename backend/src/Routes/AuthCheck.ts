@@ -37,6 +37,30 @@ export const checkMWPAUserIsLogin = async(req: Request, _res: Response): Promise
 export const isMWPAUserLogin = (req: Request): boolean => DefaultRouteCheckUserIsLogin(req, false, SchemaMWPARequestData as unknown as typeof SchemaRequestData);
 
 /**
+ * Admin-only variant. Returns false (→ 401) when not logged in, throws
+ * RouteError(FORBIDDEN) when logged in but `isAdmin` isn't set. Wired
+ * the same way as `checkMWPAUserIsLogin` — pass as the `requiresAuth`
+ * argument to `_get`/`_post`. Use this for routes that figtree owns
+ * (so we can't add an `if (!isAdmin) return FORBIDDEN` inside the
+ * handler ourselves — see ServiceRoute registration).
+ * @param {Request} req
+ * @param {Response} _res
+ * @return {Promise<boolean>}
+ */
+export const checkMWPAAdminIsLogin = async(req: Request, _res: Response): Promise<boolean> => {
+    if (!DefaultRouteCheckUserIsLogin(req, true, SchemaMWPARequestData as unknown as typeof SchemaRequestData)) {
+        return false;
+    }
+
+    const user = (req.session as unknown as {user?: MWPASessionUserData;}).user;
+    if (!user?.isAdmin) {
+        throw new RouteError(StatusCodes.FORBIDDEN, 'Admin only');
+    }
+
+    return true;
+};
+
+/**
  * ACL-aware variant of checkMWPAUserIsLogin. figtree's DefaultRoute calls this
  * with `description.aclRight` as the third arg (see DefaultRoute.js: `checkUserLogin(req, res, description.aclRight)`).
  *
