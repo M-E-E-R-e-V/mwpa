@@ -49,7 +49,9 @@ Local dev infra: `docker compose up -d mariadb` brings up MariaDB on `127.0.0.1:
 
 The figtree logger writes to `config.logging.dirname` (set to `../data/logs` in `config.dev.json` so it sits under the gitignored `data/` and the dev boot doesn't try to mkdir `/var/log/mwpa/`). Override in `config.json` for production.
 
-There is **no test suite** in the repo at this time.
+Tests:
+- **Backend**: `npm run test -w backend` builds `backend/tsconfig.test.json` to `backend/dist-test/` and runs `node --test dist-test/test/`. No extra runtime deps — pure Node 20 `node:test` + `node:assert`. Add new tests as `backend/test/**/*.test.ts`.
+- **Frontend**: `npm run test -w mwpa_frontend` runs `vitest run` (config in `frontend/vitest.config.ts`). Uses `happy-dom` because importing most widgets transitively loads `bambooo` → `bs-stepper`, which touches `window` at module-eval time. Add new tests as `frontend/test/**/*.test.ts`. Existing examples cover the FareHarbor provider (URL padding, month iteration, response mapping), the ExternalTourService constructor wiring, and the LocationPicker snap-to-route math.
 
 ## Architectural patterns
 
