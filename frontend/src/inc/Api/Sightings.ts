@@ -73,6 +73,7 @@ export type SightingsEntry = {
     files: string[];
     pointtype?: string;
     species_name?: string;
+    track_point_count?: number;
 };
 
 /**

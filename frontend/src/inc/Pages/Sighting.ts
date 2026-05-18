@@ -1048,6 +1048,22 @@ export class Sighting extends BasePage {
                 }
             });
 
+            // Track-point indicator. Always rendered so the user can spot
+            // at a glance which sightings have a real boat GPS track
+            // behind them (segment_count + 1, grey) vs which only have
+            // hand-entered begin/end anchors or no movement at all (0, red).
+            const trackCount = entry.track_point_count ?? 0;
+            const trackLabel = Lang.i().l('track pts') ?? 'track pts';
+            if (trackCount > 0) {
+                tdLocation.append(
+                    `<small class="text-muted"><i class="fas fa-route mr-1"></i>${trackCount} ${trackLabel}</small>`
+                );
+            } else {
+                tdLocation.append(
+                    `<small style="color:#dc3545"><i class="fas fa-route mr-1"></i>0 ${trackLabel}</small>`
+                );
+            }
+
             const fDistance = parseFloat(entry.distance_coast!) || 0;
             // eslint-disable-next-line no-new
             new Td(trbody, `${UtilDistanceCoast.meterToM(fDistance, true)}`);
