@@ -22,6 +22,7 @@ import {Species as SpeciesPage} from './inc/Pages/Species';
 import {Tours as ToursPage} from './inc/Pages/Tours';
 import {ToursExternal} from './inc/Pages/ToursExternal';
 import {Users as UsersPage} from './inc/Pages/Users';
+import {EncounterCategories} from './inc/Pages/EncounterCategories';
 import {ExternalTourSource} from './inc/Pages/ExternalTourSource';
 import {Vehicle} from './inc/Pages/Vehicle';
 import {Lang_DE} from './langs/Lang_DE';
@@ -240,7 +241,7 @@ type SideMenuEntry = {
                             icon: 'fa-solid fa-satellite-dish',
                             name: 'admin-encounters',
                             onClick: (): void => {
-                                //loadPage(new Species());
+                                loadPage(new EncounterCategories());
                             }
                         },
                         {
