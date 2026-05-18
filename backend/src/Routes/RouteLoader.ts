@@ -1,4 +1,6 @@
-import {HttpRouteLoader, IDefaultRoute, SwaggerUIRoute} from 'figtree';
+import {HttpRouteLoader, IDefaultRoute, ServiceRoute, SwaggerUIRoute} from 'figtree';
+import {Backend} from '../Application/Backend.js';
+import {checkMWPAAdminIsLogin} from './AuthCheck.js';
 import {Acl} from './Main/Acl.js';
 import {BehaviouralStates} from './Main/BehaviouralStates.js';
 import {Devices} from './Main/Devices.js';
@@ -39,6 +41,11 @@ export class RouteLoader extends HttpRouteLoader {
 
         return [
             SwaggerUIRoute.getInstance(),
+            // figtree's built-in /json/v1/service/{status,start,stop,invoke}
+            // — admin-only, lets the Services admin page list every running
+            // job, read its cron + last_run + status, and trigger an ad-hoc
+            // invoke without waiting for the next tick.
+            new ServiceRoute(Backend.NAME, checkMWPAAdminIsLogin),
             new Login(),
             new MapCache(),
             new Acl(),

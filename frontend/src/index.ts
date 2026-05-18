@@ -24,6 +24,7 @@ import {ToursExternal} from './inc/Pages/ToursExternal';
 import {Users as UsersPage} from './inc/Pages/Users';
 import {EncounterCategories} from './inc/Pages/EncounterCategories';
 import {ExternalTourSource} from './inc/Pages/ExternalTourSource';
+import {Services} from './inc/Pages/Services';
 import {Vehicle} from './inc/Pages/Vehicle';
 import {Lang_DE} from './langs/Lang_DE';
 import {Lang_EN} from './langs/Lang_EN';
@@ -258,6 +259,14 @@ type SideMenuEntry = {
                             name: 'admin-external-tour-source',
                             onClick: (): void => {
                                 loadPage(new ExternalTourSource());
+                            }
+                        },
+                        {
+                            title: 'Services',
+                            icon: 'fa-solid fa-cog',
+                            name: 'admin-services',
+                            onClick: (): void => {
+                                loadPage(new Services());
                             }
                         }
                     ]
