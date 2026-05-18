@@ -20,7 +20,9 @@ import {Roles as RolesPage} from './inc/Pages/Roles';
 import {Sighting as SightingPage} from './inc/Pages/Sighting';
 import {Species as SpeciesPage} from './inc/Pages/Species';
 import {Tours as ToursPage} from './inc/Pages/Tours';
+import {ToursExternal} from './inc/Pages/ToursExternal';
 import {Users as UsersPage} from './inc/Pages/Users';
+import {ExternalTourSource} from './inc/Pages/ExternalTourSource';
 import {Vehicle} from './inc/Pages/Vehicle';
 import {Lang_DE} from './langs/Lang_DE';
 import {Lang_EN} from './langs/Lang_EN';
@@ -145,7 +147,17 @@ type SideMenuEntry = {
                 name: 'tours',
                 onClick: (): void => {
                     loadPage(new ToursPage());
-                }
+                },
+                items: [
+                    {
+                        title: 'Tours External',
+                        icon: 'fa-solid fa-calendar-alt',
+                        name: 'tours-external',
+                        onClick: (): void => {
+                            loadPage(new ToursExternal());
+                        }
+                    }
+                ]
             },
             {
                 title: 'Sighting',
@@ -237,6 +249,14 @@ type SideMenuEntry = {
                             name: 'admin-devices',
                             onClick: (): void => {
                                 loadPage(new DevicesPage());
+                            }
+                        },
+                        {
+                            title: 'External Tour Sources',
+                            icon: 'fa-solid fa-calendar-alt',
+                            name: 'admin-external-tour-source',
+                            onClick: (): void => {
+                                loadPage(new ExternalTourSource());
                             }
                         }
                     ]

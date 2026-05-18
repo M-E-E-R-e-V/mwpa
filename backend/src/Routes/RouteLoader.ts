@@ -3,6 +3,7 @@ import {Acl} from './Main/Acl.js';
 import {BehaviouralStates} from './Main/BehaviouralStates.js';
 import {Devices} from './Main/Devices.js';
 import {EncounterCategories} from './Main/EncounterCategories.js';
+import {ExternalTour} from './Main/ExternalTour.js';
 import {Group} from './Main/Group.js';
 import {Login} from './Main/Login.js';
 import {Organization} from './Main/Organization.js';
@@ -44,6 +45,7 @@ export class RouteLoader extends HttpRouteLoader {
             new BehaviouralStates(),
             new Devices(),
             new EncounterCategories(),
+            new ExternalTour(),
             new Group(),
             new Organization(),
             new Sightings(),
