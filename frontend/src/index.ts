@@ -22,6 +22,7 @@ import {Species as SpeciesPage} from './inc/Pages/Species';
 import {Tours as ToursPage} from './inc/Pages/Tours';
 import {ToursExternal} from './inc/Pages/ToursExternal';
 import {Users as UsersPage} from './inc/Pages/Users';
+import {AisLiveMap} from './inc/Pages/AisLiveMap';
 import {EncounterCategories} from './inc/Pages/EncounterCategories';
 import {ExternalTourSource} from './inc/Pages/ExternalTourSource';
 import {Services} from './inc/Pages/Services';
@@ -175,6 +176,14 @@ type SideMenuEntry = {
                 name: 'ocean_fishing_map',
                 onClick: (): void => {
                     loadPage(new OceanFishingMapPage());
+                }
+            },
+            {
+                title: 'Live AIS Map',
+                icon: 'fa-solid fa-ship',
+                name: 'ais-live-map',
+                onClick: (): void => {
+                    loadPage(new AisLiveMap());
                 }
             }
         ];
