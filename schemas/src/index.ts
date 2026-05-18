@@ -201,6 +201,14 @@ export {
     MovementConfigResponse,
 } from './Routes/Main/Sightings/SightingMovement.js';
 export {
+    SchemaSightingEnvironmentProvenance,
+    SightingEnvironmentProvenance,
+    SchemaSightingEnvironmentEntry,
+    SightingEnvironmentEntry,
+    SchemaSightingEnvironmentListResponse,
+    SightingEnvironmentListResponse,
+} from './Routes/Main/Sightings/SightingEnvironment.js';
+export {
     SchemaUsersRolesEntry,
     UsersRolesEntry,
     SchemaUsersRolesListResponse,
