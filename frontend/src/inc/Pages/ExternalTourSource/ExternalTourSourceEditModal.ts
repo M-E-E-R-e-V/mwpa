@@ -129,8 +129,8 @@ export class ExternalTourSourceEditModal extends ModalDialog {
     public getItemPks(): string[] {
         const raw = this._inputItemPks.getValue();
         return raw.split(',')
-            .map((s) => s.trim())
-            .filter((s) => s !== '');
+        .map((s) => s.trim())
+        .filter((s) => s !== '');
     }
 
     public setItemPks(pks: string[]): void {
