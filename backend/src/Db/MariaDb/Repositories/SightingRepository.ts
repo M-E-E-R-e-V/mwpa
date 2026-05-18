@@ -63,6 +63,34 @@ export class SightingRepository extends DBRepository<Sighting> {
     }
 
     /**
+     * Bulk-count non-deleted sightings grouped by tour_fid for a set of
+     * tour_fids. Returns a map keyed by tour_fid; tours with no
+     * sightings are absent (caller treats as 0).
+     *
+     * Single GROUP BY query replaces N per-tour `countByTourFid` calls
+     * in the Tours list endpoint.
+     * @param {string[]} tourFids
+     * @return {Map<string, number>}
+     */
+    public async countGroupedByTourFid(tourFids: string[]): Promise<Map<string, number>> {
+        const result = new Map<string, number>();
+        if (tourFids.length === 0) {
+            return result;
+        }
+        const repository = await this._repository;
+        const rows = await repository.createQueryBuilder('s')
+            .select('s.tour_fid', 'tour_fid')
+            .addSelect('COUNT(*)', 'cnt')
+            .where({tour_fid: In(tourFids), deleted: false})
+            .groupBy('s.tour_fid')
+            .getRawMany<{tour_fid: string; cnt: string}>();
+        for (const row of rows) {
+            result.set(row.tour_fid, Number(row.cnt));
+        }
+        return result;
+    }
+
+    /**
      * Find all sightings on a tour (by foreign tour_fid).
      * @param {string} tourFid
      * @return {Sighting[]}
