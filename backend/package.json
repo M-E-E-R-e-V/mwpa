@@ -56,6 +56,8 @@
   "scripts": {
     "build": "npm run compile",
     "compile": "tsc --project tsconfig.json",
+    "compile-test": "tsc --project tsconfig.test.json",
+    "test": "npm run compile-test && node --test dist-test/test/",
     "npm-check-updates": "npm-check-updates"
   },
   "version": "1.0.0"
