@@ -44,7 +44,11 @@ export class ExternalTourService extends ServiceJobAbstract {
 
     public constructor(providers?: ExternalTourProvider[]) {
         super(ExternalTourService.NAME, ['mariadb']);
-        this._cron = '*/15 * * * *';
+        // Hourly tick: provider calendar slots change minute-granular at
+        // best (one booking flips capacity / is_sold_out), and a 15-min
+        // cadence was burning FareHarbor budget without adding signal.
+        // Admins can still trigger an ad-hoc pull from the Services page.
+        this._cron = '0 * * * *';
 
         const list = providers ?? [new FareHarborProvider()];
         for (const p of list) {
