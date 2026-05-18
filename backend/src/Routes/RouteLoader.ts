@@ -2,6 +2,7 @@ import {HttpRouteLoader, IDefaultRoute, ServiceRoute, SwaggerUIRoute} from 'figt
 import {Backend} from '../Application/Backend.js';
 import {checkMWPAAdminIsLogin} from './AuthCheck.js';
 import {Acl} from './Main/Acl.js';
+import {Ais} from './Main/Ais.js';
 import {BehaviouralStates} from './Main/BehaviouralStates.js';
 import {Devices} from './Main/Devices.js';
 import {EncounterCategories} from './Main/EncounterCategories.js';
@@ -49,6 +50,7 @@ export class RouteLoader extends HttpRouteLoader {
             new Login(),
             new MapCache(),
             new Acl(),
+            new Ais(),
             new BehaviouralStates(),
             new Devices(),
             new EncounterCategories(),
