@@ -126,4 +126,21 @@ export class SightingExtendedRepository extends DBRepositoryUnid<SightingExtende
         .getMany();
     }
 
+    /**
+     * Up to `limit` non-deleted sightings whose `ocean_last_update`
+     * is NULL or older than `cutoff`. Filters out sightings without a
+     * date too (OceanService needs one to query the upstream).
+     */
+    public async findStaleForOcean(cutoff: Date, limit: number): Promise<Sighting[]> {
+        const repository = await this._repository;
+        return repository.manager.createQueryBuilder(Sighting, 's')
+        .leftJoin(SightingExtended, 'e', 'e.sighting_id = s.id')
+        .where('s.deleted = :deleted', {deleted: false})
+        .andWhere('s.location_begin <> \'\'')
+        .andWhere('s.date <> \'\'')
+        .andWhere('(e.ocean_last_update IS NULL OR e.ocean_last_update < :cutoff)', {cutoff: cutoff})
+        .limit(limit)
+        .getMany();
+    }
+
 }

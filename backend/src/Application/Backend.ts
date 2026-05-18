@@ -8,6 +8,7 @@ import {SyncRolesRightsSetup} from '../Db/MariaDb/Setup/SyncRolesRightsSetup.js'
 import {TruncateSightingExtendedSetup} from '../Db/MariaDb/Setup/TruncateSightingExtendedSetup.js';
 import {RouteLoader} from '../Routes/RouteLoader.js';
 import {DepthService} from '../Service/DepthService.js';
+import {OceanService} from '../Service/OceanService.js';
 import {PendingTrackPromotionService} from '../Service/PendingTrack/PendingTrackPromotionService.js';
 import {WeatherService} from '../Service/WeatherService.js';
 
@@ -69,6 +70,7 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
         this._serviceManager.add(new HttpService(RouteLoader));
         this._serviceManager.add(new DepthService());
         this._serviceManager.add(new WeatherService());
+        this._serviceManager.add(new OceanService());
         this._serviceManager.add(new PendingTrackPromotionService());
     }
 
