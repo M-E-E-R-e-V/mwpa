@@ -31,3 +31,18 @@ export const SchemaEncounterCategoriesResponse = SchemaDefaultReturn.extend({
  * Type of schema EncounterCategoriesResponse
  */
 export type EncounterCategoriesResponse = ExtractSchemaResultType<typeof SchemaEncounterCategoriesResponse>;
+
+/**
+ * Schema of EncounterCategorieDeleteRequest
+ * Soft-delete one encounter category by id.
+ */
+export const SchemaEncounterCategorieDeleteRequest = Vts.object({
+    id: Vts.number(),
+}, {
+    description: 'Soft-delete one encounter category by id.',
+});
+
+/**
+ * Type of schema EncounterCategorieDeleteRequest
+ */
+export type EncounterCategorieDeleteRequest = ExtractSchemaResultType<typeof SchemaEncounterCategorieDeleteRequest>;
