@@ -64,15 +64,15 @@ describe('ExternalTourService', () => {
 
     /**
      * The service exposes its cron expression on the base class.
-     * Pinning the every-15-minutes schedule here so a careless edit
-     * doesn't accidentally turn it into every-minute — that would
-     * 4× the FareHarbor traffic with no upside, given the slot
-     * state changes are minute-granular at best.
+     * Pinning the hourly schedule here so a careless edit doesn't
+     * accidentally turn it into every-minute — that would 60× the
+     * FareHarbor traffic with no upside, given the slot state
+     * changes are minute-granular at best.
      */
-    it('runs on a 15-minute cron schedule', () => {
+    it('runs on an hourly cron schedule', () => {
         const service = new ExternalTourService();
         const cron = (service as unknown as {_cron: string})._cron;
-        assert.equal(cron, '*/15 * * * *');
+        assert.equal(cron, '0 * * * *');
     });
 
 });
