@@ -63,6 +63,7 @@ export const SchemaSightingsEntry = SchemaTypeSighting.extend({
     files: Vts.array(Vts.string()),
     pointtype: Vts.optional(Vts.string()),
     species_name: Vts.optional(Vts.string()),
+    track_point_count: Vts.optional(Vts.number({description: 'Number of GPS tracking points the boat recorded during the sighting window (segment_count + 1 for source=\'tracking\', omitted for manual_begin_end / no movement row). Lets the list-UI show which sightings actually have a real GPS track.'})),
 }, {
     description: 'Sighting list entry — extends TypeSighting with response-side fields',
 });

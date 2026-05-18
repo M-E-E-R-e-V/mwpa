@@ -43,6 +43,8 @@ export {
     EncounterCategorieEntry,
     SchemaEncounterCategoriesResponse,
     EncounterCategoriesResponse,
+    SchemaEncounterCategorieDeleteRequest,
+    EncounterCategorieDeleteRequest,
 } from './Routes/Main/EncounterCategories/EncounterCategories.js';
 export {
     SchemaGroupEntry,
@@ -135,6 +137,8 @@ export {
     UserSavePinRequest,
 } from './Routes/Main/User/User.js';
 export {
+    SchemaToursFilterOrder,
+    ToursFilterOrder,
     SchemaToursFilter,
     ToursFilter,
     SchemaTourEntry,
@@ -240,6 +244,22 @@ export {
     SchemaDevicesListResponse,
     DevicesListResponse,
 } from './Routes/Main/Devices/Devices.js';
+export {
+    SchemaExternalTourSourceEntry,
+    ExternalTourSourceEntry,
+    SchemaExternalTourCustomerType,
+    ExternalTourCustomerType,
+    SchemaExternalTourEntry,
+    ExternalTourEntry,
+    SchemaExternalTourSourceListResponse,
+    ExternalTourSourceListResponse,
+    SchemaExternalTourSourceDeleteRequest,
+    ExternalTourSourceDeleteRequest,
+    SchemaExternalTourListRequest,
+    ExternalTourListRequest,
+    SchemaExternalTourListResponse,
+    ExternalTourListResponse,
+} from './Routes/Main/ExternalTour/ExternalTour.js';
 export {
     SchemaMapCacheRequest,
     MapCacheRequest,

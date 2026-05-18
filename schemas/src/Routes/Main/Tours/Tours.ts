@@ -2,12 +2,41 @@ import {ExtractSchemaResultType, Vts} from 'vts';
 import {SchemaDefaultReturn} from 'figtree-schemas';
 
 /**
+ * Schema of ToursFilterOrder
+ * Sort directions per orderable column. Empty string means 'do not sort by this column'.
+ */
+export const SchemaToursFilterOrder = Vts.object({
+    id: Vts.string(),
+    date: Vts.string(),
+    tour_start: Vts.string(),
+    tour_end: Vts.string(),
+    create_datetime: Vts.string(),
+    update_datetime: Vts.string(),
+    count_sightings: Vts.string(),
+    count_trackings: Vts.string(),
+}, {
+    description: 'Sort directions per orderable column. Empty string means \'do not sort by this column\'.',
+});
+
+/**
+ * Type of schema ToursFilterOrder
+ */
+export type ToursFilterOrder = ExtractSchemaResultType<typeof SchemaToursFilterOrder>;
+
+/**
  * Schema of ToursFilter
  */
 export const SchemaToursFilter = Vts.object({
     year: Vts.optional(Vts.number()),
     limit: Vts.optional(Vts.number()),
     offset: Vts.optional(Vts.number()),
+    order: Vts.optional(SchemaToursFilterOrder),
+    period_from: Vts.optional(Vts.string({description: 'ISO date YYYY-MM-DD; lower bound for tour date (inclusive)'})),
+    period_to: Vts.optional(Vts.string({description: 'ISO date YYYY-MM-DD; upper bound for tour date (inclusive)'})),
+    vehicle_id: Vts.optional(Vts.number({description: 'Filter by vehicle id'})),
+    vehicle_driver_id: Vts.optional(Vts.number({description: 'Filter by vehicle driver id'})),
+    organization_id: Vts.optional(Vts.number({description: 'Filter by organization id (only effective when current user has access)'})),
+    search: Vts.optional(Vts.string({description: 'Free-text search applied as LIKE on record_by_persons + tour_fid'})),
 }, {
     description: '',
 });
