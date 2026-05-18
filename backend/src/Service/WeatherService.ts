@@ -95,21 +95,23 @@ export class WeatherService extends ServiceJobAbstract {
         const day = weather?.day;
         const hourSample = weather?.hour;
         const provider = weather?.provider;
+        // Multi-provider merges (set by WeatherProviderRegistry) tell us
+        // which upstream supplied which column. Fall back to the single
+        // `provider` string for legacy/single-provider results.
+        const providerPerField = weather?.provider_per_field;
 
         for (const key of WeatherService.METRIC_KEYS) {
             const dayCol = `${key}_day`;
             const hourCol = `${key}_hour`;
 
-            if (provider !== undefined && day?.[key] !== undefined) {
-                provenance[dayCol] = provider;
-            } else {
-                delete provenance[dayCol];
+            delete provenance[dayCol];
+            if (day?.[key] !== undefined) {
+                provenance[dayCol] = providerPerField?.[dayCol] ?? provider ?? 'unknown';
             }
 
-            if (provider !== undefined && hourSample?.[key] !== undefined) {
-                provenance[hourCol] = provider;
-            } else {
-                delete provenance[hourCol];
+            delete provenance[hourCol];
+            if (hourSample?.[key] !== undefined) {
+                provenance[hourCol] = providerPerField?.[hourCol] ?? provider ?? 'unknown';
             }
         }
 

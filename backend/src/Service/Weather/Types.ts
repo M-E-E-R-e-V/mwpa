@@ -53,9 +53,22 @@ export type WeatherInfo = {
     hour_used?: number;
 
     /**
-     * Provider id that produced the values (e.g. 'open_meteo_marine').
+     * Provider id that produced the values (e.g. 'open_meteo'). When
+     * a single result was merged from several providers (see
+     * `WeatherProviderRegistry`), this is the '+'-joined chain — use
+     * {@link provider_per_field} for the authoritative per-column
+     * provenance.
      */
     provider: string;
+
+    /**
+     * Per-column provider provenance. Keys are the persisted column
+     * names (e.g. 'uv_index_day', 'sst_c_hour') and values are
+     * provider ids. Only set when the registry merged multiple
+     * providers' results; single-provider returns leave this
+     * undefined and {@link provider} is the single source.
+     */
+    provider_per_field?: Record<string, string>;
 
     /**
      * Epoch ms when the values were fetched.
