@@ -85,8 +85,8 @@ export class SightingEditModal extends ModalDialog {
     protected _locationPicker: LocationPickerModal;
 
     protected _tourId: number|null = null;
-
-    protected _routeCache: number[][]|null = null;
+    
+    protected _routeCache: GeolocationCoordinates[]|null = null;
 
     /**
      * input distance coast
@@ -194,17 +194,25 @@ export class SightingEditModal extends ModalDialog {
 
         this._locationPicker = new LocationPickerModal(elementObject);
 
-        const openPicker = (input: LocationPickerInput): void => {
+        const openPicker = (input: LocationPickerInput, mustBeAfter?: () => GeolocationCoordinates | null): void => {
             input.setOnRequestPicker((current, accept) => {
                 this._locationPicker.resetValues();
-                this._locationPicker.open(current, null, (newValue) => {
-                    accept(newValue);
-                });
+                this._locationPicker.open(
+                    current,
+                    null,
+                    (newValue) => {
+                        accept(newValue);
+                    },
+                    mustBeAfter ? mustBeAfter() : null
+                );
                 this._loadRouteIntoPicker().catch(() => undefined);
             });
         };
         openPicker(this._inputPositionBegin);
-        openPicker(this._inputPositionEnd);
+        // End-picker must come AFTER begin along the route — pass begin's
+        // current value at open-time so the picker can warn if the user
+        // picks a position the boat passed earlier than the begin.
+        openPicker(this._inputPositionEnd, () => this._inputPositionBegin.getGcValue());
 
         const groupDistanceCoast = new FormGroup(bodyCard, 'Distance to nearest coast (nm)');
         this._inputDistanceCoast = new InputBottemBorderOnly2(groupDistanceCoast, 'distancecoast', InputType.number);
@@ -288,9 +296,7 @@ export class SightingEditModal extends ModalDialog {
                 }
             }
 
-            this._routeCache = [...sorted].sort(([a], [b]) => a - b).map(
-                ([, v]) => [v.longitude!, v.latitude!]
-            );
+            this._routeCache = [...sorted].sort(([a], [b]) => a - b).map(([, v]) => v);
         }
 
         this._locationPicker.setRoute(this._routeCache);

@@ -1,9 +1,22 @@
 /* global JQuery */
 import {ComponentType, LangText, ModalDialog, ModalDialogType} from 'bambooo';
-import {fromLonLat} from 'ol/proj';
+import moment from 'moment';
+import {fromLonLat, toLonLat} from 'ol/proj';
 import {Lang} from '../Lang';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';
 import {SightingMap, SightingMapObjectType} from './SightingMap';
+
+/**
+ * Compass label for a heading in degrees (0..360). 16-wind, 22.5° per
+ * sector. Used by the picker-info panel to make raw heading numbers
+ * readable at a glance.
+ */
+const compassLabel = (deg: number): string => {
+    const sectors = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+        'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+    const normalised = ((deg % 360) + 360) % 360;
+    return sectors[Math.round(normalised / 22.5) % 16];
+};
 
 export type LocationPickerCallback = (value: GeolocationCoordinates | null) => void;
 
@@ -58,7 +71,13 @@ export class LocationPickerModal extends ModalDialog {
 
     protected _value: GeolocationCoordinates | null = null;
 
-    protected _route: number[][] | null = null;
+    /**
+     * The surrounding tour's tracking points (ordered by timestamp asc).
+     * Used both to draw the route polyline on the map and to look up
+     * per-point metadata (time/speed/heading) for the picker-info panel.
+     * @protected
+     */
+    protected _route: GeolocationCoordinates[] | null = null;
 
     protected _onPicked: LocationPickerCallback | null = null;
 
@@ -82,9 +101,59 @@ export class LocationPickerModal extends ModalDialog {
 
     protected _dmLonMin: JQuery<HTMLInputElement>;
 
-    protected _useGpsBtn: JQuery<HTMLButtonElement>;
-
     protected _mapContainer: JQuery<HTMLDivElement>;
+
+    /**
+     * Empty-state hint shown only when the surrounding tour has no
+     * tracking points to draw — otherwise the route line on the map
+     * speaks for itself.
+     * @protected
+     */
+    protected _noTrackInfo: JQuery<HTMLDivElement>;
+
+    /**
+     * Toggle to override the snap-to-route constraint. Only visible
+     * when a route is present; checked → free pick, unchecked → snap.
+     * @protected
+     */
+    protected _freePickWrap: JQuery<HTMLDivElement>;
+
+    /**
+     * @protected
+     */
+    protected _freePickInput: JQuery<HTMLInputElement>;
+
+    /**
+     * Info panel below the free-pick checkbox. Shows the nearest tour
+     * tracking point's timestamp / speed / heading / distance whenever a
+     * value is set AND a route is available. Empty / hidden otherwise.
+     * @protected
+     */
+    protected _trackInfoWrap: JQuery<HTMLDivElement>;
+
+    /**
+     * Whether the next {@link _setValue} should snap to the route.
+     * Driven by {@link _freePickInput} and the presence of a route.
+     * @protected
+     */
+    protected _snapEnabled: boolean = true;
+
+    /**
+     * Optional reference position the pick must come AFTER along the
+     * route (e.g. the sighting's begin position when picking end). If
+     * the pick maps to an earlier vertex index than this reference, a
+     * warning is shown. Null disables the check.
+     * @protected
+     */
+    protected _mustBeAfter: GeolocationCoordinates | null = null;
+
+    /**
+     * Warning bar shown when the pick violates {@link _mustBeAfter}.
+     * Soft enforcement — save is still allowed, but the user is told
+     * the position looks wrong relative to the boat's travel direction.
+     * @protected
+     */
+    protected _orderWarning: JQuery<HTMLDivElement>;
 
     /* Guard so the DM/Dec sync doesn't infinite-loop. */
     protected _suspendSync: boolean = false;
@@ -134,21 +203,28 @@ export class LocationPickerModal extends ModalDialog {
         this._dmLonDeg = jQuery<HTMLInputElement>('<input type="number" min="0" max="179" class="form-control form-control-sm col-4 ml-1" placeholder="deg"/>').appendTo(lonRow);
         this._dmLonMin = jQuery<HTMLInputElement>('<input type="number" step="0.001" min="0" max="60" class="form-control form-control-sm col-4 ml-1" placeholder="min"/>').appendTo(lonRow);
 
-        // GPS button.
-        this._useGpsBtn = jQuery<HTMLButtonElement>(`<button type="button" class="btn btn-default btn-sm mt-3"><i class="fa fa-crosshairs"></i> ${escapeHtml(lang.l('Use current GPS'))}</button>`).appendTo(colLeft);
+        const freePickId = `loc-freepick-${Date.now()}`;
+        this._freePickWrap = jQuery<HTMLDivElement>('<div class="custom-control custom-checkbox mt-3" style="display:none;"/>').appendTo(colLeft);
+        this._freePickInput = jQuery<HTMLInputElement>(`<input type="checkbox" class="custom-control-input" id="${freePickId}"/>`).appendTo(this._freePickWrap);
+        jQuery(`<label class="custom-control-label" for="${freePickId}">${escapeHtml(lang.l('Pick freely (off-route)'))}</label>`).appendTo(this._freePickWrap);
+
+        this._trackInfoWrap = jQuery<HTMLDivElement>('<div class="small mt-2" style="display:none;"/>').appendTo(colLeft);
+
+        this._orderWarning = jQuery<HTMLDivElement>('<div class="alert alert-warning py-2 px-3 mt-2 small" style="display:none;"/>').appendTo(colLeft);
 
         /*
          * Map container — SightingMap is mounted lazily on first show() so its
          * OpenLayers init doesn't run when the modal is hidden (size=0 → broken render).
          */
         this._mapContainer = jQuery<HTMLDivElement>('<div class="location-picker-map"/>').appendTo(colRight);
+        this._noTrackInfo = jQuery<HTMLDivElement>(`<div class="small text-muted mt-2" style="display:none;">${escapeHtml(lang.l('No tracking points'))}</div>`).appendTo(colRight);
 
         // Footer buttons.
         this.addButtonClose(new LangText('Close'));
         this.addButtonSave(new LangText('Use this position'));
 
         this._wireInputs();
-        this._wireGps();
+        this._wireFreePick();
 
         this.setOnSave(async() => {
             if (this._onPicked) {
@@ -162,10 +238,16 @@ export class LocationPickerModal extends ModalDialog {
      * Open the modal pre-populated with the given coordinates and (optional)
      * tour route. The callback fires when the user accepts.
      */
-    public open(initial: GeolocationCoordinates | null, route: number[][] | null, onPicked: LocationPickerCallback): void {
+    public open(
+        initial: GeolocationCoordinates | null,
+        route: GeolocationCoordinates[] | null,
+        onPicked: LocationPickerCallback,
+        mustBeAfter: GeolocationCoordinates | null = null
+    ): void {
         this._value = initial ? {...initial} : null;
         this._route = route;
         this._onPicked = onPicked;
+        this._mustBeAfter = mustBeAfter;
 
         this._suspendSync = true;
         this._fillFromValue();
@@ -186,7 +268,7 @@ export class LocationPickerModal extends ModalDialog {
      * button. No-op if the map hasn't been mounted yet (it'll pick up the route
      * from `_route` on its next render).
      */
-    public setRoute(route: number[][]|null): void {
+    public setRoute(route: GeolocationCoordinates[]|null): void {
         this._route = route;
         if (this._mapInitialised) {
             this._renderMapState();
@@ -197,6 +279,9 @@ export class LocationPickerModal extends ModalDialog {
         this._value = null;
         this._route = null;
         this._onPicked = null;
+        this._mustBeAfter = null;
+        this._snapEnabled = true;
+        this._freePickInput.prop('checked', false);
         this._suspendSync = true;
         this._decLatInput.val('');
         this._decLonInput.val('');
@@ -207,6 +292,8 @@ export class LocationPickerModal extends ModalDialog {
         this._dmLonDeg.val('');
         this._dmLonMin.val('');
         this._suspendSync = false;
+        this._trackInfoWrap.hide().empty();
+        this._orderWarning.hide().empty();
     }
 
     protected _wireInputs(): void {
@@ -217,8 +304,12 @@ export class LocationPickerModal extends ModalDialog {
             const lat = parseNum(this._decLatInput.val() as string);
             const lon = parseNum(this._decLonInput.val() as string);
             this._setValue({latitude: lat, longitude: lon, timestamp: Date.now()});
+            /*
+             * Refill BOTH panes so any snap-to-route adjustment is
+             * visible immediately wherever the user is looking.
+             */
             this._suspendSync = true;
-            this._fillDmFromValue();
+            this._fillFromValue();
             this._suspendSync = false;
             this._renderMapState();
         };
@@ -233,7 +324,7 @@ export class LocationPickerModal extends ModalDialog {
             const lon = dmToDd(this._dmLonDir.val() as string, parseNum(this._dmLonDeg.val() as string), parseNum(this._dmLonMin.val() as string));
             this._setValue({latitude: lat, longitude: lon, timestamp: Date.now()});
             this._suspendSync = true;
-            this._fillDecFromValue();
+            this._fillFromValue();
             this._suspendSync = false;
             this._renderMapState();
         };
@@ -245,34 +336,116 @@ export class LocationPickerModal extends ModalDialog {
         this._dmLonMin.on('input', dmHandler);
     }
 
-    protected _wireGps(): void {
-        this._useGpsBtn.on('click', () => {
-            if (!navigator.geolocation) {
-                return;
-            }
-            navigator.geolocation.getCurrentPosition((pos) => {
-                const v: GeolocationCoordinates = {
-                    latitude: pos.coords.latitude,
-                    longitude: pos.coords.longitude,
-                    accuracy: pos.coords.accuracy,
-                    altitude: pos.coords.altitude ?? undefined,
-                    speed: pos.coords.speed ?? undefined,
-                    heading: pos.coords.heading ?? undefined,
-                    timestamp: pos.timestamp
-                };
-                this._setValue(v);
+    /**
+     * @protected
+     */
+    protected _wireFreePick(): void {
+        this._freePickInput.on('change', () => {
+            this._snapEnabled = !this._freePickInput.prop('checked');
+            /*
+             * If snap was just re-enabled, re-apply it to the current
+             * value so the user sees the picked position jump back
+             * onto the route immediately.
+             */
+            if (this._snapEnabled && this._value !== null) {
+                this._setValue({...this._value});
                 this._suspendSync = true;
                 this._fillFromValue();
                 this._suspendSync = false;
                 this._renderMapState();
-            }, (err) => {
-                console.warn('GPS error:', err);
-            });
+            }
         });
     }
 
     protected _setValue(v: GeolocationCoordinates): void {
+        if (this._snapEnabled
+            && this._route !== null
+            && this._route.length > 1
+            && v.latitude !== undefined
+            && v.longitude !== undefined
+            && Number.isFinite(v.latitude)
+            && Number.isFinite(v.longitude)
+        ) {
+            const snapped = LocationPickerModal._snapToRoute(v.latitude, v.longitude, this._route);
+            if (snapped !== null) {
+                this._value = {...v, latitude: snapped.lat, longitude: snapped.lon};
+                return;
+            }
+        }
         this._value = v;
+    }
+
+    /**
+     * Pull just the [lon, lat] vertex list from the typed route — used
+     * everywhere snap math / polyline drawing doesn't care about
+     * timestamp/speed. Drops vertices with missing coordinates so callers
+     * can pass the raw route as-is.
+     * @protected
+     */
+    protected static _routeCoords(route: GeolocationCoordinates[]): number[][] {
+        const coords: number[][] = [];
+        for (const p of route) {
+            if (p.latitude !== undefined && p.longitude !== undefined) {
+                coords.push([p.longitude, p.latitude]);
+            }
+        }
+        return coords;
+    }
+
+    /**
+     * Project (lat, lon) onto the polyline `route` (array of [lon, lat]
+     * vertices, EPSG:4326). Returns the closest point ON the line —
+     * either a vertex or an interpolated point on a segment — in
+     * EPSG:4326. Distance math is done in Web Mercator metres so
+     * single-degree errors at lat 28° stay sub-metre. Null route or a
+     * degenerate single point yields null (caller keeps raw input).
+     * @protected
+     */
+    protected static _snapToRoute(
+        lat: number,
+        lon: number,
+        route: GeolocationCoordinates[]
+    ): {lat: number; lon: number;} | null {
+        const coords = LocationPickerModal._routeCoords(route);
+        if (coords.length < 2) {
+            return null;
+        }
+
+        const [px, py] = fromLonLat([lon, lat]);
+
+        let bestX = px;
+        let bestY = py;
+        let bestD2 = Number.POSITIVE_INFINITY;
+
+        for (let i = 0; i < coords.length - 1; i++) {
+            const [a0, a1] = fromLonLat(coords[i]);
+            const [b0, b1] = fromLonLat(coords[i + 1]);
+
+            const dx = b0 - a0;
+            const dy = b1 - a1;
+            const lenSq = (dx * dx) + (dy * dy);
+
+            let t = 0;
+            if (lenSq > 0) {
+                t = (((px - a0) * dx) + ((py - a1) * dy)) / lenSq;
+                t = Math.max(0, Math.min(1, t));
+            }
+
+            const cx = a0 + (t * dx);
+            const cy = a1 + (t * dy);
+            const ex = px - cx;
+            const ey = py - cy;
+            const d2 = (ex * ex) + (ey * ey);
+
+            if (d2 < bestD2) {
+                bestD2 = d2;
+                bestX = cx;
+                bestY = cy;
+            }
+        }
+
+        const [snapLon, snapLat] = toLonLat([bestX, bestY]);
+        return {lat: snapLat, lon: snapLon};
     }
 
     protected _fillFromValue(): void {
@@ -319,6 +492,24 @@ export class LocationPickerModal extends ModalDialog {
         this._map.setHeight(360);
         this._map.load({useHeatmap: false, useBathymetriemap: false});
         this._mapInitialised = true;
+
+        // Click-to-pick: forward map clicks into _setValue (which honours
+        // snap-to-route) and refresh both input panes + the marker so the
+        // user can drop a point anywhere on the map instead of typing.
+        const olMap = this._map.getOlMap();
+        if (olMap) {
+            olMap.on('click', (evt) => {
+                if (this._readOnlyContent) {
+                    return;
+                }
+                const [lon, lat] = toLonLat(evt.coordinate);
+                this._setValue({latitude: lat, longitude: lon, timestamp: Date.now()});
+                this._suspendSync = true;
+                this._fillFromValue();
+                this._suspendSync = false;
+                this._renderMapState();
+            });
+        }
     }
 
     protected _renderMapState(): void {
@@ -328,21 +519,29 @@ export class LocationPickerModal extends ModalDialog {
 
         this._map.clearFeatureList();
 
-        if (this._route && this._route.length > 1) {
-            this._map.addLineRoute(this._route);
+        const routeCoords = this._route ? LocationPickerModal._routeCoords(this._route) : [];
+        const hasTrack = routeCoords.length > 1;
+        if (hasTrack) {
+            this._map.addLineRoute(routeCoords);
         }
+        this._noTrackInfo.toggle(!hasTrack);
+        /*
+         * Snap-to-route only makes sense when there is a route — hide
+         * the override checkbox otherwise so the UI stays uncluttered.
+         */
+        this._freePickWrap.toggle(hasTrack);
 
         let center: number[] | null = null;
         if (this._value && this._value.latitude !== undefined && this._value.longitude !== undefined) {
             this._map.addSighting(
-                SightingMapObjectType.Testudines,
+                SightingMapObjectType.PickMarker,
                 'picker-marker',
                 'Picked position',
                 [this._value.longitude, this._value.latitude]
             );
             center = [this._value.longitude, this._value.latitude];
-        } else if (this._route && this._route.length > 0) {
-            center = this._route[0];
+        } else if (routeCoords.length > 0) {
+            center = routeCoords[0];
         }
 
         if (center) {
@@ -351,6 +550,166 @@ export class LocationPickerModal extends ModalDialog {
 
         this._map.refrech().catch(() => undefined);
         this._map.updateSize();
+        this._updateTrackInfo();
+        this._updateOrderWarning();
+    }
+
+    /**
+     * Refresh the info panel below the free-pick checkbox.
+     *
+     * Shows the nearest tour tracking point (by Web-Mercator distance
+     * from the picked position) with its timestamp / speed / heading and
+     * the distance from the pick. Hidden when there is no route or no
+     * picked value.
+     *
+     * The distance line lets the user judge at a glance whether their
+     * pick IS a tracking point (sub-metre when snap is on and the
+     * snapped position lands on a vertex) or just near one.
+     * @protected
+     */
+    protected _updateTrackInfo(): void {
+        if (!this._route || this._route.length === 0
+            || !this._value
+            || this._value.latitude === undefined
+            || this._value.longitude === undefined
+        ) {
+            this._trackInfoWrap.hide().empty();
+            return;
+        }
+
+        const [px, py] = fromLonLat([this._value.longitude, this._value.latitude]);
+        let bestIdx = -1;
+        let bestD2 = Number.POSITIVE_INFINITY;
+
+        for (let i = 0; i < this._route.length; i++) {
+            const p = this._route[i];
+            if (p.latitude === undefined || p.longitude === undefined) {
+                continue;
+            }
+            const [qx, qy] = fromLonLat([p.longitude, p.latitude]);
+            const dx = qx - px;
+            const dy = qy - py;
+            const d2 = (dx * dx) + (dy * dy);
+            if (d2 < bestD2) {
+                bestD2 = d2;
+                bestIdx = i;
+            }
+        }
+
+        if (bestIdx === -1) {
+            this._trackInfoWrap.hide().empty();
+            return;
+        }
+
+        const point = this._route[bestIdx];
+        const distM = Math.sqrt(bestD2);
+        const lang = Lang.i();
+
+        // "On this tracking point" when within 2m (snap mode locks onto
+        // a vertex), "Nearest tracking point" otherwise. 2m chosen
+        // because Mercator-metres at lat 28° are ~accurate enough for
+        // intra-vertex precision; in practice anything < 1m means snap
+        // landed exactly on the vertex.
+        const onPoint = distM < 2;
+        const titleKey = onPoint ? 'On this tracking point' : 'Nearest tracking point';
+        const titleHtml = `<div class="font-weight-bold">${escapeHtml(lang.l(titleKey) ?? titleKey)}</div>`;
+
+        const lines: string[] = [titleHtml];
+
+        if (point.timestamp) {
+            const ts = moment(point.timestamp).format('YYYY-MM-DD HH:mm:ss');
+            lines.push(`<div><i class="far fa-clock mr-1"></i>${escapeHtml(ts)}</div>`);
+        }
+        if (point.speed !== undefined && point.speed !== null) {
+            const kmh = point.speed * 3.6;
+            const kn = point.speed * 1.943844;
+            lines.push(`<div><i class="fas fa-tachometer-alt mr-1"></i>${kmh.toFixed(1)} km/h <span class="text-muted">(${kn.toFixed(1)} kn)</span></div>`);
+        }
+        if (point.heading !== undefined && point.heading !== null) {
+            lines.push(`<div><i class="fas fa-compass mr-1"></i>${point.heading.toFixed(0)}° ${compassLabel(point.heading)}</div>`);
+        }
+        if (point.altitude !== undefined && point.altitude !== null) {
+            lines.push(`<div><i class="fas fa-mountain mr-1"></i>${point.altitude.toFixed(1)} m</div>`);
+        }
+
+        // Distance line — always shown so the user can tell "snapped on
+        // it" from "nearest of many".
+        const distLabel = lang.l('Distance from pick') ?? 'Distance from pick';
+        const distColor = onPoint ? 'text-success' : 'text-muted';
+        lines.push(`<div class="${distColor}"><i class="fas fa-arrows-alt-h mr-1"></i>${escapeHtml(distLabel)}: ${distM.toFixed(1)} m</div>`);
+
+        this._trackInfoWrap
+            .html(lines.join(''))
+            .show();
+    }
+
+    /**
+     * Index of the route vertex closest to the given coordinates in
+     * Web-Mercator space. Returns -1 when route/coords are empty or
+     * malformed. Shared between the order-warning check and any future
+     * callers that need a route position from a free position.
+     * @protected
+     */
+    protected _nearestRouteIndex(lat: number, lon: number): number {
+        if (!this._route || this._route.length === 0) {
+            return -1;
+        }
+        const [px, py] = fromLonLat([lon, lat]);
+        let bestIdx = -1;
+        let bestD2 = Number.POSITIVE_INFINITY;
+        for (let i = 0; i < this._route.length; i++) {
+            const p = this._route[i];
+            if (p.latitude === undefined || p.longitude === undefined) {
+                continue;
+            }
+            const [qx, qy] = fromLonLat([p.longitude, p.latitude]);
+            const dx = qx - px;
+            const dy = qy - py;
+            const d2 = (dx * dx) + (dy * dy);
+            if (d2 < bestD2) {
+                bestD2 = d2;
+                bestIdx = i;
+            }
+        }
+        return bestIdx;
+    }
+
+    /**
+     * Show the warning bar when the current pick maps to an earlier
+     * route vertex than {@link _mustBeAfter} — meaning, along the
+     * boat's travel direction, the user picked a position the boat had
+     * not yet reached when the reference position was recorded. Soft
+     * warning only; the save button remains active.
+     * @protected
+     */
+    protected _updateOrderWarning(): void {
+        if (!this._mustBeAfter
+            || !this._route
+            || this._route.length < 2
+            || !this._value
+            || this._value.latitude === undefined
+            || this._value.longitude === undefined
+            || this._mustBeAfter.latitude === undefined
+            || this._mustBeAfter.longitude === undefined
+        ) {
+            this._orderWarning.hide().empty();
+            return;
+        }
+
+        const beginIdx = this._nearestRouteIndex(this._mustBeAfter.latitude, this._mustBeAfter.longitude);
+        const pickIdx = this._nearestRouteIndex(this._value.latitude, this._value.longitude);
+
+        if (beginIdx === -1 || pickIdx === -1 || pickIdx > beginIdx) {
+            this._orderWarning.hide().empty();
+            return;
+        }
+
+        const lang = Lang.i();
+        const msg = lang.l('Position end is before Position begin along the boat\'s travel direction.')
+            ?? 'Position end is before Position begin along the boat\'s travel direction.';
+        this._orderWarning
+            .html(`<i class="fas fa-exclamation-triangle mr-1"></i>${escapeHtml(msg)}`)
+            .show();
     }
 
     public override setReadOnly(readonly: boolean): void {
@@ -364,7 +723,6 @@ export class LocationPickerModal extends ModalDialog {
         for (const i of inputs) {
             i.prop('disabled', readonly);
         }
-        this._useGpsBtn.prop('disabled', readonly);
     }
 
 }
