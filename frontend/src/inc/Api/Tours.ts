@@ -1,98 +1,36 @@
+import {
+    TourEntry,
+    ToursCreater,
+    ToursDevice,
+    ToursFilter,
+    ToursListResponse,
+    ToursTrackingData,
+    ToursTrackingResponse,
+    ToursTrackingSightingData,
+    ToursTrackingSightingExtended
+} from 'mwpa_schemas';
 import {NetFetch} from '../Net/NetFetch';
 import {UnauthorizedError} from './Error/UnauthorizedError';
 import {StatusCodes} from './Status/StatusCodes';
-import {DefaultReturn} from './Types/DefaultReturn';
 
-/**
- * ToursFilter
+/*
+ * The wire shapes live in the `mwpa_schemas` workspace package — the same
+ * `Vts.object(...)` definitions the backend validates request/response
+ * against. Re-exporting here means consumers keep importing from this
+ * file without coupling to the schemas package path, while drift between
+ * the hand-written types and the actual schema (the way the order-block
+ * got out of sync in 5869278…d3) is no longer possible.
  */
-export type ToursFilter = {
-    year?: number;
-    limit?: number;
-    offset?: number;
-};
-
-/**
- * TourEntry
- */
-export type TourEntry = {
-    id: number;
-    tour_fid: string;
-    creater_id: number;
-    device_id: number;
-    create_datetime: number;
-    update_datetime: number;
-    vehicle_id: number;
-    vehicle_driver_id: number;
-    beaufort_wind: string;
-    date: string;
-    tour_start: string;
-    tour_end: string;
-    organization_id: number;
-    status: number;
-    record_by_persons: string;
-    count_sightings: number;
-    count_trackings: number;
-};
-
-/**
- * ToursDevice
- */
-export type ToursDevice = {
-    id: number;
-    name: string;
-};
-
-/**
- * ToursCreater
- */
-export type ToursCreater = {
-    id: number;
-    name: string;
-};
-
-/**
- * ToursResponse
- */
-export type ToursResponse = DefaultReturn & {
-    filter?: ToursFilter;
-    offset?: number;
-    count?: number;
-    list?: TourEntry[];
-    devices?: ToursDevice[];
-    creaters?: ToursCreater[];
-};
-
-export type ToursTrackingSightingExtended = {
-    unid: string;
-    name: string;
-    data: string;
-};
-
-export type ToursTrackingSightingData = {
-    id: number;
-    location_begin: string;
-    location_end: string;
-    pointtype: string;
-    species_id: number;
-    species_name: string;
-    species_count: number;
-    distance_coast: string;
-    files: string[];
-    extended: ToursTrackingSightingExtended[];
-};
-
-export type ToursTrackingData = {
-    date: string;
-    start: string;
-    end: string;
-    positions: string[];
-    sightings: ToursTrackingSightingData[];
-    org_id: number;
-};
-
-export type ToursTrackingResponse = DefaultReturn & {
-    tracking?: ToursTrackingData;
+export type {
+    TourEntry,
+    ToursCreater,
+    ToursDevice,
+    ToursFilter,
+    ToursListResponse,
+    ToursTrackingData,
+    ToursTrackingResponse,
+    ToursTrackingSightingData,
+    ToursTrackingSightingExtended
 };
 
 /**
@@ -103,19 +41,13 @@ export class Tours {
     /**
      * getList
      */
-    public static async getList(filter?: ToursFilter): Promise<ToursResponse|null> {
-        let data = {};
-
-        if (filter) {
-            data = filter;
-        }
-
-        const result = await NetFetch.postData('/json/tours/list', data);
+    public static async getList(filter?: ToursFilter): Promise<ToursListResponse|null> {
+        const result = await NetFetch.postData('/json/tours/list', filter ?? {});
 
         if (result && result.statusCode) {
             switch (result.statusCode) {
                 case StatusCodes.OK:
-                    return result as ToursResponse;
+                    return result as ToursListResponse;
 
                 case StatusCodes.UNAUTHORIZED:
                     throw new UnauthorizedError();

@@ -1,92 +1,37 @@
+import {
+    UserData,
+    UserInfo,
+    UserInfoData,
+    UserInfoGroup,
+    UserInfoOrg,
+    UserListFilter,
+    UserListResponse,
+    UserSavePasswordRequest,
+    UserSavePinRequest
+} from 'mwpa_schemas';
 import {NetFetch} from '../Net/NetFetch';
 import {UnauthorizedError} from './Error/UnauthorizedError';
 import {StatusCodes} from './Status/StatusCodes';
-import {DefaultReturn} from './Types/DefaultReturn';
 
-/**
- * SightingsFilter
+/*
+ * Schema-typed re-exports. Legacy hand-written aliases stay so the
+ * existing call sites (UsersEditModal etc.) compile unchanged after
+ * the port.
  */
-export type UserListFilter = {
-    filter?: {
-        show_disabled?: boolean;
-    };
-    limit?: number;
-    offset?: number;
+export type {
+    UserData,
+    UserInfo,
+    UserInfoData,
+    UserInfoGroup,
+    UserInfoOrg,
+    UserListFilter,
+    UserListResponse,
+    UserSavePasswordRequest,
+    UserSavePinRequest
 };
 
-/**
- * UserInfoData
- */
-export type UserInfoData = {
-    id: number;
-    username: string;
-    fullname: string;
-    email: string;
-    isAdmin: boolean;
-};
-
-/**
- * UserInfoGroup
- */
-export type UserInfoGroup = {
-    name: string;
-    id: number;
-};
-
-/**
- * UserInfoOrg
- */
-export type UserInfoOrg = {
-    name: string;
-    id: number;
-    lat: string;
-    lon: string;
-};
-
-/**
- * UserInfo
- */
-export type UserInfo = {
-    islogin: boolean;
-    user?: UserInfoData;
-    group?: UserInfoGroup;
-    organization?: UserInfoOrg;
-};
-
-/**
- * UserData
- */
-export type UserData = UserInfoData & {
-    main_groupid: number;
-    password?: string;
-    password_repeat?: string;
-    pin?: string;
-    pin_repeat?: string;
-    disable: boolean;
-};
-
-/**
- * UserListResponse
- */
-export type UserListResponse = DefaultReturn & {
-    list?: UserData[];
-};
-
-/**
- * UserSavePassword
- */
-export type UserSavePassword = {
-    password: string;
-    repeatpassword: string;
-};
-
-/**
- * UserSavePin
- */
-export type UserSavePin = {
-    pin: string;
-    repeatpin: string;
-};
+export type UserSavePassword = UserSavePasswordRequest;
+export type UserSavePin = UserSavePinRequest;
 
 /**
  * User
@@ -166,7 +111,7 @@ export class User {
      * saveNewPassword
      * @param password
      */
-    public static async saveNewPassword(password: UserSavePassword): Promise<boolean> {
+    public static async saveNewPassword(password: UserSavePasswordRequest): Promise<boolean> {
         const result = await NetFetch.postData('/json/user/savepassword', password);
 
         if (result && result.statusCode) {
@@ -189,7 +134,7 @@ export class User {
      * saveNewPin
      * @param pin
      */
-    public static async saveNewPin(pin: UserSavePin): Promise<boolean> {
+    public static async saveNewPin(pin: UserSavePinRequest): Promise<boolean> {
         const result = await NetFetch.postData('/json/user/savepin', pin);
 
         if (result && result.statusCode) {
