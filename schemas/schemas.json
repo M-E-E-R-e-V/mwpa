@@ -6251,6 +6251,158 @@
                     ],
                     "enums": [],
                     "links": []
+                  },
+                  {
+                    "unid": "67284eeb-7293-4860-b5a3-7f50b1ac9c9a",
+                    "name": "SightingFishingVessels",
+                    "type": "file",
+                    "istoggle": true,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "62d495d2-7ec0-4824-988c-2dc9591b0339",
+                        "name": "SightingFishingVesselEntry",
+                        "description": "One fishing vessel that was active in the 25 km buffer of a sighting on the sighting day, as reported by GFW. Hours = apparent fishing hours of THIS vessel inside the buffer that day.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 100,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "0405dc14-ca1e-455f-9122-0d5ff0234ff6",
+                            "name": "sighting_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b8e52f0f-a4fa-4d86-af70-4053d71c021a",
+                            "name": "vessel_id",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "GFW vessel id (stable across reports). Use for /vessels/{id} lookups."
+                          },
+                          {
+                            "unid": "47100543-ea87-4841-a764-d6d7875b229a",
+                            "name": "name",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Vessel name from GFW /vessels/{id} enrichment; empty when not yet fetched."
+                          },
+                          {
+                            "unid": "e1a80a96-6159-4bd6-8d9a-9244ad670d8e",
+                            "name": "mmsi",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "69b85411-b6eb-4cd8-bf0d-e252ccf160d1",
+                            "name": "flag",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "ISO-3 country code (ESP, MAR, JPN, ...)."
+                          },
+                          {
+                            "unid": "59fa754e-df89-446d-a623-502503895afa",
+                            "name": "gear_type",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "GFW gear-type code: trawlers, longliners, purse_seines, drifting_longlines, ..."
+                          },
+                          {
+                            "unid": "c6c47603-4915-4778-82c2-a83f43471357",
+                            "name": "hours",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Apparent fishing hours this vessel logged inside the 25 km buffer on the sighting day."
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "8631a6a1-2ef5-4ee0-be71-5244a0e4af89",
+                        "name": "SightingFishingVesselListRequest",
+                        "description": "Bulk-fetch fishing vessels for a set of sighting ids — same shape as SightingMovementListRequest so the frontend pattern can be reused.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 600,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "d5f7a8ca-f693-49c9-829a-b79debd87e1d",
+                            "name": "sighting_ids",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "92f3b4d0-37f4-4641-96b3-490e90eb9770",
+                        "name": "SightingFishingVesselListResponse",
+                        "description": "Fishing vessels grouped by sighting_id. Sightings with no vessels (no fishing activity / no GFW data / sighting not yet processed) are absent from the list.",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 1100,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "2162a354-dee4-41f1-8c8b-b095f7342953",
+                            "name": "list",
+                            "type": {
+                              "type": "62d495d2-7ec0-4824-988c-2dc9591b0339",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
                   }
                 ],
                 "schemas": [],
@@ -7430,6 +7582,401 @@
                               "types": []
                             },
                             "description": ""
+                          }
+                        ]
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
+              },
+              {
+                "unid": "7e641193-6151-455b-a146-74ea0048fc74",
+                "name": "Ais",
+                "type": "folder",
+                "istoggle": true,
+                "entrys": [
+                  {
+                    "unid": "912d583e-8dbc-41d6-83a3-3e291ccb2f25",
+                    "name": "AisLive",
+                    "type": "file",
+                    "istoggle": true,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "8a9d64b3-8d26-4877-8821-d6c2f8712b1a",
+                        "name": "AisLiveBbox",
+                        "description": "Bounding box filter for the live AIS list endpoint. Empty omits the spatial filter.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 100,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "63388714-dc0b-4c10-b875-d8290916d153",
+                            "name": "min_lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "a9af8933-67c3-4d93-ba58-85646f0a79f0",
+                            "name": "max_lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "60cc8392-4241-4f2e-b1df-9012df565b57",
+                            "name": "min_lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "0fd96739-3f2b-4b2f-924f-5b1ef8f7301c",
+                            "name": "max_lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "48c14dd6-38a0-4bbf-aea9-d1c13c7a67f1",
+                        "name": "AisLiveListRequest",
+                        "description": "Request for the live-AIS list endpoint — restricts by recency and optional bounding box.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 500,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "23d7d5f4-990f-4b89-b392-bc68f69372ab",
+                            "name": "max_age_seconds",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Max seconds since the latest ping (default 3600 = 1 h). Beyond this a vessel is \"stale\" and dropped from the response."
+                          },
+                          {
+                            "unid": "0ed0f52f-6727-440c-b8d2-5108356597b1",
+                            "name": "bbox",
+                            "type": {
+                              "type": "8a9d64b3-8d26-4877-8821-d6c2f8712b1a",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "0e0787a6-60d1-4192-b88c-604fc26357cf",
+                        "name": "AisLiveVesselEntry",
+                        "description": "Most recent ping per MMSI joined with the static AisVessel metadata. One row per vessel currently in the live buffer.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 900,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "cea093c5-ba66-4085-a6a6-2ebdd52d8166",
+                            "name": "mmsi",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "0186b7b5-9957-47a1-9ec7-55795b118c2c",
+                            "name": "name",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d2e6c321-ba7c-42b5-bf61-a31c2e73b959",
+                            "name": "flag",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "6e8574ad-b012-4a63-be91-c62906cfca2c",
+                            "name": "ship_type",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "AIS ship-type code (1..99 per ITU-R M.1371)."
+                          },
+                          {
+                            "unid": "28fa79a0-69e6-4686-9da1-9d9f98eddd04",
+                            "name": "lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "15857a6a-52ab-4045-af8a-9821fa0989ff",
+                            "name": "lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "17408dae-cde7-4883-b3d5-f2d74da3be91",
+                            "name": "sog",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Speed over ground in knots; absent when AIS reports \"not available\"."
+                          },
+                          {
+                            "unid": "974fc678-258e-4854-8cfc-dd737ca2f332",
+                            "name": "cog",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Course over ground in degrees (0..360); absent when AIS reports \"not available\"."
+                          },
+                          {
+                            "unid": "95accf22-808e-407c-8cbc-1ec67718079b",
+                            "name": "received_at",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Unix-seconds timestamp of the most recent ping."
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "ddf81c27-f2bb-456b-9d78-59a15eba1100",
+                        "name": "AisLiveListResponse",
+                        "description": "List of live AIS vessels.",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 1300,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "3259f085-c653-412d-a7a9-1f46447ac93c",
+                            "name": "list",
+                            "type": {
+                              "type": "0e0787a6-60d1-4192-b88c-604fc26357cf",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "97a275d7-26c1-4ebe-ab07-ffc590b715f9",
+                        "name": "AisVesselTrackPoint",
+                        "description": "One downsampled ping from the live buffer — used to draw the vessel's historical track on the live map.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 100,
+                          "y": 500
+                        },
+                        "fields": [
+                          {
+                            "unid": "d5ab39f6-9612-4ab5-988d-b7dec9b05dbf",
+                            "name": "lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "02cfcfe2-224e-49fc-b6fb-02a384751adb",
+                            "name": "lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "443f5009-c318-4096-8928-c4feded4ceb7",
+                            "name": "sog",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "5f3d11d5-fe21-4ef3-a64a-f89eabfcd019",
+                            "name": "cog",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "dbd97b0c-4a5b-49f6-ab63-d3d7e9f43f08",
+                            "name": "received_at",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Unix seconds."
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "ec2f5c27-9bf9-49d4-8be7-58b25242c306",
+                        "name": "AisVesselTrackResponse",
+                        "description": "Chronological track (oldest → newest) for one MMSI inside the requested time window.",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 600,
+                          "y": 500
+                        },
+                        "fields": [
+                          {
+                            "unid": "bff3a2cc-8fda-476d-8114-bcb3fee48966",
+                            "name": "mmsi",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "37dc4a81-a816-4051-80d8-16ce41f3bbf4",
+                            "name": "points",
+                            "type": {
+                              "type": "97a275d7-26c1-4ebe-ab07-ffc590b715f9",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "1322144f-8c8c-4843-bf29-e5c3079985b4",
+                        "name": "AisVesselTrackRequest",
+                        "description": "Track request — MMSI + optional time-window override.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 1100,
+                          "y": 500
+                        },
+                        "fields": [
+                          {
+                            "unid": "da545b9b-49b8-4a0d-8820-1766d0e5088b",
+                            "name": "mmsi",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "7a49d8cf-f01f-4198-96f3-0bc2199d2192",
+                            "name": "since_seconds",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "How far back to fetch (default 3600 = 1 h). Capped by the live-buffer retention."
                           }
                         ]
                       }
@@ -8838,7 +9385,7 @@
   },
   "editor": {
     "controls_width": 465,
-    "active_entry_unid": "57d0abd8-5ea9-42a0-89db-7447cd65c961",
-    "active_entry_table_unid": "ebb2363d-b8d9-46ac-ba30-f3e956a99607"
+    "active_entry_unid": "912d583e-8dbc-41d6-83a3-3e291ccb2f25",
+    "active_entry_table_unid": "97a275d7-26c1-4ebe-ab07-ffc590b715f9"
   }
 }

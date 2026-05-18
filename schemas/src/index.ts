@@ -213,6 +213,14 @@ export {
     SightingEnvironmentListResponse,
 } from './Routes/Main/Sightings/SightingEnvironment.js';
 export {
+    SchemaSightingFishingVesselEntry,
+    SightingFishingVesselEntry,
+    SchemaSightingFishingVesselListRequest,
+    SightingFishingVesselListRequest,
+    SchemaSightingFishingVesselListResponse,
+    SightingFishingVesselListResponse,
+} from './Routes/Main/Sightings/SightingFishingVessels.js';
+export {
     SchemaUsersRolesEntry,
     UsersRolesEntry,
     SchemaUsersRolesListResponse,
@@ -260,6 +268,22 @@ export {
     SchemaExternalTourListResponse,
     ExternalTourListResponse,
 } from './Routes/Main/ExternalTour/ExternalTour.js';
+export {
+    SchemaAisLiveBbox,
+    AisLiveBbox,
+    SchemaAisLiveListRequest,
+    AisLiveListRequest,
+    SchemaAisLiveVesselEntry,
+    AisLiveVesselEntry,
+    SchemaAisLiveListResponse,
+    AisLiveListResponse,
+    SchemaAisVesselTrackPoint,
+    AisVesselTrackPoint,
+    SchemaAisVesselTrackResponse,
+    AisVesselTrackResponse,
+    SchemaAisVesselTrackRequest,
+    AisVesselTrackRequest,
+} from './Routes/Main/Ais/AisLive.js';
 export {
     SchemaMapCacheRequest,
     MapCacheRequest,
