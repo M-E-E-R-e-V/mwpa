@@ -3,6 +3,7 @@ import {StatusCodes} from 'figtree-schemas';
 import {FindOptionsOrder} from 'typeorm';
 import {SightingsEntry, SightingsFilter, SightingsListResponse} from 'mwpa_schemas';
 import {Sighting as SightingDB} from '../../../Db/MariaDb/Entities/Sighting.js';
+import {SightingMovementRepository} from '../../../Db/MariaDb/Repositories/SightingMovementRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
 import {UserRepository} from '../../../Db/MariaDb/Repositories/UserRepository.js';
 import {Users} from '../../../Users/Users.js';
@@ -86,6 +87,22 @@ export class List {
             speciesMap.set(species.id, species);
         }
 
+        // Bulk-load movement headers for the rows in this page so the list UI
+        // can show "N track points" under each row's location without a second
+        // round-trip per row. Every entry gets a count — 0 means either no
+        // movement row at all or only hand-entered begin/end anchors (source
+        // = 'manual_begin_end'), so the UI can flag those rows explicitly
+        // instead of silently omitting the value.
+        const movements = await SightingMovementRepository.getInstance()
+            .findManyBySightings(rows.map((r) => r.id));
+        const trackPointCountBySighting = new Map<number, number>();
+        for (const m of movements) {
+            const count = m.source === 'tracking' && m.segment_count > 0
+                ? m.segment_count + 1
+                : 0;
+            trackPointCountBySighting.set(m.sighting_id, count);
+        }
+
         const createrCache = new Map<number, string>();
         const list: SightingsEntry[] = [];
 
@@ -166,7 +183,8 @@ export class List {
                 organization_id: entry.organization_id,
                 files,
                 pointtype,
-                species_name: speciesName
+                species_name: speciesName,
+                track_point_count: trackPointCountBySighting.get(entry.id) ?? 0
             });
         }
 
