@@ -4,7 +4,9 @@ import {BehaviouralStates} from './Entities/BehaviouralStates.js';
 import {Devices} from './Entities/Devices.js';
 import {EncounterCategories} from './Entities/EncounterCategories.js';
 import {ExternalReceiver} from './Entities/ExternalReceiver.js';
+import {ExternalTour} from './Entities/ExternalTour.js';
 import {Group} from './Entities/Group.js';
+import {OrganizationExternalTourSource} from './Entities/OrganizationExternalTourSource.js';
 import {GroupsRoles} from './Entities/GroupsRoles.js';
 import {Organization} from './Entities/Organization.js';
 import {OrganizationTrackingArea} from './Entities/OrganizationTrackingArea.js';
@@ -48,9 +50,11 @@ export class MWPADbLoader extends DBLoader {
             Devices,
             EncounterCategories,
             ExternalReceiver,
+            ExternalTour,
             Group,
             GroupsRoles,
             Organization,
+            OrganizationExternalTourSource,
             OrganizationTrackingArea,
             Settings,
             Sighting,
