@@ -5609,6 +5609,433 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "unid": "6884278c-9009-4951-8d14-e5b18b8fcf47",
+                    "name": "SightingEnvironment",
+                    "type": "file",
+                    "istoggle": true,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "5dc620a0-78c0-4c90-8bf9-48f59a2fd7bf",
+                        "name": "SightingEnvironmentProvenance",
+                        "description": "One field-level provenance entry: which value column was produced by which upstream provider id.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 1184,
+                          "y": 846
+                        },
+                        "fields": [
+                          {
+                            "unid": "9ee2badb-700f-42f5-99ef-fb264a8cab26",
+                            "name": "field",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Value column the provenance applies to (e.g. 'chl_a_mg_m3_day', 'fishing_hours_day_25km')."
+                          },
+                          {
+                            "unid": "e2c34fed-3f27-4cfa-939f-1c91ecd553de",
+                            "name": "source",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Provider id that produced the value (e.g. 'erddap', 'gfw')."
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "974bd738-e096-4548-aee8-5927ee6b6985",
+                        "name": "SightingEnvironmentEntry",
+                        "description": "One sighting with its ocean + fishing-effort enrichment columns. Position is denormalized to lon/lat so the frontend doesn't have to re-parse location_begin.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 597,
+                          "y": 29
+                        },
+                        "fields": [
+                          {
+                            "unid": "7fcfd582-0cd1-42a9-b473-792388ebe367",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e36ab29c-60d2-46d9-92ea-283d3a66bbd9",
+                            "name": "lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Longitude (WGS84). Parsed from location_begin JSON server-side."
+                          },
+                          {
+                            "unid": "f5296f03-24ef-452f-9ddf-e104180c6851",
+                            "name": "lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Latitude (WGS84). Parsed from location_begin JSON server-side."
+                          },
+                          {
+                            "unid": "bf793d5d-b5e5-4270-9556-24732abf6478",
+                            "name": "date",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Sighting date as stored (YYYY-MM-DD or similar)."
+                          },
+                          {
+                            "unid": "cebed2bf-c633-428d-8bd1-04f99cec89c5",
+                            "name": "species_id",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "0de62f71-4a98-4c48-ab55-31b089f6292d",
+                            "name": "species_name",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e616daa9-7df3-44c2-b896-08da635e9d3e",
+                            "name": "pointtype",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "8be9fe3b-03fc-4816-8a7c-e07d6ec09bce",
+                            "name": "organization_id",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "8fc77094-3ad9-42ab-a92a-9017df006159",
+                            "name": "chl_a_mg_m3_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Surface chlorophyll-a (mg/m³), day mean. NULL = lookup pending or no data."
+                          },
+                          {
+                            "unid": "a57f20fa-cb15-44af-aaf7-42b9911bb9f6",
+                            "name": "salinity_psu_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "4be26f7a-ae64-4b48-911b-cb927e287abe",
+                            "name": "sla_cm_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "c17f1d71-9b09-43d0-9e32-8f69e00814d1",
+                            "name": "current_speed_m_s_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "afa57eaa-ad57-403f-ab58-169bf447cdb9",
+                            "name": "current_direction_deg_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "f139fc61-2d66-48ea-8bac-bf739c9f9b08",
+                            "name": "sst_c_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "95f7fd15-0183-49d1-a31c-30b901480351",
+                            "name": "depth_m",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "50b05a62-9127-460b-85e3-8232d1f1b8a3",
+                            "name": "ocean_status",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "911e3467-e3f6-4cf9-b805-295620123172",
+                            "name": "fishing_hours_day_25km",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "f891a327-60d1-45b5-affc-4780240ea76d",
+                            "name": "fishing_hours_day_50km",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "f003f37c-fe2c-4fb0-8cb2-21e256a801d2",
+                            "name": "vessel_count_day_25km",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "adca228a-8758-44df-aee3-0711a2b769e3",
+                            "name": "top_gear_type",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "4845cb90-7fa0-43bb-a299-aba3ccd7f05f",
+                            "name": "top_flag",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "92ddc628-b23d-49e8-aef2-2160858312f6",
+                            "name": "fishing_status",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "2d76844f-c8d2-4764-8fbf-eb05ce8deff3",
+                            "name": "provenance",
+                            "type": {
+                              "type": "5dc620a0-78c0-4c90-8bf9-48f59a2fd7bf",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Per-column provenance, serialized from the SightingExtended.provenance + SightingFishingEffort.provenance JSON maps."
+                          },
+                          {
+                            "unid": "b71103f7-beed-4ad8-baf2-65e864a238ec",
+                            "name": "air_temperature_c_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "2 m air temperature, day mean (°C). From WeatherService / Open-Meteo."
+                          },
+                          {
+                            "unid": "61fc8a37-3399-44de-9081-e08484e39764",
+                            "name": "uv_index_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "UV index, day peak (around solar noon)."
+                          },
+                          {
+                            "unid": "1455d2c2-084f-4368-87ee-992d405e21dd",
+                            "name": "wave_height_m_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Significant wave height, day mean (m)."
+                          },
+                          {
+                            "unid": "c67aff3e-a18f-434e-9eaf-60bea8d258ce",
+                            "name": "wave_period_s_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "47c9d36a-eb01-40d1-8d24-1527eb4e36bb",
+                            "name": "wave_direction_deg_day",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "69f1e0f1-144b-4e7c-90d4-f882b6ac642d",
+                            "name": "weather_status",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "4a217fad-8793-440f-9ffc-ac778cd2cff1",
+                        "name": "SightingEnvironmentListResponse",
+                        "description": "Response of /json/sightings/environment/list — paginated sighting list with ocean + fishing enrichment columns merged in.",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 41,
+                          "y": 255
+                        },
+                        "fields": [
+                          {
+                            "unid": "c41a1da1-2f31-4f4d-ba96-98bcc3ea58b5",
+                            "name": "count",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e4a40d27-4210-4e50-9175-baabbe24a934",
+                            "name": "offset",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "3da5f90f-8421-4786-9183-c582fd6e5454",
+                            "name": "list",
+                            "type": {
+                              "type": "974bd738-e096-4548-aee8-5927ee6b6985",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
                   }
                 ],
                 "schemas": [],
@@ -7614,7 +8041,7 @@
   },
   "editor": {
     "controls_width": 465,
-    "active_entry_unid": "c7aab178-2ddc-4451-aaa6-41d055662f33",
-    "active_entry_table_unid": "fbfb302b-fd63-46ed-9b9e-3e714c7a1fc7"
+    "active_entry_unid": "6884278c-9009-4951-8d14-e5b18b8fcf47",
+    "active_entry_table_unid": "974bd738-e096-4548-aee8-5927ee6b6985"
   }
 }

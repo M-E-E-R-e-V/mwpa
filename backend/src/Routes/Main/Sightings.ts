@@ -5,17 +5,20 @@ import {
     RightSightings,
     SchemaMWPASessionData,
     SchemaSightingDeleteRequest,
+    SchemaSightingEnvironmentListResponse,
     SchemaSightingImageGetRequest,
     SchemaSightingSaveRequest,
     SchemaSightingYearsResponse,
     SchemaSightingsFilter,
     SchemaSightingsListResponse,
+    SightingEnvironmentListResponse,
     SightingYearsResponse,
     SightingsListResponse
 } from 'mwpa_schemas';
 import {checkMWPAUserIsLogin, checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Delete} from './Sightings/Delete.js';
+import {Environment} from './Sightings/Environment.js';
 import {Excel} from './Sightings/Excel.js';
 import {GetImage} from './Sightings/GetImage.js';
 import {List} from './Sightings/List.js';
@@ -47,6 +50,23 @@ export class Sightings extends DefaultRoute {
                 description: 'Paginated list of non-deleted sightings (org-scoped for non-admins).',
                 bodySchema: SchemaSightingsFilter,
                 responseBodySchema: SchemaSightingsListResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._post(
+            '/json/sightings/environment/list',
+            checkMWPAUserIsLogin,
+            async(_req, _res, data): Promise<SightingEnvironmentListResponse> => {
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                return Environment.getList(userId, isAdmin, data.body);
+            },
+            {
+                description: 'Paginated list of non-deleted sightings joined with ocean (chl-a, salinity, currents) + GFW fishing-effort enrichment columns. Position is denormalised to lon/lat for direct map use.',
+                bodySchema: SchemaSightingsFilter,
+                responseBodySchema: SchemaSightingEnvironmentListResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,
             }
