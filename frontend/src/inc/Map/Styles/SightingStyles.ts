@@ -22,7 +22,12 @@ export enum SightingMapObjectType {
     Testudines = 'testudines',
     Boat = 'boat',
     MovementSegment = 'movement_segment',
-    MovementSegmentBad = 'movement_segment_bad'
+    MovementSegmentBad = 'movement_segment_bad',
+    /**
+     * Generic "user-picked position" marker — neutral on purpose so
+     * the position picker doesn't pretend to be a specific species.
+     */
+    PickMarker = 'pick_marker'
 }
 
 /**
@@ -113,6 +118,13 @@ export class SightingStyles {
                 width: 2,
                 color: 'rgba(220, 53, 69, 0.85)',
                 lineDash: [6, 4]
+            })
+        })],
+        [SightingMapObjectType.PickMarker, new Style({
+            image: new Circle({
+                radius: 9,
+                fill: new Fill({color: 'rgba(220, 0, 0, 0.85)'}),
+                stroke: new Stroke({color: 'white', width: 2})
             })
         })]
     ]);
