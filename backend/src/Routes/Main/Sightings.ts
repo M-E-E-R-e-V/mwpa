@@ -6,12 +6,15 @@ import {
     SchemaMWPASessionData,
     SchemaSightingDeleteRequest,
     SchemaSightingEnvironmentListResponse,
+    SchemaSightingFishingVesselListRequest,
+    SchemaSightingFishingVesselListResponse,
     SchemaSightingImageGetRequest,
     SchemaSightingSaveRequest,
     SchemaSightingYearsResponse,
     SchemaSightingsFilter,
     SchemaSightingsListResponse,
     SightingEnvironmentListResponse,
+    SightingFishingVesselListResponse,
     SightingYearsResponse,
     SightingsListResponse
 } from 'mwpa_schemas';
@@ -20,6 +23,7 @@ import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Delete} from './Sightings/Delete.js';
 import {Environment} from './Sightings/Environment.js';
 import {Excel} from './Sightings/Excel.js';
+import {FishingVesselList} from './Sightings/FishingVesselList.js';
 import {GetImage} from './Sightings/GetImage.js';
 import {List} from './Sightings/List.js';
 import {Save} from './Sightings/Save.js';
@@ -67,6 +71,22 @@ export class Sightings extends DefaultRoute {
                 description: 'Paginated list of non-deleted sightings joined with ocean (chl-a, salinity, currents) + GFW fishing-effort enrichment columns. Position is denormalised to lon/lat for direct map use.',
                 bodySchema: SchemaSightingsFilter,
                 responseBodySchema: SchemaSightingEnvironmentListResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._post(
+            '/json/sightings/fishing-vessels/list',
+            checkMWPAUserIsLogin,
+            async(_req, _res, data): Promise<SightingFishingVesselListResponse> => {
+                return FishingVesselList.getList(data.body!);
+            },
+            {
+                description: 'Per-vessel GFW fishing-effort breakdown for a set of sighting ids.'
+                    + ' Returns rows in `sighting_fishing_vessel` ordered by hours DESC.',
+                bodySchema: SchemaSightingFishingVesselListRequest,
+                responseBodySchema: SchemaSightingFishingVesselListResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,
             }

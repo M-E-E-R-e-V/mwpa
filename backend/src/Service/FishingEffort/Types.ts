@@ -39,6 +39,32 @@ export type FishingEffortSample = {
 };
 
 /**
+ * One vessel that contributed hours to the inner-radius aggregate.
+ * Returned as a side-channel from {@link FishingEffortProvider} so
+ * the service can write the per-vessel breakdown into
+ * `sighting_fishing_vessel` alongside the aggregate row.
+ */
+export type FishingEffortVessel = {
+
+    /** Provider-side vessel id (GFW: stable across reports). */
+    vessel_id: string;
+
+    /** Human-readable name when the provider returns it. */
+    name?: string;
+
+    mmsi?: string;
+
+    /** ISO-3 country code, when known. */
+    flag?: string;
+
+    /** Provider gear code (trawlers, longliners, ...). */
+    gear_type?: string;
+
+    /** Apparent fishing hours this vessel logged in the inner buffer. */
+    hours: number;
+};
+
+/**
  * Result of a successful fishing-effort lookup at (lat, lon, date).
  */
 export type FishingEffortInfo = {
@@ -47,6 +73,13 @@ export type FishingEffortInfo = {
      * Day-aggregate sample. Always present when the lookup succeeded.
      */
     day: FishingEffortSample;
+
+    /**
+     * Per-vessel breakdown behind the aggregate. Empty array when no
+     * vessels were detected, undefined when the provider doesn't
+     * expose detail (so the service can skip the table write).
+     */
+    vessels?: FishingEffortVessel[];
 
     /**
      * Provider id (e.g. 'gfw'). Stored in

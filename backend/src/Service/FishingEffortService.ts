@@ -3,6 +3,7 @@ import {
     SightingFishingEffortPatch,
     SightingFishingEffortRepository
 } from '../Db/MariaDb/Repositories/SightingFishingEffortRepository.js';
+import {SightingFishingVesselRepository} from '../Db/MariaDb/Repositories/SightingFishingVesselRepository.js';
 import {UtilIsInSea} from '../Utils/UtilIsInSea.js';
 import {FishingEffortProviderRegistry} from './FishingEffort/FishingEffortProviderRegistry.js';
 import {FishingEffortInfo} from './FishingEffort/Types.js';
@@ -128,6 +129,18 @@ export class FishingEffortService extends ServiceJobAbstract {
     ): Promise<void> {
         const patch = await this._buildPatch(sightingId, status, info);
         await SightingFishingEffortRepository.getInstance().upsertBySighting(sightingId, patch);
+
+        // Per-vessel breakdown: write whenever the provider exposed
+        // detail rows, even on `no_data` / `land` paths (info.vessels
+        // === undefined skips the write — vs an empty array which
+        // explicitly clears the table for this sighting).
+        if (info?.vessels !== undefined) {
+            await SightingFishingVesselRepository.getInstance().replaceBySighting(
+                sightingId,
+                info.vessels,
+                Math.floor(Date.now() / 1000)
+            );
+        }
     }
 
     /**
