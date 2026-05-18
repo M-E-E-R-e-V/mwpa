@@ -1,6 +1,6 @@
 import {Logger} from 'figtree';
 import {RateLimiter} from '../../Common/RateLimiter.js';
-import {FishingEffortInfo, FishingEffortProvider, FishingEffortSample} from '../Types.js';
+import {FishingEffortInfo, FishingEffortProvider, FishingEffortSample, FishingEffortVessel} from '../Types.js';
 
 /**
  * Shape of one row in a GFW 4Wings report response. With
@@ -256,11 +256,44 @@ export class GfwProvider implements FishingEffortProvider {
             sample.top_flag = topFlag;
         }
 
+        // Per-vessel breakdown: the inner-radius report we already
+        // fetched with group-by=VESSEL_ID carries one row per vessel.
+        // We just project that into FishingEffortVessel — names + MMSI
+        // aren't part of the report shape (those need /vessels/{id}
+        // enrichment, deferred to keep per-tick cost bounded).
+        const vessels: FishingEffortVessel[] = innerRows
+            .map((row) => GfwProvider._toVessel(row))
+            .filter((v): v is FishingEffortVessel => v !== null);
+
         return {
             day: sample,
+            vessels,
             provider: GfwProvider.NAME,
             dataset_version: GfwProvider.DATASET_ID,
             fetched_at: Date.now()
+        };
+    }
+
+    /**
+     * Project one GFW report row into the provider-agnostic
+     * FishingEffortVessel shape. Returns null when the row lacks the
+     * vessel identity field (defensive — GFW always returns it on
+     * group-by=VESSEL_ID but the field naming has shifted between
+     * dataset versions, so we tolerate the absence).
+     * @private
+     */
+    private static _toVessel(row: GfwReportRow): FishingEffortVessel | null {
+        const vesselId = row.vesselId ?? row.vessel_id;
+        if (!vesselId) {
+            return null;
+        }
+        const hours = GfwProvider._extractHours(row) ?? 0;
+        const gearType = row.gearType ?? row.geartype;
+        return {
+            vessel_id: vesselId,
+            flag: row.flag,
+            gear_type: gearType,
+            hours: GfwProvider._round(hours, 2)
         };
     }
 

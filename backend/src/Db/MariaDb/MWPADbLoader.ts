@@ -14,6 +14,7 @@ import {Settings} from './Entities/Settings.js';
 import {Sighting} from './Entities/Sighting.js';
 import {SightingExtended} from './Entities/SightingExtended.js';
 import {SightingFishingEffort} from './Entities/SightingFishingEffort.js';
+import {SightingFishingVessel} from './Entities/SightingFishingVessel.js';
 import {SightingMovement} from './Entities/SightingMovement.js';
 import {SightingMovementTrack} from './Entities/SightingMovementTrack.js';
 import {SightingTour} from './Entities/SightingTour.js';
@@ -60,6 +61,7 @@ export class MWPADbLoader extends DBLoader {
             Sighting,
             SightingExtended,
             SightingFishingEffort,
+            SightingFishingVessel,
             SightingMovement,
             SightingMovementTrack,
             SightingTour,

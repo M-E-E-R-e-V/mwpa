@@ -31,6 +31,7 @@ import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
 import {SightingMovement as SightingMovementAPI} from '../Api/SightingMovement';
+import {SightingFishingVessel as SightingFishingVesselAPI, SightingFishingVesselEntry} from '../Api/SightingFishingVessel';
 import {Sightings as SightingsAPI, SightingsEntry, SightingsFilter} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
 import {User as UserAPI} from '../Api/User';
@@ -1136,6 +1137,52 @@ export class Sighting extends BasePage {
                 this._sightingDialog.setNote(entry.note!);
                 this._sightingDialog.show();
             }, IconFa.edit);
+
+            abtnMenu.addDivider();
+
+            // Per-vessel GFW breakdown — opens a small modal listing
+            // each fishing vessel that was active in the 25 km buffer
+            // on the sighting day. Empty list shows a "no fishing
+            // vessels for this sighting" placeholder so the user can
+            // tell "no activity" from "endpoint failed".
+            abtnMenu.addMenuItem('Fishing vessels', async() => {
+                let vessels: SightingFishingVesselEntry[] = [];
+                try {
+                    vessels = await SightingFishingVesselAPI.getList([entry.id]);
+                } catch (e) {
+                    this._toast.fire({icon: 'error', title: (e as Error).message});
+                    return;
+                }
+
+                const body = jQuery('<div/>');
+                if (vessels.length === 0) {
+                    body.html('<p class="text-muted">No fishing vessels recorded for this sighting (no activity, or GFW pull hasn\'t run yet).</p>');
+                } else {
+                    const lines: string[] = ['<table class="table table-sm table-striped">'];
+                    lines.push('<thead><tr><th>Vessel</th><th>Flag</th><th>Gear</th><th class="text-right">Hours</th></tr></thead><tbody>');
+                    for (const v of vessels) {
+                        const name = v.name && v.name !== '' ? v.name : `<code class="small">${escapeHtml(v.vessel_id)}</code>`;
+                        const mmsi = v.mmsi && v.mmsi !== '' ? `<br><small class="text-muted">MMSI ${escapeHtml(v.mmsi)}</small>` : '';
+                        lines.push(`<tr>`
+                            + `<td>${name}${mmsi}</td>`
+                            + `<td>${escapeHtml(v.flag ?? '—')}</td>`
+                            + `<td>${escapeHtml(v.gear_type ?? '—')}</td>`
+                            + `<td class="text-right">${v.hours.toFixed(2)}</td>`
+                            + `</tr>`);
+                    }
+                    lines.push('</tbody></table>');
+                    body.html(lines.join(''));
+                }
+
+                DialogInfo.info(
+                    'fishingvessels',
+                    ModalDialogType.large,
+                    `Fishing vessels — Sighting #${entry.id}`,
+                    // @ts-ignore
+                    body,
+                    (_, modal: DialogInfo) => modal.hide()
+                );
+            }, 'fa fa-ship');
 
             abtnMenu.addDivider();
 
