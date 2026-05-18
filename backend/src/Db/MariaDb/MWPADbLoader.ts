@@ -1,7 +1,10 @@
 import {DBLoader, DbSetupState} from 'figtree';
 import {EntitySchema, MixedList} from 'typeorm';
+import {AisVessel} from './Entities/AisVessel.js';
 import {BehaviouralStates} from './Entities/BehaviouralStates.js';
 import {Devices} from './Entities/Devices.js';
+import {LiveAisTrack} from './Entities/LiveAisTrack.js';
+import {TourAisVessel} from './Entities/TourAisVessel.js';
 import {EncounterCategories} from './Entities/EncounterCategories.js';
 import {ExternalReceiver} from './Entities/ExternalReceiver.js';
 import {ExternalTour} from './Entities/ExternalTour.js';
@@ -47,12 +50,14 @@ export class MWPADbLoader extends DBLoader {
         return [
             // figtree-internal: tracks which 'once'-mode DBSetupHooks have already run.
             DbSetupState,
+            AisVessel,
             BehaviouralStates,
             Devices,
             EncounterCategories,
             ExternalReceiver,
             ExternalTour,
             Group,
+            LiveAisTrack,
             GroupsRoles,
             Organization,
             OrganizationExternalTourSource,
@@ -71,6 +76,7 @@ export class MWPADbLoader extends DBLoader {
             Species,
             SpeciesExternLink,
             SpeciesGroup,
+            TourAisVessel,
             User,
             UserGroups,
             UsersRights,
