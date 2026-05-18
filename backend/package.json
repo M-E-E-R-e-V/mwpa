@@ -8,10 +8,10 @@
     "bcrypt": "^6.0.0",
     "exceljs": "^4.3.0",
     "express": "^5.1.0",
-    "jszip": "^3.10.1",
     "figtree": "git+https://github.com/stefanwerfling/figtree.git#claude",
     "figtree-schemas": "git+https://github.com/stefanwerfling/figtree-schemas.git",
     "geojson-geometries-lookup": "^0.5.0",
+    "jszip": "^3.10.1",
     "minimist": "^1.2.5",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.48",
@@ -21,7 +21,8 @@
     "node-schedule": "^2.1.1",
     "node-xlsx": "^0.21.0",
     "rbac-simple": "git+https://github.com/OpenSourcePKG/rbac-simple.git",
-    "vts": "git+https://github.com/OpenSourcePKG/vts.git"
+    "vts": "git+https://github.com/OpenSourcePKG/vts.git",
+    "ws": "^8.20.1"
   },
   "description": "Mammals watchig process analyse - Backend",
   "devDependencies": {
@@ -55,7 +56,7 @@
   },
   "scripts": {
     "build": "npm run compile",
-    "compile": "tsc --project tsconfig.json",
+    "compile": "node -e \"const fs=require('node:fs'); fs.rmSync('dist',{recursive:true,force:true}); fs.rmSync('tsconfig.tsbuildinfo',{force:true});\" && tsc --project tsconfig.json",
     "compile-test": "tsc --project tsconfig.test.json",
     "test": "npm run compile-test && node --test dist-test/test/",
     "npm-check-updates": "npm-check-updates"
