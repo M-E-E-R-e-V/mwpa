@@ -1,49 +1,29 @@
+import {
+    SpeciesDeleteRequest,
+    SpeciesEntry,
+    SpeciesEntryGroup,
+    SpeciesListResponse,
+    SpeciesMergeRequest
+} from 'mwpa_schemas';
 import {NetFetch} from '../Net/NetFetch';
 import {UnauthorizedError} from './Error/UnauthorizedError';
 import {StatusCodes} from './Status/StatusCodes';
-import {DefaultReturn} from './Types/DefaultReturn';
 
-/**
- * Species entry group
+/*
+ * Schema-typed re-exports. The legacy names (SpeciesMerge,
+ * SpeciesDelete) stay as aliases so existing call sites compile
+ * unchanged after the port from hand-written types.
  */
-export type SpeciesEntryGroup = {
-    name: string;
-    color: string;
+export type {
+    SpeciesEntry,
+    SpeciesEntryGroup,
+    SpeciesListResponse,
+    SpeciesMergeRequest,
+    SpeciesDeleteRequest
 };
 
-/**
- * SpeciesEntry
- */
-export type SpeciesEntry = {
-    id: number;
-    name: string;
-    ottid: number;
-    isdeleted?: boolean;
-    species_groupid: number;
-    species_group?: SpeciesEntryGroup;
-};
-
-/**
- * SpeciesListResponse
- */
-export type SpeciesListResponse = DefaultReturn & {
-    list: SpeciesEntry[];
-};
-
-/**
- * SpeciesMerge
- */
-export type SpeciesMerge = {
-    source_id: number;
-    destination_id: number;
-};
-
-/**
- * SpeciesDelete
- */
-export type SpeciesDelete = {
-    id: number;
-};
+export type SpeciesMerge = SpeciesMergeRequest;
+export type SpeciesDelete = SpeciesDeleteRequest;
 
 /**
  * Species
@@ -59,9 +39,7 @@ export class Species {
         if (result && result.statusCode) {
             switch (result.statusCode) {
                 case StatusCodes.OK:
-                    // eslint-disable-next-line no-case-declarations
-                    const response = result as SpeciesListResponse;
-                    return response.list;
+                    return (result as SpeciesListResponse).list;
 
                 case StatusCodes.UNAUTHORIZED:
                     throw new UnauthorizedError();
@@ -95,7 +73,7 @@ export class Species {
      * merge
      * @param merge
      */
-    public static async merge(merge: SpeciesMerge): Promise<boolean> {
+    public static async merge(merge: SpeciesMergeRequest): Promise<boolean> {
         const result = await NetFetch.postData('/json/species/merge', merge);
 
         if (result && result.statusCode) {
@@ -115,7 +93,7 @@ export class Species {
      * delete
      * @param sdelete
      */
-    public static async delete(sdelete: SpeciesDelete): Promise<boolean> {
+    public static async delete(sdelete: SpeciesDeleteRequest): Promise<boolean> {
         const result = await NetFetch.postData('/json/species/delete', sdelete);
 
         if (result && result.statusCode) {

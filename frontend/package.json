@@ -23,6 +23,7 @@
     "jquery": "^3.6.4",
     "jquery-ui-dist": "^1.13.2",
     "moment": "^2.29.4",
+    "mwpa_schemas": "*",
     "ol": "^7.3.0",
     "ol-layerswitcher": "^4.1.1",
     "select2": "^4.1.0-rc.0",
