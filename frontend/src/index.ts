@@ -13,6 +13,7 @@ import {Admin as AdminPage} from './inc/Pages/Admin';
 import {BasePage} from './inc/Pages/BasePage';
 import {Devices as DevicesPage} from './inc/Pages/Devices';
 import {Group as GroupPage} from './inc/Pages/Group';
+import {OceanFishingMap as OceanFishingMapPage} from './inc/Pages/OceanFishingMap';
 import {Organization} from './inc/Pages/Organization';
 import {Profil} from './inc/Pages/Profil';
 import {Roles as RolesPage} from './inc/Pages/Roles';
@@ -152,6 +153,14 @@ type SideMenuEntry = {
                 name: 'sighting',
                 onClick: (): void => {
                     loadPage(new SightingPage());
+                }
+            },
+            {
+                title: 'Ocean & Fishing',
+                icon: 'fa-solid fa-water',
+                name: 'ocean_fishing_map',
+                onClick: (): void => {
+                    loadPage(new OceanFishingMapPage());
                 }
             }
         ];
