@@ -1,4 +1,5 @@
-import {ACL, BackendApp, HttpService, MariaDBService} from 'figtree';
+import {ACL, BackendApp, MariaDBService} from 'figtree';
+import {MWPAHttpService} from './Http/MWPAHttpService.js';
 import {ConfigOptions, DefaultArgs, SchemaDefaultArgs} from 'figtree-schemas';
 import {Schema} from 'vts';
 import {ACLRbac} from '../ACL/ACLRbac.js';
@@ -71,7 +72,7 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
             )
         );
 
-        this._serviceManager.add(new HttpService(RouteLoader));
+        this._serviceManager.add(new MWPAHttpService(RouteLoader));
         this._serviceManager.add(new DepthService());
         this._serviceManager.add(new WeatherService());
         this._serviceManager.add(new OceanService());
