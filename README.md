@@ -1,8 +1,10 @@
-<h1 align="center">
+<p align="center">
   <a href="https://m-e-e-r.de/">
-    <img src="doc/public/whale-ico.png" width="120" alt="MWPA" />
+    <img src="doc/public/whale-ico.png" width="180" alt="MWPA logo" />
   </a>
-  <br />
+</p>
+
+<h1 align="center">
   MWPA
   <br />
   <sub><em>Mammal Watching. Processing. Analysing.</em></sub>
@@ -38,12 +40,20 @@
 </p>
 
 <p align="center">
-  <a href="doc/data-collection.en.md">English data guide</a>
+  <strong>User manual:</strong>
+  <a href="doc/user-manual.en.md">EN</a>
   ·
-  <a href="doc/data-collection.de.md">Deutsche Anleitung</a>
+  <a href="doc/user-manual.de.md">DE</a>
   ·
-  <a href="doc/data-collection.es.md">Guía en español</a>
+  <a href="doc/user-manual.es.md">ES</a>
+  &nbsp;|&nbsp;
+  <strong>Data guide:</strong>
+  <a href="doc/data-collection.en.md">EN</a>
   ·
+  <a href="doc/data-collection.de.md">DE</a>
+  ·
+  <a href="doc/data-collection.es.md">ES</a>
+  &nbsp;|&nbsp;
   <a href="https://github.com/M-E-E-R-e-V/mwpa/wiki">Wiki</a>
   ·
   <a href="https://swe.stoplight.io/docs/mwpa/">API docs</a>
@@ -215,6 +225,8 @@ Topics covered:
 
 | Resource | What's inside |
 |---|---|
+| User manual — [EN](doc/user-manual.en.md) · [DE](doc/user-manual.de.md) · [ES](doc/user-manual.es.md) | Page-by-page walkthrough of the web frontend with screenshots |
+| Data &amp; scientific use — [EN](doc/data-collection.en.md) · [DE](doc/data-collection.de.md) · [ES](doc/data-collection.es.md) | Field reference, derived analytics, reproducibility checklist |
 | [Project wiki](https://github.com/M-E-E-R-e-V/mwpa/wiki) | Installation, deployment, IM2020 importer, AROC workflow |
 | [REST API](https://swe.stoplight.io/docs/mwpa/) | Full endpoint reference (Stoplight) |
 | [Database schema](https://dbdiagram.io/d/5dfa98f1edf08a25543f3bcc) | ER diagram of all entities |
