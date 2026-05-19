@@ -1,0 +1,24 @@
+# Keep the build context lean — frontend/ is COPY'd whole, so exclude
+# things that don't belong in a production image.
+**/node_modules
+**/.git
+**/dist-test
+**/*.tsbuildinfo
+
+# We bundle backend/dist explicitly; ignore the rest of backend/
+backend/src
+backend/test
+backend/tsconfig*.json
+
+# Repo housekeeping
+.git
+.idea
+.vscode
+.cache
+data
+imports
+old-backend
+mwpa_*.tar
+*.log
+# schemas/src and tsbuildinfo aren't needed at runtime (dist is enough)
+# but the folder itself is copied for the workspace install.

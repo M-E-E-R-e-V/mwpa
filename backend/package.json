@@ -8,7 +8,7 @@
     "bcrypt": "^6.0.0",
     "exceljs": "^4.3.0",
     "express": "^5.1.0",
-    "figtree": "git+https://github.com/stefanwerfling/figtree.git#claude",
+    "figtree": "github:stefanwerfling/figtree#claude",
     "figtree-schemas": "git+https://github.com/stefanwerfling/figtree-schemas.git",
     "geojson-geometries-lookup": "^0.5.0",
     "jszip": "^3.10.1",
@@ -21,6 +21,7 @@
     "node-schedule": "^2.1.1",
     "node-xlsx": "^0.21.0",
     "rbac-simple": "git+https://github.com/OpenSourcePKG/rbac-simple.git",
+    "tslib": "^2.8.1",
     "vts": "git+https://github.com/OpenSourcePKG/vts.git",
     "ws": "^8.20.1"
   },
@@ -61,5 +62,5 @@
     "test": "npm run compile-test && node --test dist-test/test/",
     "npm-check-updates": "npm-check-updates"
   },
-  "version": "1.0.0"
+  "version": "1.0.34"
 }

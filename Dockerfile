@@ -1,25 +1,34 @@
 FROM node:18-bullseye
 
-RUN mkdir -p /opt/app
+# ---- Workspace install (transient build dir) ----
+# npm workspaces hoist deps + symlink `mwpa_schemas` into root's
+# node_modules. We replicate the dev install here, then move the
+# resolved tree into the final /opt/app layout (which keeps the
+# original 1.0.33 conventions: dist + node_modules + frontend at root).
+WORKDIR /build
 
-RUN mkdir -p /opt/app/dist
-RUN mkdir -p /opt/app/node_modules
+COPY package.json package-lock.json* ./
+COPY schemas/ ./schemas/
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
 
+RUN npm install --workspaces --include-workspace-root --omit=dev --include=peer
+
+# ---- Final runtime layout ----
 WORKDIR /opt/app
 
-COPY backend/dist/ ./dist
-COPY backend/node_modules/ ./node_modules
-COPY frontend/ ./frontend
-
+# Backend artefacts at /opt/app root (matches the historical layout).
+COPY backend/dist/ ./dist/
 COPY backend/package.json ./package.json
 
-WORKDIR /opt/app/frontend
+# Move the workspace-installed node_modules in. Dereference the
+# mwpa_schemas symlink (which points at /build/schemas) into a real
+# directory so the runtime doesn't need /build/ anymore.
+RUN cp -aL /build/node_modules ./node_modules \
+    && rm -rf /build
 
-RUN npm install --force
-RUN npm run gulp-copy-data
-RUN npm run gulp-build-webpack
-
-WORKDIR /opt/app
+# Frontend static assets (pre-built on the host via `npm run compile`).
+COPY frontend/ ./frontend
 
 EXPOSE 3000
 

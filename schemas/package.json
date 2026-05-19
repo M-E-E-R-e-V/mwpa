@@ -24,7 +24,7 @@
   },
   "type": "module",
   "types": "dist/index.d.ts",
-  "version": "1.0.0",
+  "version": "1.0.34",
   "exports": {
     ".": {
       "import": "./dist/index.js",
