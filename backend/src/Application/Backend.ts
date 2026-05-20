@@ -5,6 +5,7 @@ import {Schema} from 'vts';
 import {ACLRbac} from '../ACL/ACLRbac.js';
 import {MWPAConfig} from '../Config/MWPAConfig.js';
 import {MWPADbLoader} from '../Db/MariaDb/MWPADbLoader.js';
+import {SightingNoteUtf8mb4Setup} from '../Db/MariaDb/Setup/SightingNoteUtf8mb4Setup.js';
 import {SyncRolesRightsSetup} from '../Db/MariaDb/Setup/SyncRolesRightsSetup.js';
 import {TruncateSightingExtendedSetup} from '../Db/MariaDb/Setup/TruncateSightingExtendedSetup.js';
 import {RouteLoader} from '../Routes/RouteLoader.js';
@@ -68,7 +69,7 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
                 undefined,
                 undefined,
                 undefined,
-                [new SyncRolesRightsSetup(), new TruncateSightingExtendedSetup()]
+                [new SyncRolesRightsSetup(), new TruncateSightingExtendedSetup(), new SightingNoteUtf8mb4Setup()]
             )
         );
 
