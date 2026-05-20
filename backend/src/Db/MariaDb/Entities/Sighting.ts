@@ -80,6 +80,8 @@ export class Sighting extends DBBaseEntityId {
      */
     @Index()
     @Column({
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
         default: ''
     })
     public beaufort_wind_n!: string;
@@ -134,7 +136,9 @@ export class Sighting extends DBBaseEntityId {
      * Location begin
      */
     @Column({
-        type: 'text'
+        type: 'text',
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci'
     })
     public location_begin!: string;
 
@@ -142,7 +146,9 @@ export class Sighting extends DBBaseEntityId {
      * Location end
      */
     @Column({
-        type: 'text'
+        type: 'text',
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci'
     })
     public location_end!: string;
 
@@ -214,6 +220,8 @@ export class Sighting extends DBBaseEntityId {
      * behaviours
      */
     @Column({
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
         default: ''
     })
     public behaviours!: string;
@@ -246,6 +254,8 @@ export class Sighting extends DBBaseEntityId {
      */
     @Column({
         type: 'text',
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
         default: ''
     })
     public freq_behaviour!: string;
@@ -255,6 +265,8 @@ export class Sighting extends DBBaseEntityId {
      */
     @Column({
         type: 'text',
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
         default: ''
     })
     public recognizable_animals!: string;
@@ -264,6 +276,8 @@ export class Sighting extends DBBaseEntityId {
      */
     @Column({
         type: 'text',
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
         default: ''
     })
     public other_species!: string;
@@ -273,6 +287,8 @@ export class Sighting extends DBBaseEntityId {
      */
     @Column({
         type: 'text',
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
         default: ''
     })
     public other!: string;
@@ -282,15 +298,19 @@ export class Sighting extends DBBaseEntityId {
      */
     @Column({
         type: 'text',
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
         default: ''
     })
     public other_vehicle!: string;
 
     /**
-     * note
+     * note — utf8mb4 so mobile clients can post emoji (😭 etc.) in user-entered text.
      */
     @Column({
         type: 'text',
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
         default: ''
     })
     public note!: string;
@@ -354,6 +374,8 @@ export class Sighting extends DBBaseEntityId {
      */
     @Column({
         type: 'text',
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
         default: null
     })
     public deletedDescription!: string;
