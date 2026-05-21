@@ -106,7 +106,8 @@ export class Tours extends BasePage {
             organization_id: 0,
             vehicle_id: 0,
             vehicle_driver_id: 0,
-            search: ''
+            search: '',
+            only_without_tracks: false
         };
 
         let inHeaderSearch = '';
@@ -152,6 +153,9 @@ export class Tours extends BasePage {
             }
             if (filterValues.vehicle_driver_id > 0) {
                 apiFilter.vehicle_driver_id = filterValues.vehicle_driver_id;
+            }
+            if (filterValues.only_without_tracks) {
+                apiFilter.only_without_tracks = true;
             }
 
             const search = inHeaderSearch !== '' ? inHeaderSearch : filterValues.search;

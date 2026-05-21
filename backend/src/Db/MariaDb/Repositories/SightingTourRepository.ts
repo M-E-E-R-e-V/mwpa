@@ -13,6 +13,7 @@ export type SightingTourFilterCriteria = {
     vehicle_id?: number;
     vehicle_driver_id?: number;
     search?: string;
+    only_without_tracks?: boolean;
 };
 
 /**
@@ -114,6 +115,13 @@ export class SightingTourRepository extends DBRepository<SightingTour> {
             baseWhere.date = Raw((alias) => `${alias} >= :from`, {from: periodFrom});
         } else if (periodTo !== '') {
             baseWhere.date = Raw((alias) => `${alias} <= :to`, {to: periodTo});
+        }
+
+        if (filter?.only_without_tracks === true) {
+            // Subquery as a Raw column constraint — TypeORM doesn't support
+            // anti-joins via FindOptionsWhere otherwise, and a separate
+            // QueryBuilder would lose the search/OR branch below.
+            baseWhere.id = Raw((alias) => `${alias} NOT IN (SELECT DISTINCT sighting_tour_id FROM sighting_tour_tracking)`);
         }
 
         const search = (filter?.search ?? '').trim();

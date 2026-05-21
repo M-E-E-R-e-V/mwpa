@@ -37,6 +37,7 @@ export const SchemaToursFilter = Vts.object({
     vehicle_driver_id: Vts.optional(Vts.number({description: 'Filter by vehicle driver id'})),
     organization_id: Vts.optional(Vts.number({description: 'Filter by organization id (only effective when current user has access)'})),
     search: Vts.optional(Vts.string({description: 'Free-text search applied as LIKE on record_by_persons + tour_fid'})),
+    only_without_tracks: Vts.optional(Vts.boolean({description: 'When true, return only tours that have zero rows in sighting_tour_tracking'})),
 }, {
     description: '',
 });

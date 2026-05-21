@@ -80,7 +80,8 @@ export class List {
                 organization_id: filter?.organization_id,
                 vehicle_id: filter?.vehicle_id,
                 vehicle_driver_id: filter?.vehicle_driver_id,
-                search: filter?.search
+                search: filter?.search,
+                only_without_tracks: filter?.only_without_tracks
             }
         );
 
