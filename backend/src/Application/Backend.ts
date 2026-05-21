@@ -1,5 +1,6 @@
-import {ACL, BackendApp, MariaDBService} from 'figtree';
+import {ACL, BackendApp} from 'figtree';
 import {MWPAHttpService} from './Http/MWPAHttpService.js';
+import {MWPAMariaDBService} from './MWPAMariaDBService.js';
 import {ConfigOptions, DefaultArgs, SchemaDefaultArgs} from 'figtree-schemas';
 import {Schema} from 'vts';
 import {ACLRbac} from '../ACL/ACLRbac.js';
@@ -64,7 +65,7 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
         ACL.getInstance().addController(new ACLRbac());
 
         this._serviceManager.add(
-            new MariaDBService(
+            new MWPAMariaDBService(
                 MWPADbLoader,
                 undefined,
                 undefined,
