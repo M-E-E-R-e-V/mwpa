@@ -42,7 +42,7 @@ services:
 #        max-file: "50"
 
 #  mwpa:
-#    image: mwpa/mwpa:1.0.35
+#    image: mwpa/mwpa:1.0.36
 #    build:
 #     context: .
 #    restart: always

@@ -1,6 +1,6 @@
 {
   "name": "mwpa",
-  "version": "1.0.35",
+  "version": "1.0.36",
   "description": "Mammals watchig process analyse",
   "scripts": {
     "npm-check-updates": "cd ./schemas/ && npm-check-updates && cd ../backend/ && npm-check-updates && cd ../frontend/ && npm-check-updates",
