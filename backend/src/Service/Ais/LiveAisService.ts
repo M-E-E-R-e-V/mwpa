@@ -1,4 +1,5 @@
 import {Logger, ServiceAbstract} from 'figtree';
+import {ServiceStatus} from 'figtree-schemas';
 import {WebSocket} from 'ws';
 import {AisVesselRepository} from '../../Db/MariaDb/Repositories/AisVesselRepository.js';
 import {LiveAisTrackRepository} from '../../Db/MariaDb/Repositories/LiveAisTrackRepository.js';
@@ -76,6 +77,27 @@ export class LiveAisService extends ServiceAbstract {
 
     private static readonly BASE_BACKOFF_MS = 1_000;
 
+    /**
+     * Wider ceiling used while the server cert is expired (or the TLS
+     * handshake fails for any non-recoverable reason). Re-trying every
+     * 60 s is pointless if the upstream broke their Let's-Encrypt
+     * renewal — they need hours to react, and the per-minute log
+     * trilogy (error/close/reconnecting) drowns everything else.
+     */
+    private static readonly TLS_FAIL_BACKOFF_MS = 30 * 60 * 1000;
+
+    /**
+     * Error codes / message fragments that signal an unrecoverable TLS
+     * issue server-side and should fall back to the wider backoff.
+     */
+    private static readonly TLS_FAIL_CODES = new Set([
+        'CERT_HAS_EXPIRED',
+        'UNABLE_TO_GET_ISSUER_CERT',
+        'UNABLE_TO_VERIFY_LEAF_SIGNATURE',
+        'SELF_SIGNED_CERT_IN_CHAIN',
+        'DEPTH_ZERO_SELF_SIGNED_CERT'
+    ]);
+
     private readonly _token: string;
 
     private _config: AisConfig | null = null;
@@ -87,6 +109,22 @@ export class LiveAisService extends ServiceAbstract {
     private _backoffAttempt: number = 0;
 
     private _shuttingDown: boolean = false;
+
+    /**
+     * Last socket error message — surfaced via `_statusMsg` so the
+     * Services admin page shows *why* we are stuck reconnecting
+     * (e.g. "certificate has expired") instead of just "error".
+     * @private
+     */
+    private _lastError: string = '';
+
+    /**
+     * Node TLS error code (e.g. `CERT_HAS_EXPIRED`) extracted from the
+     * `error` event. Used to widen the reconnect backoff while a known
+     * unrecoverable TLS issue persists.
+     * @private
+     */
+    private _lastErrorCode: string = '';
 
     private readonly _lastByMmsi: Map<string, LastState> = new Map();
 
@@ -100,6 +138,8 @@ export class LiveAisService extends ServiceAbstract {
 
         if (this._token === '') {
             logger.info(`LiveAisService: disabled — no ${LiveAisService.TOKEN_ENV_VAR} env var set`);
+            this._status = ServiceStatus.None;
+            this._statusMsg = `disabled — no ${LiveAisService.TOKEN_ENV_VAR} env var set`;
             return;
         }
 
@@ -107,10 +147,14 @@ export class LiveAisService extends ServiceAbstract {
 
         if (!this._config.enabled) {
             logger.info('LiveAisService: disabled by ais_config.enabled=false');
+            this._status = ServiceStatus.None;
+            this._statusMsg = 'disabled by ais_config.enabled=false';
             return;
         }
 
         this._shuttingDown = false;
+        this._status = ServiceStatus.Progress;
+        this._statusMsg = 'connecting…';
         await this._connect();
     }
 
@@ -130,6 +174,9 @@ export class LiveAisService extends ServiceAbstract {
             }
             this._ws = null;
         }
+
+        this._status = ServiceStatus.None;
+        this._statusMsg = 'stopped';
     }
 
     /**
@@ -150,6 +197,8 @@ export class LiveAisService extends ServiceAbstract {
         ws.on('open', () => {
             logger.info('LiveAisService: WebSocket open — sending subscription');
             this._backoffAttempt = 0;
+            this._lastError = '';
+            this._lastErrorCode = '';
 
             const subscription = {
                 APIKey: this._token,
@@ -166,6 +215,9 @@ export class LiveAisService extends ServiceAbstract {
                 ]
             };
             ws.send(JSON.stringify(subscription));
+
+            this._status = ServiceStatus.Success;
+            this._statusMsg = `connected — bbox [${config.bbox_min_lat},${config.bbox_min_lon}]..[${config.bbox_max_lat},${config.bbox_max_lon}]`;
         });
 
         ws.on('message', (raw) => {
@@ -184,13 +236,23 @@ export class LiveAisService extends ServiceAbstract {
         });
 
         ws.on('close', (code, reason) => {
-            logger.warn(`LiveAisService: WebSocket closed (code=${code}) — ${reason.toString()}`);
+            const reasonStr = reason.toString();
+            logger.warn(`LiveAisService: WebSocket closed (code=${code}) — ${reasonStr}`);
             this._ws = null;
+            this._status = ServiceStatus.Error;
+            // Prefer the 'error' message (more specific, e.g. "certificate
+            // has expired") over the close reason which is usually empty
+            // when the close was triggered by a TLS failure.
+            const detail = this._lastError !== '' ? this._lastError : (reasonStr || `code=${code}`);
+            this._statusMsg = `disconnected — ${detail}`;
             this._scheduleReconnect();
         });
 
         ws.on('error', (err) => {
+            const code = (err as Error & {code?: string}).code ?? '';
             logger.warn(`LiveAisService: WebSocket error — ${err.message}`);
+            this._lastError = err.message;
+            this._lastErrorCode = code;
             // 'error' will be followed by 'close' — reconnect happens there.
         });
 
@@ -202,18 +264,35 @@ export class LiveAisService extends ServiceAbstract {
             return;
         }
 
+        // Pick the ceiling: when the last failure was a known
+        // unrecoverable TLS issue (typically expired upstream cert),
+        // use the wider 30 min cap. Retrying every minute is wasted
+        // work — these problems take hours of operator action upstream
+        // to fix, and the log flood obscures everything else.
+        const isTlsFailure = this._lastErrorCode !== ''
+            && LiveAisService.TLS_FAIL_CODES.has(this._lastErrorCode);
+        const ceiling = isTlsFailure
+            ? LiveAisService.TLS_FAIL_BACKOFF_MS
+            : LiveAisService.MAX_BACKOFF_MS;
+
         const backoff = Math.min(
             LiveAisService.BASE_BACKOFF_MS * Math.pow(2, this._backoffAttempt),
-            LiveAisService.MAX_BACKOFF_MS
+            ceiling
         );
         this._backoffAttempt++;
 
         Logger.getLogger().info(`LiveAisService: reconnecting in ${backoff} ms (attempt ${this._backoffAttempt})`);
 
+        const detail = this._lastError !== '' ? this._lastError : 'unknown';
+        this._status = ServiceStatus.Error;
+        this._statusMsg = `reconnect attempt ${this._backoffAttempt} in ${Math.round(backoff / 1000)}s — ${detail}`;
+
         this._reconnectTimer = setTimeout(() => {
             this._reconnectTimer = null;
             this._connect().catch((e) => {
-                Logger.getLogger().warn(`LiveAisService: reconnect failed — ${(e as Error).message}`);
+                const msg = (e as Error).message;
+                Logger.getLogger().warn(`LiveAisService: reconnect failed — ${msg}`);
+                this._lastError = msg;
                 this._scheduleReconnect();
             });
         }, backoff);
