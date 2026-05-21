@@ -22,5 +22,5 @@
 /.env
 /.cache/
 /old-backend/
-/mwpa_1.0.33.tar
+/mwpa_*.tar
 /doc/
