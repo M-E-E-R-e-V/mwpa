@@ -3226,6 +3226,17 @@
                               "types": []
                             },
                             "description": "Free-text search applied as LIKE on record_by_persons + tour_fid"
+                          },
+                          {
+                            "unid": "0a03a68d-1838-4b38-9187-929cfc187f8a",
+                            "name": "only_without_tracks",
+                            "type": {
+                              "type": "boolean",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "When true, return only tours that have zero rows in sighting_tour_tracking"
                           }
                         ]
                       },
@@ -7615,8 +7626,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 100,
-                          "y": 100
+                          "x": 522,
+                          "y": 171
                         },
                         "fields": [
                           {
@@ -7673,8 +7684,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 500,
-                          "y": 100
+                          "x": 41,
+                          "y": 264
                         },
                         "fields": [
                           {
@@ -7709,8 +7720,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 900,
-                          "y": 100
+                          "x": 851,
+                          "y": 43
                         },
                         "fields": [
                           {
@@ -7822,8 +7833,8 @@
                           "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
                         },
                         "pos": {
-                          "x": 1300,
-                          "y": 100
+                          "x": 28,
+                          "y": 89
                         },
                         "fields": [
                           {
@@ -7847,8 +7858,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 100,
-                          "y": 500
+                          "x": 545,
+                          "y": 431
                         },
                         "fields": [
                           {
@@ -7916,8 +7927,8 @@
                           "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
                         },
                         "pos": {
-                          "x": 600,
-                          "y": 500
+                          "x": 64,
+                          "y": 456
                         },
                         "fields": [
                           {
@@ -7952,8 +7963,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 1100,
-                          "y": 500
+                          "x": 83,
+                          "y": 636
                         },
                         "fields": [
                           {

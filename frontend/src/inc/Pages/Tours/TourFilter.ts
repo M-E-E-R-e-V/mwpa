@@ -8,7 +8,8 @@ import {
     InputBottemBorderOnly2,
     InputType,
     LangText,
-    SelectBottemBorderOnly2
+    SelectBottemBorderOnly2,
+    Switch
 } from 'bambooo';
 import {OrganizationEntry} from '../../Api/Organization';
 import {VehicleEntry} from '../../Api/Vehicle';
@@ -27,6 +28,7 @@ export type TourFilterValues = {
     vehicle_id: number;
     vehicle_driver_id: number;
     search: string;
+    only_without_tracks: boolean;
 };
 
 export type TourFilterApplyFn = (values: TourFilterValues) => void;
@@ -47,6 +49,7 @@ export class TourFilter extends Card {
     protected _selectVehicle: SelectBottemBorderOnly2;
     protected _selectDriver: SelectBottemBorderOnly2;
     protected _inputSearch: InputBottemBorderOnly2;
+    protected _switchOnlyWithoutTracks: Switch;
     protected _onApply: TourFilterApplyFn|null = null;
 
     public constructor(elementObject: ComponentType) {
@@ -77,9 +80,16 @@ export class TourFilter extends Card {
         const groupDriver = new FormGroup(row.createCol(2), new LangText('Driver'));
         this._selectDriver = TourFilter._buildSelect(groupDriver);
 
-        const groupSearch = new FormGroup(row.createCol(4), new LangText('Search'));
+        const groupSearch = new FormGroup(row.createCol(3), new LangText('Search'));
         this._inputSearch = new InputBottemBorderOnly2(groupSearch, undefined, InputType.text);
         this._inputSearch.setPlaceholder('persons / tour-fid …');
+
+        const groupOnlyWithoutTracks = new FormGroup(row.createCol(1), new LangText('Without tracks'));
+        this._switchOnlyWithoutTracks = new Switch(
+            groupOnlyWithoutTracks,
+            'tour-filter-only-without-tracks',
+            'only'
+        );
 
         const actions = jQuery('<div class="text-right pt-1"/>').appendTo(body);
 
@@ -150,7 +160,8 @@ export class TourFilter extends Card {
             organization_id: Number.isFinite(organizationId) ? organizationId : 0,
             vehicle_id: Number.isFinite(vehicleId) ? vehicleId : 0,
             vehicle_driver_id: Number.isFinite(driverId) ? driverId : 0,
-            search: this._inputSearch.getValue().trim()
+            search: this._inputSearch.getValue().trim(),
+            only_without_tracks: this._switchOnlyWithoutTracks.isEnable()
         };
     }
 
@@ -160,6 +171,7 @@ export class TourFilter extends Card {
         this._selectVehicle.setSelectedValue('');
         this._selectDriver.setSelectedValue('');
         this._inputSearch.setValue('');
+        this._switchOnlyWithoutTracks.setEnable(false);
     }
 
     public isActive(): boolean {
@@ -169,7 +181,8 @@ export class TourFilter extends Card {
             || v.organization_id > 0
             || v.vehicle_id > 0
             || v.vehicle_driver_id > 0
-            || v.search !== '';
+            || v.search !== ''
+            || v.only_without_tracks;
     }
 
 }
