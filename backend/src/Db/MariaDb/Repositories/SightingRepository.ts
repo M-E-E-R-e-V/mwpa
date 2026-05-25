@@ -361,6 +361,7 @@ export class SightingRepository extends DBRepository<Sighting> {
         id: number;
         date: string;
         tour_start: string;
+        tour_fid: string;
         species_count: number;
         juveniles: number;
         calves: number;
@@ -369,13 +370,21 @@ export class SightingRepository extends DBRepository<Sighting> {
         behaviours: string;
         reaction_id: number;
         location_begin: string;
+        beaufort_wind: number;
+        other_vehicle: string;
         depth_m: number | null;
         sst_c_day: number | null;
         chl_a_mg_m3_day: number | null;
+        salinity_psu_day: number | null;
+        sla_cm_day: number | null;
+        current_speed_m_s_day: number | null;
+        wave_height_m_day: number | null;
+        uv_index_day: number | null;
         avg_speed_mps: number | null;
         max_speed_mps: number | null;
         total_distance_m: number | null;
         dominant_heading_deg: number | null;
+        fishing_hours_day_25km: number | null;
     }>> {
         if (organizationIds !== undefined && organizationIds.length === 0) {
             return [];
@@ -386,6 +395,7 @@ export class SightingRepository extends DBRepository<Sighting> {
             .select('s.id', 'id')
             .addSelect('s.date', 'date')
             .addSelect('s.tour_start', 'tour_start')
+            .addSelect('s.tour_fid', 'tour_fid')
             .addSelect('s.species_count', 'species_count')
             .addSelect('s.juveniles', 'juveniles')
             .addSelect('s.calves', 'calves')
@@ -394,15 +404,24 @@ export class SightingRepository extends DBRepository<Sighting> {
             .addSelect('s.behaviours', 'behaviours')
             .addSelect('s.reaction_id', 'reaction_id')
             .addSelect('s.location_begin', 'location_begin')
+            .addSelect('s.beaufort_wind', 'beaufort_wind')
+            .addSelect('s.other_vehicle', 'other_vehicle')
             .addSelect('e.depth_m', 'depth_m')
             .addSelect('e.sst_c_day', 'sst_c_day')
             .addSelect('e.chl_a_mg_m3_day', 'chl_a_mg_m3_day')
+            .addSelect('e.salinity_psu_day', 'salinity_psu_day')
+            .addSelect('e.sla_cm_day', 'sla_cm_day')
+            .addSelect('e.current_speed_m_s_day', 'current_speed_m_s_day')
+            .addSelect('e.wave_height_m_day', 'wave_height_m_day')
+            .addSelect('e.uv_index_day', 'uv_index_day')
             .addSelect('m.avg_speed_mps', 'avg_speed_mps')
             .addSelect('m.max_speed_mps', 'max_speed_mps')
             .addSelect('m.total_distance_m', 'total_distance_m')
             .addSelect('m.dominant_heading_deg', 'dominant_heading_deg')
+            .addSelect('f.fishing_hours_day_25km', 'fishing_hours_day_25km')
             .leftJoin('sighting_extended', 'e', 'e.sighting_id = s.id')
             .leftJoin('sighting_movement', 'm', 'm.sighting_id = s.id')
+            .leftJoin('sighting_fishing_effort', 'f', 'f.sighting_id = s.id')
             .where('s.species_id = :sid', {sid: speciesId})
             .andWhere('s.deleted = :del', {del: false});
 
@@ -421,6 +440,77 @@ export class SightingRepository extends DBRepository<Sighting> {
         }
 
         return qb.getRawMany();
+    }
+
+    /**
+     * Find other species seen on the same tours (same `tour_fid`) as a
+     * given species, restricted to the supplied period and org scope.
+     * Returns label (species name) + count of distinct tour_fids where
+     * both species co-occurred.
+     *
+     * The query joins back to `species` for the human-readable name and
+     * deduplicates by `tour_fid` so a tour with two sightings of the same
+     * co-occurring species is counted once.
+     *
+     * @param {number} speciesId
+     * @param {string | undefined} periodFrom
+     * @param {string | undefined} periodTo
+     * @param {number[] | undefined} organizationIds
+     * @return {Array<{species_id: number; species_name: string; tour_count: number;}>}
+     */
+    public async findCooccurringSpecies(
+        speciesId: number,
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        organizationIds: number[] | undefined
+    ): Promise<Array<{species_id: number; species_name: string; tour_count: number;}>> {
+        if (organizationIds !== undefined && organizationIds.length === 0) {
+            return [];
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('o')
+            .select('o.species_id', 'species_id')
+            .addSelect('sp.name', 'species_name')
+            .addSelect('COUNT(DISTINCT o.tour_fid)', 'tour_count')
+            .innerJoin('species', 'sp', 'sp.id = o.species_id')
+            .innerJoin(
+                (sub) => sub
+                    .select('DISTINCT inner_s.tour_fid', 'tour_fid')
+                    .from('sighting', 'inner_s')
+                    .where('inner_s.species_id = :sid', {sid: speciesId})
+                    .andWhere('inner_s.deleted = :del', {del: false})
+                    .andWhere('inner_s.tour_fid <> :empty', {empty: ''}),
+                't',
+                't.tour_fid = o.tour_fid'
+            )
+            .where('o.species_id <> :sid', {sid: speciesId})
+            .andWhere('o.deleted = :del', {del: false})
+            .groupBy('o.species_id')
+            .addGroupBy('sp.name')
+            .orderBy('tour_count', 'DESC')
+            .limit(20);
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+        if (from !== '') {
+            qb.andWhere('o.date >= :from', {from});
+        }
+        if (to !== '') {
+            qb.andWhere('o.date <= :to', {to});
+        }
+
+        if (organizationIds !== undefined) {
+            qb.innerJoin('vehicle', 'v', 'v.id = o.vehicle_id')
+                .andWhere('v.organization_id IN (:...orgIds)', {orgIds: organizationIds});
+        }
+
+        const rows = await qb.getRawMany<{species_id: number | string; species_name: string; tour_count: number | string;}>();
+        return rows.map((r) => ({
+            species_id: Number(r.species_id),
+            species_name: r.species_name,
+            tour_count: Number(r.tour_count)
+        }));
     }
 
 }

@@ -181,6 +181,67 @@ export class SightingTourRepository extends DBRepository<SightingTour> {
     }
 
     /**
+     * Sum of tour-hours per YYYY-MM bucket inside `[periodFrom, periodTo]`,
+     * filtered to the supplied orgs when `organizationIds` is set. Used by
+     * the Species Profile to compute SPUE (sightings per tour-hour) — the
+     * standard effort-corrected encounter rate.
+     *
+     * tour_start / tour_end are stored as HH:mm strings; the calc is done
+     * via SQL TIME arithmetic so the whole aggregation stays in one query
+     * (negative deltas — tours crossing midnight — are clamped to 0).
+     *
+     * @param {string | undefined} periodFrom YYYY-MM-DD inclusive
+     * @param {string | undefined} periodTo   YYYY-MM-DD inclusive
+     * @param {number[] | undefined} organizationIds
+     * @return {Map<string, number>} ym → hours
+     */
+    public async aggregateMonthlyTourHours(
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        organizationIds: number[] | undefined
+    ): Promise<Map<string, number>> {
+        const out = new Map<string, number>();
+
+        if (organizationIds !== undefined && organizationIds.length === 0) {
+            return out;
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('st')
+            .select('DATE_FORMAT(st.date, \'%Y-%m\')', 'ym')
+            .addSelect(
+                'SUM(' +
+                'GREATEST(0, ' +
+                'TIME_TO_SEC(STR_TO_DATE(NULLIF(st.tour_end, \'\'), \'%H:%i\')) - ' +
+                'TIME_TO_SEC(STR_TO_DATE(NULLIF(st.tour_start, \'\'), \'%H:%i\'))' +
+                ')) / 3600.0',
+                'hours'
+            )
+            .where('st.tour_start <> \'\'')
+            .andWhere('st.tour_end <> \'\'');
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+        if (from !== '') {
+            qb.andWhere('st.date >= :from', {from});
+        }
+        if (to !== '') {
+            qb.andWhere('st.date <= :to', {to});
+        }
+        if (organizationIds !== undefined) {
+            qb.andWhere('st.organization_id IN (:...orgIds)', {orgIds: organizationIds});
+        }
+
+        qb.groupBy('DATE_FORMAT(st.date, \'%Y-%m\')');
+
+        const rows = await qb.getRawMany<{ym: string; hours: number | string | null;}>();
+        for (const r of rows) {
+            out.set(r.ym, Number(r.hours ?? 0));
+        }
+        return out;
+    }
+
+    /**
      * Closest tour for the same vehicle whose date sits immediately before
      * the given anchor date — used by the tracking-edit UI to suggest a
      * "previous day" tour when shifting points across midnight.

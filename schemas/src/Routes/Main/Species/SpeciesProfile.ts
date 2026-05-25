@@ -173,6 +173,76 @@ export const SchemaSpeciesProfileHeatmapPoint = Vts.object({
 export type SpeciesProfileHeatmapPoint = ExtractSchemaResultType<typeof SchemaSpeciesProfileHeatmapPoint>;
 
 /**
+ * Schema of SpeciesProfileMonthlyEffort
+ * Per-month tour effort + sightings + SPUE
+ */
+export const SchemaSpeciesProfileMonthlyEffort = Vts.object({
+    ym: Vts.string(),
+    tour_hours: Vts.number(),
+    sightings: Vts.number(),
+    spue: Vts.number({description: 'Sightings per tour-hour. 0 when tour_hours = 0.'}),
+}, {
+    description: 'Per-month tour effort + sightings + SPUE',
+});
+
+/**
+ * Type of schema SpeciesProfileMonthlyEffort
+ */
+export type SpeciesProfileMonthlyEffort = ExtractSchemaResultType<typeof SchemaSpeciesProfileMonthlyEffort>;
+
+/**
+ * Schema of SpeciesProfileYearly
+ * Per-year sighting count
+ */
+export const SchemaSpeciesProfileYearly = Vts.object({
+    y: Vts.string({description: 'YYYY'}),
+    count: Vts.number(),
+}, {
+    description: 'Per-year sighting count',
+});
+
+/**
+ * Type of schema SpeciesProfileYearly
+ */
+export type SpeciesProfileYearly = ExtractSchemaResultType<typeof SchemaSpeciesProfileYearly>;
+
+/**
+ * Schema of SpeciesProfileEnvExtra
+ * Additional environmental distributions (salinity, SLA, currents, waves, UV)
+ */
+export const SchemaSpeciesProfileEnvExtra = Vts.object({
+    salinity_psu: Vts.array(SchemaSpeciesProfileBucket),
+    sla_cm: Vts.array(SchemaSpeciesProfileBucket),
+    current_speed_m_s: Vts.array(SchemaSpeciesProfileBucket),
+    wave_height_m: Vts.array(SchemaSpeciesProfileBucket),
+    uv_index: Vts.array(SchemaSpeciesProfileBucket),
+}, {
+    description: 'Additional environmental distributions (salinity, SLA, currents, waves, UV)',
+});
+
+/**
+ * Type of schema SpeciesProfileEnvExtra
+ */
+export type SpeciesProfileEnvExtra = ExtractSchemaResultType<typeof SchemaSpeciesProfileEnvExtra>;
+
+/**
+ * Schema of SpeciesProfilePressure
+ * Anthropogenic / environmental pressure indicators at sightings
+ */
+export const SchemaSpeciesProfilePressure = Vts.object({
+    beaufort: Vts.array(SchemaSpeciesProfileBucket),
+    other_boats: Vts.array(SchemaSpeciesProfileBucket),
+    fishing_hours_25km: Vts.array(SchemaSpeciesProfileBucket),
+}, {
+    description: 'Anthropogenic / environmental pressure indicators at sightings',
+});
+
+/**
+ * Type of schema SpeciesProfilePressure
+ */
+export type SpeciesProfilePressure = ExtractSchemaResultType<typeof SchemaSpeciesProfilePressure>;
+
+/**
  * Schema of SpeciesProfile
  * Aggregated profile of a species over a (filtered) timeframe
  */
@@ -194,6 +264,11 @@ export const SchemaSpeciesProfile = Vts.object({
     reaction_mix: Vts.array(SchemaSpeciesProfileCategoryShare),
     movement: SchemaSpeciesProfileMovement,
     heatmap: Vts.array(SchemaSpeciesProfileHeatmapPoint),
+    monthly_effort: Vts.array(SchemaSpeciesProfileMonthlyEffort),
+    yearly: Vts.array(SchemaSpeciesProfileYearly),
+    env_extra: SchemaSpeciesProfileEnvExtra,
+    pressure: SchemaSpeciesProfilePressure,
+    cooccurrence: Vts.array(SchemaSpeciesProfileCategoryShare),
 }, {
     description: 'Aggregated profile of a species over a (filtered) timeframe',
 });

@@ -17,7 +17,9 @@ import {
     SpeciesProfileCategoryShare,
     SpeciesProfileData,
     SpeciesProfileHeadingBin,
-    SpeciesProfileHeatmapPoint
+    SpeciesProfileHeatmapPoint,
+    SpeciesProfileMonthlyEffort,
+    SpeciesProfileYearly
 } from '../../Api/Species';
 import {Lang} from '../../Lang';
 import {BaseMap} from '../../Map/BaseMap';
@@ -186,7 +188,64 @@ export class SpeciesProfile extends BasePage {
             '</div>'
         ).appendTo(movementCard.getBodyElement());
 
-        // Row 7 — spatial heatmap -------------------------------------------------------------------------------------
+        // Row 7 — SPUE (Sightings Per Unit Effort) --------------------------------------------------------------------
+
+        const rowSpue = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const spueCard = new Card(new ContentCol(rowSpue, ContentColSize.col12));
+        spueCard.setTitle(new LangText('Sightings per tour-hour (SPUE)'));
+        SpeciesProfile._attachInfo(spueCard, 'Sightings per tour-hour (SPUE)', 'desc.spue');
+        const spueHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(spueCard.getBodyElement());
+
+        // Row 8 — yearly trend ----------------------------------------------------------------------------------------
+
+        const rowYearly = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const yearlyCard = new Card(new ContentCol(rowYearly, ContentColSize.colMd6));
+        yearlyCard.setTitle(new LangText('Sightings per year'));
+        SpeciesProfile._attachInfo(yearlyCard, 'Sightings per year', 'desc.yearly');
+        const yearlyHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(yearlyCard.getBodyElement());
+
+        // Co-occurrence card next to yearly
+        const cooccCard = new Card(new ContentCol(rowYearly, ContentColSize.colMd6));
+        cooccCard.setTitle(new LangText('Co-occurring species (same tour)'));
+        SpeciesProfile._attachInfo(cooccCard, 'Co-occurring species (same tour)', 'desc.cooccurrence');
+        const cooccHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(cooccCard.getBodyElement());
+
+        // Row 9 — pressure indicators --------------------------------------------------------------------------------
+
+        const rowPress = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const pressureCard = new Card(new ContentCol(rowPress, ContentColSize.col12));
+        pressureCard.setTitle(new LangText('Pressure indicators'));
+        SpeciesProfile._attachInfo(pressureCard, 'Pressure indicators', 'desc.pressure');
+
+        const pressureGrid = jQuery<HTMLDivElement>(
+            '<div class="row p-2">' +
+            `<div class="col-md-4"><div class="text-muted small">${lang.l('Beaufort sea state')}</div><div class="species-profile-chart" data-press="beaufort"></div></div>` +
+            `<div class="col-md-4"><div class="text-muted small">${lang.l('Other boats present')}</div><div class="species-profile-chart" data-press="boats"></div></div>` +
+            `<div class="col-md-4"><div class="text-muted small">${lang.l('Fishing hours (25 km, day)')}</div><div class="species-profile-chart" data-press="fishing"></div></div>` +
+            '</div>'
+        ).appendTo(pressureCard.getBodyElement());
+
+        // Row 10 — extra env distributions ---------------------------------------------------------------------------
+
+        const rowEnvExtra = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const envExtraCard = new Card(new ContentCol(rowEnvExtra, ContentColSize.col12));
+        envExtraCard.setTitle(new LangText('Extended environment (oceanographic)'));
+        SpeciesProfile._attachInfo(envExtraCard, 'Extended environment (oceanographic)', 'desc.env_extra');
+
+        const envExtraGrid = jQuery<HTMLDivElement>(
+            '<div class="row p-2">' +
+            `<div class="col-md-2-4"><div class="text-muted small">${lang.l('Salinity (PSU)')}</div><div class="species-profile-chart" data-envx="salinity"></div></div>` +
+            `<div class="col-md-2-4"><div class="text-muted small">${lang.l('SLA (cm)')}</div><div class="species-profile-chart" data-envx="sla"></div></div>` +
+            `<div class="col-md-2-4"><div class="text-muted small">${lang.l('Current speed (m/s)')}</div><div class="species-profile-chart" data-envx="current"></div></div>` +
+            `<div class="col-md-2-4"><div class="text-muted small">${lang.l('Wave height (m)')}</div><div class="species-profile-chart" data-envx="wave"></div></div>` +
+            `<div class="col-md-2-4"><div class="text-muted small">${lang.l('UV index')}</div><div class="species-profile-chart" data-envx="uv"></div></div>` +
+            '</div>' +
+            // Custom 5-column row helper — Bootstrap 4 doesn't ship col-md-2-4,
+            // so define it inline to avoid touching the global stylesheet.
+            '<style>.col-md-2-4{flex:0 0 20%;max-width:20%;padding-right:7.5px;padding-left:7.5px;}</style>'
+        ).appendTo(envExtraCard.getBodyElement());
+
+        // Row 11 — spatial heatmap ------------------------------------------------------------------------------------
 
         const rowMap = new ContentRow(this._wrapper.getContentWrapper().getContent());
         const mapCard = new Card(new ContentCol(rowMap, ContentColSize.col12));
@@ -236,6 +295,36 @@ export class SpeciesProfile extends BasePage {
                     SpeciesProfile._renderHeadingRose(el as HTMLElement, profile.movement.heading_rose);
                 });
 
+                SpeciesProfile._renderSpue(spueHost[0] as HTMLElement, profile.monthly_effort);
+                SpeciesProfile._renderYearly(yearlyHost[0] as HTMLElement, profile.yearly);
+                SpeciesProfile._renderCooccurrence(cooccHost[0] as HTMLElement, profile.cooccurrence);
+
+                pressureGrid.find('[data-press="beaufort"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.pressure.beaufort, '#0d6efd');
+                });
+                pressureGrid.find('[data-press="boats"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.pressure.other_boats, '#fd7e14');
+                });
+                pressureGrid.find('[data-press="fishing"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.pressure.fishing_hours_25km, '#c14953');
+                });
+
+                envExtraGrid.find('[data-envx="salinity"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.salinity_psu, '#264653');
+                });
+                envExtraGrid.find('[data-envx="sla"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.sla_cm, '#4a90c2');
+                });
+                envExtraGrid.find('[data-envx="current"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.current_speed_m_s, '#1d6f8a');
+                });
+                envExtraGrid.find('[data-envx="wave"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.wave_height_m, '#2a9d8f');
+                });
+                envExtraGrid.find('[data-envx="uv"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.uv_index, '#d4a017');
+                });
+
                 this._heatmap = SpeciesProfile._renderHeatmap(mapHost[0] as HTMLElement, profile.heatmap, this._heatmap);
                 Lang.i().lAll();
             } finally {
@@ -244,6 +333,201 @@ export class SpeciesProfile extends BasePage {
         };
 
         this._onLoadTable();
+    }
+
+    /**
+     * Combined bar + line chart for SPUE: bars = sightings/month, line =
+     * tour-hours/month on a secondary axis, dotted line = SPUE (per-hour
+     * rate) on the count axis (re-scaled).
+     */
+    private static _renderSpue(host: HTMLElement, rows: SpeciesProfileMonthlyEffort[]): void {
+        d3.select(host).selectAll('*').remove();
+        const lang = Lang.i();
+        if (rows.length === 0) {
+            jQuery(host).text(lang.l('No data'));
+            return;
+        }
+
+        const width = Math.max(320, (host.clientWidth || 800) - 24);
+        const height = 220;
+        const margin = {top: 16, right: 56, bottom: 52, left: 48};
+        const innerW = width - margin.left - margin.right;
+        const innerH = height - margin.top - margin.bottom;
+
+        const svg = d3.select(host).append('svg').attr('width', width).attr('height', height);
+        const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+        const x = d3.scaleBand().domain(rows.map((r: SpeciesProfileMonthlyEffort) => r.ym)).range([0, innerW]).padding(0.15);
+        const maxSightings = d3.max(rows, (r: SpeciesProfileMonthlyEffort) => r.sightings) ?? 1;
+        const yL = d3.scaleLinear().domain([0, Math.max(1, maxSightings)]).nice().range([innerH, 0]);
+
+        const maxHours = d3.max(rows, (r: SpeciesProfileMonthlyEffort) => r.tour_hours) ?? 1;
+        const yR = d3.scaleLinear().domain([0, Math.max(1, maxHours)]).nice().range([innerH, 0]);
+
+        const tickLabels = SpeciesProfile._everyNthTick(rows.map((r: SpeciesProfileMonthlyEffort) => r.ym), 3);
+
+        g.append('g')
+            .attr('transform', `translate(0,${innerH})`)
+            .call(d3.axisBottom(x).tickValues(tickLabels))
+            .selectAll('text')
+            .attr('transform', 'rotate(-45)')
+            .style('text-anchor', 'end');
+        g.append('g').call(d3.axisLeft(yL).ticks(4));
+        g.append('g')
+            .attr('transform', `translate(${innerW},0)`)
+            .call(d3.axisRight(yR).ticks(4));
+
+        // Sightings bars
+        g.selectAll('rect')
+            .data(rows)
+            .enter()
+            .append('rect')
+            .attr('x', (r: SpeciesProfileMonthlyEffort) => x(r.ym))
+            .attr('width', x.bandwidth())
+            .attr('y', (r: SpeciesProfileMonthlyEffort) => yL(r.sightings))
+            .attr('height', (r: SpeciesProfileMonthlyEffort) => innerH - yL(r.sightings))
+            .attr('fill', '#2471A3')
+            .attr('opacity', 0.75)
+            .append('title')
+            .text((r: SpeciesProfileMonthlyEffort) =>
+                `${r.ym}\n${lang.l('Sightings')}: ${r.sightings}\n${lang.l('Tour hours')}: ${r.tour_hours.toFixed(1)}\nSPUE: ${r.spue.toFixed(3)}`);
+
+        // Tour-hours line (solid, light)
+        const linePts = rows.map((r: SpeciesProfileMonthlyEffort) => ({
+            cx: (x(r.ym) ?? 0) + x.bandwidth() / 2,
+            cy: yR(r.tour_hours)
+        }));
+        for (let i = 1; i < linePts.length; i++) {
+            g.append('line')
+                .attr('x1', linePts[i - 1].cx)
+                .attr('y1', linePts[i - 1].cy)
+                .attr('x2', linePts[i].cx)
+                .attr('y2', linePts[i].cy)
+                .attr('stroke', '#fd7e14')
+                .attr('stroke-width', 2);
+        }
+
+        // SPUE line on the left axis (scaled into yL via a ratio)
+        const maxSpue = d3.max(rows, (r: SpeciesProfileMonthlyEffort) => r.spue) ?? 0;
+        if (maxSpue > 0) {
+            const yLDomainMax = yL.domain()[1];
+            const scale = yLDomainMax / maxSpue;
+            const spuePts = rows.map((r: SpeciesProfileMonthlyEffort) => ({
+                cx: (x(r.ym) ?? 0) + x.bandwidth() / 2,
+                cy: yL(r.spue * scale)
+            }));
+            for (let i = 1; i < spuePts.length; i++) {
+                g.append('line')
+                    .attr('x1', spuePts[i - 1].cx)
+                    .attr('y1', spuePts[i - 1].cy)
+                    .attr('x2', spuePts[i].cx)
+                    .attr('y2', spuePts[i].cy)
+                    .attr('stroke', '#28a745')
+                    .attr('stroke-width', 2)
+                    .attr('stroke-dasharray', '4,3');
+            }
+        }
+
+        // Mini legend
+        const legend = jQuery(
+            '<div class="small mt-1 d-flex flex-wrap" style="gap: 0.75rem;">' +
+            `<span><span style="display:inline-block;width:10px;height:10px;background:#2471A3;"></span> ${lang.l('Sightings')}</span>` +
+            `<span><span style="display:inline-block;width:10px;height:2px;background:#fd7e14;vertical-align:middle;"></span> ${lang.l('Tour hours')}</span>` +
+            `<span><span style="display:inline-block;width:10px;height:0;border-top:2px dashed #28a745;vertical-align:middle;"></span> SPUE</span>` +
+            '</div>'
+        );
+        jQuery(host).append(legend);
+    }
+
+    /**
+     * Yearly trend — a single bar per year.
+     */
+    private static _renderYearly(host: HTMLElement, rows: SpeciesProfileYearly[]): void {
+        d3.select(host).selectAll('*').remove();
+        if (rows.length === 0) {
+            jQuery(host).text(Lang.i().l('No data'));
+            return;
+        }
+
+        const width = Math.max(280, (host.clientWidth || 480) - 24);
+        const height = 200;
+        const margin = {top: 12, right: 12, bottom: 32, left: 40};
+        const innerW = width - margin.left - margin.right;
+        const innerH = height - margin.top - margin.bottom;
+
+        const svg = d3.select(host).append('svg').attr('width', width).attr('height', height);
+        const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+        const x = d3.scaleBand().domain(rows.map((r: SpeciesProfileYearly) => r.y)).range([0, innerW]).padding(0.15);
+        const yMax = d3.max(rows, (r: SpeciesProfileYearly) => r.count) ?? 1;
+        const y = d3.scaleLinear().domain([0, Math.max(1, yMax)]).nice().range([innerH, 0]);
+
+        g.append('g').attr('transform', `translate(0,${innerH})`).call(d3.axisBottom(x));
+        g.append('g').call(d3.axisLeft(y).ticks(4));
+
+        g.selectAll('rect')
+            .data(rows)
+            .enter()
+            .append('rect')
+            .attr('x', (r: SpeciesProfileYearly) => x(r.y))
+            .attr('width', x.bandwidth())
+            .attr('y', (r: SpeciesProfileYearly) => y(r.count))
+            .attr('height', (r: SpeciesProfileYearly) => innerH - y(r.count))
+            .attr('fill', '#6f42c1')
+            .append('title')
+            .text((r: SpeciesProfileYearly) => `${r.y}: ${r.count}`);
+    }
+
+    /**
+     * Horizontal bar chart of co-occurring species (top-N by tour count).
+     */
+    private static _renderCooccurrence(host: HTMLElement, items: SpeciesProfileCategoryShare[]): void {
+        d3.select(host).selectAll('*').remove();
+        const lang = Lang.i();
+        if (items.length === 0) {
+            jQuery(host).text(lang.l('No data'));
+            return;
+        }
+
+        const top = items.slice(0, 12);
+        const width = Math.max(280, (host.clientWidth || 480) - 24);
+        const rowHeight = 18;
+        const height = Math.max(100, top.length * (rowHeight + 4) + 28);
+        const margin = {top: 8, right: 40, bottom: 16, left: 160};
+        const innerW = width - margin.left - margin.right;
+        const innerH = height - margin.top - margin.bottom;
+
+        const svg = d3.select(host).append('svg').attr('width', width).attr('height', height);
+        const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+        const y = d3.scaleBand().domain(top.map((d: SpeciesProfileCategoryShare) => d.label)).range([0, innerH]).padding(0.15);
+        const xMax = d3.max(top, (d: SpeciesProfileCategoryShare) => d.count) ?? 1;
+        const x = d3.scaleLinear().domain([0, Math.max(1, xMax)]).range([0, innerW]);
+
+        g.append('g').call(d3.axisLeft(y));
+        g.append('g').attr('transform', `translate(0,${innerH})`).call(d3.axisBottom(x).ticks(4));
+
+        g.selectAll('rect')
+            .data(top)
+            .enter()
+            .append('rect')
+            .attr('y', (d: SpeciesProfileCategoryShare) => y(d.label))
+            .attr('x', 0)
+            .attr('height', y.bandwidth())
+            .attr('width', (d: SpeciesProfileCategoryShare) => x(d.count))
+            .attr('fill', '#16a085')
+            .append('title')
+            .text((d: SpeciesProfileCategoryShare) => `${d.label}: ${d.count} ${lang.l('tours')}`);
+
+        g.selectAll('text.cooc-value')
+            .data(top)
+            .enter()
+            .append('text')
+            .attr('class', 'cooc-value')
+            .attr('x', (d: SpeciesProfileCategoryShare) => x(d.count) + 4)
+            .attr('y', (d: SpeciesProfileCategoryShare) => (y(d.label) ?? 0) + y.bandwidth() / 2 + 4)
+            .style('font-size', '10px')
+            .text((d: SpeciesProfileCategoryShare) => d.count);
     }
 
     /**

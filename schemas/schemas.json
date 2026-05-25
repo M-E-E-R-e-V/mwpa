@@ -3027,6 +3027,61 @@
                               "types": []
                             },
                             "description": ""
+                          },
+                          {
+                            "unid": "a33a65f3-ace5-4175-a6a2-2bf80bbe5235",
+                            "name": "monthly_effort",
+                            "type": {
+                              "type": "fac7e959-2d31-4a08-bafb-beed770f5eb1",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d615a687-0c0a-481c-ab2d-10f0990a2e45",
+                            "name": "yearly",
+                            "type": {
+                              "type": "22d685eb-960d-4b71-9a67-a1abd461e745",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "7a6dcc83-f9fb-4a9b-918e-283929dd6c97",
+                            "name": "env_extra",
+                            "type": {
+                              "type": "0fc2aa6a-0cf0-4e9e-b347-a90d2e431fac",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "79a72173-25ca-4d4c-b33b-2433212984af",
+                            "name": "pressure",
+                            "type": {
+                              "type": "3283d734-0e04-41e6-accf-2c7471a96148",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "66ea5761-064b-4a07-974d-2c9e499487cc",
+                            "name": "cooccurrence",
+                            "type": {
+                              "type": "4846e026-b4dc-4800-9069-492a38bb2485",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
                           }
                         ]
                       },
@@ -3251,6 +3306,216 @@
                               "types": []
                             },
                             "description": "species_count at this sighting (used as weight)"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "fac7e959-2d31-4a08-bafb-beed770f5eb1",
+                        "name": "SpeciesProfileMonthlyEffort",
+                        "description": "Per-month tour effort + sightings + SPUE",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "179cbc5d-0c05-475a-a996-0693af49ecad",
+                            "name": "ym",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "5591e8e3-e652-4f88-9979-53198bcdc82c",
+                            "name": "tour_hours",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "f7d6bdea-4841-4f33-86a0-8849eb4aac43",
+                            "name": "sightings",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "94f18eaa-7db6-474f-8da8-ab9cee4e9201",
+                            "name": "spue",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Sightings per tour-hour. 0 when tour_hours = 0."
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "22d685eb-960d-4b71-9a67-a1abd461e745",
+                        "name": "SpeciesProfileYearly",
+                        "description": "Per-year sighting count",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "c66c18b6-d991-4ab4-99b0-0e7b1d647d73",
+                            "name": "y",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "YYYY"
+                          },
+                          {
+                            "unid": "581c3fde-1667-41a5-9c57-427459449485",
+                            "name": "count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "0fc2aa6a-0cf0-4e9e-b347-a90d2e431fac",
+                        "name": "SpeciesProfileEnvExtra",
+                        "description": "Additional environmental distributions (salinity, SLA, currents, waves, UV)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "2076552b-e891-4565-a825-56234dc0e7b4",
+                            "name": "salinity_psu",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "13080bf8-23ad-41e7-9460-91535e7f0714",
+                            "name": "sla_cm",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "a90cfb31-5000-4aa1-ae57-68965bb98f2e",
+                            "name": "current_speed_m_s",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "a7aea947-be66-4310-8816-81289a22f075",
+                            "name": "wave_height_m",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "c71e6ca2-4bd0-494a-b4a7-074dc4c472f1",
+                            "name": "uv_index",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "3283d734-0e04-41e6-accf-2c7471a96148",
+                        "name": "SpeciesProfilePressure",
+                        "description": "Anthropogenic / environmental pressure indicators at sightings",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "d45aa760-0aba-4e9d-8e36-f8c2d52a04ea",
+                            "name": "beaufort",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Sea state at sighting (Beaufort scale 0..12)"
+                          },
+                          {
+                            "unid": "8e503db6-1257-4184-9012-26ca0b1cab7d",
+                            "name": "other_boats",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Number of other boats present at sighting (parsed from other_vehicle text)"
+                          },
+                          {
+                            "unid": "e5c164c1-3d34-4b0f-9003-96d9c1e845ae",
+                            "name": "fishing_hours_25km",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "GFW fishing hours within 25 km of the sighting (day mean)"
                           }
                         ]
                       }

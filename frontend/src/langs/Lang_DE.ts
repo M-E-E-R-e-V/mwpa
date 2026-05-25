@@ -232,7 +232,29 @@ export class Lang_DE implements LangDefine {
         'desc.behaviour': 'Während der Sichtungen erfasste Verhaltensweisen (aus BehaviouralStates). Eine Sichtung kann mehrere Labels beisteuern; die Top-8 werden gezeigt, der Rest läuft unter „other".',
         'desc.reaction': 'Reaktion der Tiere auf das Beobachtungsboot (aus EncounterCategories). Hilft bei der Bewertung von Beobachtungs-Impact und Habituierung.',
         'desc.movement': 'Bewegungs-Signatur abgeleitet aus SightingMovement — nur Sichtungen mit Track-Segment fließen ein. Geschwindigkeiten sind Mediane in Knoten; die Windrose zeigt die 8-Wege-Kompass-Verteilung des dominanten Kurses je Sichtung.',
-        'desc.heatmap': 'Aggregierte Positionen aller Sichtungen im Filter. Jeder Punkt nutzt location_begin; die Heatmap-Intensität markiert Hotspots wiederholter Begegnungen. Es werden bis zu ~2000 Punkte angezeigt.'
+        'desc.heatmap': 'Aggregierte Positionen aller Sichtungen im Filter. Jeder Punkt nutzt location_begin; die Heatmap-Intensität markiert Hotspots wiederholter Begegnungen. Es werden bis zu ~2000 Punkte angezeigt.',
+
+        // Species Profile Phase 3 — SPUE, yearly, co-occurrence, pressure, env extra
+        'Sightings per tour-hour (SPUE)': 'Sichtungen pro Tour-Stunde (SPUE)',
+        'Sightings per year': 'Sichtungen pro Jahr',
+        'Co-occurring species (same tour)': 'Mit-vorkommende Spezies (gleiche Tour)',
+        'Pressure indicators': 'Druck-Indikatoren',
+        'Extended environment (oceanographic)': 'Erweiterte Umwelt (ozeanographisch)',
+        'Tour hours': 'Tour-Stunden',
+        'tours': 'Touren',
+        'Beaufort sea state': 'Beaufort-Seegang',
+        'Fishing hours (25 km, day)': 'Fischerei-Stunden (25 km, Tag)',
+        'Salinity (PSU)': 'Salzgehalt (PSU)',
+        'SLA (cm)': 'SLA (cm)',
+        'Current speed (m/s)': 'Strömungs-Geschwindigkeit (m/s)',
+        'Wave height (m)': 'Wellenhöhe (m)',
+        'UV index': 'UV-Index',
+
+        'desc.spue': 'Aufwand-korrigierte Begegnungsrate: Anzahl Sichtungen pro Tour-Stunde im jeweiligen Monat. Balken = Sichtungen, durchgezogene Linie = Tour-Stunden (rechte Achse), gestrichelte Linie = SPUE. Macht Trends sichtbar, die von der Anzahl Touren verzerrt würden — Standard-Metrik in der Cetacean-Research.',
+        'desc.yearly': 'Sichtungen pro Kalenderjahr — komplementär zum Monats-Chart und nützlich für Mehrjahres-Trends. Achtung: Ohne SPUE-Korrektur können Schwankungen reine Effort-Effekte sein.',
+        'desc.cooccurrence': 'Top-Spezies, die auf denselben Touren (gleicher tour_fid) wie diese Spezies gesehen wurden. Zählt distinkte Touren — Tour-Doppelzählung pro Spezies ausgeschlossen. Limit 12 Spezies.',
+        'desc.pressure': 'Indikatoren für Beobachtungs- und anthropogenen Druck: Beaufort-Seegang während der Sichtung, Anzahl anderer Boote vor Ort (aus „other_vehicle"), kommerzielle Fischerei-Stunden im 25-km-Umkreis am Sichtungstag (GFW).',
+        'desc.env_extra': 'Zusätzliche ozeanographische Variablen aus SightingExtended: Salzgehalt (PSU), Meeresspiegel-Anomalie (cm), Strömungs-Geschwindigkeit (m/s), Wellenhöhe (m), UV-Index. Tägliche Mittelwerte.'
     };
 
     /**
