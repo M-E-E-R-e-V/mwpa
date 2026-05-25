@@ -281,7 +281,18 @@ export class Lang_ES implements LangDefine {
         'Mag': 'Mag.',
         'Depth (km)': 'Profundidad (km)',
         'Place': 'Lugar',
-        'Source': 'Fuente'
+        'Source': 'Fuente',
+
+        // Species Profile — seismic exposure
+        'Seismic exposure': 'Exposición sísmica',
+        'Sightings w/ event': 'Avistamientos con evento',
+        'Sighting × event pairs': 'Pares avistamiento × evento',
+        'Max magnitude': 'Magnitud máx.',
+        'Median distance': 'Distancia mediana',
+        'Magnitude': 'Magnitud',
+        'Distance to epicenter (km)': 'Distancia al epicentro (km)',
+        'Offset (h, +event before sighting)': 'Desfase (h, +evento antes del avistamiento)',
+        'desc.seismic': 'Correlaciones de la tabla `sighting_seismic`: cada avistamiento de esta especie se ha emparejado con terremotos a ≤ 200 km y ±14 días. KPI a la izquierda: número de avistamientos con al menos un evento cercano, total de pares avistamiento × evento, magnitud máxima, mediana de distancia. Los histogramas muestran la distribución de magnitud, distancia y desfase temporal — desfases positivos = evento previo al avistamiento. Una asimetría positiva del desfase es interesante para detectar respuestas conductuales.'
     };
 
     /**

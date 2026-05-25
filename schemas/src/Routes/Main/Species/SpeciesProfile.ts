@@ -243,6 +243,27 @@ export const SchemaSpeciesProfilePressure = Vts.object({
 export type SpeciesProfilePressure = ExtractSchemaResultType<typeof SchemaSpeciesProfilePressure>;
 
 /**
+ * Schema of SpeciesProfileSeismic
+ * Seismic-exposure summary per species — count of correlated sightings plus magnitude/distance/offset histograms
+ */
+export const SchemaSpeciesProfileSeismic = Vts.object({
+    n_sightings_with_event: Vts.number({description: 'Distinct sightings that have at least one correlated earthquake'}),
+    n_correlations: Vts.number({description: 'Total sighting × earthquake pairs'}),
+    max_magnitude: Vts.number(),
+    median_distance_km: Vts.number(),
+    magnitude: Vts.array(SchemaSpeciesProfileBucket),
+    distance_km: Vts.array(SchemaSpeciesProfileBucket),
+    hours_offset: Vts.array(SchemaSpeciesProfileBucket),
+}, {
+    description: 'Seismic-exposure summary per species — count of correlated sightings plus magnitude/distance/offset histograms',
+});
+
+/**
+ * Type of schema SpeciesProfileSeismic
+ */
+export type SpeciesProfileSeismic = ExtractSchemaResultType<typeof SchemaSpeciesProfileSeismic>;
+
+/**
  * Schema of SpeciesProfile
  * Aggregated profile of a species over a (filtered) timeframe
  */
@@ -269,6 +290,7 @@ export const SchemaSpeciesProfile = Vts.object({
     env_extra: SchemaSpeciesProfileEnvExtra,
     pressure: SchemaSpeciesProfilePressure,
     cooccurrence: Vts.array(SchemaSpeciesProfileCategoryShare),
+    seismic: SchemaSpeciesProfileSeismic,
 }, {
     description: 'Aggregated profile of a species over a (filtered) timeframe',
 });

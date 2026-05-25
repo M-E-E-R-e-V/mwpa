@@ -14,6 +14,7 @@ import {Vts} from 'vts';
 import {BehaviouralStatesRepository} from '../../../Db/MariaDb/Repositories/BehaviouralStatesRepository.js';
 import {EncounterCategoriesRepository} from '../../../Db/MariaDb/Repositories/EncounterCategoriesRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
+import {SightingSeismicRepository} from '../../../Db/MariaDb/Repositories/SightingSeismicRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {SpeciesRepository} from '../../../Db/MariaDb/Repositories/SpeciesRepository.js';
 
@@ -89,6 +90,15 @@ export class Profile {
     private static readonly FISHING_HOURS_EDGES = [0, 0.5, 1, 2, 5, 10, 25];
 
     /**
+     * Bucket edges for the seismic-exposure card. Magnitude edges
+     * mirror USGS' significant-event thresholds; distance edges fit
+     * the 200 km correlation radius the EarthquakeService writes.
+     */
+    private static readonly SEISMIC_MAG_EDGES = [2.5, 3, 3.5, 4, 4.5, 5, 6];
+    private static readonly SEISMIC_DIST_EDGES_KM = [0, 25, 50, 100, 150, 200];
+    private static readonly SEISMIC_OFFSET_EDGES_H = [-336, -168, -72, -24, 0, 24, 72, 168, 336];
+
+    /**
      * Heading-rose bins (8-way compass — center degrees in clockwise order).
      */
     private static readonly HEADING_BINS: ReadonlyArray<{deg: number; label: string;}> = [
@@ -141,6 +151,15 @@ export class Profile {
             reactionById.set(c.id, c.name);
         }
 
+        // Seismic — correlations from sighting_seismic; same period +
+        // org scope.
+        const seismicRows = await SightingSeismicRepository.getInstance().findForSpecies(
+            request.species_id,
+            request.period_from,
+            request.period_to,
+            organizationIds
+        );
+
         // SPUE — tour-hours per month inside the same time window and
         // org scope as the sighting query. Independent of species; one
         // extra grouped query.
@@ -166,7 +185,8 @@ export class Profile {
             behById,
             reactionById,
             tourHours,
-            cooccurring
+            cooccurring,
+            seismicRows
         );
 
         return {statusCode: StatusCodes.OK, profile};
@@ -345,7 +365,8 @@ export class Profile {
         behById: Map<number, string>,
         reactionById: Map<number, string>,
         tourHours: Map<string, number>,
-        cooccurring: Array<{species_id: number; species_name: string; tour_count: number;}>
+        cooccurring: Array<{species_id: number; species_name: string; tour_count: number;}>,
+        seismicRows: Array<{sighting_id: number; distance_km: number; hours_offset: number; magnitude: number;}>
     ): SpeciesProfileData {
         const monthly = new Map<string, number>();
         const hourly = new Array<number>(24).fill(0);
@@ -543,6 +564,21 @@ export class Profile {
             count: c.tour_count
         }));
 
+        const seismicSightings = new Set<number>();
+        const seismicMagnitudes: number[] = [];
+        const seismicDistances: number[] = [];
+        const seismicOffsets: number[] = [];
+        let seismicMaxMag = 0;
+        for (const r of seismicRows) {
+            seismicSightings.add(r.sighting_id);
+            seismicMagnitudes.push(r.magnitude);
+            seismicDistances.push(r.distance_km);
+            seismicOffsets.push(r.hours_offset);
+            if (r.magnitude > seismicMaxMag) {
+                seismicMaxMag = r.magnitude;
+            }
+        }
+
         return {
             species_id: speciesId,
             species_name: speciesName,
@@ -587,7 +623,16 @@ export class Profile {
                 other_boats: Profile._bucketize(otherBoats, Profile.OTHER_BOATS_EDGES),
                 fishing_hours_25km: Profile._bucketize(fishingHours, Profile.FISHING_HOURS_EDGES)
             },
-            cooccurrence: cooccurrence
+            cooccurrence: cooccurrence,
+            seismic: {
+                n_sightings_with_event: seismicSightings.size,
+                n_correlations: seismicRows.length,
+                max_magnitude: seismicMaxMag,
+                median_distance_km: Profile._percentile(seismicDistances, 50),
+                magnitude: Profile._bucketize(seismicMagnitudes, Profile.SEISMIC_MAG_EDGES),
+                distance_km: Profile._bucketize(seismicDistances, Profile.SEISMIC_DIST_EDGES_KM),
+                hours_offset: Profile._bucketize(seismicOffsets, Profile.SEISMIC_OFFSET_EDGES_H)
+            }
         };
     }
 
