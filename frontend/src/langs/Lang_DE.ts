@@ -187,7 +187,52 @@ export class Lang_DE implements LangDefine {
             'Lokale Zeitzone für Legacy-HH:MM (IANA, z. B. Atlantic/Canary)',
         'Settings saved': 'Einstellungen gespeichert',
         'Load failed': 'Laden fehlgeschlagen',
-        'Save failed': 'Speichern fehlgeschlagen'
+        'Save failed': 'Speichern fehlgeschlagen',
+
+        // Species Profile — Titel & KPI
+        'Profile': 'Profil',
+        'Species Profile': 'Spezies-Profil',
+        'Period': 'Zeitraum',
+        'Sightings': 'Sichtungen',
+        'Animals (sum)': 'Tiere (Summe)',
+        'Median group': 'Median Gruppengröße',
+        'p95 group': 'p95 Gruppengröße',
+
+        // Species Profile — Karten-Titel
+        'Sightings per hour-of-day': 'Sichtungen pro Tagesstunde',
+        'Composition (sightings reporting …)': 'Zusammensetzung (Sichtungen mit …)',
+        'Environment preference': 'Umwelt-Präferenz',
+        'Distance to coast (m)': 'Küstenabstand (m)',
+        'SST (°C)': 'Wassertemperatur (°C)',
+        'Chl-a (mg/m³)': 'Chlorophyll-a (mg/m³)',
+        'Behaviour mix': 'Verhaltens-Mix',
+        'Reaction to boat': 'Reaktion auf das Boot',
+        'Movement signature (derived from SightingMovement)': 'Bewegungs-Signatur (aus SightingMovement)',
+        'Spatial distribution': 'Räumliche Verteilung',
+        'Dominant heading rose': 'Dominanter Kurs (Windrose)',
+
+        // Species Profile — Movement KPI
+        'Sightings w/ movement': 'Sichtungen mit Bewegung',
+        'Median avg speed': 'Median ⌀-Geschwindigkeit',
+        'Median max speed': 'Median Max-Geschwindigkeit',
+        'Median total distance': 'Median Gesamtstrecke',
+
+        // Species Profile — leere Zustände
+        'No data': 'Keine Daten',
+        'No positions': 'Keine Positionen',
+        'No heading data': 'Keine Kurs-Daten',
+        'Show description': 'Beschreibung anzeigen',
+
+        // Species Profile — Diagramm-Beschreibungen
+        'desc.monthly': 'Anzahl Sichtungen dieser Spezies pro Kalendermonat, summiert über alle Jahre im gewählten Zeitraum. Hilft, saisonales Vorkommen zu erkennen.',
+        'desc.hourly': 'Anzahl Sichtungen pro Tagesstunde (anhand der Tour-Start-Stunde). Zeigt tägliche Aktivitätsspitzen der Beobachtungstätigkeit. Hinweis: das ist die Beobachtungszeit, nicht zwingend die tatsächliche Aktivität der Tiere.',
+        'desc.group_size': 'Verteilung der erfassten Gruppengrößen (species_count je Sichtung). Lesen als „wie oft wurden X Tiere zusammen angetroffen". Die letzten Buckets fangen einzelne Ausreißer ab.',
+        'desc.group_ratios': 'Anteil der Sichtungen, bei denen Jungtiere, Kälber oder Neugeborene gemeldet wurden. Höhere Werte sprechen für Nutzung als Aufzuchts- oder Kinderstuben-Habitat.',
+        'desc.env': 'Umweltbedingungen an den Sichtungs-Positionen. Charakterisiert die bevorzugte Habitat-Hülle der Spezies (Wassertiefe, Küstenabstand, Wassertemperatur, Chlorophyll-Konzentration).',
+        'desc.behaviour': 'Während der Sichtungen erfasste Verhaltensweisen (aus BehaviouralStates). Eine Sichtung kann mehrere Labels beisteuern; die Top-8 werden gezeigt, der Rest läuft unter „other".',
+        'desc.reaction': 'Reaktion der Tiere auf das Beobachtungsboot (aus EncounterCategories). Hilft bei der Bewertung von Beobachtungs-Impact und Habituierung.',
+        'desc.movement': 'Bewegungs-Signatur abgeleitet aus SightingMovement — nur Sichtungen mit Track-Segment fließen ein. Geschwindigkeiten sind Mediane in Knoten; die Windrose zeigt die 8-Wege-Kompass-Verteilung des dominanten Kurses je Sichtung.',
+        'desc.heatmap': 'Aggregierte Positionen aller Sichtungen im Filter. Jeder Punkt nutzt location_begin; die Heatmap-Intensität markiert Hotspots wiederholter Begegnungen. Es werden bis zu ~2000 Punkte angezeigt.'
     };
 
     /**

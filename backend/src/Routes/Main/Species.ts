@@ -7,13 +7,18 @@ import {
     SchemaSpeciesEntry,
     SchemaSpeciesListResponse,
     SchemaSpeciesMergeRequest,
-    SpeciesListResponse
+    SchemaSpeciesProfileRequest,
+    SchemaSpeciesProfileResponse,
+    SpeciesListResponse,
+    SpeciesProfileResponse
 } from 'mwpa_schemas';
+import {Users} from '../../Users/Users.js';
 import {checkMWPAUserIsLogin} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Delete} from './Species/Delete.js';
 import {List} from './Species/List.js';
 import {Merge} from './Species/Merge.js';
+import {Profile} from './Species/Profile.js';
 import {Save} from './Species/Save.js';
 
 /**
@@ -76,6 +81,24 @@ export class Species extends DefaultRoute {
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._post(
+            '/json/species/profile',
+            checkMWPAUserIsLogin,
+            async(_req, _res, data): Promise<SpeciesProfileResponse> => {
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                const orgIds = isAdmin ? undefined : await Users.getOrganizationIds(userId);
+                return Profile.getProfile(data.body, orgIds);
+            },
+            {
+                description: 'Aggregated per-species profile (counts, group-size hist, env distributions). Org-scoped for non-admins via vehicle.organization_id.',
+                bodySchema: SchemaSpeciesProfileRequest,
+                responseBodySchema: SchemaSpeciesProfileResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit
             }
         );
 

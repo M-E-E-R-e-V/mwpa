@@ -187,7 +187,46 @@ export class Lang_ES implements LangDefine {
             'Zona horaria local para HH:MM antiguo (IANA, p. ej. Atlantic/Canary)',
         'Settings saved': 'Ajustes guardados',
         'Load failed': 'Carga fallida',
-        'Save failed': 'Guardado fallido'
+        'Save failed': 'Guardado fallido',
+
+        // Species Profile — títulos y KPI
+        'Profile': 'Perfil',
+        'Species Profile': 'Perfil de especie',
+        'Period': 'Periodo',
+        'Sightings': 'Avistamientos',
+        'Animals (sum)': 'Animales (suma)',
+        'Median group': 'Mediana tamaño de grupo',
+        'p95 group': 'p95 tamaño de grupo',
+        'Sightings per hour-of-day': 'Avistamientos por hora del día',
+        'Composition (sightings reporting …)': 'Composición (avistamientos con …)',
+        'Environment preference': 'Preferencia ambiental',
+        'Distance to coast (m)': 'Distancia a la costa (m)',
+        'SST (°C)': 'Temperatura superficial (°C)',
+        'Chl-a (mg/m³)': 'Clorofila-a (mg/m³)',
+        'Behaviour mix': 'Mezcla de comportamientos',
+        'Reaction to boat': 'Reacción al barco',
+        'Movement signature (derived from SightingMovement)': 'Firma de movimiento (derivada de SightingMovement)',
+        'Spatial distribution': 'Distribución espacial',
+        'Dominant heading rose': 'Rosa de rumbos dominantes',
+        'Sightings w/ movement': 'Avistamientos con movimiento',
+        'Median avg speed': 'Mediana velocidad media',
+        'Median max speed': 'Mediana velocidad máx.',
+        'Median total distance': 'Mediana distancia total',
+        'No data': 'Sin datos',
+        'No positions': 'Sin posiciones',
+        'No heading data': 'Sin datos de rumbo',
+        'Show description': 'Mostrar descripción',
+
+        // Species Profile — descripciones
+        'desc.monthly': 'Número de avistamientos de esta especie por mes natural, sumado a lo largo de todos los años en el rango seleccionado. Útil para detectar presencia estacional.',
+        'desc.hourly': 'Número de avistamientos por hora del día (según la hora de inicio de la salida). Muestra los picos de actividad de observación. Nota: refleja el esfuerzo de observación, no necesariamente la actividad real de los animales.',
+        'desc.group_size': 'Distribución de tamaños de grupo registrados (species_count por avistamiento). Se lee como «con qué frecuencia se encontraron X animales juntos». Los últimos buckets recogen los valores atípicos.',
+        'desc.group_ratios': 'Proporción de avistamientos que reportaron presencia de juveniles, crías o neonatos. Valores altos sugieren uso como hábitat de cría o crianza.',
+        'desc.env': 'Condiciones ambientales en las posiciones de avistamiento. Caracteriza la envoltura de hábitat preferida (profundidad, distancia a la costa, temperatura del agua, concentración de clorofila).',
+        'desc.behaviour': 'Estados de comportamiento registrados durante el avistamiento (de BehaviouralStates). Un avistamiento puede aportar varias etiquetas; se muestran los 8 primeros, el resto bajo «other».',
+        'desc.reaction': 'Reacción de los animales hacia la embarcación de observación (de EncounterCategories). Útil para evaluar impacto y habituación.',
+        'desc.movement': 'Firma de movimiento derivada de la tabla SightingMovement — sólo los avistamientos con segmento de track contribuyen. Las velocidades son medianas en nudos; la rosa muestra la distribución de 8 sectores del rumbo dominante por avistamiento.',
+        'desc.heatmap': 'Posiciones agregadas de todos los avistamientos en el filtro. Cada punto usa location_begin; la intensidad del mapa de calor marca los puntos calientes de encuentros repetidos. Se muestran hasta ~2000 puntos.'
     };
 
     /**

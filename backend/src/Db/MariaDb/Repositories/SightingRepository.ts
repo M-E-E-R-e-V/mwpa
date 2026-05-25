@@ -335,4 +335,92 @@ export class SightingRepository extends DBRepository<Sighting> {
         return {rows, count};
     }
 
+    /**
+     * Project the sub-set of sighting columns the per-species profile needs,
+     * joined with `sighting_extended` for the env metrics. The Profile route
+     * histograms in JS — keeping the projection narrow keeps the row payload
+     * small (only the columns we actually bucket on).
+     *
+     * Org scoping: when `organizationIds` is set, joins through
+     * `vehicle.organization_id` (sighting.organization_id is only populated by
+     * mobile-save and zero for legacy/web-created rows — see memory note).
+     *
+     * @param {number} speciesId
+     * @param {string | undefined} periodFrom YYYY-MM-DD inclusive
+     * @param {string | undefined} periodTo   YYYY-MM-DD inclusive
+     * @param {number[] | undefined} organizationIds — when set (non-admins),
+     *        restrict to sightings whose vehicle belongs to one of these orgs.
+     *        Empty array → no rows.
+     */
+    public async findForSpeciesProfile(
+        speciesId: number,
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        organizationIds: number[] | undefined
+    ): Promise<Array<{
+        id: number;
+        date: string;
+        tour_start: string;
+        species_count: number;
+        juveniles: number;
+        calves: number;
+        newborns: number;
+        distance_coast: string;
+        behaviours: string;
+        reaction_id: number;
+        location_begin: string;
+        depth_m: number | null;
+        sst_c_day: number | null;
+        chl_a_mg_m3_day: number | null;
+        avg_speed_mps: number | null;
+        max_speed_mps: number | null;
+        total_distance_m: number | null;
+        dominant_heading_deg: number | null;
+    }>> {
+        if (organizationIds !== undefined && organizationIds.length === 0) {
+            return [];
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('s')
+            .select('s.id', 'id')
+            .addSelect('s.date', 'date')
+            .addSelect('s.tour_start', 'tour_start')
+            .addSelect('s.species_count', 'species_count')
+            .addSelect('s.juveniles', 'juveniles')
+            .addSelect('s.calves', 'calves')
+            .addSelect('s.newborns', 'newborns')
+            .addSelect('s.distance_coast', 'distance_coast')
+            .addSelect('s.behaviours', 'behaviours')
+            .addSelect('s.reaction_id', 'reaction_id')
+            .addSelect('s.location_begin', 'location_begin')
+            .addSelect('e.depth_m', 'depth_m')
+            .addSelect('e.sst_c_day', 'sst_c_day')
+            .addSelect('e.chl_a_mg_m3_day', 'chl_a_mg_m3_day')
+            .addSelect('m.avg_speed_mps', 'avg_speed_mps')
+            .addSelect('m.max_speed_mps', 'max_speed_mps')
+            .addSelect('m.total_distance_m', 'total_distance_m')
+            .addSelect('m.dominant_heading_deg', 'dominant_heading_deg')
+            .leftJoin('sighting_extended', 'e', 'e.sighting_id = s.id')
+            .leftJoin('sighting_movement', 'm', 'm.sighting_id = s.id')
+            .where('s.species_id = :sid', {sid: speciesId})
+            .andWhere('s.deleted = :del', {del: false});
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+        if (from !== '') {
+            qb.andWhere('s.date >= :from', {from});
+        }
+        if (to !== '') {
+            qb.andWhere('s.date <= :to', {to});
+        }
+
+        if (organizationIds !== undefined) {
+            qb.innerJoin('vehicle', 'v', 'v.id = s.vehicle_id')
+                .andWhere('v.organization_id IN (:...orgIds)', {orgIds: organizationIds});
+        }
+
+        return qb.getRawMany();
+    }
+
 }
