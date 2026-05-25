@@ -30,6 +30,7 @@ import {Lang} from '../Lang';
 import {UtilOttLink} from '../Utils/UtilOttLink';
 import {SpeciesGroupDisplay} from '../Widget/SpeciesGroupDisplay';
 import {BasePage} from './BasePage';
+import {SpeciesProfile as SpeciesProfilePage} from './Species/Profile';
 import {SpeciesEditModal} from './Species/SpeciesEditModal';
 import {SpeciesMergeModal} from './Species/SpeciesMergeModal';
 
@@ -66,7 +67,9 @@ const highlight = (text: string, term: string): string => {
  */
 export class Species extends BasePage {
 
-    protected override _name: string = 'admin-species';
+    public static NAME: string = 'admin-species';
+
+    protected override _name: string = Species.NAME;
 
     protected _speciesDialog: SpeciesEditModal;
 
@@ -232,6 +235,12 @@ export class Species extends BasePage {
 
             const actionTd = new Td(trbody, '');
             const btnMenu = new ButtonMenu(actionTd, IconFa.bars, true, ButtonType.borderless);
+
+            btnMenu.addMenuItem(lang.l('Profile'), (): void => {
+                if (this._loadPageFn) {
+                    this._loadPageFn(new SpeciesProfilePage(specie.id));
+                }
+            }, 'fa-solid fa-chart-column');
 
             btnMenu.addMenuItem('Edit', async(): Promise<void> => {
                 this._speciesDialog.resetValues();

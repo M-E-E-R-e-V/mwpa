@@ -2539,6 +2539,724 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "unid": "9391726c-9e85-4313-b9a1-93454fccfff2",
+                    "name": "SpeciesProfile",
+                    "type": "file",
+                    "istoggle": true,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "e922fbf0-a84a-4811-a968-ce228d57a03c",
+                        "name": "SpeciesProfileRequest",
+                        "description": "Filter for the per-species profile aggregation",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 51,
+                          "y": 300
+                        },
+                        "fields": [
+                          {
+                            "unid": "223cd5bf-eeae-4cba-b3c9-0d0cae9c619b",
+                            "name": "species_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "5ee55013-01c0-4d4d-872a-53d4041aa663",
+                            "name": "period_from",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "YYYY-MM-DD inclusive lower bound (optional)"
+                          },
+                          {
+                            "unid": "389f1bc6-9c32-426e-85d6-f177195f7cc8",
+                            "name": "period_to",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "YYYY-MM-DD inclusive upper bound (optional)"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "7b87e404-1037-4c9a-aecc-771d5089af9c",
+                        "name": "SpeciesProfileMonthly",
+                        "description": "Per-month sighting count (YYYY-MM bucket)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 926,
+                          "y": 259
+                        },
+                        "fields": [
+                          {
+                            "unid": "a30685ac-5eb3-42d8-8159-fba786a1c83b",
+                            "name": "ym",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "YYYY-MM"
+                          },
+                          {
+                            "unid": "867a7d77-0228-4867-971e-14bb25bb9c3a",
+                            "name": "count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "999351a2-dc38-430e-81cd-df4a55a0da8a",
+                        "name": "SpeciesProfileHourly",
+                        "description": "Per-hour-of-day sighting count (0–23 bucket)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 1476,
+                          "y": 85
+                        },
+                        "fields": [
+                          {
+                            "unid": "fd78e2f0-509f-4f14-a93a-56c7a67e8fc2",
+                            "name": "hour",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "0..23 in local time of the tour"
+                          },
+                          {
+                            "unid": "eb4faf7a-8706-4f3d-b404-549ea840c91f",
+                            "name": "count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                        "name": "SpeciesProfileBucket",
+                        "description": "Generic histogram bucket: [min, max) plus count",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 1397,
+                          "y": 489
+                        },
+                        "fields": [
+                          {
+                            "unid": "55d697e0-69f9-4aca-bbcc-c437e41fee0f",
+                            "name": "bucket_min",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "inclusive lower edge of the bucket"
+                          },
+                          {
+                            "unid": "aa28ce73-9fd8-4883-9728-2ae9c0dd002e",
+                            "name": "bucket_max",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "exclusive upper edge of the bucket"
+                          },
+                          {
+                            "unid": "09922c62-ded8-4485-8a74-5606bb98338c",
+                            "name": "count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "7af7ca70-7108-4ffd-a033-c38ef07d49ec",
+                        "name": "SpeciesProfileGroupRatios",
+                        "description": "Share of sightings reporting juveniles / calves / newborns",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 1718,
+                          "y": 429
+                        },
+                        "fields": [
+                          {
+                            "unid": "50d458b9-4c75-4516-ae0a-b98d06c1a877",
+                            "name": "with_juveniles",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "2dc6456e-4ef1-4275-bc49-67d16df5e136",
+                            "name": "with_calves",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "85bcecec-f7d7-424b-baf2-409cf8ad7fa5",
+                            "name": "with_newborns",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "a2cc6a43-1e85-4d58-96fe-08721d4f900d",
+                            "name": "total",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "55e54a3b-8c17-416a-9070-ebb14be0b30d",
+                        "name": "SpeciesProfileEnv",
+                        "description": "Environmental preference distributions (per-bucket counts)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 1107,
+                          "y": 831
+                        },
+                        "fields": [
+                          {
+                            "unid": "b0101ec4-8556-46d7-98dd-1cd4ff81a093",
+                            "name": "distance_coast_m",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Distance from coast in meters"
+                          },
+                          {
+                            "unid": "b53d15bb-401e-406c-bafc-ed26fdbef6f5",
+                            "name": "depth_m",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Sea depth at sighting in meters (from SightingExtended)"
+                          },
+                          {
+                            "unid": "efb2f2f7-b1d1-432c-87a5-92b69ac7a730",
+                            "name": "sst_c",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Sea-surface temperature °C (day)"
+                          },
+                          {
+                            "unid": "efef5117-f9cc-42df-8b45-51edac0189d7",
+                            "name": "chl_a_mg_m3",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Chlorophyll-a mg/m³ (day)"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "a4bb653e-2ebb-4f66-9004-28f190d2d627",
+                        "name": "SpeciesProfile",
+                        "description": "Aggregated profile of a species over a (filtered) timeframe",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 449,
+                          "y": -2
+                        },
+                        "fields": [
+                          {
+                            "unid": "ade6f840-2177-4640-8cee-0dfbcea35f2c",
+                            "name": "species_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "f2a6e2b6-7e09-42f4-b5bb-c9c429115413",
+                            "name": "species_name",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "1b87556d-b09c-4ba1-804e-18075217e6ce",
+                            "name": "period_from",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Actual date range used (resolved from request or auto-extended to data range)"
+                          },
+                          {
+                            "unid": "9eac6b88-ef20-4c5b-8f0a-f1a7caac7022",
+                            "name": "period_to",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "75ee061d-3da5-441b-94d1-cc46a702814f",
+                            "name": "n_sightings",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "4d4f5a11-128b-4d7f-afec-d7c6d59ed722",
+                            "name": "group_size_total",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Sum of species_count across all sightings"
+                          },
+                          {
+                            "unid": "40ec75bf-7773-4870-95ef-f6b94345185a",
+                            "name": "group_size_p50",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Median species_count per sighting"
+                          },
+                          {
+                            "unid": "2d400bf0-cacc-4e6e-a7f0-2360949471ab",
+                            "name": "group_size_p95",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e7bf1a1c-eec6-4565-a6de-6978f48518ca",
+                            "name": "monthly",
+                            "type": {
+                              "type": "7b87e404-1037-4c9a-aecc-771d5089af9c",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "48defc1f-a83a-4bac-9504-d7fbbe038d80",
+                            "name": "hourly",
+                            "type": {
+                              "type": "999351a2-dc38-430e-81cd-df4a55a0da8a",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "5753139b-2992-4905-a2d9-4eece53737e5",
+                            "name": "group_size",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Histogram of species_count per sighting"
+                          },
+                          {
+                            "unid": "a4ed62f9-2b09-499f-bde3-8aa453028f09",
+                            "name": "group_ratios",
+                            "type": {
+                              "type": "7af7ca70-7108-4ffd-a033-c38ef07d49ec",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e9c1be00-6c3d-4292-a4e7-c4edba6964e4",
+                            "name": "env",
+                            "type": {
+                              "type": "55e54a3b-8c17-416a-9070-ebb14be0b30d",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "a601a791-5bbb-4e2c-a3c0-1d3579dc745f",
+                            "name": "behaviour_mix",
+                            "type": {
+                              "type": "4846e026-b4dc-4800-9069-492a38bb2485",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "88431262-05a0-40c3-96cc-c28edff91162",
+                            "name": "reaction_mix",
+                            "type": {
+                              "type": "4846e026-b4dc-4800-9069-492a38bb2485",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b12f28c7-0ab7-402f-bc7d-dede38efe65a",
+                            "name": "movement",
+                            "type": {
+                              "type": "4eb56a56-823f-4d46-8da1-9f19890a97fd",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "675ecfbe-8743-46db-922a-335e18932341",
+                            "name": "heatmap",
+                            "type": {
+                              "type": "1fa9329f-d2f5-4a87-a9a8-33468fc5aceb",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "d64aa242-3f43-47d9-abf4-165d3de963b0",
+                        "name": "SpeciesProfileResponse",
+                        "description": "Profile response wrapper",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 31,
+                          "y": 531
+                        },
+                        "fields": [
+                          {
+                            "unid": "f73d6974-cb81-40fb-9c5d-32e49443ef56",
+                            "name": "profile",
+                            "type": {
+                              "type": "a4bb653e-2ebb-4f66-9004-28f190d2d627",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "4846e026-b4dc-4800-9069-492a38bb2485",
+                        "name": "SpeciesProfileCategoryShare",
+                        "description": "Labelled category count for donut-style charts (behaviour, reaction)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 1624,
+                          "y": 785
+                        },
+                        "fields": [
+                          {
+                            "unid": "0fe5145e-3952-4390-8964-2f82cd12a2f3",
+                            "name": "label",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "6105a382-9a41-4d19-b72d-8d2a5630f604",
+                            "name": "count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "f9b59998-5dff-48b2-b01e-25da01150bec",
+                        "name": "SpeciesProfileHeadingBin",
+                        "description": "Heading rose bin (compass octant or finer)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 1553,
+                          "y": 1107
+                        },
+                        "fields": [
+                          {
+                            "unid": "f7691861-8977-4a6a-98cd-39e2196230f7",
+                            "name": "bin_deg",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Center of the bin in degrees (0 = N, 90 = E, …)"
+                          },
+                          {
+                            "unid": "20794a33-4baa-4724-947d-081e124556f1",
+                            "name": "label",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "N / NE / E / SE / …"
+                          },
+                          {
+                            "unid": "69f64c55-3437-4bf9-b557-4b28d6579b20",
+                            "name": "count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "4eb56a56-823f-4d46-8da1-9f19890a97fd",
+                        "name": "SpeciesProfileMovement",
+                        "description": "Derived per-species movement signature (medians + heading rose)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 1048,
+                          "y": 1105
+                        },
+                        "fields": [
+                          {
+                            "unid": "e406f6b1-41e5-4dd7-b221-f41cb784062e",
+                            "name": "n_with_movement",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Sightings that have an associated sighting_movement row"
+                          },
+                          {
+                            "unid": "74e99c42-02ca-42f4-b258-d41b7e9002f5",
+                            "name": "median_avg_speed_kt",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "74d1bf1a-83fb-4744-8e71-aa636c7fc323",
+                            "name": "median_max_speed_kt",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "ed685638-5a5b-4781-8002-85336a02245a",
+                            "name": "median_total_distance_m",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "677248e7-7607-4c8f-b581-429b0fab2b07",
+                            "name": "heading_rose",
+                            "type": {
+                              "type": "f9b59998-5dff-48b2-b01e-25da01150bec",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "1fa9329f-d2f5-4a87-a9a8-33468fc5aceb",
+                        "name": "SpeciesProfileHeatmapPoint",
+                        "description": "Sighting position for the spatial mini-heatmap",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 536,
+                          "y": 940
+                        },
+                        "fields": [
+                          {
+                            "unid": "b92b5bbe-a4e8-439d-9b33-0037620fbd7a",
+                            "name": "lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "7a824aa7-7c7e-472c-97dc-bc43e8d48adb",
+                            "name": "lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "a0082771-5201-47da-af70-fbbc21f43f31",
+                            "name": "count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "species_count at this sighting (used as weight)"
+                          }
+                        ]
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
                   }
                 ],
                 "schemas": [],
@@ -4318,8 +5036,8 @@
                           "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
                         },
                         "pos": {
-                          "x": 32,
-                          "y": 588
+                          "x": 0,
+                          "y": 0
                         },
                         "fields": [
                           {
@@ -10256,7 +10974,7 @@
   },
   "editor": {
     "controls_width": 344,
-    "active_entry_unid": "f07259b0-82a4-4ae8-b753-8fadf17e9538",
-    "active_entry_table_unid": "54c4c049-620f-4b39-8921-ceff88843e3f"
+    "active_entry_unid": "9391726c-9e85-4313-b9a1-93454fccfff2",
+    "active_entry_table_unid": "a4bb653e-2ebb-4f66-9004-28f190d2d627"
   }
 }

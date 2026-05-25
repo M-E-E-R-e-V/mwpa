@@ -3,7 +3,18 @@ import {
     SpeciesEntry,
     SpeciesEntryGroup,
     SpeciesListResponse,
-    SpeciesMergeRequest
+    SpeciesMergeRequest,
+    SpeciesProfile as SpeciesProfileData,
+    SpeciesProfileBucket,
+    SpeciesProfileCategoryShare,
+    SpeciesProfileEnv,
+    SpeciesProfileGroupRatios,
+    SpeciesProfileHeadingBin,
+    SpeciesProfileHeatmapPoint,
+    SpeciesProfileHourly,
+    SpeciesProfileMonthly,
+    SpeciesProfileMovement,
+    SpeciesProfileResponse
 } from 'mwpa_schemas';
 import {NetFetch} from '../Net/NetFetch';
 import {UnauthorizedError} from './Error/UnauthorizedError';
@@ -19,7 +30,18 @@ export type {
     SpeciesEntryGroup,
     SpeciesListResponse,
     SpeciesMergeRequest,
-    SpeciesDeleteRequest
+    SpeciesDeleteRequest,
+    SpeciesProfileData,
+    SpeciesProfileBucket,
+    SpeciesProfileCategoryShare,
+    SpeciesProfileEnv,
+    SpeciesProfileGroupRatios,
+    SpeciesProfileHeadingBin,
+    SpeciesProfileHeatmapPoint,
+    SpeciesProfileHourly,
+    SpeciesProfileMonthly,
+    SpeciesProfileMovement,
+    SpeciesProfileResponse
 };
 
 export type SpeciesMerge = SpeciesMergeRequest;
@@ -87,6 +109,32 @@ export class Species {
         }
 
         return false;
+    }
+
+    /**
+     * Fetch the per-species profile (counts, group-size histogram, env
+     * distributions). Period bounds are optional — omit for the full
+     * data range.
+     */
+    public static async getProfile(speciesId: number, periodFrom?: string, periodTo?: string): Promise<SpeciesProfileData | null> {
+        const body: {species_id: number; period_from?: string; period_to?: string;} = {species_id: speciesId};
+        if (periodFrom) {
+            body.period_from = periodFrom;
+        }
+        if (periodTo) {
+            body.period_to = periodTo;
+        }
+        const result = await NetFetch.postData('/json/species/profile', body) as SpeciesProfileResponse;
+
+        if (result && result.statusCode === StatusCodes.UNAUTHORIZED) {
+            throw new UnauthorizedError();
+        }
+
+        if (result && result.statusCode === StatusCodes.OK && result.profile) {
+            return result.profile;
+        }
+
+        return null;
     }
 
     /**
