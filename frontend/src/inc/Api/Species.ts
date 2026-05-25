@@ -8,13 +8,17 @@ import {
     SpeciesProfileBucket,
     SpeciesProfileCategoryShare,
     SpeciesProfileEnv,
+    SpeciesProfileEnvExtra,
     SpeciesProfileGroupRatios,
     SpeciesProfileHeadingBin,
     SpeciesProfileHeatmapPoint,
     SpeciesProfileHourly,
     SpeciesProfileMonthly,
+    SpeciesProfileMonthlyEffort,
     SpeciesProfileMovement,
-    SpeciesProfileResponse
+    SpeciesProfilePressure,
+    SpeciesProfileResponse,
+    SpeciesProfileYearly
 } from 'mwpa_schemas';
 import {NetFetch} from '../Net/NetFetch';
 import {UnauthorizedError} from './Error/UnauthorizedError';
@@ -35,13 +39,17 @@ export type {
     SpeciesProfileBucket,
     SpeciesProfileCategoryShare,
     SpeciesProfileEnv,
+    SpeciesProfileEnvExtra,
     SpeciesProfileGroupRatios,
     SpeciesProfileHeadingBin,
     SpeciesProfileHeatmapPoint,
     SpeciesProfileHourly,
     SpeciesProfileMonthly,
+    SpeciesProfileMonthlyEffort,
     SpeciesProfileMovement,
-    SpeciesProfileResponse
+    SpeciesProfilePressure,
+    SpeciesProfileResponse,
+    SpeciesProfileYearly
 };
 
 export type SpeciesMerge = SpeciesMergeRequest;

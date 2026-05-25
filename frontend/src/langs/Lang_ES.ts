@@ -226,7 +226,29 @@ export class Lang_ES implements LangDefine {
         'desc.behaviour': 'Estados de comportamiento registrados durante el avistamiento (de BehaviouralStates). Un avistamiento puede aportar varias etiquetas; se muestran los 8 primeros, el resto bajo «other».',
         'desc.reaction': 'Reacción de los animales hacia la embarcación de observación (de EncounterCategories). Útil para evaluar impacto y habituación.',
         'desc.movement': 'Firma de movimiento derivada de la tabla SightingMovement — sólo los avistamientos con segmento de track contribuyen. Las velocidades son medianas en nudos; la rosa muestra la distribución de 8 sectores del rumbo dominante por avistamiento.',
-        'desc.heatmap': 'Posiciones agregadas de todos los avistamientos en el filtro. Cada punto usa location_begin; la intensidad del mapa de calor marca los puntos calientes de encuentros repetidos. Se muestran hasta ~2000 puntos.'
+        'desc.heatmap': 'Posiciones agregadas de todos los avistamientos en el filtro. Cada punto usa location_begin; la intensidad del mapa de calor marca los puntos calientes de encuentros repetidos. Se muestran hasta ~2000 puntos.',
+
+        // Species Profile Phase 3
+        'Sightings per tour-hour (SPUE)': 'Avistamientos por hora de salida (SPUE)',
+        'Sightings per year': 'Avistamientos por año',
+        'Co-occurring species (same tour)': 'Especies co-ocurrentes (misma salida)',
+        'Pressure indicators': 'Indicadores de presión',
+        'Extended environment (oceanographic)': 'Entorno extendido (oceanográfico)',
+        'Tour hours': 'Horas de salida',
+        'tours': 'salidas',
+        'Beaufort sea state': 'Estado del mar (Beaufort)',
+        'Fishing hours (25 km, day)': 'Horas de pesca (25 km, día)',
+        'Salinity (PSU)': 'Salinidad (PSU)',
+        'SLA (cm)': 'SLA (cm)',
+        'Current speed (m/s)': 'Velocidad de la corriente (m/s)',
+        'Wave height (m)': 'Altura de ola (m)',
+        'UV index': 'Índice UV',
+
+        'desc.spue': 'Tasa de encuentro corregida por esfuerzo: número de avistamientos por hora de salida en el mes correspondiente. Barras = avistamientos, línea continua = horas de salida (eje derecho), línea discontinua = SPUE. Hace visibles tendencias que el conteo bruto enmascararía — métrica estándar en cetología.',
+        'desc.yearly': 'Avistamientos por año natural — complementario al gráfico mensual, útil para tendencias multianuales. Atención: sin corrección SPUE, las fluctuaciones pueden ser puros efectos de esfuerzo.',
+        'desc.cooccurrence': 'Especies más frecuentes vistas en las mismas salidas (mismo tour_fid) que esta especie. Cuenta salidas distintas; se excluye doble conteo por salida. Límite 12 especies.',
+        'desc.pressure': 'Indicadores de presión: estado del mar (Beaufort) durante el avistamiento, número de otros barcos presentes (de «other_vehicle»), horas de pesca comercial en un radio de 25 km el día del avistamiento (GFW).',
+        'desc.env_extra': 'Variables oceanográficas adicionales de SightingExtended: salinidad (PSU), anomalía del nivel del mar (cm), velocidad de la corriente (m/s), altura de ola (m), índice UV. Medias diarias.'
     };
 
     /**

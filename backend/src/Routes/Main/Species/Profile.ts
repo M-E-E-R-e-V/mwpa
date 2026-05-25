@@ -5,6 +5,7 @@ import {
     SpeciesProfileCategoryShare,
     SpeciesProfileHeadingBin,
     SpeciesProfileHeatmapPoint,
+    SpeciesProfileMonthlyEffort,
     SpeciesProfileMovement,
     SpeciesProfileRequest,
     SpeciesProfileResponse
@@ -13,6 +14,7 @@ import {Vts} from 'vts';
 import {BehaviouralStatesRepository} from '../../../Db/MariaDb/Repositories/BehaviouralStatesRepository.js';
 import {EncounterCategoriesRepository} from '../../../Db/MariaDb/Repositories/EncounterCategoriesRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
+import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {SpeciesRepository} from '../../../Db/MariaDb/Repositories/SpeciesRepository.js';
 
 /**
@@ -24,6 +26,7 @@ export type SightingProfileRow = {
     id: number;
     date: string;
     tour_start: string;
+    tour_fid: string;
     species_count: number;
     juveniles: number;
     calves: number;
@@ -32,13 +35,21 @@ export type SightingProfileRow = {
     behaviours: string;
     reaction_id: number;
     location_begin: string;
+    beaufort_wind: number;
+    other_vehicle: string;
     depth_m: number | null;
     sst_c_day: number | null;
     chl_a_mg_m3_day: number | null;
+    salinity_psu_day: number | null;
+    sla_cm_day: number | null;
+    current_speed_m_s_day: number | null;
+    wave_height_m_day: number | null;
+    uv_index_day: number | null;
     avg_speed_mps: number | null;
     max_speed_mps: number | null;
     total_distance_m: number | null;
     dominant_heading_deg: number | null;
+    fishing_hours_day_25km: number | null;
 };
 
 /**
@@ -64,6 +75,18 @@ export class Profile {
     private static readonly DEPTH_EDGES_M = [0, 25, 50, 100, 200, 500, 1000, 2000];
     private static readonly SST_EDGES_C = [10, 13, 16, 19, 22, 25, 28];
     private static readonly CHL_EDGES_MG_M3 = [0, 0.1, 0.25, 0.5, 1, 2, 5];
+
+    // Phase 3 — extra env distributions
+    private static readonly SALINITY_EDGES_PSU = [34, 35, 36, 37, 38, 39];
+    private static readonly SLA_EDGES_CM = [-20, -10, -5, 0, 5, 10, 20];
+    private static readonly CURRENT_EDGES_M_S = [0, 0.1, 0.25, 0.5, 1];
+    private static readonly WAVE_EDGES_M = [0, 0.5, 1, 1.5, 2, 3];
+    private static readonly UV_EDGES = [0, 2, 4, 6, 8, 10];
+
+    // Phase 3 — pressure histograms
+    private static readonly BEAUFORT_EDGES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    private static readonly OTHER_BOATS_EDGES = [0, 1, 2, 3, 5, 10];
+    private static readonly FISHING_HOURS_EDGES = [0, 0.5, 1, 2, 5, 10, 25];
 
     /**
      * Heading-rose bins (8-way compass — center degrees in clockwise order).
@@ -118,13 +141,32 @@ export class Profile {
             reactionById.set(c.id, c.name);
         }
 
+        // SPUE — tour-hours per month inside the same time window and
+        // org scope as the sighting query. Independent of species; one
+        // extra grouped query.
+        const tourHours = await SightingTourRepository.getInstance().aggregateMonthlyTourHours(
+            request.period_from,
+            request.period_to,
+            organizationIds
+        );
+
+        // Co-occurrence — top-N other species seen on the same tour_fids.
+        const cooccurring = await SightingRepository.getInstance().findCooccurringSpecies(
+            request.species_id,
+            request.period_from,
+            request.period_to,
+            organizationIds
+        );
+
         const profile: SpeciesProfileData = Profile._aggregate(
             species.id,
             species.name,
             rows,
             request,
             behById,
-            reactionById
+            reactionById,
+            tourHours,
+            cooccurring
         );
 
         return {statusCode: StatusCodes.OK, profile};
@@ -277,13 +319,33 @@ export class Profile {
         return top;
     }
 
+    /**
+     * Parse the legacy `other_vehicle` text column into an integer count
+     * of "other boats present". The legacy UI stored either a free-text
+     * description or a leading digit/CSV; we take the first integer we
+     * find, default to 0 when nothing parseable.
+     */
+    private static _parseOtherBoats(text: string): number {
+        if (!text) {
+            return 0;
+        }
+        const m = text.match(/-?\d+/u);
+        if (!m) {
+            return 0;
+        }
+        const n = parseInt(m[0], 10);
+        return Number.isFinite(n) && n >= 0 ? n : 0;
+    }
+
     private static _aggregate(
         speciesId: number,
         speciesName: string,
         rows: SightingProfileRow[],
         request: SpeciesProfileRequest,
         behById: Map<number, string>,
-        reactionById: Map<number, string>
+        reactionById: Map<number, string>,
+        tourHours: Map<string, number>,
+        cooccurring: Array<{species_id: number; species_name: string; tour_count: number;}>
     ): SpeciesProfileData {
         const monthly = new Map<string, number>();
         const hourly = new Array<number>(24).fill(0);
@@ -297,6 +359,20 @@ export class Profile {
         const depth: number[] = [];
         const sst: number[] = [];
         const chl: number[] = [];
+
+        // Phase 3 — extra env + pressure
+        const salinity: number[] = [];
+        const sla: number[] = [];
+        const currentSpeed: number[] = [];
+        const waveHeight: number[] = [];
+        const uvIndex: number[] = [];
+        const beaufort: number[] = [];
+        const otherBoats: number[] = [];
+        const fishingHours: number[] = [];
+
+        // Phase 3 — per-month sightings + per-year sightings
+        const monthlySightings = new Map<string, number>();
+        const yearlyCounts = new Map<string, number>();
 
         const behaviourCounts = new Map<string, number>();
         const reactionCounts = new Map<string, number>();
@@ -317,6 +393,11 @@ export class Profile {
             const ym = (r.date ?? '').substring(0, 7);
             if (ym.length === 7) {
                 monthly.set(ym, (monthly.get(ym) ?? 0) + 1);
+                monthlySightings.set(ym, (monthlySightings.get(ym) ?? 0) + 1);
+            }
+            const yr = (r.date ?? '').substring(0, 4);
+            if (yr.length === 4) {
+                yearlyCounts.set(yr, (yearlyCounts.get(yr) ?? 0) + 1);
             }
 
             // Hourly bucket — tour_start is HH:mm[:ss].
@@ -355,6 +436,31 @@ export class Profile {
             }
             if (r.chl_a_mg_m3_day !== null && r.chl_a_mg_m3_day !== undefined && Number.isFinite(r.chl_a_mg_m3_day)) {
                 chl.push(r.chl_a_mg_m3_day);
+            }
+
+            if (r.salinity_psu_day !== null && r.salinity_psu_day !== undefined && Number.isFinite(r.salinity_psu_day)) {
+                salinity.push(r.salinity_psu_day);
+            }
+            if (r.sla_cm_day !== null && r.sla_cm_day !== undefined && Number.isFinite(r.sla_cm_day)) {
+                sla.push(r.sla_cm_day);
+            }
+            if (r.current_speed_m_s_day !== null && r.current_speed_m_s_day !== undefined && Number.isFinite(r.current_speed_m_s_day)) {
+                currentSpeed.push(r.current_speed_m_s_day);
+            }
+            if (r.wave_height_m_day !== null && r.wave_height_m_day !== undefined && Number.isFinite(r.wave_height_m_day)) {
+                waveHeight.push(r.wave_height_m_day);
+            }
+            if (r.uv_index_day !== null && r.uv_index_day !== undefined && Number.isFinite(r.uv_index_day)) {
+                uvIndex.push(r.uv_index_day);
+            }
+
+            // Pressure
+            if (Number.isFinite(r.beaufort_wind) && r.beaufort_wind >= 0) {
+                beaufort.push(r.beaufort_wind);
+            }
+            otherBoats.push(Profile._parseOtherBoats(r.other_vehicle ?? ''));
+            if (r.fishing_hours_day_25km !== null && r.fishing_hours_day_25km !== undefined && Number.isFinite(r.fishing_hours_day_25km)) {
+                fishingHours.push(Number(r.fishing_hours_day_25km));
             }
 
             // Behaviour mix — multi-value column (JSON map of stringified ids).
@@ -412,6 +518,31 @@ export class Profile {
             heading_rose: headingRose
         };
 
+        // SPUE — join monthly tour-hours with sightings, drop months with
+        // 0 hours of effort (no surveys → SPUE is undefined, not zero).
+        const monthlyEffort: SpeciesProfileMonthlyEffort[] = [];
+        const ymKeys = new Set<string>([...tourHours.keys(), ...monthlySightings.keys()]);
+        const ymSorted = [...ymKeys].sort((a, b) => a.localeCompare(b));
+        for (const ym of ymSorted) {
+            const hours = tourHours.get(ym) ?? 0;
+            const sightings = monthlySightings.get(ym) ?? 0;
+            monthlyEffort.push({
+                ym: ym,
+                tour_hours: Math.round(hours * 10) / 10,
+                sightings: sightings,
+                spue: hours > 0 ? sightings / hours : 0
+            });
+        }
+
+        const yearly = [...yearlyCounts.entries()]
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([y, count]) => ({y: y, count: count}));
+
+        const cooccurrence: SpeciesProfileCategoryShare[] = cooccurring.map((c) => ({
+            label: c.species_name,
+            count: c.tour_count
+        }));
+
         return {
             species_id: speciesId,
             species_name: speciesName,
@@ -441,7 +572,22 @@ export class Profile {
             behaviour_mix: Profile._topShares(behaviourCounts),
             reaction_mix: Profile._topShares(reactionCounts),
             movement: movement,
-            heatmap: heatmap
+            heatmap: heatmap,
+            monthly_effort: monthlyEffort,
+            yearly: yearly,
+            env_extra: {
+                salinity_psu: Profile._bucketize(salinity, Profile.SALINITY_EDGES_PSU),
+                sla_cm: Profile._bucketize(sla, Profile.SLA_EDGES_CM),
+                current_speed_m_s: Profile._bucketize(currentSpeed, Profile.CURRENT_EDGES_M_S),
+                wave_height_m: Profile._bucketize(waveHeight, Profile.WAVE_EDGES_M),
+                uv_index: Profile._bucketize(uvIndex, Profile.UV_EDGES)
+            },
+            pressure: {
+                beaufort: Profile._bucketize(beaufort, Profile.BEAUFORT_EDGES),
+                other_boats: Profile._bucketize(otherBoats, Profile.OTHER_BOATS_EDGES),
+                fishing_hours_25km: Profile._bucketize(fishingHours, Profile.FISHING_HOURS_EDGES)
+            },
+            cooccurrence: cooccurrence
         };
     }
 
