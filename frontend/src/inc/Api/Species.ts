@@ -18,7 +18,12 @@ import {
     SpeciesProfileMovement,
     SpeciesProfilePressure,
     SpeciesProfileResponse,
-    SpeciesProfileYearly
+    SpeciesProfileYearly,
+    SpeciesRegressionChart,
+    SpeciesRegressionFit,
+    SpeciesRegressionMatrixResponse,
+    SpeciesRegressionPoint,
+    SpeciesRegressionSeries
 } from 'mwpa_schemas';
 import {NetFetch} from '../Net/NetFetch';
 import {UnauthorizedError} from './Error/UnauthorizedError';
@@ -49,7 +54,12 @@ export type {
     SpeciesProfileMovement,
     SpeciesProfilePressure,
     SpeciesProfileResponse,
-    SpeciesProfileYearly
+    SpeciesProfileYearly,
+    SpeciesRegressionChart,
+    SpeciesRegressionFit,
+    SpeciesRegressionMatrixResponse,
+    SpeciesRegressionPoint,
+    SpeciesRegressionSeries
 };
 
 export type SpeciesMerge = SpeciesMergeRequest;
@@ -140,6 +150,31 @@ export class Species {
 
         if (result && result.statusCode === StatusCodes.OK && result.profile) {
             return result.profile;
+        }
+
+        return null;
+    }
+
+    /**
+     * Cross-species regression matrix (4 scatter charts + pooled fits)
+     * for Simpson-paradox visibility. Period bounds optional.
+     */
+    public static async getRegressionMatrix(periodFrom?: string, periodTo?: string): Promise<SpeciesRegressionChart[] | null> {
+        const body: {period_from?: string; period_to?: string;} = {};
+        if (periodFrom) {
+            body.period_from = periodFrom;
+        }
+        if (periodTo) {
+            body.period_to = periodTo;
+        }
+        const result = await NetFetch.postData('/json/species/regression-matrix', body) as SpeciesRegressionMatrixResponse;
+
+        if (result && result.statusCode === StatusCodes.UNAUTHORIZED) {
+            throw new UnauthorizedError();
+        }
+
+        if (result && result.statusCode === StatusCodes.OK) {
+            return result.charts ?? [];
         }
 
         return null;

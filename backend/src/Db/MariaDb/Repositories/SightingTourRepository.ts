@@ -181,6 +181,57 @@ export class SightingTourRepository extends DBRepository<SightingTour> {
     }
 
     /**
+     * Sum of tour-hours per YYYY bucket — used by the cross-species
+     * regression matrix to compute Year × SPUE. Same SQL shape as
+     * {@link aggregateMonthlyTourHours}, just `%Y` instead of `%Y-%m`.
+     */
+    public async aggregateYearlyTourHours(
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        organizationIds: number[] | undefined
+    ): Promise<Map<string, number>> {
+        const out = new Map<string, number>();
+
+        if (organizationIds !== undefined && organizationIds.length === 0) {
+            return out;
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('st')
+            .select('DATE_FORMAT(st.date, \'%Y\')', 'y')
+            .addSelect(
+                'SUM(' +
+                'GREATEST(0, ' +
+                'TIME_TO_SEC(STR_TO_DATE(NULLIF(st.tour_end, \'\'), \'%H:%i\')) - ' +
+                'TIME_TO_SEC(STR_TO_DATE(NULLIF(st.tour_start, \'\'), \'%H:%i\'))' +
+                ')) / 3600.0',
+                'hours'
+            )
+            .where('st.tour_start <> \'\'')
+            .andWhere('st.tour_end <> \'\'');
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+        if (from !== '') {
+            qb.andWhere('st.date >= :from', {from});
+        }
+        if (to !== '') {
+            qb.andWhere('st.date <= :to', {to});
+        }
+        if (organizationIds !== undefined) {
+            qb.andWhere('st.organization_id IN (:...orgIds)', {orgIds: organizationIds});
+        }
+
+        qb.groupBy('DATE_FORMAT(st.date, \'%Y\')');
+
+        const rows = await qb.getRawMany<{y: string; hours: number | string | null;}>();
+        for (const r of rows) {
+            out.set(r.y, Number(r.hours ?? 0));
+        }
+        return out;
+    }
+
+    /**
      * Sum of tour-hours per YYYY-MM bucket inside `[periodFrom, periodTo]`,
      * filtered to the supplied orgs when `organizationIds` is set. Used by
      * the Species Profile to compute SPUE (sightings per tour-hour) — the
