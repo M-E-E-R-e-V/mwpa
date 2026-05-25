@@ -3082,6 +3082,17 @@
                               "types": []
                             },
                             "description": ""
+                          },
+                          {
+                            "unid": "bfca74c7-65f3-4bd2-b93b-e8c90250c7ea",
+                            "name": "seismic",
+                            "type": {
+                              "type": "72224cf1-c06f-4811-b07c-36fdd348af62",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
                           }
                         ]
                       },
@@ -3516,6 +3527,97 @@
                               "types": []
                             },
                             "description": "GFW fishing hours within 25 km of the sighting (day mean)"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "72224cf1-c06f-4811-b07c-36fdd348af62",
+                        "name": "SpeciesProfileSeismic",
+                        "description": "Seismic-exposure summary per species — count of correlated sightings plus magnitude/distance/offset histograms",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "4d619ca2-4896-4ad8-aa3d-1d6819e5a83d",
+                            "name": "n_sightings_with_event",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Distinct sightings that have at least one correlated earthquake"
+                          },
+                          {
+                            "unid": "2716002b-a694-463f-b81e-66f9dbfb375d",
+                            "name": "n_correlations",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Total sighting × earthquake pairs"
+                          },
+                          {
+                            "unid": "8e0c2dd3-9c0b-42af-99c1-bd53f5ed5894",
+                            "name": "max_magnitude",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "0a934a3a-900d-4fbf-83f0-f5e25da338cf",
+                            "name": "median_distance_km",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "dbe6e03c-a34a-407e-acdf-d7a47a06152b",
+                            "name": "magnitude",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "3a5b04c7-ee48-43e2-97a9-971a2f30cc55",
+                            "name": "distance_km",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d4eb4835-8681-45f3-9a6f-e9cc6643cb25",
+                            "name": "hours_offset",
+                            "type": {
+                              "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Bucketed signed offset (positive = earthquake before sighting)"
                           }
                         ]
                       }
@@ -12012,7 +12114,7 @@
   },
   "editor": {
     "controls_width": 344,
-    "active_entry_unid": "8e249c19-8cd9-4815-adf8-298e25afdaed",
-    "active_entry_table_unid": "d1ee61ea-86cf-4fbe-883b-b32d5e5860bd"
+    "active_entry_unid": "9391726c-9e85-4313-b9a1-93454fccfff2",
+    "active_entry_table_unid": "a4bb653e-2ebb-4f66-9004-28f190d2d627"
   }
 }

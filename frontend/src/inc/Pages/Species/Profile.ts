@@ -253,6 +253,27 @@ export class SpeciesProfile extends BasePage {
         SpeciesProfile._attachInfo(mapCard, 'Spatial distribution', 'desc.heatmap');
         const mapHost = jQuery<HTMLDivElement>('<div class="species-profile-map" style="height: 360px;"/>').appendTo(mapCard.getBodyElement());
 
+        // Row 12 — seismic exposure -----------------------------------------------------------------------------------
+
+        const rowSeismic = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const seismicCard = new Card(new ContentCol(rowSeismic, ContentColSize.col12));
+        seismicCard.setTitle(new LangText('Seismic exposure'));
+        SpeciesProfile._attachInfo(seismicCard, 'Seismic exposure', 'desc.seismic');
+
+        const seismicBody = jQuery<HTMLDivElement>(
+            '<div class="row p-2">' +
+            '<div class="col-md-4 d-flex flex-wrap" style="gap: 1.25rem;">' +
+            `<div class="kpi" data-skpi="n"><div class="kpi-label text-muted small">${lang.l('Sightings w/ event')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
+            `<div class="kpi" data-skpi="pairs"><div class="kpi-label text-muted small">${lang.l('Sighting × event pairs')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
+            `<div class="kpi" data-skpi="maxmag"><div class="kpi-label text-muted small">${lang.l('Max magnitude')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
+            `<div class="kpi" data-skpi="dist"><div class="kpi-label text-muted small">${lang.l('Median distance')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
+            '</div>' +
+            `<div class="col-md-8 row"><div class="col-md-4"><div class="text-muted small">${lang.l('Magnitude')}</div><div class="species-profile-chart" data-seismic="mag"></div></div>` +
+            `<div class="col-md-4"><div class="text-muted small">${lang.l('Distance to epicenter (km)')}</div><div class="species-profile-chart" data-seismic="dist"></div></div>` +
+            `<div class="col-md-4"><div class="text-muted small">${lang.l('Offset (h, +event before sighting)')}</div><div class="species-profile-chart" data-seismic="offset"></div></div>` +
+            '</div></div>'
+        ).appendTo(seismicCard.getBodyElement());
+
         this._onLoadTable = async(): Promise<void> => {
             kpiCard.showLoading();
             try {
@@ -326,6 +347,18 @@ export class SpeciesProfile extends BasePage {
                 });
 
                 this._heatmap = SpeciesProfile._renderHeatmap(mapHost[0] as HTMLElement, profile.heatmap, this._heatmap);
+
+                SpeciesProfile._renderSeismicKpi(seismicBody, profile);
+                seismicBody.find('[data-seismic="mag"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.seismic.magnitude, '#dc3545');
+                });
+                seismicBody.find('[data-seismic="dist"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.seismic.distance_km, '#fd7e14');
+                });
+                seismicBody.find('[data-seismic="offset"]').each((_i, el) => {
+                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.seismic.hours_offset, '#6f42c1');
+                });
+
                 Lang.i().lAll();
             } finally {
                 kpiCard.hideLoading();
@@ -647,6 +680,22 @@ export class SpeciesProfile extends BasePage {
         set('avg', m.n_with_movement > 0 ? `${m.median_avg_speed_kt.toFixed(2)} kt` : '–');
         set('max', m.n_with_movement > 0 ? `${m.median_max_speed_kt.toFixed(2)} kt` : '–');
         set('dist', m.n_with_movement > 0 ? `${SpeciesProfile._compact(m.median_total_distance_m)} m` : '–');
+    }
+
+    /**
+     * KPI cells for the seismic-exposure card. Same wiring pattern as
+     * _renderMovementKpi — fills `[data-skpi="…"] .kpi-value` text in
+     * place so the card structure stays declarative.
+     */
+    private static _renderSeismicKpi(host: JQuery<HTMLDivElement>, profile: SpeciesProfileData): void {
+        const set = (key: string, value: string): void => {
+            host.find(`[data-skpi="${key}"] .kpi-value`).text(value);
+        };
+        const s = profile.seismic;
+        set('n', `${s.n_sightings_with_event}`);
+        set('pairs', `${s.n_correlations}`);
+        set('maxmag', s.n_correlations > 0 ? `M ${s.max_magnitude.toFixed(1)}` : '–');
+        set('dist', s.n_correlations > 0 ? `${s.median_distance_km.toFixed(0)} km` : '–');
     }
 
     /**

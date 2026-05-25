@@ -45,6 +45,17 @@ export class CrossSpeciesAnalytics extends BasePage {
      */
     public static NAME: string = 'cross-species-analytics';
 
+    /**
+     * Categorical palette (Tableau-10-style). The species_group color
+     * coming from the DB is one of only ~3 blues, so 8 species rendered
+     * with that scheme collapse visually — we override per species_id
+     * with this distinct-hue palette, stable across all four charts.
+     */
+    private static readonly SPECIES_PALETTE: ReadonlyArray<string> = [
+        '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+        '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'
+    ];
+
     protected override _name: string = CrossSpeciesAnalytics.NAME;
 
     public override async loadContent(): Promise<void> {
@@ -87,10 +98,13 @@ export class CrossSpeciesAnalytics extends BasePage {
                 if (!charts || charts.length === 0) {
                     return;
                 }
+                // Build a stable species→color map across every chart so
+                // the same species reads the same on every plot.
+                const colorBySpecies = CrossSpeciesAnalytics._buildColorMap(charts);
                 for (const chart of charts) {
                     const host = hosts[chart.id];
                     if (host) {
-                        CrossSpeciesAnalytics._renderScatter(host, chart);
+                        CrossSpeciesAnalytics._renderScatter(host, chart, colorBySpecies);
                     }
                 }
                 Lang.i().lAll();
@@ -103,13 +117,42 @@ export class CrossSpeciesAnalytics extends BasePage {
     }
 
     /**
+     * Pick stable per-species colors from the categorical palette. The
+     * species are sorted by total point count (descending, across all
+     * charts) so the most prominent species reliably get the most
+     * distinctive palette positions (early entries are also the most
+     * distinct hues by design).
+     */
+    private static _buildColorMap(charts: SpeciesRegressionChart[]): Map<number, string> {
+        const pointsBySpecies = new Map<number, number>();
+        for (const chart of charts) {
+            for (const series of chart.series) {
+                pointsBySpecies.set(
+                    series.species_id,
+                    (pointsBySpecies.get(series.species_id) ?? 0) + series.points.length
+                );
+            }
+        }
+
+        const ranked = [...pointsBySpecies.entries()]
+            .sort((a, b) => b[1] - a[1])
+            .map(([id]) => id);
+
+        const out = new Map<number, string>();
+        for (let i = 0; i < ranked.length; i++) {
+            out.set(ranked[i], CrossSpeciesAnalytics.SPECIES_PALETTE[i % CrossSpeciesAnalytics.SPECIES_PALETTE.length]);
+        }
+        return out;
+    }
+
+    /**
      * Render one scatter chart: points colored by species + per-species
      * regression line (when fit is present) + pooled regression line.
      * The pooled line is drawn last and thicker so it visually dominates;
      * when its slope sign disagrees with most colored lines, that's the
      * Simpson paradox moment.
      */
-    private static _renderScatter(host: HTMLElement, chart: SpeciesRegressionChart): void {
+    private static _renderScatter(host: HTMLElement, chart: SpeciesRegressionChart, colorBySpecies: Map<number, string>): void {
         d3.select(host).selectAll('*').remove();
         jQuery(host).empty();
 
@@ -166,6 +209,7 @@ export class CrossSpeciesAnalytics extends BasePage {
 
         // Points — per-series so we can color them and tooltip them.
         for (const series of chart.series) {
+            const color = colorBySpecies.get(series.species_id) ?? series.color;
             g.append('g')
                 .selectAll('circle')
                 .data(series.points)
@@ -174,7 +218,7 @@ export class CrossSpeciesAnalytics extends BasePage {
                 .attr('cx', (p: SpeciesRegressionPoint) => x(p.x))
                 .attr('cy', (p: SpeciesRegressionPoint) => y(p.y))
                 .attr('r', 3)
-                .attr('fill', series.color)
+                .attr('fill', color)
                 .attr('opacity', 0.65)
                 .append('title')
                 .text((p: SpeciesRegressionPoint) => p.label ?? `${p.x.toFixed(2)}, ${p.y.toFixed(2)}`);
@@ -186,7 +230,8 @@ export class CrossSpeciesAnalytics extends BasePage {
             if (!series.fit) {
                 continue;
             }
-            CrossSpeciesAnalytics._drawFitLine(g, x, y, series.fit, xDomain, series.color, false);
+            const color = colorBySpecies.get(series.species_id) ?? series.color;
+            CrossSpeciesAnalytics._drawFitLine(g, x, y, series.fit, xDomain, color, false);
         }
 
         // Pooled fit (thicker, dashed black). Drawn last so it sits on top.
@@ -194,7 +239,7 @@ export class CrossSpeciesAnalytics extends BasePage {
             CrossSpeciesAnalytics._drawFitLine(g, x, y, chart.pooled_fit, xDomain, '#000', true);
         }
 
-        CrossSpeciesAnalytics._buildLegend(host, chart);
+        CrossSpeciesAnalytics._buildLegend(host, chart, colorBySpecies);
     }
 
     /**
@@ -225,7 +270,7 @@ export class CrossSpeciesAnalytics extends BasePage {
      * plus a dedicated entry for the pooled fit. Helps the reader spot a
      * sign mismatch (Simpson) at a glance.
      */
-    private static _buildLegend(host: HTMLElement, chart: SpeciesRegressionChart): void {
+    private static _buildLegend(host: HTMLElement, chart: SpeciesRegressionChart, colorBySpecies: Map<number, string>): void {
         const lang = Lang.i();
         const legend = jQuery('<div class="mt-2 small d-flex flex-wrap" style="gap: 0.4rem 1rem;"/>');
         const escape = (s: string): string => s.replace(/[&<>"']/g, (ch) =>
@@ -247,7 +292,8 @@ export class CrossSpeciesAnalytics extends BasePage {
         };
 
         for (const s of chart.series as SpeciesRegressionSeries[]) {
-            legend.append(renderRow(s.color, s.species_name, s.fit, s.points.length, false));
+            const color = colorBySpecies.get(s.species_id) ?? s.color;
+            legend.append(renderRow(color, s.species_name, s.fit, s.points.length, false));
         }
 
         if (chart.pooled_fit) {

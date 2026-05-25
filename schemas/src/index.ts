@@ -142,6 +142,8 @@ export {
     SpeciesProfileEnvExtra,
     SchemaSpeciesProfilePressure,
     SpeciesProfilePressure,
+    SchemaSpeciesProfileSeismic,
+    SpeciesProfileSeismic,
     SchemaSpeciesProfile,
     SpeciesProfile,
     SchemaSpeciesProfileResponse,

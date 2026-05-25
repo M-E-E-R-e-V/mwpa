@@ -287,7 +287,18 @@ export class Lang_DE implements LangDefine {
         'Mag': 'Mag.',
         'Depth (km)': 'Tiefe (km)',
         'Place': 'Ort',
-        'Source': 'Quelle'
+        'Source': 'Quelle',
+
+        // Species Profile — seismic exposure
+        'Seismic exposure': 'Seismische Exposition',
+        'Sightings w/ event': 'Sichtungen mit Beben',
+        'Sighting × event pairs': 'Sichtung × Beben (Paare)',
+        'Max magnitude': 'Max Magnitude',
+        'Median distance': 'Median Abstand',
+        'Magnitude': 'Magnitude',
+        'Distance to epicenter (km)': 'Abstand zum Epizentrum (km)',
+        'Offset (h, +event before sighting)': 'Zeit-Offset (h, +Beben vor Sichtung)',
+        'desc.seismic': 'Korrelationen aus der `sighting_seismic`-Tabelle: jede Sichtung dieser Spezies wurde mit Erdbeben im 200-km-Umkreis und ±14 Tagen gepaart. KPI links: Anzahl Sichtungen mit mindestens einem Beben in der Nähe, Gesamtzahl Sichtung × Beben-Paare, stärkste Magnitude, Median-Abstand. Histogramme rechts zeigen die Verteilung von Magnitude, Abstand und Zeit-Offset — positive Offsets = Beben vor Sichtung. Mit positiv schiefer Offset-Verteilung interessant für Verhaltens-Reaktionen.'
     };
 
     /**
