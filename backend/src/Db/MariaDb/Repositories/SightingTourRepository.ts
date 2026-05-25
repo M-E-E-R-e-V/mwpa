@@ -181,6 +181,48 @@ export class SightingTourRepository extends DBRepository<SightingTour> {
     }
 
     /**
+     * Closest tour for the same vehicle whose date sits immediately before
+     * the given anchor date — used by the tracking-edit UI to suggest a
+     * "previous day" tour when shifting points across midnight.
+     * @param {number} vehicleId
+     * @param {string} date — anchor tour date, YYYY-MM-DD
+     * @return {SightingTour | null}
+     */
+    public async findPrevByVehicle(vehicleId: number, date: string): Promise<SightingTour | null> {
+        const repository = await this._repository;
+        return repository.findOne({
+            where: {
+                vehicle_id: vehicleId,
+                date: Raw((alias) => `${alias} < :date`, {date})
+            },
+            order: {
+                date: 'DESC',
+                tour_start: 'DESC'
+            }
+        });
+    }
+
+    /**
+     * Counterpart of {@link findPrevByVehicle}.
+     * @param {number} vehicleId
+     * @param {string} date
+     * @return {SightingTour | null}
+     */
+    public async findNextByVehicle(vehicleId: number, date: string): Promise<SightingTour | null> {
+        const repository = await this._repository;
+        return repository.findOne({
+            where: {
+                vehicle_id: vehicleId,
+                date: Raw((alias) => `${alias} > :date`, {date})
+            },
+            order: {
+                date: 'ASC',
+                tour_start: 'ASC'
+            }
+        });
+    }
+
+    /**
      * Look up candidate tours for the OrphanTracks-Assign dialog. Each picker
      * field on `criteria` is optional: empty = wildcard. When `tour_start`
      * is set the result is restricted to tours within a ±60 min window and

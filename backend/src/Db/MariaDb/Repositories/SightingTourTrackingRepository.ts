@@ -49,6 +49,35 @@ export class SightingTourTrackingRepository extends DBRepositoryUnid<SightingTou
     }
 
     /**
+     * Delete a set of tracking rows by `unid` (the entity has no `id`).
+     * @param {string[]} unids
+     * @return {number} affected row count
+     */
+    public async deleteByUnids(unids: string[]): Promise<number> {
+        if (unids.length === 0) {
+            return 0;
+        }
+        const repository = await this._repository;
+        const result = await repository.delete({unid: In(unids)});
+        return result.affected ?? 0;
+    }
+
+    /**
+     * Reassign a set of tracking rows to a different tour by `unid`.
+     * @param {string[]} unids
+     * @param {number} targetTourId
+     * @return {number} affected row count
+     */
+    public async reassignTour(unids: string[], targetTourId: number): Promise<number> {
+        if (unids.length === 0) {
+            return 0;
+        }
+        const repository = await this._repository;
+        const result = await repository.update({unid: In(unids)}, {sighting_tour_id: targetTourId});
+        return result.affected ?? 0;
+    }
+
+    /**
      * Bulk-count tracking points grouped by sighting_tour_id for a set
      * of tour ids. Returns a map keyed by sighting_tour_id; tours with
      * no tracking points are absent from the map (caller treats as 0).

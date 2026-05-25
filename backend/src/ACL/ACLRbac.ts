@@ -1,5 +1,5 @@
 import {ACLRbac as TACLRbac} from 'figtree';
-import {MwpaRights, RightService, RightSightings, RightUsers, Role} from 'mwpa_schemas';
+import {MwpaRights, RightService, RightSightings, RightTours, RightUsers, Role} from 'mwpa_schemas';
 import {Rbac} from 'rbac-simple';
 
 /**
@@ -38,6 +38,11 @@ export class ACLRbac extends TACLRbac<Role, MwpaRights> {
             [RightUsers.users_roles_read]: {},
             [RightUsers.users_roles_write]: {}
         },
+        [RightTours.tours]: {
+            [RightTours.tours_read]: {},
+            [RightTours.tours_write]: {},
+            [RightTours.tours_tracking_edit]: {}
+        },
     };
 
     /**
@@ -47,10 +52,12 @@ export class ACLRbac extends TACLRbac<Role, MwpaRights> {
         [Role.root]: [
             RightService.service,
             RightSightings.sightings,
-            RightUsers.users
+            RightUsers.users,
+            RightTours.tours
         ],
         [Role.user]: [
-            RightSightings.sightings_read
+            RightSightings.sightings_read,
+            RightTours.tours_read
         ]
     };
 

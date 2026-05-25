@@ -27,7 +27,13 @@ export enum SightingMapObjectType {
      * Generic "user-picked position" marker — neutral on purpose so
      * the position picker doesn't pretend to be a specific species.
      */
-    PickMarker = 'pick_marker'
+    PickMarker = 'pick_marker',
+    /**
+     * Highlight dot for the tour-map tracking-edit selection — bright
+     * orange so it can't be confused with sighting markers, route
+     * lines or the gray default chart bars.
+     */
+    TrackingHighlight = 'tracking_highlight'
 }
 
 /**
@@ -124,6 +130,13 @@ export class SightingStyles {
             image: new Circle({
                 radius: 9,
                 fill: new Fill({color: 'rgba(220, 0, 0, 0.85)'}),
+                stroke: new Stroke({color: 'white', width: 2})
+            })
+        })],
+        [SightingMapObjectType.TrackingHighlight, new Style({
+            image: new Circle({
+                radius: 7,
+                fill: new Fill({color: 'rgba(253, 126, 20, 0.95)'}),
                 stroke: new Stroke({color: 'white', width: 2})
             })
         })]

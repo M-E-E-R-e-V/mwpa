@@ -69,9 +69,19 @@ export enum RightApi {
 }
 
 /**
+ * Enum RightTours
+ */
+export enum RightTours {
+    'tours' = 'tours',
+    'tours_read' = 'tours_read',
+    'tours_write' = 'tours_write',
+    'tours_tracking_edit' = 'tours_tracking_edit',
+}
+
+/**
  * Schema of MwpaRights
  */
-export const SchemaMwpaRights = Vts.or([Vts.enum(RightUsers), Vts.enum(RightSettings), Vts.enum(RightService), Vts.enum(RightUser), Vts.enum(RightSightings), Vts.enum(RightApi)], {});
+export const SchemaMwpaRights = Vts.or([Vts.enum(RightUsers), Vts.enum(RightSettings), Vts.enum(RightService), Vts.enum(RightUser), Vts.enum(RightSightings), Vts.enum(RightApi), Vts.enum(RightTours)], {});
 
 /**
  * Type of schema MwpaRights
