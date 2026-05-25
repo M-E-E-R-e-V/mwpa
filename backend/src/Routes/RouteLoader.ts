@@ -10,6 +10,7 @@ import {ExternalTour} from './Main/ExternalTour.js';
 import {Group} from './Main/Group.js';
 import {Login} from './Main/Login.js';
 import {Organization} from './Main/Organization.js';
+import {OrphanTracks} from './Main/OrphanTracks.js';
 import {SightingMovement} from './Main/SightingMovement.js';
 import {Sightings} from './Main/Sightings.js';
 import {Species} from './Main/Species.js';
@@ -57,6 +58,7 @@ export class RouteLoader extends HttpRouteLoader {
             new ExternalTour(),
             new Group(),
             new Organization(),
+            new OrphanTracks(),
             new Sightings(),
             new SightingMovement(),
             new Species(),

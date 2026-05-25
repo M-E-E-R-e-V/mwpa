@@ -180,4 +180,66 @@ export class SightingTourRepository extends DBRepository<SightingTour> {
         });
     }
 
+    /**
+     * Look up candidate tours for the OrphanTracks-Assign dialog. Each picker
+     * field on `criteria` is optional: empty = wildcard. When `tour_start`
+     * is set the result is restricted to tours within a ±60 min window and
+     * sorted by absolute time distance ascending; otherwise the result is
+     * sorted by date desc, tour_start desc.
+     *
+     * Non-admin callers pass `orgIds` to limit candidates to their orgs.
+     *
+     * @param {{vehicle_id?: number; vehicle_driver_id?: number; date?: string; tour_start?: string;}} criteria
+     * @param {number[] | undefined} orgIds
+     * @param {number | undefined} limit
+     * @return {SightingTour[]}
+     */
+    public async findCandidatesForOrphan(
+        criteria: {vehicle_id?: number; vehicle_driver_id?: number; date?: string; tour_start?: string;},
+        orgIds?: number[],
+        limit: number = 50
+    ): Promise<SightingTour[]> {
+        if (orgIds !== undefined && orgIds.length === 0) {
+            return [];
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('st').where('1=1');
+
+        if (criteria.vehicle_id !== undefined && criteria.vehicle_id > 0) {
+            qb.andWhere('st.vehicle_id = :vehicleId', {vehicleId: criteria.vehicle_id});
+        }
+
+        if (criteria.vehicle_driver_id !== undefined && criteria.vehicle_driver_id > 0) {
+            qb.andWhere('st.vehicle_driver_id = :driverId', {driverId: criteria.vehicle_driver_id});
+        }
+
+        const date = (criteria.date ?? '').trim();
+        if (date !== '') {
+            qb.andWhere('st.date = :date', {date});
+        }
+
+        const tourStart = (criteria.tour_start ?? '').trim();
+        const m = /^(\d{1,2}):(\d{2})$/.exec(tourStart);
+        if (m) {
+            const targetMin = Number(m[1]) * 60 + Number(m[2]);
+            const minutesExpr = '(CAST(SUBSTRING_INDEX(st.tour_start, \':\', 1) AS SIGNED) * 60 + ' +
+                'CAST(SUBSTRING_INDEX(st.tour_start, \':\', -1) AS SIGNED))';
+            qb.andWhere('st.tour_start <> \'\'');
+            qb.andWhere(`ABS(${minutesExpr} - :targetMin) <= 60`, {targetMin});
+            qb.addSelect(`ABS(${minutesExpr} - :targetMin)`, 'time_distance');
+            qb.orderBy('time_distance', 'ASC');
+        } else {
+            qb.orderBy('st.date', 'DESC').addOrderBy('st.tour_start', 'DESC');
+        }
+
+        if (orgIds !== undefined) {
+            qb.andWhere('st.organization_id IN (:...orgIds)', {orgIds});
+        }
+
+        qb.limit(limit);
+
+        return qb.getMany();
+    }
+
 }

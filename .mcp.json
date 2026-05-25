@@ -2,7 +2,7 @@
   "mcpServers": {
     "vtseditor": {
       "type": "http",
-      "url": "http://localhost:5174/mcp"
+      "url": "http://localhost:5162/mcp"
     }
   }
 }
