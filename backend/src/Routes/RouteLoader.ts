@@ -5,6 +5,7 @@ import {Acl} from './Main/Acl.js';
 import {Ais} from './Main/Ais.js';
 import {BehaviouralStates} from './Main/BehaviouralStates.js';
 import {Devices} from './Main/Devices.js';
+import {Earthquake} from './Main/Earthquake.js';
 import {EncounterCategories} from './Main/EncounterCategories.js';
 import {ExternalTour} from './Main/ExternalTour.js';
 import {Group} from './Main/Group.js';
@@ -54,6 +55,7 @@ export class RouteLoader extends HttpRouteLoader {
             new Ais(),
             new BehaviouralStates(),
             new Devices(),
+            new Earthquake(),
             new EncounterCategories(),
             new ExternalTour(),
             new Group(),

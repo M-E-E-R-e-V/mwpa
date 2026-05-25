@@ -271,7 +271,23 @@ export class Lang_DE implements LangDefine {
         'desc.reg.year_spue': 'Aufwand-korrigierte Begegnungsrate pro Jahr und Spezies. X = Kalenderjahr, Y = Sichtungen ÷ Tour-Stunden in dem Jahr. Bringt mehrjährige Trends ans Licht, die durch ungleichen Touren-Aufwand verzerrt würden.',
         'desc.reg.sst_groupsize': 'Wassertemperatur am Sichtungstag gegen Gruppengröße. Eine Sichtung = ein Punkt. Klassischer Simpson-Kandidat: Über alle Spezies wirkt SST oft schwach, pro Spezies aber stark — verschiedene Spezies bewohnen verschiedene Temperaturbereiche.',
         'desc.reg.chl_groupsize': 'Chlorophyll-a (Produktivitäts-Proxy) gegen Gruppengröße. Höhere Chl-a-Werte deuten auf produktive Gewässer — testet ob größere Pods produktivere Bereiche nutzen.',
-        'desc.reg.effort': 'Monatliche Tour-Stunden gegen Sichtungen derselben Spezies in dem Monat. Eine Sättigungs-Kurve (sub-lineare Steigung) wäre ein Hinweis darauf, dass mehr Aufwand nicht proportional mehr Sichtungen bringt; eine perfekt lineare Beziehung spricht für Aufwand-limitiertes Sampling.'
+        'desc.reg.effort': 'Monatliche Tour-Stunden gegen Sichtungen derselben Spezies in dem Monat. Eine Sättigungs-Kurve (sub-lineare Steigung) wäre ein Hinweis darauf, dass mehr Aufwand nicht proportional mehr Sichtungen bringt; eine perfekt lineare Beziehung spricht für Aufwand-limitiertes Sampling.',
+
+        // Earthquake admin page (Phase 5)
+        'Earthquakes': 'Erdbeben',
+        'Events': 'Ereignisse',
+        'Period from': 'Zeitraum von',
+        'Period to': 'Zeitraum bis',
+        'Min magnitude': 'Min. Magnitude',
+        'Apply': 'Anwenden',
+        'Import now': 'Jetzt importieren',
+        'Import done': 'Import fertig',
+        'Reload': 'Neu laden',
+        'When': 'Wann',
+        'Mag': 'Mag.',
+        'Depth (km)': 'Tiefe (km)',
+        'Place': 'Ort',
+        'Source': 'Quelle'
     };
 
     /**

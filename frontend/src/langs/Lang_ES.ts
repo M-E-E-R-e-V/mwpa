@@ -265,7 +265,23 @@ export class Lang_ES implements LangDefine {
         'desc.reg.year_spue': 'Tasa de encuentro corregida por esfuerzo por año y especie. X = año natural, Y = avistamientos ÷ horas de salida en ese año. Revela tendencias multianuales que el esfuerzo desigual ocultaría.',
         'desc.reg.sst_groupsize': 'Temperatura superficial del agua frente al tamaño de grupo. Un avistamiento = un punto. Caso clásico de Simpson: agregado puede parecer débil mientras que por especie es fuerte — diferentes especies habitan diferentes rangos térmicos.',
         'desc.reg.chl_groupsize': 'Clorofila-a (proxy de productividad) frente al tamaño de grupo. Mayor Chl-a indica aguas productivas — comprueba si los grupos grandes usan zonas más productivas.',
-        'desc.reg.effort': 'Horas de salida mensuales frente a avistamientos de la misma especie ese mes. Una curva de saturación (pendiente sub-lineal) indicaría que más esfuerzo no rinde proporcionalmente más avistamientos; una relación lineal sugiere muestreo limitado por esfuerzo.'
+        'desc.reg.effort': 'Horas de salida mensuales frente a avistamientos de la misma especie ese mes. Una curva de saturación (pendiente sub-lineal) indicaría que más esfuerzo no rinde proporcionalmente más avistamientos; una relación lineal sugiere muestreo limitado por esfuerzo.',
+
+        // Earthquake admin page (Phase 5)
+        'Earthquakes': 'Terremotos',
+        'Events': 'Eventos',
+        'Period from': 'Periodo desde',
+        'Period to': 'Periodo hasta',
+        'Min magnitude': 'Magnitud mín.',
+        'Apply': 'Aplicar',
+        'Import now': 'Importar ahora',
+        'Import done': 'Importación lista',
+        'Reload': 'Recargar',
+        'When': 'Cuándo',
+        'Mag': 'Mag.',
+        'Depth (km)': 'Profundidad (km)',
+        'Place': 'Lugar',
+        'Source': 'Fuente'
     };
 
     /**
