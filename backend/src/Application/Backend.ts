@@ -16,7 +16,6 @@ import {DepthService} from '../Service/DepthService.js';
 import {ExternalTourService} from '../Service/ExternalTourService.js';
 import {FishingEffortService} from '../Service/FishingEffortService.js';
 import {OceanService} from '../Service/OceanService.js';
-import {PendingTrackPromotionService} from '../Service/PendingTrack/PendingTrackPromotionService.js';
 import {WeatherService} from '../Service/WeatherService.js';
 
 /**
@@ -82,7 +81,6 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
         this._serviceManager.add(new ExternalTourService());
         this._serviceManager.add(new LiveAisService());
         this._serviceManager.add(new AisPruneService());
-        this._serviceManager.add(new PendingTrackPromotionService());
     }
 
 }

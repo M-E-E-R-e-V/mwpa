@@ -9,7 +9,7 @@ import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesReposit
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {SightingMovementService} from '../../../Service/Movement/SightingMovementService.js';
-import {PendingTrackPromotionService} from '../../../Service/PendingTrack/PendingTrackPromotionService.js';
+import {PendingTrackPromoter} from '../../../Service/PendingTrack/PendingTrackPromoter.js';
 import {Users} from '../../../Users/Users.js';
 import {UtilSighting} from '../../../Utils/UtilSighting.js';
 import {UtilTourFid} from '../../../Utils/UtilTourFid.js';
@@ -82,7 +82,7 @@ export class Save {
         // If the device buffered tracking points for this tour_fid before the
         // sighting arrived (Mobile/SightingTourTracking::save → pending bucket),
         // promote them into the real tracking table now.
-        const promotedTracks = await PendingTrackPromotionService.promoteForTour(tourFid, device.id, tour.id);
+        const promotedTracks = await PendingTrackPromoter.promoteForTour(tourFid, device.id, tour.id);
         if (promotedTracks > 0 || tourWasJustCreated) {
             Logger.getLogger().info(
                 `Mobile/Sightings::save: tour_fid: ${tourFid} created=${tourWasJustCreated} promoted=${promotedTracks}`

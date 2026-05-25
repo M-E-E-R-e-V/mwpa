@@ -19,6 +19,7 @@ import {Profil} from './inc/Pages/Profil';
 import {Roles as RolesPage} from './inc/Pages/Roles';
 import {Sighting as SightingPage} from './inc/Pages/Sighting';
 import {Species as SpeciesPage} from './inc/Pages/Species';
+import {OrphanTracks as OrphanTracksPage} from './inc/Pages/OrphanTracks';
 import {Tours as ToursPage} from './inc/Pages/Tours';
 import {ToursExternal} from './inc/Pages/ToursExternal';
 import {Users as UsersPage} from './inc/Pages/Users';
@@ -190,6 +191,18 @@ type SideMenuEntry = {
 
         if (currentuser) {
             if (currentuser.user?.isAdmin) {
+                const toursEntry = sidemenuList.find((s) => s.name === 'tours');
+                if (toursEntry?.items) {
+                    toursEntry.items.push({
+                        title: 'Orphan Tracks',
+                        icon: 'fa-solid fa-unlink',
+                        name: 'orphan-tracks',
+                        onClick: (): void => {
+                            loadPage(new OrphanTracksPage());
+                        }
+                    });
+                }
+
                 sidemenuList.push({
                     title: 'Admin',
                     icon: 'fa-cogs',

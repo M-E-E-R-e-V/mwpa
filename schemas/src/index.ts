@@ -285,6 +285,24 @@ export {
     AisVesselTrackRequest,
 } from './Routes/Main/Ais/AisLive.js';
 export {
+    SchemaOrphanTracksFilter,
+    OrphanTracksFilter,
+    SchemaOrphanTrackEntry,
+    OrphanTrackEntry,
+    SchemaOrphanTracksMatchCandidate,
+    OrphanTracksMatchCandidate,
+    SchemaOrphanTracksMatchRequest,
+    OrphanTracksMatchRequest,
+    SchemaOrphanTracksAssignRequest,
+    OrphanTracksAssignRequest,
+    SchemaOrphanTracksListResponse,
+    OrphanTracksListResponse,
+    SchemaOrphanTracksMatchResponse,
+    OrphanTracksMatchResponse,
+    SchemaOrphanTracksAssignResponse,
+    OrphanTracksAssignResponse,
+} from './Routes/Main/OrphanTracks/OrphanTracks.js';
+export {
     SchemaMapCacheRequest,
     MapCacheRequest,
 } from './Routes/Map/MapCache.js';
