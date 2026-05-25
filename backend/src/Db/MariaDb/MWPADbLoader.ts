@@ -3,6 +3,7 @@ import {EntitySchema, MixedList} from 'typeorm';
 import {AisVessel} from './Entities/AisVessel.js';
 import {BehaviouralStates} from './Entities/BehaviouralStates.js';
 import {Devices} from './Entities/Devices.js';
+import {Earthquake} from './Entities/Earthquake.js';
 import {LiveAisTrack} from './Entities/LiveAisTrack.js';
 import {TourAisVessel} from './Entities/TourAisVessel.js';
 import {EncounterCategories} from './Entities/EncounterCategories.js';
@@ -20,6 +21,7 @@ import {SightingFishingEffort} from './Entities/SightingFishingEffort.js';
 import {SightingFishingVessel} from './Entities/SightingFishingVessel.js';
 import {SightingMovement} from './Entities/SightingMovement.js';
 import {SightingMovementTrack} from './Entities/SightingMovementTrack.js';
+import {SightingSeismic} from './Entities/SightingSeismic.js';
 import {SightingTour} from './Entities/SightingTour.js';
 import {SightingTourTracking} from './Entities/SightingTourTracking.js';
 import {SightingTourTrackingPending} from './Entities/SightingTourTrackingPending.js';
@@ -53,6 +55,7 @@ export class MWPADbLoader extends DBLoader {
             AisVessel,
             BehaviouralStates,
             Devices,
+            Earthquake,
             EncounterCategories,
             ExternalReceiver,
             ExternalTour,
@@ -69,6 +72,7 @@ export class MWPADbLoader extends DBLoader {
             SightingFishingVessel,
             SightingMovement,
             SightingMovementTrack,
+            SightingSeismic,
             SightingTour,
             SightingTourTracking,
             SightingTourTrackingPending,

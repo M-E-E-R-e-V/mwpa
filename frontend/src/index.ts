@@ -19,7 +19,9 @@ import {Profil} from './inc/Pages/Profil';
 import {Roles as RolesPage} from './inc/Pages/Roles';
 import {Sighting as SightingPage} from './inc/Pages/Sighting';
 import {Species as SpeciesPage} from './inc/Pages/Species';
+import {Earthquake as EarthquakePage} from './inc/Pages/Earthquake';
 import {OrphanTracks as OrphanTracksPage} from './inc/Pages/OrphanTracks';
+import {CrossSpeciesAnalytics as CrossSpeciesAnalyticsPage} from './inc/Pages/Species/CrossSpeciesAnalytics';
 import {Tours as ToursPage} from './inc/Pages/Tours';
 import {ToursExternal} from './inc/Pages/ToursExternal';
 import {Users as UsersPage} from './inc/Pages/Users';
@@ -172,6 +174,14 @@ type SideMenuEntry = {
                 }
             },
             {
+                title: 'Cross-species analytics',
+                icon: 'fa-solid fa-chart-line',
+                name: 'cross-species-analytics',
+                onClick: (): void => {
+                    loadPage(new CrossSpeciesAnalyticsPage());
+                }
+            },
+            {
                 title: 'Ocean & Fishing',
                 icon: 'fa-solid fa-water',
                 name: 'ocean_fishing_map',
@@ -273,6 +283,14 @@ type SideMenuEntry = {
                             name: 'admin-devices',
                             onClick: (): void => {
                                 loadPage(new DevicesPage());
+                            }
+                        },
+                        {
+                            title: 'Earthquakes',
+                            icon: 'fa-solid fa-house-crack',
+                            name: 'admin-earthquakes',
+                            onClick: (): void => {
+                                loadPage(new EarthquakePage());
                             }
                         },
                         {

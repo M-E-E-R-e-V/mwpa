@@ -366,6 +366,20 @@ export {
     OrphanTracksAssignResponse,
 } from './Routes/Main/OrphanTracks/OrphanTracks.js';
 export {
+    SchemaEarthquakeEntry,
+    EarthquakeEntry,
+    SchemaEarthquakeFilter,
+    EarthquakeFilter,
+    SchemaEarthquakeListResponse,
+    EarthquakeListResponse,
+    SchemaEarthquakeImportRequest,
+    EarthquakeImportRequest,
+    SchemaEarthquakeImportResponse,
+    EarthquakeImportResponse,
+    SchemaSightingSeismicEntry,
+    SightingSeismicEntry,
+} from './Routes/Main/Earthquake/Earthquake.js';
+export {
     SchemaMapCacheRequest,
     MapCacheRequest,
 } from './Routes/Map/MapCache.js';

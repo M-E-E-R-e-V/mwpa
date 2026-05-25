@@ -497,6 +497,33 @@ export class SightingRepository extends DBRepository<Sighting> {
     }
 
     /**
+     * Minimal projection of sightings whose `date` falls inside the
+     * supplied YYYY-MM-DD range — used by the seismic correlation flow
+     * to find sightings near a freshly imported earthquake. Returns
+     * `location_begin` as the raw JSON so the caller decides whether
+     * to parse + Haversine-filter or not.
+     */
+    public async findInDateRange(
+        dateFrom: string,
+        dateTo: string
+    ): Promise<Array<{
+        id: number;
+        date: string;
+        tour_start: string;
+        location_begin: string;
+    }>> {
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('s')
+            .select('s.id', 'id')
+            .addSelect('s.date', 'date')
+            .addSelect('s.tour_start', 'tour_start')
+            .addSelect('s.location_begin', 'location_begin')
+            .where('s.deleted = :del', {del: false})
+            .andWhere('s.date BETWEEN :from AND :to', {from: dateFrom, to: dateTo});
+        return qb.getRawMany();
+    }
+
+    /**
      * Month × Species sighting counts — one row per (species_id, ym)
      * with name + group color. Pairs with the monthly tour-hours
      * aggregate to form the effort-saturation regression

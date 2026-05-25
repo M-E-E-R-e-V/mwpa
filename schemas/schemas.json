@@ -3538,8 +3538,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 190,
+                          "y": 326
                         },
                         "fields": [
                           {
@@ -3574,8 +3574,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 1659,
+                          "y": 204
                         },
                         "fields": [
                           {
@@ -3621,8 +3621,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 1623,
+                          "y": 584
                         },
                         "fields": [
                           {
@@ -3679,8 +3679,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 1223,
+                          "y": 268
                         },
                         "fields": [
                           {
@@ -3748,8 +3748,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 766,
+                          "y": 362
                         },
                         "fields": [
                           {
@@ -3850,8 +3850,8 @@
                           "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 199,
+                          "y": 501
                         },
                         "fields": [
                           {
@@ -10190,6 +10190,431 @@
                 "schemas": [],
                 "enums": [],
                 "links": []
+              },
+              {
+                "unid": "e2ff2363-650a-4afc-a74f-2ca6d7fb9473",
+                "name": "Earthquake",
+                "type": "folder",
+                "istoggle": true,
+                "entrys": [
+                  {
+                    "unid": "8e249c19-8cd9-4815-adf8-298e25afdaed",
+                    "name": "Earthquake",
+                    "type": "file",
+                    "istoggle": true,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "2a7642b3-8087-46d2-9076-2052a8aca022",
+                        "name": "EarthquakeEntry",
+                        "description": "One imported earthquake event (USGS or other source)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "fce73019-cc81-47a7-b237-bfa492818427",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "ec47ca57-ccb1-448a-8e79-19377d3f6bf4",
+                            "name": "source",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Provider tag — 'usgs' for now; future expansion: 'emsc'"
+                          },
+                          {
+                            "unid": "0c7f4fb2-8b83-4577-a1a9-73a5e5bee00f",
+                            "name": "source_event_id",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Stable provider ID, e.g. USGS 'us7000xyz' — used for upsert"
+                          },
+                          {
+                            "unid": "b8d383eb-b599-4b5d-9661-96944a5a6a08",
+                            "name": "event_time_ms",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Event origin time (ms epoch, UTC)"
+                          },
+                          {
+                            "unid": "fd685daa-604b-4d82-a086-78cb9439ff65",
+                            "name": "lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "facb3130-3170-4911-8443-6b3a2f713e1b",
+                            "name": "lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b3303c44-2df2-46af-846f-3ce39713784b",
+                            "name": "depth_km",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d7c0c397-db61-463d-9b57-58ef6ccf4950",
+                            "name": "magnitude",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "40c22c56-e48e-49a2-a890-6fe0b4f6efc2",
+                            "name": "magnitude_type",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "'ml', 'mw', 'mb', etc."
+                          },
+                          {
+                            "unid": "25c704f1-3f7a-475b-9b81-9375a94f1744",
+                            "name": "place",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Free-form locality from provider, e.g. \"12 km SW of Adeje, Spain\""
+                          },
+                          {
+                            "unid": "ecd3f7d4-c675-4e0b-8a7f-93e44d81fe34",
+                            "name": "url",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Provider's detail page for the event"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "b75de24d-9a97-4bf6-8830-b80221d604b5",
+                        "name": "EarthquakeFilter",
+                        "description": "Paginated earthquake list filter",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "9ff66224-b21d-419b-b0a9-66b29f11e1c6",
+                            "name": "period_from",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e70661d2-9285-4c93-b4dd-e79b005c8f13",
+                            "name": "period_to",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "805eecd7-5f73-42a9-bd63-be20cc127e4f",
+                            "name": "min_magnitude",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "76f872cc-b4dd-4718-88f7-3fec192f988a",
+                            "name": "limit",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "8c1ce952-6ebd-4eef-9db1-6a0de1d3be84",
+                            "name": "offset",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "6d3660ff-9095-43c0-8384-caa9c78961d9",
+                        "name": "EarthquakeListResponse",
+                        "description": "Earthquake list response",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "dfb0324d-a643-4927-bb44-8ede09940888",
+                            "name": "filter",
+                            "type": {
+                              "type": "b75de24d-9a97-4bf6-8830-b80221d604b5",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "3100c6a9-dacf-44c0-8633-8e5c04d0923f",
+                            "name": "count",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "6ddfab56-a54d-441f-a0c2-103248b9353e",
+                            "name": "list",
+                            "type": {
+                              "type": "2a7642b3-8087-46d2-9076-2052a8aca022",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "014c7b8e-1a23-4141-bc17-22ab217bdfb0",
+                        "name": "EarthquakeImportRequest",
+                        "description": "Manual earthquake-import trigger (admin)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "093df15e-56c2-4f2d-8001-fbcd78dfd2c7",
+                            "name": "backfill_from",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "YYYY-MM-DD start for a backfill (default = last successful import or 30 days ago)"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "f2781b92-84e9-47ab-892c-5559d0e3470a",
+                        "name": "EarthquakeImportResponse",
+                        "description": "Result of an earthquake-import run",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "57d86186-3b9b-4d6a-854b-4b16a15d9b7c",
+                            "name": "imported",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "a436edce-a04d-415d-a561-c5a2b53c027b",
+                            "name": "updated",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "ecfc9414-f0f0-4bf3-b219-f5bad2896762",
+                            "name": "correlations",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Number of sighting_seismic rows upserted"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "d1ee61ea-86cf-4fbe-883b-b32d5e5860bd",
+                        "name": "SightingSeismicEntry",
+                        "description": "Per-sighting correlation to a nearby earthquake",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "f494d5de-8bf6-45cd-9d80-7c168341e53d",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "0c9650ef-1f35-4a55-91ac-94575125f56e",
+                            "name": "sighting_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d711460e-11e4-45f4-b1e6-244ab794805e",
+                            "name": "earthquake_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "7abab30f-cd32-47c0-aacb-236e8841ba28",
+                            "name": "distance_km",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "82b2bfb4-33de-4ae2-9771-c05b01638614",
+                            "name": "hours_offset",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Hours between earthquake event_time and sighting tour_start (signed: positive = earthquake before sighting)"
+                          },
+                          {
+                            "unid": "a71f7718-9e66-46f6-a228-36bbd56f1fd9",
+                            "name": "magnitude",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Snapshot of earthquake.magnitude at correlation time (denormalised for fast lookups)"
+                          }
+                        ]
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
               }
             ],
             "schemas": [],
@@ -11587,7 +12012,7 @@
   },
   "editor": {
     "controls_width": 344,
-    "active_entry_unid": "b8439d5e-6365-48ca-98f4-4d81f78de828",
-    "active_entry_table_unid": "19955f61-b5b3-4a45-8e41-40d5971ccf40"
+    "active_entry_unid": "8e249c19-8cd9-4815-adf8-298e25afdaed",
+    "active_entry_table_unid": "d1ee61ea-86cf-4fbe-883b-b32d5e5860bd"
   }
 }
