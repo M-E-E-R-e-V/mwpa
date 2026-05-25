@@ -8,6 +8,7 @@ export {
     RightUser,
     RightSightings,
     RightApi,
+    RightTours,
 } from './ACL/MwpaACLRbac.js';
 export {
     SchemaBackendConfigOptions,
@@ -161,6 +162,20 @@ export {
     ToursTrackingData,
     SchemaToursTrackingResponse,
     ToursTrackingResponse,
+    SchemaToursTrackingDeleteRequest,
+    ToursTrackingDeleteRequest,
+    SchemaToursTrackingDeleteResponse,
+    ToursTrackingDeleteResponse,
+    SchemaToursTrackingTransferRequest,
+    ToursTrackingTransferRequest,
+    SchemaToursTrackingTransferResponse,
+    ToursTrackingTransferResponse,
+    SchemaToursTrackingNeighborsRequest,
+    ToursTrackingNeighborsRequest,
+    SchemaToursTrackingNeighborTour,
+    ToursTrackingNeighborTour,
+    SchemaToursTrackingNeighborsResponse,
+    ToursTrackingNeighborsResponse,
 } from './Routes/Main/Tours/ToursTracking.js';
 export {
     SchemaTypeSighting,

@@ -5,9 +5,13 @@ import {
     ToursFilter,
     ToursListResponse,
     ToursTrackingData,
+    ToursTrackingDeleteResponse,
+    ToursTrackingNeighborTour,
+    ToursTrackingNeighborsResponse,
     ToursTrackingResponse,
     ToursTrackingSightingData,
-    ToursTrackingSightingExtended
+    ToursTrackingSightingExtended,
+    ToursTrackingTransferResponse
 } from 'mwpa_schemas';
 import {NetFetch} from '../Net/NetFetch';
 import {UnauthorizedError} from './Error/UnauthorizedError';
@@ -28,9 +32,13 @@ export type {
     ToursFilter,
     ToursListResponse,
     ToursTrackingData,
+    ToursTrackingDeleteResponse,
+    ToursTrackingNeighborTour,
+    ToursTrackingNeighborsResponse,
     ToursTrackingResponse,
     ToursTrackingSightingData,
-    ToursTrackingSightingExtended
+    ToursTrackingSightingExtended,
+    ToursTrackingTransferResponse
 };
 
 /**
@@ -77,6 +85,87 @@ export class Tours {
         }
 
         return null;
+    }
+
+    /**
+     * Resolve previous/next tour (same vehicle) for the tracking-edit picker.
+     * @param tourId
+     */
+    public static async getTrackingNeighbors(tourId: number): Promise<{
+        prev?: ToursTrackingNeighborTour;
+        next?: ToursTrackingNeighborTour;
+    } | null> {
+        const result = await NetFetch.postData('/json/tours/tracking/neighbors', {
+            tour_id: tourId
+        }) as ToursTrackingNeighborsResponse;
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return {prev: result.prev, next: result.next};
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Delete tracking points whose GPS timestamp falls inside [timestampFrom, timestampTo].
+     * @param tourId
+     * @param timestampFrom inclusive ms epoch
+     * @param timestampTo   inclusive ms epoch
+     */
+    public static async deleteTracking(
+        tourId: number,
+        timestampFrom: number,
+        timestampTo: number
+    ): Promise<number> {
+        const result = await NetFetch.postData('/json/tours/tracking/delete', {
+            tour_id: tourId,
+            timestamp_from: timestampFrom,
+            timestamp_to: timestampTo
+        }) as ToursTrackingDeleteResponse;
+
+        if (result && result.statusCode === StatusCodes.UNAUTHORIZED) {
+            throw new UnauthorizedError();
+        }
+
+        if (result && result.statusCode === StatusCodes.OK) {
+            return result.deleted ?? 0;
+        }
+
+        throw new Error(result?.msg ?? 'Delete failed');
+    }
+
+    /**
+     * Transfer tracking points whose timestamp falls in [timestampFrom, timestampTo]
+     * from source tour to target tour.
+     */
+    public static async transferTracking(
+        tourIdFrom: number,
+        tourIdTo: number,
+        timestampFrom: number,
+        timestampTo: number
+    ): Promise<number> {
+        const result = await NetFetch.postData('/json/tours/tracking/transfer', {
+            tour_id_from: tourIdFrom,
+            tour_id_to: tourIdTo,
+            timestamp_from: timestampFrom,
+            timestamp_to: timestampTo
+        }) as ToursTrackingTransferResponse;
+
+        if (result && result.statusCode === StatusCodes.UNAUTHORIZED) {
+            throw new UnauthorizedError();
+        }
+
+        if (result && result.statusCode === StatusCodes.OK) {
+            return result.transferred ?? 0;
+        }
+
+        throw new Error(result?.msg ?? 'Transfer failed');
     }
 
 }
