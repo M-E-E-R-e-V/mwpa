@@ -443,6 +443,182 @@ export class SightingRepository extends DBRepository<Sighting> {
     }
 
     /**
+     * Year × Species sighting counts — one row per (species_id, year)
+     * with the species' name and species_group color attached. Used by
+     * the cross-species regression matrix for Year × SPUE.
+     */
+    public async aggregateYearlySpecies(
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        organizationIds: number[] | undefined
+    ): Promise<Array<{species_id: number; species_name: string; color: string; y: string; sightings: number;}>> {
+        if (organizationIds !== undefined && organizationIds.length === 0) {
+            return [];
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('s')
+            .select('s.species_id', 'species_id')
+            .addSelect('sp.name', 'species_name')
+            .addSelect('sg.color', 'color')
+            .addSelect('DATE_FORMAT(s.date, \'%Y\')', 'y')
+            .addSelect('COUNT(*)', 'sightings')
+            .innerJoin('species', 'sp', 'sp.id = s.species_id')
+            .leftJoin('species_group', 'sg', 'sg.id = sp.species_groupid')
+            .where('s.deleted = :del', {del: false})
+            .andWhere('s.species_id > 0');
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+        if (from !== '') {
+            qb.andWhere('s.date >= :from', {from});
+        }
+        if (to !== '') {
+            qb.andWhere('s.date <= :to', {to});
+        }
+        if (organizationIds !== undefined) {
+            qb.innerJoin('vehicle', 'v', 'v.id = s.vehicle_id')
+                .andWhere('v.organization_id IN (:...orgIds)', {orgIds: organizationIds});
+        }
+
+        qb.groupBy('s.species_id')
+            .addGroupBy('sp.name')
+            .addGroupBy('sg.color')
+            .addGroupBy('DATE_FORMAT(s.date, \'%Y\')');
+
+        const rows = await qb.getRawMany<{species_id: number | string; species_name: string; color: string | null; y: string; sightings: number | string;}>();
+        return rows.map((r) => ({
+            species_id: Number(r.species_id),
+            species_name: r.species_name,
+            color: r.color ?? '#6c757d',
+            y: r.y,
+            sightings: Number(r.sightings)
+        }));
+    }
+
+    /**
+     * Month × Species sighting counts — one row per (species_id, ym)
+     * with name + group color. Pairs with the monthly tour-hours
+     * aggregate to form the effort-saturation regression
+     * (tour_hours × sightings).
+     */
+    public async aggregateMonthlySpecies(
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        organizationIds: number[] | undefined
+    ): Promise<Array<{species_id: number; species_name: string; color: string; ym: string; sightings: number;}>> {
+        if (organizationIds !== undefined && organizationIds.length === 0) {
+            return [];
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('s')
+            .select('s.species_id', 'species_id')
+            .addSelect('sp.name', 'species_name')
+            .addSelect('sg.color', 'color')
+            .addSelect('DATE_FORMAT(s.date, \'%Y-%m\')', 'ym')
+            .addSelect('COUNT(*)', 'sightings')
+            .innerJoin('species', 'sp', 'sp.id = s.species_id')
+            .leftJoin('species_group', 'sg', 'sg.id = sp.species_groupid')
+            .where('s.deleted = :del', {del: false})
+            .andWhere('s.species_id > 0');
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+        if (from !== '') {
+            qb.andWhere('s.date >= :from', {from});
+        }
+        if (to !== '') {
+            qb.andWhere('s.date <= :to', {to});
+        }
+        if (organizationIds !== undefined) {
+            qb.innerJoin('vehicle', 'v', 'v.id = s.vehicle_id')
+                .andWhere('v.organization_id IN (:...orgIds)', {orgIds: organizationIds});
+        }
+
+        qb.groupBy('s.species_id')
+            .addGroupBy('sp.name')
+            .addGroupBy('sg.color')
+            .addGroupBy('DATE_FORMAT(s.date, \'%Y-%m\')');
+
+        const rows = await qb.getRawMany<{species_id: number | string; species_name: string; color: string | null; ym: string; sightings: number | string;}>();
+        return rows.map((r) => ({
+            species_id: Number(r.species_id),
+            species_name: r.species_name,
+            color: r.color ?? '#6c757d',
+            ym: r.ym,
+            sightings: Number(r.sightings)
+        }));
+    }
+
+    /**
+     * Per-sighting env scatter — every non-deleted sighting in the period
+     * with its species + group color plus the env values needed for
+     * regression. Drops rows with NULL species_count (defensive).
+     */
+    public async findEnvScatterRows(
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        organizationIds: number[] | undefined
+    ): Promise<Array<{
+        species_id: number;
+        species_name: string;
+        color: string;
+        species_count: number;
+        sst_c_day: number | null;
+        chl_a_mg_m3_day: number | null;
+    }>> {
+        if (organizationIds !== undefined && organizationIds.length === 0) {
+            return [];
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('s')
+            .select('s.species_id', 'species_id')
+            .addSelect('sp.name', 'species_name')
+            .addSelect('sg.color', 'color')
+            .addSelect('s.species_count', 'species_count')
+            .addSelect('e.sst_c_day', 'sst_c_day')
+            .addSelect('e.chl_a_mg_m3_day', 'chl_a_mg_m3_day')
+            .innerJoin('species', 'sp', 'sp.id = s.species_id')
+            .leftJoin('species_group', 'sg', 'sg.id = sp.species_groupid')
+            .leftJoin('sighting_extended', 'e', 'e.sighting_id = s.id')
+            .where('s.deleted = :del', {del: false})
+            .andWhere('s.species_id > 0')
+            .andWhere('s.species_count > 0');
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+        if (from !== '') {
+            qb.andWhere('s.date >= :from', {from});
+        }
+        if (to !== '') {
+            qb.andWhere('s.date <= :to', {to});
+        }
+        if (organizationIds !== undefined) {
+            qb.innerJoin('vehicle', 'v', 'v.id = s.vehicle_id')
+                .andWhere('v.organization_id IN (:...orgIds)', {orgIds: organizationIds});
+        }
+
+        const rows = await qb.getRawMany<{
+            species_id: number | string;
+            species_name: string;
+            color: string | null;
+            species_count: number | string;
+            sst_c_day: number | null;
+            chl_a_mg_m3_day: number | null;
+        }>();
+        return rows.map((r) => ({
+            species_id: Number(r.species_id),
+            species_name: r.species_name,
+            color: r.color ?? '#6c757d',
+            species_count: Number(r.species_count),
+            sst_c_day: r.sst_c_day !== null ? Number(r.sst_c_day) : null,
+            chl_a_mg_m3_day: r.chl_a_mg_m3_day !== null ? Number(r.chl_a_mg_m3_day) : null
+        }));
+    }
+
+    /**
      * Find other species seen on the same tours (same `tour_fid`) as a
      * given species, restricted to the supplied period and org scope.
      * Returns label (species name) + count of distinct tour_fids where

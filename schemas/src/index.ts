@@ -148,6 +148,20 @@ export {
     SpeciesProfileResponse,
 } from './Routes/Main/Species/SpeciesProfile.js';
 export {
+    SchemaSpeciesRegressionRequest,
+    SpeciesRegressionRequest,
+    SchemaSpeciesRegressionPoint,
+    SpeciesRegressionPoint,
+    SchemaSpeciesRegressionFit,
+    SpeciesRegressionFit,
+    SchemaSpeciesRegressionSeries,
+    SpeciesRegressionSeries,
+    SchemaSpeciesRegressionChart,
+    SpeciesRegressionChart,
+    SchemaSpeciesRegressionMatrixResponse,
+    SpeciesRegressionMatrixResponse,
+} from './Routes/Main/Species/SpeciesRegression.js';
+export {
     SchemaUserInfoData,
     UserInfoData,
     SchemaUserInfoGroup,

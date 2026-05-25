@@ -9,8 +9,11 @@ import {
     SchemaSpeciesMergeRequest,
     SchemaSpeciesProfileRequest,
     SchemaSpeciesProfileResponse,
+    SchemaSpeciesRegressionMatrixResponse,
+    SchemaSpeciesRegressionRequest,
     SpeciesListResponse,
-    SpeciesProfileResponse
+    SpeciesProfileResponse,
+    SpeciesRegressionMatrixResponse
 } from 'mwpa_schemas';
 import {Users} from '../../Users/Users.js';
 import {checkMWPAUserIsLogin} from '../AuthCheck.js';
@@ -19,6 +22,7 @@ import {Delete} from './Species/Delete.js';
 import {List} from './Species/List.js';
 import {Merge} from './Species/Merge.js';
 import {Profile} from './Species/Profile.js';
+import {Regression} from './Species/Regression.js';
 import {Save} from './Species/Save.js';
 
 /**
@@ -81,6 +85,24 @@ export class Species extends DefaultRoute {
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._post(
+            '/json/species/regression-matrix',
+            checkMWPAUserIsLogin,
+            async(_req, _res, data): Promise<SpeciesRegressionMatrixResponse> => {
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                const orgIds = isAdmin ? undefined : await Users.getOrganizationIds(userId);
+                return Regression.getMatrix(data.body, orgIds);
+            },
+            {
+                description: 'Cross-species regression matrix (Year×SPUE, SST×group-size, Chl-a×group-size, effort saturation) — per-species + pooled OLS fits to surface Simpson-paradox effects.',
+                bodySchema: SchemaSpeciesRegressionRequest,
+                responseBodySchema: SchemaSpeciesRegressionMatrixResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit
             }
         );
 

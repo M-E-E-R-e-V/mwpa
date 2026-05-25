@@ -254,7 +254,24 @@ export class Lang_DE implements LangDefine {
         'desc.yearly': 'Sichtungen pro Kalenderjahr — komplementär zum Monats-Chart und nützlich für Mehrjahres-Trends. Achtung: Ohne SPUE-Korrektur können Schwankungen reine Effort-Effekte sein.',
         'desc.cooccurrence': 'Top-Spezies, die auf denselben Touren (gleicher tour_fid) wie diese Spezies gesehen wurden. Zählt distinkte Touren — Tour-Doppelzählung pro Spezies ausgeschlossen. Limit 12 Spezies.',
         'desc.pressure': 'Indikatoren für Beobachtungs- und anthropogenen Druck: Beaufort-Seegang während der Sichtung, Anzahl anderer Boote vor Ort (aus „other_vehicle"), kommerzielle Fischerei-Stunden im 25-km-Umkreis am Sichtungstag (GFW).',
-        'desc.env_extra': 'Zusätzliche ozeanographische Variablen aus SightingExtended: Salzgehalt (PSU), Meeresspiegel-Anomalie (cm), Strömungs-Geschwindigkeit (m/s), Wellenhöhe (m), UV-Index. Tägliche Mittelwerte.'
+        'desc.env_extra': 'Zusätzliche ozeanographische Variablen aus SightingExtended: Salzgehalt (PSU), Meeresspiegel-Anomalie (cm), Strömungs-Geschwindigkeit (m/s), Wellenhöhe (m), UV-Index. Tägliche Mittelwerte.',
+
+        // Cross-species analytics page (Phase 4)
+        'Cross-species analytics': 'Spezies-übergreifende Auswertung',
+        'Year × SPUE': 'Jahr × SPUE',
+        'SST × group size': 'Wassertemperatur × Gruppengröße',
+        'Chlorophyll-a × group size': 'Chlorophyll-a × Gruppengröße',
+        'Tour effort × sightings': 'Tour-Aufwand × Sichtungen',
+        'Pooled fit': 'Gepoolte Regression',
+        '(all species)': '(alle Spezies)',
+        'slope': 'Steigung',
+        '< min_n (no fit)': '< min_n (kein Fit)',
+
+        'desc.regression.page': 'Vier Streudiagramme über alle Spezies hinweg, jeweils mit einer Regressionslinie pro Spezies (farbig) und einer gepoolten Regression über alle Punkte (schwarz gestrichelt). Wenn die Vorzeichen oder die Steigung von gepoolt und farbig auseinanderlaufen, ist das Simpson-Paradoxon im Spiel — die gepoolte Sicht widerspricht den per-Spezies-Trends. Spezies mit < 10 Punkten werden weiterhin als Streupunkte gezeigt, bekommen aber keine eigene Linie.',
+        'desc.reg.year_spue': 'Aufwand-korrigierte Begegnungsrate pro Jahr und Spezies. X = Kalenderjahr, Y = Sichtungen ÷ Tour-Stunden in dem Jahr. Bringt mehrjährige Trends ans Licht, die durch ungleichen Touren-Aufwand verzerrt würden.',
+        'desc.reg.sst_groupsize': 'Wassertemperatur am Sichtungstag gegen Gruppengröße. Eine Sichtung = ein Punkt. Klassischer Simpson-Kandidat: Über alle Spezies wirkt SST oft schwach, pro Spezies aber stark — verschiedene Spezies bewohnen verschiedene Temperaturbereiche.',
+        'desc.reg.chl_groupsize': 'Chlorophyll-a (Produktivitäts-Proxy) gegen Gruppengröße. Höhere Chl-a-Werte deuten auf produktive Gewässer — testet ob größere Pods produktivere Bereiche nutzen.',
+        'desc.reg.effort': 'Monatliche Tour-Stunden gegen Sichtungen derselben Spezies in dem Monat. Eine Sättigungs-Kurve (sub-lineare Steigung) wäre ein Hinweis darauf, dass mehr Aufwand nicht proportional mehr Sichtungen bringt; eine perfekt lineare Beziehung spricht für Aufwand-limitiertes Sampling.'
     };
 
     /**

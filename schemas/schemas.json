@@ -3522,6 +3522,354 @@
                     ],
                     "enums": [],
                     "links": []
+                  },
+                  {
+                    "unid": "b8439d5e-6365-48ca-98f4-4d81f78de828",
+                    "name": "SpeciesRegression",
+                    "type": "file",
+                    "istoggle": true,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "cc323180-2ace-4b30-ad51-1c5d1a27a088",
+                        "name": "SpeciesRegressionRequest",
+                        "description": "Filter for the cross-species regression matrix",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "efb0dbd8-4327-48f8-80c0-ebe70830281d",
+                            "name": "period_from",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "73ac819a-c962-4d10-9710-e71c105ac804",
+                            "name": "period_to",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "7b3ad730-878c-4e09-9ff4-72fb589f2658",
+                        "name": "SpeciesRegressionPoint",
+                        "description": "Single scatter point with optional tooltip label",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "a9395f4b-197a-40a1-8da4-1259ea99dc8b",
+                            "name": "x",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "3ca59224-50e2-41ff-b914-381810251b56",
+                            "name": "y",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "de674087-7da4-4521-b9fb-0284086975b7",
+                            "name": "label",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "a8403af5-868f-49fa-9413-6a5d454b6b09",
+                        "name": "SpeciesRegressionFit",
+                        "description": "Ordinary-least-squares fit (slope/intercept/R²/n)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "3cba3b87-ca73-4b7d-a5fd-3f1e769478bd",
+                            "name": "slope",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "5e23a98d-bb5c-456e-98db-10709454bd0a",
+                            "name": "intercept",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "648eb303-c193-40ac-aee3-b514f5ff50c3",
+                            "name": "r2",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Coefficient of determination (0..1; 0 if undefined)"
+                          },
+                          {
+                            "unid": "b806c819-141c-4b27-97fe-3cfe1d4322be",
+                            "name": "n",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "90f51308-e38e-4ba9-ba4c-d8267d960656",
+                        "name": "SpeciesRegressionSeries",
+                        "description": "One species' points + per-species regression fit",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "b52dcc36-85e1-41b6-8201-4a179bc3e9e9",
+                            "name": "species_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "bafcb9ef-27bf-4271-912a-87852943dd2b",
+                            "name": "species_name",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d6bf057b-fa19-4428-9778-41c3f0b066c2",
+                            "name": "color",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "CSS color taken from the species_group (or auto-assigned)"
+                          },
+                          {
+                            "unid": "79900eb9-b39a-4a76-9aba-bb4693571292",
+                            "name": "points",
+                            "type": {
+                              "type": "7b3ad730-878c-4e09-9ff4-72fb589f2658",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "0b4b13dd-ddda-4650-975c-3a8ad687dfcc",
+                            "name": "fit",
+                            "type": {
+                              "type": "a8403af5-868f-49fa-9413-6a5d454b6b09",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Per-species OLS fit. Absent when n &lt; min_n_per_series."
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "3b3fb5d7-5595-43b3-b90a-462180e16c90",
+                        "name": "SpeciesRegressionChart",
+                        "description": "One scatter chart (x/y label + series + pooled fit)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "c5d865d6-e522-4d51-b6bc-de42570680cf",
+                            "name": "id",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Stable chart key (e.g. 'year_spue', 'sst_groupsize')"
+                          },
+                          {
+                            "unid": "61e4a8e9-15a6-47f4-80e1-5a3d38d1237a",
+                            "name": "title_key",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "2463a47e-6937-429e-a4da-19e6da8ab52e",
+                            "name": "desc_key",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "8f7ddb18-0ced-40e4-8550-07c8d4ab42f0",
+                            "name": "x_label_key",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "65ae676a-a901-4916-ab5d-e9f44a1bc294",
+                            "name": "y_label_key",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e44a3ab2-2fa5-4984-9584-0ba4abf0c7d6",
+                            "name": "min_n_per_series",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Minimum points per species required to draw a per-species fit line"
+                          },
+                          {
+                            "unid": "ec0fa3f7-06b1-4d03-aa2a-ae6a8111f1ca",
+                            "name": "series",
+                            "type": {
+                              "type": "90f51308-e38e-4ba9-ba4c-d8267d960656",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "5dcf60c8-5300-4d60-8cf9-c54ff16417fd",
+                            "name": "pooled_fit",
+                            "type": {
+                              "type": "a8403af5-868f-49fa-9413-6a5d454b6b09",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "19955f61-b5b3-4a45-8e41-40d5971ccf40",
+                        "name": "SpeciesRegressionMatrixResponse",
+                        "description": "Response carrying all configured regression scatters",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "ddf09c6e-5e46-4c14-80b6-ffc8b74ea763",
+                            "name": "charts",
+                            "type": {
+                              "type": "3b3fb5d7-5595-43b3-b90a-462180e16c90",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
                   }
                 ],
                 "schemas": [],
@@ -11239,7 +11587,7 @@
   },
   "editor": {
     "controls_width": 344,
-    "active_entry_unid": "9391726c-9e85-4313-b9a1-93454fccfff2",
-    "active_entry_table_unid": "a4bb653e-2ebb-4f66-9004-28f190d2d627"
+    "active_entry_unid": "b8439d5e-6365-48ca-98f4-4d81f78de828",
+    "active_entry_table_unid": "19955f61-b5b3-4a45-8e41-40d5971ccf40"
   }
 }

@@ -248,7 +248,24 @@ export class Lang_ES implements LangDefine {
         'desc.yearly': 'Avistamientos por año natural — complementario al gráfico mensual, útil para tendencias multianuales. Atención: sin corrección SPUE, las fluctuaciones pueden ser puros efectos de esfuerzo.',
         'desc.cooccurrence': 'Especies más frecuentes vistas en las mismas salidas (mismo tour_fid) que esta especie. Cuenta salidas distintas; se excluye doble conteo por salida. Límite 12 especies.',
         'desc.pressure': 'Indicadores de presión: estado del mar (Beaufort) durante el avistamiento, número de otros barcos presentes (de «other_vehicle»), horas de pesca comercial en un radio de 25 km el día del avistamiento (GFW).',
-        'desc.env_extra': 'Variables oceanográficas adicionales de SightingExtended: salinidad (PSU), anomalía del nivel del mar (cm), velocidad de la corriente (m/s), altura de ola (m), índice UV. Medias diarias.'
+        'desc.env_extra': 'Variables oceanográficas adicionales de SightingExtended: salinidad (PSU), anomalía del nivel del mar (cm), velocidad de la corriente (m/s), altura de ola (m), índice UV. Medias diarias.',
+
+        // Cross-species analytics page (Phase 4)
+        'Cross-species analytics': 'Análisis entre especies',
+        'Year × SPUE': 'Año × SPUE',
+        'SST × group size': 'Temp. superficial × tamaño de grupo',
+        'Chlorophyll-a × group size': 'Clorofila-a × tamaño de grupo',
+        'Tour effort × sightings': 'Esfuerzo × avistamientos',
+        'Pooled fit': 'Regresión agrupada',
+        '(all species)': '(todas las especies)',
+        'slope': 'pendiente',
+        '< min_n (no fit)': '< min_n (sin ajuste)',
+
+        'desc.regression.page': 'Cuatro diagramas de dispersión sobre todas las especies, cada uno con una línea de regresión por especie (color) y una regresión agrupada sobre todos los puntos (discontinua negra). Si el signo o la pendiente de la línea agrupada se separa de las líneas de color, estamos ante la paradoja de Simpson — la vista agrupada contradice las tendencias por especie. Las especies con < 10 puntos siguen apareciendo como puntos pero sin su propia línea.',
+        'desc.reg.year_spue': 'Tasa de encuentro corregida por esfuerzo por año y especie. X = año natural, Y = avistamientos ÷ horas de salida en ese año. Revela tendencias multianuales que el esfuerzo desigual ocultaría.',
+        'desc.reg.sst_groupsize': 'Temperatura superficial del agua frente al tamaño de grupo. Un avistamiento = un punto. Caso clásico de Simpson: agregado puede parecer débil mientras que por especie es fuerte — diferentes especies habitan diferentes rangos térmicos.',
+        'desc.reg.chl_groupsize': 'Clorofila-a (proxy de productividad) frente al tamaño de grupo. Mayor Chl-a indica aguas productivas — comprueba si los grupos grandes usan zonas más productivas.',
+        'desc.reg.effort': 'Horas de salida mensuales frente a avistamientos de la misma especie ese mes. Una curva de saturación (pendiente sub-lineal) indicaría que más esfuerzo no rinde proporcionalmente más avistamientos; una relación lineal sugiere muestreo limitado por esfuerzo.'
     };
 
     /**

@@ -30,6 +30,7 @@ import {Lang} from '../Lang';
 import {UtilOttLink} from '../Utils/UtilOttLink';
 import {SpeciesGroupDisplay} from '../Widget/SpeciesGroupDisplay';
 import {BasePage} from './BasePage';
+import {CrossSpeciesAnalytics as CrossSpeciesAnalyticsPage} from './Species/CrossSpeciesAnalytics';
 import {SpeciesProfile as SpeciesProfilePage} from './Species/Profile';
 import {SpeciesEditModal} from './Species/SpeciesEditModal';
 import {SpeciesMergeModal} from './Species/SpeciesMergeModal';
@@ -85,6 +86,14 @@ export class Species extends BasePage {
         this._mergeDialog = new SpeciesMergeModal(
             this._wrapper.getContentWrapper().getContent().getElement()
         );
+
+        // eslint-disable-next-line no-new
+        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Cross-species analytics', async() => {
+            if (this._loadPageFn) {
+                this._loadPageFn(new CrossSpeciesAnalyticsPage());
+            }
+            return false;
+        }, 'btn btn-block btn-default btn-sm', 'fa-solid fa-chart-line');
 
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Specie', async() => {
