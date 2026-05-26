@@ -174,7 +174,7 @@ type SideMenuEntry = {
                 }
             },
             {
-                title: 'Cross-species analytics',
+                title: 'Species comparison',
                 icon: 'fa-solid fa-chart-line',
                 name: 'cross-species-analytics',
                 onClick: (): void => {
