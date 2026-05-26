@@ -252,6 +252,7 @@ export class Lang_ES implements LangDefine {
 
         // Cross-species analytics page (Phase 4)
         'Cross-species analytics': 'Análisis entre especies',
+        'Species comparison': 'Comparación de especies',
         'Year × SPUE': 'Año × SPUE',
         'SST × group size': 'Temp. superficial × tamaño de grupo',
         'Chlorophyll-a × group size': 'Clorofila-a × tamaño de grupo',
@@ -282,6 +283,10 @@ export class Lang_ES implements LangDefine {
         'Depth (km)': 'Profundidad (km)',
         'Place': 'Lugar',
         'Source': 'Fuente',
+        'Backfill from': 'Retroactivo desde',
+        'Recorrelate all': 'Recorrelacionar todo',
+        'Recorrelate done': 'Recorrelación completada',
+        'Recorrelate confirm': '¿Recorrelacionar todos los avistamientos con todos los terremotos almacenados? En bases grandes puede tardar — ver registro.',
 
         // Species Profile — seismic exposure
         'Seismic exposure': 'Exposición sísmica',
