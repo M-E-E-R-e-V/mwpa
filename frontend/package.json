@@ -28,6 +28,7 @@
     "mwpa_schemas": "*",
     "ol": "^7.3.0",
     "ol-layerswitcher": "^4.1.1",
+    "qrcode": "^1.5.4",
     "select2": "^4.1.0-rc.0",
     "vts": "git+https://github.com/OpenSourcePKG/vts.git"
   },
@@ -36,6 +37,7 @@
     "@types/bootstrap": "^4.6.2",
     "@types/d3": "^7.4.3",
     "@types/jquery": "^3.5.16",
+    "@types/qrcode": "^1.5.6",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
     "bootstrap": "^4.6.2",
