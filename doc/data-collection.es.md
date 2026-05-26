@@ -92,6 +92,46 @@ Datos ambientales por avistamiento, refrescados por servicios en segundo plano:
 - `weather_hour_used` — hora local de la que se tomaron las muestras *_hour
 - `provenance` — JSON: qué proveedor generó qué columna
 
+### Terremotos y correlación avistamiento × terremoto
+
+Los terremotos los importa cada hora `EarthquakeService` desde dos catálogos compatibles con FDSNWS:
+
+- **USGS** — `earthquake.usgs.gov/fdsnws/event/1/query` (`format=geojson`), cobertura internacional amplia para M ≥ 4
+- **EMSC** — `seismicportal.eu/fdsnws/event/1/query` (`format=json`), reporte regional mucho más denso hasta ~M 1,0 en Canarias / Mediterráneo
+
+El mismo evento físico puede acabar guardado dos veces (una por proveedor, con distinto `source_event_id`) — no existe un identificador estable entre catálogos, así que la tabla conserva ambas filas con su propia procedencia.
+
+Tabla `earthquake` — una fila por evento y proveedor:
+
+| Columna | Significado |
+|---|---|
+| `source` | `'usgs'` o `'emsc'` |
+| `source_event_id` | Id de evento estable del proveedor |
+| `event_time_ms` | Hora de origen del evento, ms-epoch UTC (BigInt; TypeORM lo devuelve como cadena) |
+| `lat` / `lon` | Epicentro, WGS-84 grados decimales |
+| `depth_km` | Profundidad del hipocentro, km positivos (convenciones Z de ambos proveedores normalizadas) |
+| `magnitude` | Magnitud reportada |
+| `magnitude_type` | Escala de magnitud (p. ej. `ml`, `mb`) |
+| `place` | Texto libre de región (p. ej. `'CANARY ISLANDS, SPAIN REGION'`) |
+| `url` | Página de detalle del evento en el proveedor |
+
+Tabla de correlación `sighting_seismic` — una fila por par (avistamiento × terremoto) dentro de la ventana configurada (actualmente **±200 km** y **±14 días** desde la posición + `tour_start` del avistamiento):
+
+| Columna | Significado |
+|---|---|
+| `sighting_id` | FK a `sighting.id` |
+| `earthquake_id` | FK a `earthquake.id` |
+| `distance_km` | Distancia ortodrómica desde la posición del avistamiento al epicentro |
+| `hours_offset` | Horas con signo; **positivo = terremoto antes del avistamiento** |
+| `magnitude` | Snapshot denormalizado de la magnitud para filtrado rápido |
+
+Un índice único sobre `(sighting_id, earthquake_id)` deduplica los pares.
+
+Notas:
+
+- La bbox de importación de cada organización es el centroide de su tracking area (o la sede de la organización, si no hay tracking area configurada) expandida en **500 km** — suficiente para cubrir el archipiélago canario + la plataforma marroquí desde un único punto de anclaje en el puerto.
+- El umbral mínimo de magnitud es **M 2,5** (umbral del feed "significant" de USGS). Por debajo, los picks de USGS son en su mayoría ruido instrumental lejano, pero SE conservan para la región de Canarias gracias al pickup regional de EMSC.
+
 ## Convenciones de coordenadas y tiempo
 
 - **Coordenadas** en **WGS84 grados decimales**. La longitud es signada (oeste = negativo).
@@ -134,6 +174,7 @@ Los avistamientos sin puntos de tracking caen en `source='manual_begin_end'`: un
 - **Patrones de comportamiento**: `behaviours` (JSON sobre `BehaviouralStates`), `reaction_id` (`EncounterCategories`).
 - **Movimiento / cinemática**: segmentos `sighting_movement_track` — distribuciones de velocidad, histogramas de ángulo de giro, diagramas en rosa de rumbo, proxies de tiempo de permanencia.
 - **Comparación anual**: la pestaña Year-comparison usa el mismo conjunto cargado que el mapa.
+- **Respuesta conductual a eventos sísmicos** — emparejar avistamientos con terremotos cercanos (±14 d / ±200 km) e inspeccionar la distribución firmada del desfase horario. Una asimetría fuertemente positiva sugiere patrones de respuesta retardada.
 
 ### Limitaciones
 

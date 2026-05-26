@@ -19,16 +19,18 @@ see [Data collection & scientific use](data-collection.en.md).
 5. [Tours External](#5-tours-external)
 6. [Ocean & Fishing map](#6-ocean--fishing-map)
 7. [Live AIS map](#7-live-ais-map)
-8. [Admin → Users](#8-admin--users)
-9. [Admin → User Groups](#9-admin--user-groups)
-10. [Admin → Roles](#10-admin--roles)
-11. [Admin → Organization](#11-admin--organization)
-12. [Admin → Species](#12-admin--species)
-13. [Admin → Vehicle](#13-admin--vehicle)
-14. [Admin → Encounters](#14-admin--encounters)
-15. [Admin → Devices](#15-admin--devices)
-16. [Admin → External Tour Sources](#16-admin--external-tour-sources)
-17. [Admin → Services](#17-admin--services)
+8. [Earthquakes & impact analysis](#8-earthquakes--impact-analysis)
+9. [Admin → Users](#9-admin--users)
+10. [Admin → User Groups](#10-admin--user-groups)
+11. [Admin → Roles](#11-admin--roles)
+12. [Admin → Organization](#12-admin--organization)
+13. [Admin → Species](#13-admin--species)
+14. [Admin → Vehicle](#14-admin--vehicle)
+15. [Admin → Encounters](#15-admin--encounters)
+16. [Admin → Devices](#16-admin--devices)
+17. [Tours → Orphan tracks](#17-tours--orphan-tracks)
+18. [Admin → External Tour Sources](#18-admin--external-tour-sources)
+19. [Admin → Services](#19-admin--services)
 
 ---
 
@@ -149,7 +151,47 @@ basemap. Click a vessel marker to open its recent trail.
 
 ---
 
-## 8. Admin → Users
+## 8. Earthquakes & impact analysis
+
+*Admin-only.* Imports earthquakes hourly from the FDSNWS catalogues of
+**USGS** (global coverage) and **EMSC** (dense regional reporting for
+the Canaries / Mediterranean, down to ~M 1.0) and correlates them with
+every sighting within ±14 days and 200 km.
+
+**Filter card:**
+- Period from / to + min. magnitude — populates the earthquake table
+  and renders them as circles on the map (radius by magnitude, hue by
+  depth: shallow = red, deep = ochre).
+- **± window** — dropdown with five options:
+  - *Do not show sightings* (default — earthquake list only)
+  - **±24 h** — acute stress response (strandings, P/S-wave effects)
+  - **±3 days** — short-term behavioural shift
+  - **±7 days** — medium-term displacement / migration
+  - **±14 days** — broad — catches delayed effects, noisy
+
+As soon as a window other than "none" is selected the page loads the
+impact analysis across **all** earthquakes in the current table:
+
+- The affected sightings are rendered as markers on the map (tooltip
+  with species, Δ km, Δ h)
+- Per sighting the computed movement track is overlaid as a polyline
+- An **analysis** card below the map area shows four bar charts:
+  sightings by species, by behavioural state, by encounter category,
+  and a time-offset histogram (signed hours — positive = quake before
+  sighting)
+
+**No manual import button:** the hourly cron pulls new events
+automatically. On cold-start of a new provider the backfill begins at
+the oldest sighting date minus 30 days.
+
+**Recorrelate** (button on the right of the filter bar): walks the
+entire `earthquake` table once and rewrites the `sighting_seismic`
+correlations — only needed after a change to `CORRELATION_RADIUS_KM`
+or `CORRELATION_WINDOW_DAYS` in the code.
+
+---
+
+## 9. Admin → Users
 
 Manage operator accounts.
 
@@ -163,7 +205,7 @@ you can also assign secondary groups and reset the password.
 
 ---
 
-## 9. Admin → User Groups
+## 10. Admin → User Groups
 
 Groups bind a *role* (admin / importer / driver / guide …) to an
 *organisation*. A user can belong to multiple groups but always has
@@ -175,7 +217,7 @@ exactly one *main group*.
 
 ---
 
-## 10. Admin → Roles
+## 11. Admin → Roles
 
 Roles define the set of rights (RBAC) available in the system. New
 rights have to be added in [`schemas/schemas.json`](../schemas/schemas.json)
@@ -187,7 +229,7 @@ via the vtseditor — they are not free text.
 
 ---
 
-## 11. Admin → Organization
+## 12. Admin → Organization
 
 The owning entity for vehicles, drivers, tours and sightings.
 A single MWPA instance can serve multiple organisations.
@@ -198,7 +240,7 @@ A single MWPA instance can serve multiple organisations.
 
 ---
 
-## 12. Admin → Species
+## 13. Admin → Species
 
 Master list of cetaceans (and other animals) that observers can select
 from. Each species belongs to a **species group** (Odontoceti / Mysticeti /
@@ -210,7 +252,7 @@ from. Each species belongs to a **species group** (Odontoceti / Mysticeti /
 
 ---
 
-## 13. Admin → Vehicle
+## 14. Admin → Vehicle
 
 Boats in the fleet. Only entries with **In use** = true are offered when
 a new tour is started.
@@ -221,7 +263,7 @@ a new tour is started.
 
 ---
 
-## 14. Admin → Encounters
+## 15. Admin → Encounters
 
 Encounter categories used in the **Reaction** field of a sighting —
 *Interaction*, *No Response*, *Avoidance*, *Proximity*, *Unknown* etc.
@@ -232,7 +274,7 @@ Encounter categories used in the **Reaction** field of a sighting —
 
 ---
 
-## 15. Admin → Devices
+## 16. Admin → Devices
 
 Mobile devices that have synced with the backend (one row per
 install). Used to trace which physical phone / tablet uploaded a tour.
@@ -243,7 +285,33 @@ install). Used to trace which physical phone / tablet uploaded a tour.
 
 ---
 
-## 16. Admin → External Tour Sources
+## 17. Tours → Orphan tracks
+
+*Admin-only.* Available in the **Tours** sub-menu. Lists pending
+tracking buckets (`sighting_tour_tracking_pending`) that could not be
+attached to a `SightingTour` — typical when crew or boat are corrected
+in the portal after the trip and the GPS points stay anchored to the
+old `tour_fid`.
+
+<p align="center">
+  <img src="screenshots/manual/16-admin-orphan-tracks.png" width="900" alt="Orphan tracks" />
+</p>
+
+**Assign modal:** clicking a row opens a dialog with four pickers
+(vehicle, driver, date, tour start) and a match list of fitting tours.
+Below that a small **map preview** of the bucket contents (polyline
+through all decoded positions + start / end markers + time-span line)
+so you can tell at a glance whether the data belongs to a real tour
+or is just GPS noise.
+
+- **Assign** moves the pending rows into `sighting_tour_tracking` of
+  the chosen target and triggers a `SightingMovement` recompute.
+- **Delete bucket** drops the pending rows entirely — useful for test
+  rides, harbour drift or obviously broken GPS traces.
+
+---
+
+## 18. Admin → External Tour Sources
 
 Configures third-party tour providers (e.g. FareHarbor) that feed the
 [Tours External](#5-tours-external) list. Each row stores the provider
@@ -255,7 +323,7 @@ type, credentials and a polling interval.
 
 ---
 
-## 17. Admin → Services
+## 19. Admin → Services
 
 Status dashboard for the backend service-manager. Runners (e.g.
 `mariadb`, `httpserver`) keep the platform up; schedulers (`depth`,

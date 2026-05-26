@@ -20,16 +20,18 @@ científico del conjunto de datos consulta
 5. [Salidas externas](#5-salidas-externas)
 6. [Mapa Ocean & Fishing](#6-mapa-ocean--fishing)
 7. [Mapa AIS en vivo](#7-mapa-ais-en-vivo)
-8. [Admin → Usuarios](#8-admin--usuarios)
-9. [Admin → Grupos de usuarios](#9-admin--grupos-de-usuarios)
-10. [Admin → Roles](#10-admin--roles)
-11. [Admin → Organización](#11-admin--organización)
-12. [Admin → Especies](#12-admin--especies)
-13. [Admin → Embarcación](#13-admin--embarcación)
-14. [Admin → Encuentros](#14-admin--encuentros)
-15. [Admin → Dispositivos](#15-admin--dispositivos)
-16. [Admin → Fuentes externas de salidas](#16-admin--fuentes-externas-de-salidas)
-17. [Admin → Servicios](#17-admin--servicios)
+8. [Terremotos y análisis de impacto](#8-terremotos-y-análisis-de-impacto)
+9. [Admin → Usuarios](#9-admin--usuarios)
+10. [Admin → Grupos de usuarios](#10-admin--grupos-de-usuarios)
+11. [Admin → Roles](#11-admin--roles)
+12. [Admin → Organización](#12-admin--organización)
+13. [Admin → Especies](#13-admin--especies)
+14. [Admin → Embarcación](#14-admin--embarcación)
+15. [Admin → Encuentros](#15-admin--encuentros)
+16. [Admin → Dispositivos](#16-admin--dispositivos)
+17. [Salidas → Tracks huérfanos](#17-salidas--tracks-huérfanos)
+18. [Admin → Fuentes externas de salidas](#18-admin--fuentes-externas-de-salidas)
+19. [Admin → Servicios](#19-admin--servicios)
 
 ---
 
@@ -155,7 +157,51 @@ mismo mapa base. Haz clic en un marcador para abrir su rastro reciente.
 
 ---
 
-## 8. Admin → Usuarios
+## 8. Terremotos y análisis de impacto
+
+*Solo administrador.* Importa terremotos cada hora desde los catálogos
+FDSNWS de **USGS** (cobertura global) y **EMSC** (reporte regional denso
+para Canarias / Mediterráneo, hasta ~M 1,0) y los correlaciona con todos
+los avistamientos dentro de ±14 días y 200 km.
+
+**Tarjeta de filtros:**
+- Periodo desde / hasta + magnitud mínima — llena la tabla de
+  terremotos y los muestra como círculos en el mapa (radio según
+  magnitud, tono según profundidad: superficial = rojo, profundo =
+  ocre).
+- **± ventana** — desplegable con cinco opciones:
+  - *No mostrar avistamientos* (por defecto — solo lista de terremotos)
+  - **±24 h** — respuesta aguda al estrés (varamientos, efectos de ondas P/S)
+  - **±3 días** — cambio conductual a corto plazo
+  - **±7 días** — desplazamiento / migración a medio plazo
+  - **±14 días** — amplio, captura efectos retardados (ruidoso)
+
+En cuanto se selecciona una ventana distinta de "ninguna", la página
+carga el análisis de impacto sobre **todos** los terremotos de la tabla
+actual:
+
+- Los avistamientos afectados se renderizan como marcadores en el mapa
+  (tooltip con especie, Δ km, Δ h)
+- Por avistamiento se superpone el trayecto de movimiento calculado
+  como polilínea
+- Una tarjeta de **análisis** debajo del mapa muestra cuatro gráficos
+  de barras: avistamientos por especie, por estado conductual, por
+  categoría de encuentro, y un histograma de desfase temporal
+  (horas con signo — positivo = terremoto antes del avistamiento)
+
+**Sin botón de importación manual:** el cron horario trae los eventos
+nuevos automáticamente. En el primer arranque de un proveedor el
+relleno retroactivo arranca en la fecha del avistamiento más antiguo
+menos 30 días.
+
+**Recorrelacionar** (botón a la derecha de la barra de filtros):
+recorre toda la tabla `earthquake` y reescribe las correlaciones
+`sighting_seismic` — solo necesario tras un cambio en
+`CORRELATION_RADIUS_KM` o `CORRELATION_WINDOW_DAYS` en el código.
+
+---
+
+## 9. Admin → Usuarios
 
 Gestiona las cuentas de operador.
 
@@ -170,7 +216,7 @@ grupos secundarios y se restablecen contraseñas.
 
 ---
 
-## 9. Admin → Grupos de usuarios
+## 10. Admin → Grupos de usuarios
 
 Los grupos asocian un *rol* (admin / importer / driver / guide …) con
 una *organización*. Un usuario puede pertenecer a varios grupos pero
@@ -182,7 +228,7 @@ siempre tiene exactamente un *grupo principal*.
 
 ---
 
-## 10. Admin → Roles
+## 11. Admin → Roles
 
 Los roles agrupan los permisos (RBAC) disponibles en el sistema. Los
 nuevos permisos se añaden en
@@ -195,7 +241,7 @@ no son texto libre.
 
 ---
 
-## 11. Admin → Organización
+## 12. Admin → Organización
 
 Entidad propietaria de embarcaciones, patrones, salidas y avistamientos.
 Una sola instancia MWPA puede atender a varias organizaciones.
@@ -206,7 +252,7 @@ Una sola instancia MWPA puede atender a varias organizaciones.
 
 ---
 
-## 12. Admin → Especies
+## 13. Admin → Especies
 
 Lista maestra de cetáceos (y otros animales) entre los que el
 observador puede elegir. Cada especie pertenece a un **grupo de
@@ -219,7 +265,7 @@ externo para enlazar con la taxonomía.
 
 ---
 
-## 13. Admin → Embarcación
+## 14. Admin → Embarcación
 
 Las embarcaciones de la flota. Solo las entradas con **In use** = true
 se ofrecen al crear una nueva salida.
@@ -230,7 +276,7 @@ se ofrecen al crear una nueva salida.
 
 ---
 
-## 14. Admin → Encuentros
+## 15. Admin → Encuentros
 
 Categorías de encuentro utilizadas en el campo **Reacción** de un
 avistamiento — *Interaction*, *No Response*, *Avoidance*, *Proximity*,
@@ -242,7 +288,7 @@ avistamiento — *Interaction*, *No Response*, *Avoidance*, *Proximity*,
 
 ---
 
-## 15. Admin → Dispositivos
+## 16. Admin → Dispositivos
 
 Dispositivos móviles que se han sincronizado con el backend (una fila
 por instalación). Útil para rastrear qué teléfono / tableta subió cada
@@ -254,7 +300,34 @@ salida.
 
 ---
 
-## 16. Admin → Fuentes externas de salidas
+## 17. Salidas → Tracks huérfanos
+
+*Solo administrador.* Disponible en el submenú **Salidas**. Lista los
+buckets de tracking pendientes (`sighting_tour_tracking_pending`) que
+no pudieron asignarse a ninguna `SightingTour` — algo típico cuando
+tripulación o embarcación se corrigen en el portal después de la salida
+y los puntos GPS quedan anclados al `tour_fid` antiguo.
+
+<p align="center">
+  <img src="screenshots/manual/16-admin-orphan-tracks.png" width="900" alt="Tracks huérfanos" />
+</p>
+
+**Modal de asignación:** al hacer clic en una fila se abre un diálogo
+con cuatro selectores (embarcación, patrón, fecha, hora de inicio) y
+una lista de coincidencias con las salidas candidatas. Debajo, una
+pequeña **vista previa de mapa** del contenido del bucket (polilínea a
+través de todas las posiciones decodificadas + marcadores de inicio /
+fin + línea del intervalo temporal), de modo que se puede juzgar de un
+vistazo si los datos pertenecen a una salida real o son solo ruido GPS.
+
+- **Asignar** mueve las filas pendientes a `sighting_tour_tracking` del
+  destino elegido y dispara un recálculo de `SightingMovement`.
+- **Eliminar bucket** descarta las filas pendientes por completo — útil
+  para pruebas, deriva en puerto o trazas GPS claramente rotas.
+
+---
+
+## 18. Admin → Fuentes externas de salidas
 
 Configura proveedores externos (p. ej. FareHarbor) que alimentan la
 lista de [Salidas externas](#5-salidas-externas). Cada fila guarda el
@@ -266,7 +339,7 @@ tipo de proveedor, las credenciales y un intervalo de sondeo.
 
 ---
 
-## 17. Admin → Servicios
+## 19. Admin → Servicios
 
 Panel de estado del gestor de servicios del backend. Los **runners**
 (p. ej. `mariadb`, `httpserver`) mantienen la plataforma en marcha; los

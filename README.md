@@ -176,7 +176,8 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 - Users, groups &amp; roles (RBAC via `rbac-simple`)
 - Vehicles, drivers, organisations, species &amp; species groups
 - Encounter categories, behavioural states, external receivers (AROC)
-- Bulk re-derivation of analytics (e.g. movement tracks)
+- **Orphan tracks** admin page — buckets of pending GPS points whose parent tour never landed (typical when crew/boat is corrected after the fact). Includes a map preview of the actual points so the admin can decide *assign-vs-delete* before re-pointing them at a different `SightingTour`.
+- Bulk re-derivation of analytics (e.g. movement tracks, sighting × earthquake correlations)
 
 ### For researchers
 
@@ -184,6 +185,9 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 - AROC office-report export (filled `PLANTILLA_AVISTAMIENTOS_AROC.xlsx`, one file per boat per half-year)
 - Printable Data Page (Map + Analytics + Year comparison) via the browser's PDF export
 - Derived **movement tracks** per sighting: distance, speed, heading, turning-angle, with GPS-jump flag
+- Per-sighting **environmental enrichment** — bathymetry, SST, chlorophyll-a, sea-surface salinity, sea-level anomaly, UV index (Open-Meteo + ERDDAP + NASA POWER), fishing effort (Global Fishing Watch)
+- **Seismic correlation** — hourly cron pulls earthquakes from USGS + EMSC (FDSNWS) for every org's tracking area, joins to nearby sightings within ±14 days / 200 km, exposes them on the per-species profile and an interactive impact-analysis page (pick a window — ±24 h / 3 d / 7 d / 14 d — see affected sightings, their movement tracks, and analytics buckets by species / behaviour / encounter / hours-offset)
+- Cross-species regression matrix with Simpson's-paradox visibility (per-species + pooled regression lines on the same plot)
 - **Effort-only tours** — legs without sightings are still preserved server-side from the uploaded GPS track, so they appear in sighting-rate and survey-effort analyses
 
 ## Tech stack
@@ -199,6 +203,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 | Maps | OpenLayers + `ol-layerswitcher`, OSM tile cache |
 | Analytics | d3 + dc.js (crossfilter), in-page charts and dashboards |
 | Office exports | `node-xlsx` (sightings list), `JSZip` direct-XML patch (AROC template) |
+| External data | Open-Meteo + NASA POWER (weather/UV), ERDDAP (SST/chl-a/SSS/SLA/currents), Global Fishing Watch 4Wings (fishing effort), USGS + EMSC FDSNWS (earthquakes), AISStream.io (live vessel positions) |
 | Mobile | Flutter ([separate repo](https://github.com/M-E-E-R-e-V/mwpa-app)) |
 | Local infra | Docker Compose (MariaDB) |
 
