@@ -1,5 +1,5 @@
 import {DBRepository} from 'figtree';
-import {Between, FindOptionsWhere, LessThanOrEqual, MoreThanOrEqual, Raw} from 'typeorm';
+import {Between, FindOptionsWhere, In, LessThanOrEqual, MoreThanOrEqual, Raw} from 'typeorm';
 import {Earthquake} from '../Entities/Earthquake.js';
 
 /**
@@ -189,6 +189,39 @@ export class EarthquakeRepository extends DBRepository<Earthquake> {
                 lat: Between(bbox.min_lat, bbox.max_lat),
                 lon: Between(bbox.min_lon, bbox.max_lon),
                 event_time_ms: Between(timeFromMs, timeToMs),
+                magnitude: Raw((alias) => `${alias} >= :m`, {m: minMag})
+            }
+        });
+    }
+
+    /**
+     * Load earthquakes by id list — used by the impact endpoint to
+     * materialise the focus event(s) for the response.
+     */
+    public async findByIds(ids: number[]): Promise<Earthquake[]> {
+        if (ids.length === 0) {
+            return [];
+        }
+        const repository = await this._repository;
+        return repository.find({where: {id: In(ids)}});
+    }
+
+    /**
+     * Earthquakes whose `event_time_ms` falls within the given UTC
+     * calendar day (00:00..23:59:59.999 UTC). Used by the impact
+     * endpoint when the user enters a date rather than clicking a
+     * single event.
+     */
+    public async findByDateUtc(dateIso: string, minMag: number): Promise<Earthquake[]> {
+        const startMs = Date.parse(`${dateIso}T00:00:00Z`);
+        if (!Number.isFinite(startMs)) {
+            return [];
+        }
+        const endMs = startMs + (24 * 60 * 60 * 1000) - 1;
+        const repository = await this._repository;
+        return repository.find({
+            where: {
+                event_time_ms: Between(startMs, endMs),
                 magnitude: Raw((alias) => `${alias} >= :m`, {m: minMag})
             }
         });

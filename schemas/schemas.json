@@ -10283,6 +10283,175 @@
                             "description": ""
                           }
                         ]
+                      },
+                      {
+                        "unid": "db36bc48-0c73-46a5-9197-18b4776ad5e7",
+                        "name": "OrphanTracksPoint",
+                        "description": "One decoded pending-track point — lat/lon + timestamp (s since epoch) for the map preview in the AssignModal",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "c0585f1f-9f5e-47c0-a15e-6f59ce3b5fa2",
+                            "name": "lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "75d2de90-4eba-431c-b0fd-fab754a589d2",
+                            "name": "lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "88282402-a44f-4b07-85fe-86cf6df47ff7",
+                            "name": "ts",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "create_datetime in seconds since epoch — matches the source row's value"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "8a586098-1913-441f-afae-091c9f1ba586",
+                        "name": "OrphanTracksPointsRequest",
+                        "description": "Fetch decoded points for one orphan bucket (tour_fid + device_id) to draw on the AssignModal map",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "feacad9f-240a-412d-80ca-5cf130244877",
+                            "name": "tour_fid",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b5279b60-28d6-4b90-abc8-480a437bcf90",
+                            "name": "device_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "cc3ac1fe-1998-484b-8a5b-c353375e8fdb",
+                        "name": "OrphanTracksPointsResponse",
+                        "description": "Decoded points for an orphan bucket — ordered by timestamp ascending",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "3b00bd9f-8aca-45ca-8a7f-036f13733916",
+                            "name": "points",
+                            "type": {
+                              "type": "db36bc48-0c73-46a5-9197-18b4776ad5e7",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "54dffe8e-a661-43ee-bc30-03d2d6930e00",
+                        "name": "OrphanTracksDeleteRequest",
+                        "description": "Drop the entire pending bucket for (tour_fid, device_id) without promoting — used when the admin decides the orphan is junk",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "f0e197f4-d04d-4ceb-a4d6-8eecb48206e2",
+                            "name": "tour_fid",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "cbb656e7-f9eb-427f-8ebd-2372578e7c20",
+                            "name": "device_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "ca022e4e-ef76-48b4-b2c6-d55f228aa5d7",
+                        "name": "OrphanTracksDeleteResponse",
+                        "description": "Result of dropping an orphan bucket — `deleted` echoes the row count that was in the bucket before",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "941589d2-5a8e-4028-8a44-bd74e8782c0e",
+                            "name": "deleted",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
                       }
                     ],
                     "enums": [],
@@ -10558,86 +10727,6 @@
                         ]
                       },
                       {
-                        "unid": "d1ee61ea-86cf-4fbe-883b-b32d5e5860bd",
-                        "name": "SightingSeismicEntry",
-                        "description": "Per-sighting correlation to a nearby earthquake",
-                        "extend": {
-                          "type": "object"
-                        },
-                        "pos": {
-                          "x": 790,
-                          "y": 453
-                        },
-                        "fields": [
-                          {
-                            "unid": "f494d5de-8bf6-45cd-9d80-7c168341e53d",
-                            "name": "id",
-                            "type": {
-                              "type": "number",
-                              "optional": false,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": ""
-                          },
-                          {
-                            "unid": "0c9650ef-1f35-4a55-91ac-94575125f56e",
-                            "name": "sighting_id",
-                            "type": {
-                              "type": "number",
-                              "optional": false,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": ""
-                          },
-                          {
-                            "unid": "d711460e-11e4-45f4-b1e6-244ab794805e",
-                            "name": "earthquake_id",
-                            "type": {
-                              "type": "number",
-                              "optional": false,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": ""
-                          },
-                          {
-                            "unid": "7abab30f-cd32-47c0-aacb-236e8841ba28",
-                            "name": "distance_km",
-                            "type": {
-                              "type": "number",
-                              "optional": false,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": ""
-                          },
-                          {
-                            "unid": "82b2bfb4-33de-4ae2-9771-c05b01638614",
-                            "name": "hours_offset",
-                            "type": {
-                              "type": "number",
-                              "optional": false,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": "Hours between earthquake event_time and sighting tour_start (signed: positive = earthquake before sighting)"
-                          },
-                          {
-                            "unid": "a71f7718-9e66-46f6-a228-36bbd56f1fd9",
-                            "name": "magnitude",
-                            "type": {
-                              "type": "number",
-                              "optional": false,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": "Snapshot of earthquake.magnitude at correlation time (denormalised for fast lookups)"
-                          }
-                        ]
-                      },
-                      {
                         "unid": "5b30aa0a-5fc2-49cb-93e7-72cf4b3967a5",
                         "name": "EarthquakeRecorrelateResponse",
                         "description": "Result of a manual sighting_seismic recompute (admin)",
@@ -10670,6 +10759,569 @@
                               "types": []
                             },
                             "description": "sighting_seismic rows written"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "de7d78e1-2186-4732-b261-476827c4bcd6",
+                        "name": "SightingSeismicEntry",
+                        "description": "Per-sighting correlation to a nearby earthquake",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 754,
+                          "y": 45
+                        },
+                        "fields": [
+                          {
+                            "unid": "97fdd91c-0ce0-4292-9067-76767c3b31a1",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "100366da-6b75-41d9-bdb3-8cc3f197eb39",
+                            "name": "sighting_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "77332a8e-e2f8-43ca-b278-4559bebe1bc9",
+                            "name": "earthquake_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "65183457-0513-497b-b718-55c28e9a968c",
+                            "name": "distance_km",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "12b38db2-f228-40ce-80bf-124e3e177a27",
+                            "name": "hours_offset",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Hours between earthquake event_time and sighting tour_start (signed: positive = earthquake before sighting)"
+                          },
+                          {
+                            "unid": "5744d139-d39a-41df-85cb-1da41e280eef",
+                            "name": "magnitude",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Snapshot of earthquake.magnitude at correlation time (denormalised for fast lookups)"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "51b2ae05-4013-4898-95ac-cca8ef92f9db",
+                        "name": "EarthquakeImpactRequest",
+                        "description": "Request shape for the impact-analysis endpoint — either pin an earthquake_id (from the table) or a date (all events that day); window_days picks the ±N-day correlation slice (1/3/7/14)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "87660354-49db-42f1-ab38-3a143e1f0792",
+                            "name": "earthquake_id",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e7ee1655-d9f9-4ddb-9618-9278be86bbcd",
+                            "name": "date",
+                            "type": {
+                              "type": "string",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "YYYY-MM-DD UTC; used when earthquake_id is not set — all earthquakes on that day are aggregated"
+                          },
+                          {
+                            "unid": "cfb3149e-2d8a-4675-bcfb-85afa1c9fa70",
+                            "name": "window_days",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "±N-day slice of the stored ±14d correlations — UI exposes 1 / 3 / 7 / 14"
+                          },
+                          {
+                            "unid": "ee845292-91f4-479d-ae2d-b20a424abf86",
+                            "name": "earthquake_ids",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Set of earthquake_ids — used when the user has filtered the events list and wants the impact across all of them. Wins over earthquake_id and date when supplied."
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "2213ceb4-ad00-471c-bcf3-1abe6dc379e1",
+                        "name": "EarthquakeImpactBucket",
+                        "description": "One bucket label + count, reused across all 4 analytics histograms",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "693def69-0d1e-41cf-bb13-41ce125fba2f",
+                            "name": "key",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "6bbdbf00-c26d-41b5-85c5-b097b7d7a2fc",
+                            "name": "count",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "97916b30-20e8-4301-8411-790f46ff6565",
+                        "name": "EarthquakeImpactSighting",
+                        "description": "One affected sighting × earthquake row — enriched with species/behaviour/encounter names so the frontend can render directly",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "e3700b9a-d8a2-442e-bb65-ff6625cf6e3b",
+                            "name": "id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "0f928147-30db-410c-93bb-75f5c3bbb81d",
+                            "name": "earthquake_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b7d1e060-fe00-4edf-a261-f97be6554bc3",
+                            "name": "date",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "e860263c-7938-429a-8673-954c63ddf3cd",
+                            "name": "tour_start",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "4af92b80-266e-4922-a4f3-d8daf2168625",
+                            "name": "lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "f4ccf868-3d57-4459-b6dd-5253dc6ce930",
+                            "name": "lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b1c84dd2-19a1-41a6-af0e-7ac2d3014d31",
+                            "name": "species_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "7fa8cd79-254a-4922-84ac-a96ac37d2731",
+                            "name": "species_name",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "ab3d50a8-2445-43e5-a54e-1b47afb4d723",
+                            "name": "behaviour_label",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Comma-separated behaviour-state names resolved from sighting.behaviours (which stores comma-separated IDs)"
+                          },
+                          {
+                            "unid": "4d7b19db-fb64-4029-8dbd-99599ae28eb0",
+                            "name": "encounter_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "cbd912f8-4b35-4597-acf5-e46727886b88",
+                            "name": "encounter_name",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "357216c8-a345-42d8-b948-0afc0c089a08",
+                            "name": "distance_km",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "9b9b7774-6bf4-41c0-afa0-9cc195ee1ec8",
+                            "name": "hours_offset",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Signed hours: positive = earthquake before sighting"
+                          },
+                          {
+                            "unid": "0de2c300-e8b8-4eba-b634-4bab430de9b8",
+                            "name": "magnitude",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "3bbdfc60-df8b-4543-8085-9bbaf70275a7",
+                        "name": "EarthquakeImpactTrackSegment",
+                        "description": "One movement-track polyline segment — shape mirrors what the frontend MovementTracksLayer.setMovements() expects",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "404c3d47-8cad-46f6-9392-fa55e10b1a11",
+                            "name": "start_lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b92c2ae3-8687-48f4-9456-1e7cca148211",
+                            "name": "start_lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "2bbdcddd-0e32-4ea7-a2f5-d007d7035ce6",
+                            "name": "end_lat",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "af6eda90-05c5-4a9f-b9ef-ccf06de4aa57",
+                            "name": "end_lon",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "673719bb-8ce0-4061-a683-74915f1d6f7c",
+                            "name": "quality",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "\"good\" or \"bad\" — MovementTracksLayer renders bad segments dashed"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "a0aa752d-dd19-4082-af89-b9fd13a241e6",
+                        "name": "EarthquakeImpactTrack",
+                        "description": "Movement tracks for one affected sighting (zero or more good/bad segments)",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "a74c245c-f3a6-4a22-878b-4bd786d18745",
+                            "name": "sighting_id",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "964d1669-73bc-4f43-9430-81523aaf85ea",
+                            "name": "tracks",
+                            "type": {
+                              "type": "3bbdfc60-df8b-4543-8085-9bbaf70275a7",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "4842a911-9701-424e-9bd3-274cb751e4ae",
+                        "name": "EarthquakeImpactAnalytics",
+                        "description": "Aggregated analytics for the Auswertung card — by species / behaviour / encounter / signed hours-offset",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "36773077-3549-4c11-bcfd-d9dafbf11819",
+                            "name": "by_species",
+                            "type": {
+                              "type": "2213ceb4-ad00-471c-bcf3-1abe6dc379e1",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "2b7459ec-100a-4f70-af3d-0efccaa0faa7",
+                            "name": "by_behaviour",
+                            "type": {
+                              "type": "2213ceb4-ad00-471c-bcf3-1abe6dc379e1",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "4152ff7d-3209-47be-9fb0-11874a0019f0",
+                            "name": "by_encounter",
+                            "type": {
+                              "type": "2213ceb4-ad00-471c-bcf3-1abe6dc379e1",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "b0acd490-6ee4-4f23-aeb6-c964d4976f55",
+                            "name": "hours_offset_hist",
+                            "type": {
+                              "type": "2213ceb4-ad00-471c-bcf3-1abe6dc379e1",
+                              "optional": false,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": "Signed hours-offset buckets (e.g. \"-72..-48\", \"-48..-24\", \"-24..0\", \"0..24\", ...)"
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "f4b18667-94ad-428d-b369-7e1c8596599f",
+                        "name": "EarthquakeImpactResponse",
+                        "description": "Result of /json/earthquake/impact — focus earthquakes + affected sightings + their movement tracks + analytics buckets",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "020c22d5-c982-46cd-babc-613ece576bfb",
+                            "name": "earthquakes",
+                            "type": {
+                              "type": "2a7642b3-8087-46d2-9076-2052a8aca022",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "0e8f29d2-2650-4acb-8527-85a122d0f72b",
+                            "name": "sightings",
+                            "type": {
+                              "type": "97916b30-20e8-4301-8411-790f46ff6565",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "9db9fdf3-f863-4aa2-a000-b0de1be142d1",
+                            "name": "tracks",
+                            "type": {
+                              "type": "a0aa752d-dd19-4082-af89-b9fd13a241e6",
+                              "optional": true,
+                              "array": true,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "15f7a904-1f1b-47c0-bda7-3a915ee44225",
+                            "name": "analytics",
+                            "type": {
+                              "type": "4842a911-9701-424e-9bd3-274cb751e4ae",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
                           }
                         ]
                       }
@@ -12078,7 +12730,7 @@
   },
   "editor": {
     "controls_width": 553,
-    "active_entry_unid": "8e249c19-8cd9-4815-adf8-298e25afdaed",
-    "active_entry_table_unid": "5b30aa0a-5fc2-49cb-93e7-72cf4b3967a5"
+    "active_entry_unid": "d089eaba-8ce4-401d-9feb-3bf3cef184a8",
+    "active_entry_table_unid": "db36bc48-0c73-46a5-9197-18b4776ad5e7"
   }
 }

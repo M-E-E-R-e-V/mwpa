@@ -2,21 +2,29 @@ import {Router} from 'express';
 import {DefaultRoute} from 'figtree';
 import {
     OrphanTracksAssignResponse,
+    OrphanTracksDeleteResponse,
     OrphanTracksListResponse,
     OrphanTracksMatchResponse,
+    OrphanTracksPointsResponse,
     SchemaMWPASessionData,
     SchemaOrphanTracksAssignRequest,
     SchemaOrphanTracksAssignResponse,
+    SchemaOrphanTracksDeleteRequest,
+    SchemaOrphanTracksDeleteResponse,
     SchemaOrphanTracksFilter,
     SchemaOrphanTracksListResponse,
     SchemaOrphanTracksMatchRequest,
-    SchemaOrphanTracksMatchResponse
+    SchemaOrphanTracksMatchResponse,
+    SchemaOrphanTracksPointsRequest,
+    SchemaOrphanTracksPointsResponse
 } from 'mwpa_schemas';
 import {checkMWPAAdminIsLogin} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Assign} from './OrphanTracks/Assign.js';
+import {Delete} from './OrphanTracks/Delete.js';
 import {List} from './OrphanTracks/List.js';
 import {Match} from './OrphanTracks/Match.js';
+import {Points} from './OrphanTracks/Points.js';
 
 /**
  * OrphanTracks
@@ -75,6 +83,36 @@ export class OrphanTracks extends DefaultRoute {
                 description: 'Promote the pending-track bucket for (tour_fid, device_id) into the chosen target tour. Admin-only.',
                 bodySchema: SchemaOrphanTracksAssignRequest,
                 responseBodySchema: SchemaOrphanTracksAssignResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit
+            }
+        );
+
+        this._post(
+            '/json/orphantracks/points',
+            checkMWPAAdminIsLogin,
+            async(_req, _res, data): Promise<OrphanTracksPointsResponse> => {
+                return Points.getPoints(data.body);
+            },
+            {
+                description: 'Decoded lat/lon/ts points for one orphan bucket — drives the map preview in the AssignModal. Admin-only.',
+                bodySchema: SchemaOrphanTracksPointsRequest,
+                responseBodySchema: SchemaOrphanTracksPointsResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit
+            }
+        );
+
+        this._post(
+            '/json/orphantracks/delete',
+            checkMWPAAdminIsLogin,
+            async(_req, _res, data): Promise<OrphanTracksDeleteResponse> => {
+                return Delete.drop(data.body);
+            },
+            {
+                description: 'Drop the pending-track bucket for (tour_fid, device_id) without promoting — used when the admin judges the orphan as junk. Admin-only.',
+                bodySchema: SchemaOrphanTracksDeleteRequest,
+                responseBodySchema: SchemaOrphanTracksDeleteResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit
             }
