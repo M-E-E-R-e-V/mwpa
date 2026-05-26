@@ -258,6 +258,7 @@ export class Lang_DE implements LangDefine {
 
         // Cross-species analytics page (Phase 4)
         'Cross-species analytics': 'Spezies-übergreifende Auswertung',
+        'Species comparison': 'Spezies-Vergleich',
         'Year × SPUE': 'Jahr × SPUE',
         'SST × group size': 'Wassertemperatur × Gruppengröße',
         'Chlorophyll-a × group size': 'Chlorophyll-a × Gruppengröße',
@@ -288,6 +289,10 @@ export class Lang_DE implements LangDefine {
         'Depth (km)': 'Tiefe (km)',
         'Place': 'Ort',
         'Source': 'Quelle',
+        'Backfill from': 'Rückwirkend ab',
+        'Recorrelate all': 'Alle neu korrelieren',
+        'Recorrelate done': 'Neu-Korrelation fertig',
+        'Recorrelate confirm': 'Alle Sichtungen erneut gegen alle gespeicherten Erdbeben korrelieren? Bei großem Bestand kann das eine Weile dauern — siehe Log.',
 
         // Species Profile — seismic exposure
         'Seismic exposure': 'Seismische Exposition',

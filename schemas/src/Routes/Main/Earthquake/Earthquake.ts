@@ -113,3 +113,19 @@ export const SchemaSightingSeismicEntry = Vts.object({
  * Type of schema SightingSeismicEntry
  */
 export type SightingSeismicEntry = ExtractSchemaResultType<typeof SchemaSightingSeismicEntry>;
+
+/**
+ * Schema of EarthquakeRecorrelateResponse
+ * Result of a manual sighting_seismic recompute (admin)
+ */
+export const SchemaEarthquakeRecorrelateResponse = SchemaDefaultReturn.extend({
+    events: Vts.optional(Vts.number({description: 'Earthquakes processed'})),
+    correlations: Vts.optional(Vts.number({description: 'sighting_seismic rows written'})),
+}, {
+    description: 'Result of a manual sighting_seismic recompute (admin)',
+});
+
+/**
+ * Type of schema EarthquakeRecorrelateResponse
+ */
+export type EarthquakeRecorrelateResponse = ExtractSchemaResultType<typeof SchemaEarthquakeRecorrelateResponse>;

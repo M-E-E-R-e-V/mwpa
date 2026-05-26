@@ -10708,6 +10708,42 @@
                             "description": "Snapshot of earthquake.magnitude at correlation time (denormalised for fast lookups)"
                           }
                         ]
+                      },
+                      {
+                        "unid": "5b30aa0a-5fc2-49cb-93e7-72cf4b3967a5",
+                        "name": "EarthquakeRecorrelateResponse",
+                        "description": "Result of a manual sighting_seismic recompute (admin)",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "fields": [
+                          {
+                            "unid": "d4b199c6-a006-4c60-928e-47068daea767",
+                            "name": "events",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Earthquakes processed"
+                          },
+                          {
+                            "unid": "d2add171-2c80-4753-be47-ec9ca05079b7",
+                            "name": "correlations",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "sighting_seismic rows written"
+                          }
+                        ]
                       }
                     ],
                     "enums": [],
@@ -12113,8 +12149,8 @@
     "enums": []
   },
   "editor": {
-    "controls_width": 344,
-    "active_entry_unid": "9391726c-9e85-4313-b9a1-93454fccfff2",
-    "active_entry_table_unid": "a4bb653e-2ebb-4f66-9004-28f190d2d627"
+    "controls_width": 553,
+    "active_entry_unid": "8e249c19-8cd9-4815-adf8-298e25afdaed",
+    "active_entry_table_unid": "5b30aa0a-5fc2-49cb-93e7-72cf4b3967a5"
   }
 }

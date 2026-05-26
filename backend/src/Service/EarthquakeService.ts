@@ -27,6 +27,15 @@ export class EarthquakeService extends ServiceJobAbstract {
     private static readonly MIN_MAGNITUDE = 2.5;
 
     /**
+     * Radius (km) around each org's tracking-area centroid / HQ
+     * coordinates used to build the USGS import bbox. Sized to cover
+     * the Canaries archipelago + Moroccan shelf even when the
+     * tracking-area polygon is just a harbor: a 500 km bubble at
+     * 28°N is roughly ±4.5° lat × ±5.1° lon.
+     */
+    private static readonly IMPORT_RADIUS_KM = 500;
+
+    /**
      * Correlation radius for sighting × earthquake matching. Earthquakes
      * farther than this from a sighting position are ignored entirely.
      */
@@ -73,6 +82,24 @@ export class EarthquakeService extends ServiceJobAbstract {
         return this._import(backfillFromIso);
     }
 
+    /**
+     * Walk every earthquake already in the local table and re-run the
+     * sighting correlation against it. Use after a wide backfill (so
+     * old earthquakes that were just imported pick up their matching
+     * historical sightings) or after a configuration change
+     * (CORRELATION_RADIUS_KM / WINDOW_DAYS) where existing rows need
+     * to be re-evaluated.
+     *
+     * Independent of the cron — runs on demand via the admin endpoint.
+     */
+    public async recorrelateAll(): Promise<{events: number; correlations: number;}> {
+        const all = await EarthquakeRepository.getInstance().findAll();
+        Logger.getLogger().info(`EarthquakeService: recorrelate over ${all.length} events`);
+        const written = await this._correlate(all, new Set<number>());
+        Logger.getLogger().info(`EarthquakeService: recorrelate done — correlations=${written}`);
+        return {events: all.length, correlations: written};
+    }
+
     protected async _execute(): Promise<void> {
         try {
             await this._import(undefined);
@@ -82,7 +109,7 @@ export class EarthquakeService extends ServiceJobAbstract {
     }
 
     private async _import(backfillFromIso: string | undefined): Promise<{imported: number; updated: number; correlations: number;}> {
-        const bbox = await EarthquakeBboxResolver.resolveUnionBbox();
+        const bbox = await EarthquakeBboxResolver.resolveUnionBbox(EarthquakeService.IMPORT_RADIUS_KM);
         if (!bbox) {
             Logger.getLogger().info('EarthquakeService: no usable bbox, import skipped');
             return {imported: 0, updated: 0, correlations: 0};

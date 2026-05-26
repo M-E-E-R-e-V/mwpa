@@ -380,6 +380,8 @@ export {
     EarthquakeImportResponse,
     SchemaSightingSeismicEntry,
     SightingSeismicEntry,
+    SchemaEarthquakeRecorrelateResponse,
+    EarthquakeRecorrelateResponse,
 } from './Routes/Main/Earthquake/Earthquake.js';
 export {
     SchemaMapCacheRequest,

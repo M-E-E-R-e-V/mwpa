@@ -2,7 +2,8 @@ import {
     EarthquakeEntry,
     EarthquakeFilter,
     EarthquakeImportResponse,
-    EarthquakeListResponse
+    EarthquakeListResponse,
+    EarthquakeRecorrelateResponse
 } from 'mwpa_schemas';
 import {NetFetch} from '../Net/NetFetch';
 import {UnauthorizedError} from './Error/UnauthorizedError';
@@ -12,7 +13,8 @@ export type {
     EarthquakeEntry,
     EarthquakeFilter,
     EarthquakeListResponse,
-    EarthquakeImportResponse
+    EarthquakeImportResponse,
+    EarthquakeRecorrelateResponse
 };
 
 /**
@@ -42,6 +44,20 @@ export class Earthquake {
             body.backfill_from = backfillFrom;
         }
         const result = await NetFetch.postData('/json/earthquake/import', body) as EarthquakeImportResponse;
+
+        if (result && result.statusCode === StatusCodes.UNAUTHORIZED) {
+            throw new UnauthorizedError();
+        }
+        return result ?? null;
+    }
+
+    /**
+     * Walk every earthquake already in the DB and re-write the
+     * sighting_seismic correlations. Used to retroactively pick up
+     * older sightings after a wide backfill.
+     */
+    public static async runRecorrelate(): Promise<EarthquakeRecorrelateResponse | null> {
+        const result = await NetFetch.getData('/json/earthquake/recorrelate') as EarthquakeRecorrelateResponse;
 
         if (result && result.statusCode === StatusCodes.UNAUTHORIZED) {
             throw new UnauthorizedError();

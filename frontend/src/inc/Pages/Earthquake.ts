@@ -41,6 +41,7 @@ export class Earthquake extends BasePage {
     protected _periodFrom: JQuery<HTMLInputElement> | null = null;
     protected _periodTo: JQuery<HTMLInputElement> | null = null;
     protected _minMag: JQuery<HTMLInputElement> | null = null;
+    protected _backfillFrom: JQuery<HTMLInputElement> | null = null;
 
     /**
      * Mini-map handle; disposed in unloadContent.
@@ -86,13 +87,19 @@ export class Earthquake extends BasePage {
             await this._reload();
         });
 
+        // Visual separator between "list filter" and "ingest controls".
+        jQuery('<div style="width:1px;background:#dee2e6;align-self:stretch;"/>').appendTo(filterBody);
+
+        this._backfillFrom = buildField(lang.l('Backfill from'), 'date');
+
         const btnImport = jQuery<HTMLButtonElement>(
             `<button type="button" class="btn btn-sm btn-default"><i class="fa fa-download"></i> ${lang.l('Import now')}</button>`
         ).appendTo(filterBody);
         btnImport.on('click', async() => {
             btnImport.attr('disabled', 'disabled');
             try {
-                const res = await EarthquakeAPI.runImport();
+                const backfill = (this._backfillFrom?.val() as string) ?? '';
+                const res = await EarthquakeAPI.runImport(backfill || undefined);
                 if (res && res.imported !== undefined) {
                     this._toast.fire({
                         icon: 'success',
@@ -106,6 +113,33 @@ export class Earthquake extends BasePage {
             } finally {
                 btnImport.removeAttr('disabled');
                 await this._reload();
+            }
+        });
+
+        const btnRecorrelate = jQuery<HTMLButtonElement>(
+            `<button type="button" class="btn btn-sm btn-warning"><i class="fa fa-link"></i> ${lang.l('Recorrelate all')}</button>`
+        ).appendTo(filterBody);
+        btnRecorrelate.on('click', async() => {
+            // eslint-disable-next-line no-alert
+            const ok = window.confirm(lang.l('Recorrelate confirm'));
+            if (!ok) {
+                return;
+            }
+            btnRecorrelate.attr('disabled', 'disabled');
+            try {
+                const res = await EarthquakeAPI.runRecorrelate();
+                if (res && res.events !== undefined) {
+                    this._toast.fire({
+                        icon: 'success',
+                        title: `${lang.l('Recorrelate done')}: events=${res.events} / sighting-seismic ${res.correlations}`
+                    });
+                } else if (res?.msg) {
+                    this._toast.fire({icon: 'error', title: res.msg});
+                }
+            } catch (e) {
+                this._toast.fire({icon: 'error', title: (e as Error).message});
+            } finally {
+                btnRecorrelate.removeAttr('disabled');
             }
         });
 
