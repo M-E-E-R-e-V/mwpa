@@ -131,6 +131,18 @@ export class OrphanTracks extends BasePage {
             }
         });
 
+        this._modal.setOnDeleteRequest(async(tourFid, deviceId) => {
+            const response = await OrphanTracksAPI.dropBucket({tour_fid: tourFid, device_id: deviceId});
+            if (response && response.statusCode === '200') {
+                this._modal.hide();
+                if (this._onLoadTable) {
+                    await this._onLoadTable();
+                }
+            } else {
+                alert(response?.msg ?? 'Delete failed');
+            }
+        });
+
         // List card -----------------------------------------------------------------------------
         const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
         const card = new Card(new ContentCol(row1, ContentColSize.col12));
@@ -195,6 +207,13 @@ export class OrphanTracks extends BasePage {
                 );
                 this._modal.show();
                 void refreshCandidates();
+                void (async(): Promise<void> => {
+                    const pointsRes = await OrphanTracksAPI.getPoints({
+                        tour_fid: entry.tour_fid,
+                        device_id: entry.device_id
+                    });
+                    this._modal.setPoints(pointsRes?.points ?? []);
+                })();
             }, IconFa.add);
         };
 

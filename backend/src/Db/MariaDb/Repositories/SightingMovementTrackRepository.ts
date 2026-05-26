@@ -36,6 +36,22 @@ export class SightingMovementTrackRepository extends DBRepository<SightingMoveme
     }
 
     /**
+     * Batch sibling of {@link findByMovement} — segments for many
+     * movements in one round-trip, ordered by movement then sequence
+     * so the caller can stable-group by `sighting_movement_id`.
+     */
+    public async findByMovements(movementIds: number[]): Promise<SightingMovementTrack[]> {
+        if (movementIds.length === 0) {
+            return [];
+        }
+        const repository = await this._repository;
+        return repository.find({
+            where: {sighting_movement_id: In(movementIds)},
+            order: {sighting_movement_id: 'ASC', sequence_no: 'ASC'}
+        });
+    }
+
+    /**
      * Drop all segments belonging to any of the given movements. Helpful
      * when bulk-rebuilding a tour.
      */

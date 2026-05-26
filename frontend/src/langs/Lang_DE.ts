@@ -274,6 +274,11 @@ export class Lang_DE implements LangDefine {
         'desc.reg.chl_groupsize': 'Chlorophyll-a (Produktivitäts-Proxy) gegen Gruppengröße. Höhere Chl-a-Werte deuten auf produktive Gewässer — testet ob größere Pods produktivere Bereiche nutzen.',
         'desc.reg.effort': 'Monatliche Tour-Stunden gegen Sichtungen derselben Spezies in dem Monat. Eine Sättigungs-Kurve (sub-lineare Steigung) wäre ein Hinweis darauf, dass mehr Aufwand nicht proportional mehr Sichtungen bringt; eine perfekt lineare Beziehung spricht für Aufwand-limitiertes Sampling.',
 
+        // Orphan tracks
+        'Orphan track preview': 'Pending-Tracks Vorschau',
+        'Delete bucket': 'Bucket löschen',
+        'No decodable points in this bucket': 'Keine dekodierbaren Punkte in diesem Bucket',
+
         // Earthquake admin page (Phase 5)
         'Earthquakes': 'Erdbeben',
         'Events': 'Ereignisse',
@@ -290,6 +295,28 @@ export class Lang_DE implements LangDefine {
         'Recorrelate all': 'Alle neu korrelieren',
         'Recorrelate done': 'Neu-Korrelation fertig',
         'Recorrelate confirm': 'Alle Sichtungen erneut gegen alle gespeicherten Erdbeben korrelieren? Bei großem Bestand kann das eine Weile dauern — siehe Log.',
+        'Impact window': '± Fenster',
+        'Impact window hint': 'Welche Sichtungen sind „beeinflusst" — biologisch sinnvolle Zeitfenster pro Erdbeben. Auswahl ≠ „keine" lädt den Impact über alle aktuell gelisteten Erdbeben.',
+        'Hide sightings': 'Keine Sichtungen anzeigen',
+        '±3 days': '±3 Tage',
+        '±7 days': '±7 Tage',
+        '±14 days': '±14 Tage',
+        'window.hint.off': 'Nur Erdbeben-Liste anzeigen, keine Sichtungs-Korrelationen rendern',
+        'window.hint.24h': 'Akute Stressreaktion (Strandungen, P-/S-Wellen-Effekte)',
+        'window.hint.3d': 'Kurzfristige Verhaltensänderung',
+        'window.hint.7d': 'Mittelfristige Verdrängung / Migrationsverschiebung',
+        'window.hint.14d': 'Breit, fängt verzögerte Effekte ein (rauschig)',
+        'Impact analysis': 'Auswertung',
+        'Impact load failed': 'Impact-Analyse fehlgeschlagen',
+        'By species': 'Nach Spezies',
+        'By behaviour': 'Nach Verhalten',
+        'By encounter category': 'Nach Begegnungskategorie',
+        'Hours offset (signed)': 'Zeit-Offset (h, signed)',
+        'Window': 'Fenster',
+        'days': 'Tage',
+        'events': 'Ereignisse',
+        'Affected sightings': 'Betroffene Sichtungen',
+        'Correlations': 'Korrelationen',
 
         // Species Profile — seismic exposure
         'Seismic exposure': 'Seismische Exposition',

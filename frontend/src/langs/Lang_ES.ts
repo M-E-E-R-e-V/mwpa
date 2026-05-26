@@ -268,6 +268,11 @@ export class Lang_ES implements LangDefine {
         'desc.reg.chl_groupsize': 'Clorofila-a (proxy de productividad) frente al tamaño de grupo. Mayor Chl-a indica aguas productivas — comprueba si los grupos grandes usan zonas más productivas.',
         'desc.reg.effort': 'Horas de salida mensuales frente a avistamientos de la misma especie ese mes. Una curva de saturación (pendiente sub-lineal) indicaría que más esfuerzo no rinde proporcionalmente más avistamientos; una relación lineal sugiere muestreo limitado por esfuerzo.',
 
+        // Orphan tracks
+        'Orphan track preview': 'Vista previa de pending-tracks',
+        'Delete bucket': 'Eliminar bucket',
+        'No decodable points in this bucket': 'Sin puntos decodificables en este bucket',
+
         // Earthquake admin page (Phase 5)
         'Earthquakes': 'Terremotos',
         'Events': 'Eventos',
@@ -284,6 +289,28 @@ export class Lang_ES implements LangDefine {
         'Recorrelate all': 'Recorrelacionar todo',
         'Recorrelate done': 'Recorrelación completada',
         'Recorrelate confirm': '¿Recorrelacionar todos los avistamientos con todos los terremotos almacenados? En bases grandes puede tardar — ver registro.',
+        'Impact window': '± Ventana',
+        'Impact window hint': 'Qué avistamientos están «afectados» — ventanas temporales con sentido biológico por terremoto. Cualquier valor distinto de «ninguno» carga el impacto sobre todos los terremotos listados.',
+        'Hide sightings': 'No mostrar avistamientos',
+        '±3 days': '±3 días',
+        '±7 days': '±7 días',
+        '±14 days': '±14 días',
+        'window.hint.off': 'Mostrar solo la lista de terremotos, sin renderizar correlaciones de avistamientos',
+        'window.hint.24h': 'Reacción aguda al estrés (varamientos, efectos de ondas P/S)',
+        'window.hint.3d': 'Cambios conductuales a corto plazo',
+        'window.hint.7d': 'Desplazamiento / cambio de migración a medio plazo',
+        'window.hint.14d': 'Amplio, capta efectos retardados (ruidoso)',
+        'Impact analysis': 'Análisis de impacto',
+        'Impact load failed': 'Fallo al cargar el impacto',
+        'By species': 'Por especie',
+        'By behaviour': 'Por conducta',
+        'By encounter category': 'Por categoría de encuentro',
+        'Hours offset (signed)': 'Desfase horario (con signo)',
+        'Window': 'Ventana',
+        'days': 'días',
+        'events': 'eventos',
+        'Affected sightings': 'Avistamientos afectados',
+        'Correlations': 'Correlaciones',
 
         // Species Profile — seismic exposure
         'Seismic exposure': 'Exposición sísmica',

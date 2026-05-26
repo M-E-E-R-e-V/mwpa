@@ -30,6 +30,13 @@ export class EarthquakeLayer extends MapLayer {
      */
     protected _features: object[] = [];
 
+    /**
+     * Set of earthquake ids drawn with the thicker highlight stroke —
+     * used by the impact view to make the focus event stand out from
+     * neighbouring events in the same period filter.
+     */
+    protected _highlightIds: Set<number> = new Set<number>();
+
     public override getName(): string {
         return 'earthquake_layer';
     }
@@ -51,6 +58,21 @@ export class EarthquakeLayer extends MapLayer {
     }
 
     /**
+     * Mark a subset of earthquake ids as "focus" — drawn with a thick
+     * dark outline + larger radius so they pop in the impact view.
+     * Pass an empty list to clear.
+     */
+    public setHighlight(ids: number[]): void {
+        this._highlightIds = new Set<number>(ids);
+        // Re-tag buffered features so the next refresh picks up the
+        // new highlight state without the caller having to resupply
+        // the whole quake list.
+        for (const f of this._features as {properties: {id: number; highlight?: boolean;};}[]) {
+            f.properties.highlight = this._highlightIds.has(f.properties.id);
+        }
+    }
+
+    /**
      * Replace the buffered features with the supplied earthquake list.
      * Followed by {@link refresh} to commit.
      */
@@ -65,7 +87,8 @@ export class EarthquakeLayer extends MapLayer {
                 event_time_ms: q.event_time_ms,
                 place: q.place,
                 magnitude_type: q.magnitude_type,
-                url: q.url
+                url: q.url,
+                highlight: this._highlightIds.has(q.id)
             },
             geometry: {
                 type: 'Point',
@@ -126,12 +149,16 @@ export class EarthquakeLayer extends MapLayer {
         }
         const mag = Number(props.magnitude) || 0;
         const depth = Number(props.depth_km) || 0;
+        const highlight = props.highlight === true;
 
         return [new Style({
             image: new Circle({
-                radius: EarthquakeLayer._radiusFor(mag),
+                radius: EarthquakeLayer._radiusFor(mag) + (highlight ? 3 : 0),
                 fill: new Fill({color: EarthquakeLayer._fillFor(depth)}),
-                stroke: new Stroke({color: 'rgba(0,0,0,0.65)', width: 1})
+                stroke: new Stroke({
+                    color: highlight ? 'rgba(0,0,0,0.95)' : 'rgba(0,0,0,0.65)',
+                    width: highlight ? 3 : 1
+                })
             })
         })];
     }

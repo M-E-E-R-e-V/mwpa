@@ -213,6 +213,16 @@ type SideMenuEntry = {
                     });
                 }
 
+                const aisIdx = sidemenuList.findIndex((s) => s.name === 'ais-live-map');
+                sidemenuList.splice(aisIdx >= 0 ? aisIdx + 1 : sidemenuList.length, 0, {
+                    title: 'Earthquakes',
+                    icon: 'fa-solid fa-bolt',
+                    name: 'earthquakes',
+                    onClick: (): void => {
+                        loadPage(new EarthquakePage());
+                    }
+                });
+
                 sidemenuList.push({
                     title: 'Admin',
                     icon: 'fa-cogs',
@@ -283,14 +293,6 @@ type SideMenuEntry = {
                             name: 'admin-devices',
                             onClick: (): void => {
                                 loadPage(new DevicesPage());
-                            }
-                        },
-                        {
-                            title: 'Earthquakes',
-                            icon: 'fa-solid fa-house-crack',
-                            name: 'admin-earthquakes',
-                            onClick: (): void => {
-                                loadPage(new EarthquakePage());
                             }
                         },
                         {

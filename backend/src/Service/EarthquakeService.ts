@@ -214,8 +214,19 @@ export class EarthquakeService extends ServiceJobAbstract {
 
         let written = 0;
         for (const ev of events) {
-            const dateFrom = EarthquakeService._isoDate(ev.event_time_ms - windowMs);
-            const dateTo = EarthquakeService._isoDate(ev.event_time_ms + windowMs);
+            // TypeORM returns BigInt columns as strings on MariaDB — coerce
+            // once up-front so the subsequent arithmetic doesn't silently
+            // produce NaN (which then crashes new Date(NaN).toISOString()
+            // with "Invalid time value"). Rows with unparseable timestamps
+            // (legacy null entries) are skipped rather than killing the
+            // whole recorrelate pass.
+            const eventMs = Number(ev.event_time_ms);
+            if (!Number.isFinite(eventMs) || eventMs <= 0) {
+                Logger.getLogger().warn(`EarthquakeService: skipping earthquake id=${ev.id} — invalid event_time_ms=${ev.event_time_ms as unknown as string}`);
+                continue;
+            }
+            const dateFrom = EarthquakeService._isoDate(eventMs - windowMs);
+            const dateTo = EarthquakeService._isoDate(eventMs + windowMs);
 
             // eslint-disable-next-line no-await-in-loop
             const sightings = await SightingRepository.getInstance().findInDateRange(dateFrom, dateTo);
@@ -230,7 +241,7 @@ export class EarthquakeService extends ServiceJobAbstract {
                 }
 
                 const sightingMs = EarthquakeService._sightingTimeMs(s.date, s.tour_start);
-                const offsetHours = (sightingMs - ev.event_time_ms) / (60 * 60 * 1000);
+                const offsetHours = (sightingMs - eventMs) / (60 * 60 * 1000);
                 if (Math.abs(offsetHours) > EarthquakeService.CORRELATION_WINDOW_DAYS * 24) {
                     continue;
                 }

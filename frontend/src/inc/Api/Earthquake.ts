@@ -1,6 +1,13 @@
 import {
     EarthquakeEntry,
     EarthquakeFilter,
+    EarthquakeImpactAnalytics,
+    EarthquakeImpactBucket,
+    EarthquakeImpactRequest,
+    EarthquakeImpactResponse,
+    EarthquakeImpactSighting,
+    EarthquakeImpactTrack,
+    EarthquakeImpactTrackSegment,
     EarthquakeListResponse,
     EarthquakeRecorrelateResponse
 } from 'mwpa_schemas';
@@ -11,6 +18,13 @@ import {StatusCodes} from './Status/StatusCodes';
 export type {
     EarthquakeEntry,
     EarthquakeFilter,
+    EarthquakeImpactAnalytics,
+    EarthquakeImpactBucket,
+    EarthquakeImpactRequest,
+    EarthquakeImpactResponse,
+    EarthquakeImpactSighting,
+    EarthquakeImpactTrack,
+    EarthquakeImpactTrackSegment,
     EarthquakeListResponse,
     EarthquakeRecorrelateResponse
 };
@@ -35,6 +49,20 @@ export class Earthquake {
             return result;
         }
         return null;
+    }
+
+    /**
+     * Load the impact picture for one earthquake (by id) or a UTC day.
+     * Returns focus earthquakes, affected sightings, per-sighting
+     * movement tracks, and 4 analytics bucket arrays.
+     */
+    public static async runImpact(request: EarthquakeImpactRequest): Promise<EarthquakeImpactResponse | null> {
+        const result = await NetFetch.postData('/json/earthquake/impact', request) as EarthquakeImpactResponse;
+
+        if (result && result.statusCode === StatusCodes.UNAUTHORIZED) {
+            throw new UnauthorizedError();
+        }
+        return result ?? null;
     }
 
     /**

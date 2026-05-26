@@ -140,3 +140,82 @@ export const SchemaOrphanTracksAssignResponse = SchemaDefaultReturn.extend({
  * Type of schema OrphanTracksAssignResponse
  */
 export type OrphanTracksAssignResponse = ExtractSchemaResultType<typeof SchemaOrphanTracksAssignResponse>;
+
+/**
+ * Schema of OrphanTracksPoint
+ * One decoded pending-track point — lat/lon + timestamp (s since epoch) for the map preview in the AssignModal
+ */
+export const SchemaOrphanTracksPoint = Vts.object({
+    lat: Vts.number(),
+    lon: Vts.number(),
+    ts: Vts.number({description: 'create_datetime in seconds since epoch — matches the source row\'s value'}),
+}, {
+    description: 'One decoded pending-track point — lat/lon + timestamp (s since epoch) for the map preview in the AssignModal',
+});
+
+/**
+ * Type of schema OrphanTracksPoint
+ */
+export type OrphanTracksPoint = ExtractSchemaResultType<typeof SchemaOrphanTracksPoint>;
+
+/**
+ * Schema of OrphanTracksPointsRequest
+ * Fetch decoded points for one orphan bucket (tour_fid + device_id) to draw on the AssignModal map
+ */
+export const SchemaOrphanTracksPointsRequest = Vts.object({
+    tour_fid: Vts.string(),
+    device_id: Vts.number(),
+}, {
+    description: 'Fetch decoded points for one orphan bucket (tour_fid + device_id) to draw on the AssignModal map',
+});
+
+/**
+ * Type of schema OrphanTracksPointsRequest
+ */
+export type OrphanTracksPointsRequest = ExtractSchemaResultType<typeof SchemaOrphanTracksPointsRequest>;
+
+/**
+ * Schema of OrphanTracksPointsResponse
+ * Decoded points for an orphan bucket — ordered by timestamp ascending
+ */
+export const SchemaOrphanTracksPointsResponse = SchemaDefaultReturn.extend({
+    points: Vts.optional(Vts.array(SchemaOrphanTracksPoint)),
+}, {
+    description: 'Decoded points for an orphan bucket — ordered by timestamp ascending',
+});
+
+/**
+ * Type of schema OrphanTracksPointsResponse
+ */
+export type OrphanTracksPointsResponse = ExtractSchemaResultType<typeof SchemaOrphanTracksPointsResponse>;
+
+/**
+ * Schema of OrphanTracksDeleteRequest
+ * Drop the entire pending bucket for (tour_fid, device_id) without promoting — used when the admin decides the orphan is junk
+ */
+export const SchemaOrphanTracksDeleteRequest = Vts.object({
+    tour_fid: Vts.string(),
+    device_id: Vts.number(),
+}, {
+    description: 'Drop the entire pending bucket for (tour_fid, device_id) without promoting — used when the admin decides the orphan is junk',
+});
+
+/**
+ * Type of schema OrphanTracksDeleteRequest
+ */
+export type OrphanTracksDeleteRequest = ExtractSchemaResultType<typeof SchemaOrphanTracksDeleteRequest>;
+
+/**
+ * Schema of OrphanTracksDeleteResponse
+ * Result of dropping an orphan bucket — `deleted` echoes the row count that was in the bucket before
+ */
+export const SchemaOrphanTracksDeleteResponse = SchemaDefaultReturn.extend({
+    deleted: Vts.optional(Vts.number()),
+}, {
+    description: 'Result of dropping an orphan bucket — `deleted` echoes the row count that was in the bucket before',
+});
+
+/**
+ * Type of schema OrphanTracksDeleteResponse
+ */
+export type OrphanTracksDeleteResponse = ExtractSchemaResultType<typeof SchemaOrphanTracksDeleteResponse>;
