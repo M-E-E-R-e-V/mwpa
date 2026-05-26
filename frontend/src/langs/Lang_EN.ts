@@ -13,7 +13,7 @@ export class Lang_EN implements LangDefine {
         title: 'MWPA',
         login_title: '<b>MWPA</b>',
         copyrightname: '<strong>Mammal watching. Processing. Analysing. - Project MWPA 2022 <a href="https://github.com/stefanwerfling/mwpa" target="_blank">on Github</a>.</strong> &nbsp; A project of the  <a href="https://m-e-e-r.de/" target="_blank">M.e.e.r e.V.</a> association',
-        version: '<b>Version</b> 1.0.34'
+        version: '<b>Version</b> 1.0.38'
     };
 
     /**

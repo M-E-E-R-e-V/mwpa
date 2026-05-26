@@ -62,5 +62,5 @@
     "test": "npm run compile-test && node --test dist-test/test/",
     "npm-check-updates": "npm-check-updates"
   },
-  "version": "1.0.37"
+  "version": "1.0.38"
 }
