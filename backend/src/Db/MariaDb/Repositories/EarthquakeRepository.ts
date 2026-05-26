@@ -31,13 +31,19 @@ export class EarthquakeRepository extends DBRepository<Earthquake> {
     /**
      * Find the most recent event_time_ms across the table (or 0 when
      * empty). Used by the import flow to compute `starttime` for the
-     * next USGS request without re-pulling the whole archive each tick.
+     * next provider request without re-pulling the whole archive each
+     * tick. Pass `source` to scope to one provider — needed when a
+     * second provider is wired up after the first has been running, so
+     * its own backfill starts from its own 0 instead of the global max.
      */
-    public async getLatestEventTimeMs(): Promise<number> {
+    public async getLatestEventTimeMs(source?: string): Promise<number> {
         const repository = await this._repository;
-        const row = await repository.createQueryBuilder('e')
-            .select('MAX(e.event_time_ms)', 'max_ts')
-            .getRawOne<{max_ts: number | string | null;}>();
+        const qb = repository.createQueryBuilder('e')
+            .select('MAX(e.event_time_ms)', 'max_ts');
+        if (source) {
+            qb.where('e.source = :source', {source: source});
+        }
+        const row = await qb.getRawOne<{max_ts: number | string | null;}>();
         if (!row || row.max_ts === null) {
             return 0;
         }

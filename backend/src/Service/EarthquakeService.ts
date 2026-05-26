@@ -52,12 +52,14 @@ export class EarthquakeService extends ServiceJobAbstract {
     private static readonly CORRELATION_WINDOW_DAYS = 14;
 
     /**
-     * How far back to look on a cold start. The cron is hourly, so on
-     * a warm system the lookback is "since latest event_time_ms"; on a
-     * cold DB we backfill the trailing 30 d so the page has something
-     * to show immediately.
+     * Padding (days) before the oldest sighting date when cold-starting
+     * a provider. The cron is hourly, so on a warm system the lookback
+     * is "since this provider's latest event_time_ms". On cold start —
+     * empty DB, or a newly added provider — we backfill to (oldest
+     * sighting date - this many days) so every existing sighting has
+     * the full ±CORRELATION_WINDOW_DAYS of events available.
      */
-    private static readonly COLD_START_BACKFILL_DAYS = 30;
+    private static readonly COLD_START_PRE_SIGHTING_DAYS = 30;
 
     /**
      * Mean Earth radius in km — used by the in-JS Haversine.
@@ -81,18 +83,6 @@ export class EarthquakeService extends ServiceJobAbstract {
     }
 
     /**
-     * Manual trigger for the admin route. Optionally backfills from a
-     * specific date — useful after wiring up a new org's tracking area.
-     */
-    public async runImport(backfillFromIso: string | undefined): Promise<{
-        imported: number;
-        updated: number;
-        correlations: number;
-    }> {
-        return this._import(backfillFromIso);
-    }
-
-    /**
      * Walk every earthquake already in the local table and re-run the
      * sighting correlation against it. Use after a wide backfill (so
      * old earthquakes that were just imported pick up their matching
@@ -112,33 +102,44 @@ export class EarthquakeService extends ServiceJobAbstract {
 
     protected async _execute(): Promise<void> {
         try {
-            await this._import(undefined);
+            await this._import();
         } catch (err) {
             Logger.getLogger().error(`EarthquakeService: import failed: ${(err as Error).message}`);
         }
     }
 
-    private async _import(backfillFromIso: string | undefined): Promise<{imported: number; updated: number; correlations: number;}> {
+    private async _import(): Promise<{imported: number; updated: number; correlations: number;}> {
         const bbox = await EarthquakeBboxResolver.resolveUnionBbox(EarthquakeService.IMPORT_RADIUS_KM);
         if (!bbox) {
             Logger.getLogger().info('EarthquakeService: no usable bbox, import skipped');
             return {imported: 0, updated: 0, correlations: 0};
         }
 
-        const startTimeMs = await this._computeStartTime(backfillFromIso);
+        const coldStartMs = await this._coldStartTime();
+        if (coldStartMs === null) {
+            Logger.getLogger().info('EarthquakeService: no sightings yet, import skipped');
+            return {imported: 0, updated: 0, correlations: 0};
+        }
         const endTimeMs = Date.now();
 
         Logger.getLogger().info(
-            `EarthquakeService: import from ${new Date(startTimeMs).toISOString()} to ${new Date(endTimeMs).toISOString()} ` +
-            `bbox lat[${bbox.min_lat.toFixed(2)}..${bbox.max_lat.toFixed(2)}] lon[${bbox.min_lon.toFixed(2)}..${bbox.max_lon.toFixed(2)}]`
+            `EarthquakeService: import bbox lat[${bbox.min_lat.toFixed(2)}..${bbox.max_lat.toFixed(2)}] ` +
+            `lon[${bbox.min_lon.toFixed(2)}..${bbox.max_lon.toFixed(2)}] (cold-start floor ${new Date(coldStartMs).toISOString()})`
         );
 
         let imported = 0;
         let updated = 0;
-        const correlated = new Set<number>();
+        let minStartMs = endTimeMs;
 
         for (const client of this._clients) {
             const source = client.getSource();
+            // eslint-disable-next-line no-await-in-loop
+            const latest = await EarthquakeRepository.getInstance().getLatestEventTimeMs(source);
+            const startTimeMs = latest > 0 ? latest + 1 : coldStartMs;
+            if (startTimeMs < minStartMs) {
+                minStartMs = startTimeMs;
+            }
+
             let events: FdsnwsEvent[];
             try {
                 // eslint-disable-next-line no-await-in-loop
@@ -147,7 +148,9 @@ export class EarthquakeService extends ServiceJobAbstract {
                 Logger.getLogger().error(`EarthquakeService: ${source} fetch failed: ${(err as Error).message}`);
                 continue;
             }
-            Logger.getLogger().info(`EarthquakeService: ${source} returned ${events.length} events`);
+            Logger.getLogger().info(
+                `EarthquakeService: ${source} from ${new Date(startTimeMs).toISOString()} → ${events.length} events`
+            );
 
             for (const ev of events) {
                 // eslint-disable-next-line no-await-in-loop
@@ -161,32 +164,37 @@ export class EarthquakeService extends ServiceJobAbstract {
         }
 
         // Reload the rows we just touched (we need their `id` for the
-        // correlation upsert) — bbox + time range matches the import.
+        // correlation upsert) — span the earliest per-client start so
+        // every freshly inserted event is in scope.
         const persisted = await EarthquakeRepository.getInstance().findByBboxAndTime(
             bbox,
-            startTimeMs,
+            minStartMs,
             endTimeMs,
             EarthquakeService.MIN_MAGNITUDE
         );
 
-        const correlations = await this._correlate(persisted, correlated);
+        const correlations = await this._correlate(persisted, new Set<number>());
 
         Logger.getLogger().info(`EarthquakeService: done — imported=${imported} updated=${updated} correlations=${correlations}`);
         return {imported: imported, updated: updated, correlations: correlations};
     }
 
-    private async _computeStartTime(backfillFromIso: string | undefined): Promise<number> {
-        if (backfillFromIso) {
-            const t = Date.parse(backfillFromIso);
-            if (Number.isFinite(t)) {
-                return t;
-            }
+    /**
+     * Floor for any provider's cold-start window: the oldest sighting
+     * date minus COLD_START_PRE_SIGHTING_DAYS, expressed as ms-epoch
+     * UTC midnight. Returns null when no sighting exists yet — caller
+     * skips the import in that case.
+     */
+    private async _coldStartTime(): Promise<number | null> {
+        const oldest = await SightingRepository.getInstance().getOldestSightingDate();
+        if (!oldest) {
+            return null;
         }
-        const latest = await EarthquakeRepository.getInstance().getLatestEventTimeMs();
-        if (latest > 0) {
-            return latest + 1;
+        const base = Date.parse(`${oldest}T00:00:00Z`);
+        if (!Number.isFinite(base)) {
+            return null;
         }
-        return Date.now() - (EarthquakeService.COLD_START_BACKFILL_DAYS * 24 * 60 * 60 * 1000);
+        return base - (EarthquakeService.COLD_START_PRE_SIGHTING_DAYS * 24 * 60 * 60 * 1000);
     }
 
     /**
