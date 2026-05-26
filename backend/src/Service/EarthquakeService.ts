@@ -1,9 +1,11 @@
 import {Logger, ServiceJobAbstract} from 'figtree';
 import {Earthquake} from '../Db/MariaDb/Entities/Earthquake.js';
-import {EarthquakeBbox, EarthquakeRepository} from '../Db/MariaDb/Repositories/EarthquakeRepository.js';
+import {EarthquakeRepository} from '../Db/MariaDb/Repositories/EarthquakeRepository.js';
 import {SightingRepository} from '../Db/MariaDb/Repositories/SightingRepository.js';
 import {SightingSeismicRepository} from '../Db/MariaDb/Repositories/SightingSeismicRepository.js';
 import {EarthquakeBboxResolver} from './Earthquake/EarthquakeBboxResolver.js';
+import {EmscClient} from './Earthquake/EmscClient.js';
+import {FdsnwsClient, FdsnwsEvent} from './Earthquake/FdsnwsClient.js';
 import {UsgsClient} from './Earthquake/UsgsClient.js';
 
 /**
@@ -62,12 +64,20 @@ export class EarthquakeService extends ServiceJobAbstract {
      */
     private static readonly EARTH_RADIUS_KM = 6371;
 
-    private readonly _client: UsgsClient;
+    /**
+     * Catalog clients consulted in order on every import tick. USGS
+     * keeps the bigger international events; EMSC covers small
+     * regional events (Canaries, Mediterranean) that USGS misses.
+     * Both run, both upsert with their own `source` tag — the two
+     * may store the same physical event twice (different `source_event_id`),
+     * which is acceptable given that there's no stable cross-catalog id.
+     */
+    private readonly _clients: FdsnwsClient[];
 
-    public constructor(client?: UsgsClient) {
+    public constructor(clients?: FdsnwsClient[]) {
         super(EarthquakeService.NAME, ['mariadb']);
         this._cron = '0 * * * *';
-        this._client = client ?? new UsgsClient();
+        this._clients = clients ?? [new UsgsClient(), new EmscClient()];
     }
 
     /**
@@ -123,20 +133,30 @@ export class EarthquakeService extends ServiceJobAbstract {
             `bbox lat[${bbox.min_lat.toFixed(2)}..${bbox.max_lat.toFixed(2)}] lon[${bbox.min_lon.toFixed(2)}..${bbox.max_lon.toFixed(2)}]`
         );
 
-        const events = await this._client.fetchEvents(bbox, startTimeMs, endTimeMs, EarthquakeService.MIN_MAGNITUDE);
-        Logger.getLogger().info(`EarthquakeService: USGS returned ${events.length} events`);
-
         let imported = 0;
         let updated = 0;
         const correlated = new Set<number>();
 
-        for (const ev of events) {
-            // eslint-disable-next-line no-await-in-loop
-            const action = await EarthquakeRepository.getInstance().upsertBySourceEvent(ev);
-            if (action === 'inserted') {
-                imported++;
-            } else if (action === 'updated') {
-                updated++;
+        for (const client of this._clients) {
+            const source = client.getSource();
+            let events: FdsnwsEvent[];
+            try {
+                // eslint-disable-next-line no-await-in-loop
+                events = await client.fetchEvents(bbox, startTimeMs, endTimeMs, EarthquakeService.MIN_MAGNITUDE);
+            } catch (err) {
+                Logger.getLogger().error(`EarthquakeService: ${source} fetch failed: ${(err as Error).message}`);
+                continue;
+            }
+            Logger.getLogger().info(`EarthquakeService: ${source} returned ${events.length} events`);
+
+            for (const ev of events) {
+                // eslint-disable-next-line no-await-in-loop
+                const action = await EarthquakeRepository.getInstance().upsertBySourceEvent(ev);
+                if (action === 'inserted') {
+                    imported++;
+                } else if (action === 'updated') {
+                    updated++;
+                }
             }
         }
 
