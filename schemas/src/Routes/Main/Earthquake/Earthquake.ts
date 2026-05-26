@@ -63,38 +63,6 @@ export const SchemaEarthquakeListResponse = SchemaDefaultReturn.extend({
 export type EarthquakeListResponse = ExtractSchemaResultType<typeof SchemaEarthquakeListResponse>;
 
 /**
- * Schema of EarthquakeImportRequest
- * Manual earthquake-import trigger (admin)
- */
-export const SchemaEarthquakeImportRequest = Vts.object({
-    backfill_from: Vts.optional(Vts.string({description: 'YYYY-MM-DD start for a backfill (default = last successful import or 30 days ago)'})),
-}, {
-    description: 'Manual earthquake-import trigger (admin)',
-});
-
-/**
- * Type of schema EarthquakeImportRequest
- */
-export type EarthquakeImportRequest = ExtractSchemaResultType<typeof SchemaEarthquakeImportRequest>;
-
-/**
- * Schema of EarthquakeImportResponse
- * Result of an earthquake-import run
- */
-export const SchemaEarthquakeImportResponse = SchemaDefaultReturn.extend({
-    imported: Vts.optional(Vts.number()),
-    updated: Vts.optional(Vts.number()),
-    correlations: Vts.optional(Vts.number({description: 'Number of sighting_seismic rows upserted'})),
-}, {
-    description: 'Result of an earthquake-import run',
-});
-
-/**
- * Type of schema EarthquakeImportResponse
- */
-export type EarthquakeImportResponse = ExtractSchemaResultType<typeof SchemaEarthquakeImportResponse>;
-
-/**
  * Schema of SightingSeismicEntry
  * Per-sighting correlation to a nearby earthquake
  */

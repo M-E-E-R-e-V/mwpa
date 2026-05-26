@@ -497,6 +497,21 @@ export class SightingRepository extends DBRepository<Sighting> {
     }
 
     /**
+     * Oldest non-deleted sighting date (YYYY-MM-DD), or null when the
+     * table is empty. Used by the seismic import flow to figure out how
+     * far back to cold-start; without sightings there's nothing to
+     * correlate against, so the caller skips the import entirely.
+     */
+    public async getOldestSightingDate(): Promise<string | null> {
+        const repository = await this._repository;
+        const row = await repository.createQueryBuilder('s')
+            .select('MIN(s.date)', 'min_date')
+            .where('s.deleted = :del', {del: false})
+            .getRawOne<{min_date: string | null;}>();
+        return row?.min_date ?? null;
+    }
+
+    /**
      * Minimal projection of sightings whose `date` falls inside the
      * supplied YYYY-MM-DD range — used by the seismic correlation flow
      * to find sightings near a freshly imported earthquake. Returns

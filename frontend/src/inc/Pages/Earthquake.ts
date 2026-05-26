@@ -21,10 +21,10 @@ import {BasePage} from './BasePage';
 
 /**
  * Earthquake admin page — list of imported events with a period +
- * min-magnitude filter, a manual "import now" button, and an inline
- * mini-map showing every visible event. Data source is purely the
- * `earthquake` table; the cron job (EarthquakeService) is the only
- * thing that talks to USGS.
+ * min-magnitude filter, an inline mini-map showing every visible
+ * event, and a recorrelate-all button for use after radius/window
+ * tuning. Imports run on an hourly cron (EarthquakeService); there is
+ * no manual trigger.
  */
 export class Earthquake extends BasePage {
 
@@ -33,15 +33,13 @@ export class Earthquake extends BasePage {
     protected override _name: string = Earthquake.NAME;
 
     /**
-     * Filter controls — kept on the instance so the import button can
-     * re-read them after a successful run. Raw jQuery refs because the
-     * bambooo widgets don't accept loose div parents and dragging in
-     * FormRow/FormGroup just for three inputs isn't worth it.
+     * Filter controls — raw jQuery refs because the bambooo widgets
+     * don't accept loose div parents and dragging in FormRow/FormGroup
+     * just for three inputs isn't worth it.
      */
     protected _periodFrom: JQuery<HTMLInputElement> | null = null;
     protected _periodTo: JQuery<HTMLInputElement> | null = null;
     protected _minMag: JQuery<HTMLInputElement> | null = null;
-    protected _backfillFrom: JQuery<HTMLInputElement> | null = null;
 
     /**
      * Mini-map handle; disposed in unloadContent.
@@ -87,34 +85,8 @@ export class Earthquake extends BasePage {
             await this._reload();
         });
 
-        // Visual separator between "list filter" and "ingest controls".
+        // Visual separator between "list filter" and "recorrelate".
         jQuery('<div style="width:1px;background:#dee2e6;align-self:stretch;"/>').appendTo(filterBody);
-
-        this._backfillFrom = buildField(lang.l('Backfill from'), 'date');
-
-        const btnImport = jQuery<HTMLButtonElement>(
-            `<button type="button" class="btn btn-sm btn-default"><i class="fa fa-download"></i> ${lang.l('Import now')}</button>`
-        ).appendTo(filterBody);
-        btnImport.on('click', async() => {
-            btnImport.attr('disabled', 'disabled');
-            try {
-                const backfill = (this._backfillFrom?.val() as string) ?? '';
-                const res = await EarthquakeAPI.runImport(backfill || undefined);
-                if (res && res.imported !== undefined) {
-                    this._toast.fire({
-                        icon: 'success',
-                        title: `${lang.l('Import done')}: +${res.imported} / ~${res.updated} / sighting-seismic ${res.correlations}`
-                    });
-                } else if (res?.msg) {
-                    this._toast.fire({icon: 'error', title: res.msg});
-                }
-            } catch (e) {
-                this._toast.fire({icon: 'error', title: (e as Error).message});
-            } finally {
-                btnImport.removeAttr('disabled');
-                await this._reload();
-            }
-        });
 
         const btnRecorrelate = jQuery<HTMLButtonElement>(
             `<button type="button" class="btn btn-sm btn-warning"><i class="fa fa-link"></i> ${lang.l('Recorrelate all')}</button>`

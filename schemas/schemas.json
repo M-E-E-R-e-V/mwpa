@@ -10314,8 +10314,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 454,
+                          "y": 40
                         },
                         "fields": [
                           {
@@ -10449,8 +10449,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 473,
+                          "y": 655
                         },
                         "fields": [
                           {
@@ -10518,8 +10518,8 @@
                           "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 40,
+                          "y": 40
                         },
                         "fields": [
                           {
@@ -10558,78 +10558,6 @@
                         ]
                       },
                       {
-                        "unid": "014c7b8e-1a23-4141-bc17-22ab217bdfb0",
-                        "name": "EarthquakeImportRequest",
-                        "description": "Manual earthquake-import trigger (admin)",
-                        "extend": {
-                          "type": "object"
-                        },
-                        "pos": {
-                          "x": 0,
-                          "y": 0
-                        },
-                        "fields": [
-                          {
-                            "unid": "093df15e-56c2-4f2d-8001-fbcd78dfd2c7",
-                            "name": "backfill_from",
-                            "type": {
-                              "type": "string",
-                              "optional": true,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": "YYYY-MM-DD start for a backfill (default = last successful import or 30 days ago)"
-                          }
-                        ]
-                      },
-                      {
-                        "unid": "f2781b92-84e9-47ab-892c-5559d0e3470a",
-                        "name": "EarthquakeImportResponse",
-                        "description": "Result of an earthquake-import run",
-                        "extend": {
-                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
-                        },
-                        "pos": {
-                          "x": 0,
-                          "y": 0
-                        },
-                        "fields": [
-                          {
-                            "unid": "57d86186-3b9b-4d6a-854b-4b16a15d9b7c",
-                            "name": "imported",
-                            "type": {
-                              "type": "number",
-                              "optional": true,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": ""
-                          },
-                          {
-                            "unid": "a436edce-a04d-415d-a561-c5a2b53c027b",
-                            "name": "updated",
-                            "type": {
-                              "type": "number",
-                              "optional": true,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": ""
-                          },
-                          {
-                            "unid": "ecfc9414-f0f0-4bf3-b219-f5bad2896762",
-                            "name": "correlations",
-                            "type": {
-                              "type": "number",
-                              "optional": true,
-                              "array": false,
-                              "types": []
-                            },
-                            "description": "Number of sighting_seismic rows upserted"
-                          }
-                        ]
-                      },
-                      {
                         "unid": "d1ee61ea-86cf-4fbe-883b-b32d5e5860bd",
                         "name": "SightingSeismicEntry",
                         "description": "Per-sighting correlation to a nearby earthquake",
@@ -10637,8 +10565,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 790,
+                          "y": 453
                         },
                         "fields": [
                           {
@@ -10717,8 +10645,8 @@
                           "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 24,
+                          "y": 591
                         },
                         "fields": [
                           {
