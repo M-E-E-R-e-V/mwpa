@@ -92,6 +92,47 @@ Per-sighting environment lookup, refreshed by background services:
 - `weather_hour_used` — local-time hour the *_hour samples were taken from
 - `provenance` — JSON: which provider produced which column
 
+### Earthquakes & sighting × earthquake correlation
+
+Earthquakes are imported hourly by `EarthquakeService` from two
+FDSNWS-compatible catalogues:
+
+- **USGS** — `earthquake.usgs.gov/fdsnws/event/1/query` (`format=geojson`), broad international coverage for M ≥ 4
+- **EMSC** — `seismicportal.eu/fdsnws/event/1/query` (`format=json`), much denser regional reporting down to ~M 1.0 in the Canaries / Mediterranean
+
+The same physical event can end up stored twice (once per provider, different `source_event_id`) — there is no stable cross-catalogue identifier, so the table keeps both rows with their own provenance.
+
+`earthquake` table — one row per event per provider:
+
+| Column | Meaning |
+|---|---|
+| `source` | `'usgs'` or `'emsc'` |
+| `source_event_id` | Provider-stable event id |
+| `event_time_ms` | Event origin time, ms-epoch UTC (BigInt; TypeORM returns it as a string) |
+| `lat` / `lon` | Epicentre, WGS-84 decimal degrees |
+| `depth_km` | Hypocentre depth, positive km (both providers' Z-conventions are normalised) |
+| `magnitude` | Reported magnitude value |
+| `magnitude_type` | Magnitude scale (e.g. `ml`, `mb`) |
+| `place` | Free-text region name (e.g. `'CANARY ISLANDS, SPAIN REGION'`) |
+| `url` | Event-detail page on the provider |
+
+`sighting_seismic` correlation table — one row per (sighting × earthquake) pair within the configured window (currently **±200 km** and **±14 days** from each sighting's position + tour_start time):
+
+| Column | Meaning |
+|---|---|
+| `sighting_id` | FK to `sighting.id` |
+| `earthquake_id` | FK to `earthquake.id` |
+| `distance_km` | Great-circle distance from sighting position to epicentre |
+| `hours_offset` | Signed hours; **positive = earthquake before sighting** |
+| `magnitude` | Denormalised snapshot of the earthquake's magnitude for fast filtering |
+
+A unique index on `(sighting_id, earthquake_id)` deduplicates the pairs.
+
+Notes:
+
+- The import bbox for each org is the org's tracking-area centroid (or the org HQ if no tracking area is configured) expanded by **500 km** — wide enough to cover the Canaries archipelago + the Moroccan shelf from a single anchor point in the harbour.
+- The minimum magnitude floor is **M 2.5** (USGS' "significant" feed threshold). Below that, USGS picks are mostly instrumental noise far away, but they ARE kept for the Canaries region thanks to EMSC's regional pickup.
+
 ## Coordinate & time conventions
 
 - **Coordinates** are **WGS84 decimal degrees**. Longitude is signed (negative west).
@@ -134,6 +175,7 @@ Sightings without tracking points fall back to `source='manual_begin_end'`: a si
 - **Behavioural patterns**: `behaviours` (JSON of `BehaviouralStates`), `reaction_id` (`EncounterCategories`).
 - **Movement / kinematics**: `sighting_movement_track` segments — speed distributions, turning-angle histograms, heading rose diagrams, residency-time proxies.
 - **Year-on-year comparison**: built-in Year-comparison tab uses the same `loadedEntries` as the rest of the page.
+- **Behavioural response to seismic events** — pair sightings with nearby earthquakes (±14 d / ±200 km) and inspect the signed hours-offset distribution. Strongly positive skew suggests delayed-response patterns.
 
 ### Limitations
 

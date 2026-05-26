@@ -116,3 +116,15 @@ If you change an entity in a way that *removes* or *narrows* columns, do **not**
 ## Schemas workflow
 
 `schemas/schemas.json` is the source of truth (vtseditor format). Regeneration writes to `schemas/src/` with `destinationClear: true` — uncommitted manual edits there will be lost. The generator emits both runtime validators (`SchemaXxx`) and TS types (`Xxx`); both are re-exported from `schemas/src/index.ts`. After regenerating, run the schemas + backend compile to surface type errors in callers.
+
+### vts MCP gotchas
+
+When creating schemas via `mcp__vtseditor__vts_create_schema`, response schemas that should extend `SchemaDefaultReturn` need `extend: {"type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"}` (the unid of `SchemaDefaultReturn`) — passing `"SchemaDefaultReturn"` as a string falls through to a plain `Vts.object(...)` without the `statusCode`/`msg` envelope. Same pattern for any cross-schema reference (`type` field on `vts_create_field`): pass the target schema's unid, not its name.
+
+The MCP server's autoGenerate runs after every mutation, so the regenerated TS lands on disk before the next tool call. After deleting a schema, grep the codebase to catch stale imports the regenerator silently dropped from `schemas/src/index.ts`.
+
+## BigInt columns (TypeORM + MariaDB)
+
+`@Column({type: 'bigint'})` fields come back from TypeORM as **strings** on MariaDB. Plain arithmetic coerces fine (`"1779783658393" - n → number`) but `new Date(ev.col)` interprets the string as an ISO date — usually invalid, then `.toISOString()` throws `"Invalid time value"`. The canonical fix is `const ms = Number(row.col); if (!Number.isFinite(ms) || ms <= 0) { skip }` before any date math.
+
+Legacy rows can also have `null` in a bigint column even when the entity declares `default: 0`, so the `Number.isFinite` gate is also load-bearing for that case. See `EarthquakeService._correlate` for the canonical pattern.

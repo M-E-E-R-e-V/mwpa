@@ -20,16 +20,18 @@ beschrieben.
 5. [Externe Touren](#5-externe-touren)
 6. [Ozean- & Fischerei-Karte](#6-ozean--fischerei-karte)
 7. [Live-AIS-Karte](#7-live-ais-karte)
-8. [Admin → Benutzer](#8-admin--benutzer)
-9. [Admin → Benutzergruppen](#9-admin--benutzergruppen)
-10. [Admin → Rollen](#10-admin--rollen)
-11. [Admin → Organisation](#11-admin--organisation)
-12. [Admin → Arten](#12-admin--arten)
-13. [Admin → Fahrzeuge](#13-admin--fahrzeuge)
-14. [Admin → Begegnungen](#14-admin--begegnungen)
-15. [Admin → Geräte](#15-admin--geräte)
-16. [Admin → Externe Tour-Quellen](#16-admin--externe-tour-quellen)
-17. [Admin → Services](#17-admin--services)
+8. [Erdbeben & Impact-Analyse](#8-erdbeben--impact-analyse)
+9. [Admin → Benutzer](#9-admin--benutzer)
+10. [Admin → Benutzergruppen](#10-admin--benutzergruppen)
+11. [Admin → Rollen](#11-admin--rollen)
+12. [Admin → Organisation](#12-admin--organisation)
+13. [Admin → Arten](#13-admin--arten)
+14. [Admin → Fahrzeuge](#14-admin--fahrzeuge)
+15. [Admin → Begegnungen](#15-admin--begegnungen)
+16. [Admin → Geräte](#16-admin--geräte)
+17. [Touren → Verwaiste Tracks](#17-touren--verwaiste-tracks)
+18. [Admin → Externe Tour-Quellen](#18-admin--externe-tour-quellen)
+19. [Admin → Services](#19-admin--services)
 
 ---
 
@@ -154,7 +156,48 @@ Klick auf einen Marker zeigt die jüngste Spur des Schiffes.
 
 ---
 
-## 8. Admin → Benutzer
+## 8. Erdbeben & Impact-Analyse
+
+*Admin-only.* Importiert stündlich Erdbeben aus den FDSNWS-Katalogen
+von **USGS** (globale Coverage) und **EMSC** (dichte regionale
+Berichterstattung für die Kanaren / das Mittelmeer, bis ~M 1,0) und
+korreliert sie mit allen Sichtungen innerhalb von ±14 Tagen und 200 km.
+
+**Filter-Karte:**
+- Zeitraum von / bis + Min. Magnitude — listet die Erdbeben in der
+  Tabelle und blendet sie als Kreise auf der Karte ein (Radius nach
+  Magnitude, Farbton nach Tiefe: oberflächlich = rot, tief = ocker).
+- **± Fenster** — Dropdown mit fünf Optionen:
+  - *Keine Sichtungen anzeigen* (Default — nur Erdbeben-Liste)
+  - **±24 h** — akute Stressreaktion (Strandungen, P-/S-Wellen-Effekte)
+  - **±3 Tage** — kurzfristige Verhaltensänderung
+  - **±7 Tage** — mittelfristige Verdrängung / Migrationsverschiebung
+  - **±14 Tage** — breit, fängt verzögerte Effekte ein (rauschig)
+
+Sobald ein Fenster ≠ „keine" gewählt wird, lädt die Seite die Impact-
+Analyse über **alle** Erdbeben aus der aktuellen Tabelle:
+
+- Die betroffenen Sichtungen werden als Marker auf der Karte gerendert
+  (Tooltip mit Spezies, Δ km, Δ h)
+- Pro Sichtung wird der berechnete Bewegungs-Track als Polylinie
+  hinterlegt
+- Eine **Auswertung**-Karte unter dem Karten-Bereich zeigt vier
+  Balkendiagramme: Sichtungen nach Spezies, nach Verhaltenszustand,
+  nach Begegnungskategorie, und ein Zeit-Offset-Histogramm
+  (signed Stunden — positiv = Beben vor Sichtung)
+
+**Kein manueller Import-Knopf:** Der stündliche Cron holt neue Events
+automatisch nach. Bei Cold-Start eines neuen Providers wird ab dem
+Datum der ältesten Sichtung minus 30 Tage zurückgefüllt.
+
+**Neu korrelieren** (Button rechts in der Filter-Leiste): Geht die
+gesamte `earthquake`-Tabelle einmal komplett durch und schreibt die
+`sighting_seismic`-Korrelationen neu — nur nötig nach einer Änderung
+an `CORRELATION_RADIUS_KM` oder `CORRELATION_WINDOW_DAYS` im Code.
+
+---
+
+## 9. Admin → Benutzer
 
 Verwaltung der Operator-Konten.
 
@@ -169,7 +212,7 @@ zuweisen und Passwörter zurücksetzen.
 
 ---
 
-## 9. Admin → Benutzergruppen
+## 10. Admin → Benutzergruppen
 
 Gruppen verbinden eine *Rolle* (admin / importer / driver / guide …) mit
 einer *Organisation*. Ein Benutzer kann mehreren Gruppen angehören,
@@ -181,7 +224,7 @@ hat aber genau eine *Hauptgruppe*.
 
 ---
 
-## 10. Admin → Rollen
+## 11. Admin → Rollen
 
 Rollen bündeln die im System verfügbaren Rechte (RBAC). Neue Rechte
 werden in [`schemas/schemas.json`](../schemas/schemas.json) über den
@@ -193,7 +236,7 @@ vtseditor ergänzt — keine Freitexte.
 
 ---
 
-## 11. Admin → Organisation
+## 12. Admin → Organisation
 
 Eigentümer von Fahrzeugen, Skippern, Touren und Sichtungen. Eine
 MWPA-Instanz kann mehrere Organisationen bedienen.
@@ -204,7 +247,7 @@ MWPA-Instanz kann mehrere Organisationen bedienen.
 
 ---
 
-## 12. Admin → Arten
+## 13. Admin → Arten
 
 Stammdaten der Wal-/Delfinarten (und weiterer Tiere), aus denen
 Beobachter wählen können. Jede Art gehört zu einer **Artengruppe**
@@ -217,7 +260,7 @@ Taxonomie tragen.
 
 ---
 
-## 13. Admin → Fahrzeuge
+## 14. Admin → Fahrzeuge
 
 Die Boote der Flotte. Nur Einträge mit **In use** = wahr werden beim
 Anlegen einer neuen Tour angeboten.
@@ -228,7 +271,7 @@ Anlegen einer neuen Tour angeboten.
 
 ---
 
-## 14. Admin → Begegnungen
+## 15. Admin → Begegnungen
 
 Begegnungs-Kategorien für das Feld **Reaktion** einer Sichtung —
 *Interaction*, *No Response*, *Avoidance*, *Proximity*, *Unknown* usw.
@@ -239,7 +282,7 @@ Begegnungs-Kategorien für das Feld **Reaktion** einer Sichtung —
 
 ---
 
-## 15. Admin → Geräte
+## 16. Admin → Geräte
 
 Mobile Geräte, die sich mit dem Backend synchronisiert haben (eine
 Zeile pro Installation). Hilfreich, um zu sehen, welches Handy / Tablet
@@ -251,7 +294,34 @@ eine Tour hochgeladen hat.
 
 ---
 
-## 16. Admin → Externe Tour-Quellen
+## 17. Touren → Verwaiste Tracks
+
+*Admin-only.* Im Untermenü **Touren** verfügbar. Listet
+Pending-Track-Buckets (`sighting_tour_tracking_pending`) auf, denen kein
+`SightingTour` zugeordnet werden konnte — typisch wenn Crew oder Boot
+nach der Tour im Portal korrigiert werden und die GPS-Punkte am alten
+`tour_fid` hängen bleiben.
+
+<p align="center">
+  <img src="screenshots/manual/16-admin-orphan-tracks.png" width="900" alt="Verwaiste Tracks" />
+</p>
+
+**Zuweisen-Modal:** Klick auf eine Zeile öffnet einen Dialog mit vier
+Pickern (Fahrzeug, Fahrer, Datum, Tour-Start) und einer Match-Liste der
+passenden Touren. Darunter eine kleine **Karten-Vorschau** des Bucket-
+Inhalts (Polylinie durch alle dekodierten Positionen + Start-/Endmarker
++ Zeitspanne), so dass auf einen Blick beurteilt werden kann, ob die
+Daten zu einer echten Tour gehören oder GPS-Rauschen sind.
+
+- **Zuweisen** überträgt die Pending-Rows in `sighting_tour_tracking`
+  des gewählten Ziels und triggert anschließend `SightingMovement`-
+  Neuberechnung.
+- **Bucket löschen** verwirft die Pending-Rows ganz — sinnvoll bei
+  Testfahrten, Hafen-Drift oder offensichtlich kaputten GPS-Spuren.
+
+---
+
+## 18. Admin → Externe Tour-Quellen
 
 Konfiguriert Drittanbieter (z. B. FareHarbor), die die
 [Externen Touren](#5-externe-touren) liefern. Jede Zeile speichert
@@ -263,7 +333,7 @@ Anbieter-Typ, Zugangsdaten und ein Poll-Intervall.
 
 ---
 
-## 17. Admin → Services
+## 19. Admin → Services
 
 Status-Dashboard des Service-Managers im Backend. **Runner** (z. B.
 `mariadb`, `httpserver`) halten die Plattform am Laufen; **Scheduler**

@@ -92,6 +92,46 @@ Pro-Sichtung-Umweltdaten, von Hintergrund-Services aktualisiert:
 - `weather_hour_used` — Lokal-Stunde aus der die *_hour-Werte stammen
 - `provenance` — JSON: welcher Provider hat welche Spalte geliefert
 
+### Erdbeben & Sichtung × Erdbeben-Korrelation
+
+Erdbeben werden stündlich vom `EarthquakeService` aus zwei FDSNWS-kompatiblen Katalogen importiert:
+
+- **USGS** — `earthquake.usgs.gov/fdsnws/event/1/query` (`format=geojson`), breite internationale Coverage ab M ≥ 4
+- **EMSC** — `seismicportal.eu/fdsnws/event/1/query` (`format=json`), deutlich dichtere regionale Berichterstattung bis ~M 1,0 für Kanaren / Mittelmeer
+
+Dasselbe physikalische Event kann zweimal in der Tabelle landen (einmal pro Provider, mit unterschiedlicher `source_event_id`) — es gibt keine stabile katalogübergreifende Id, daher werden beide Zeilen mit eigener Provenance behalten.
+
+`earthquake`-Tabelle — eine Zeile pro Event pro Provider:
+
+| Spalte | Bedeutung |
+|---|---|
+| `source` | `'usgs'` oder `'emsc'` |
+| `source_event_id` | Provider-stabile Event-Id |
+| `event_time_ms` | Event-Ursprungszeit, ms-Epoch UTC (BigInt; TypeORM gibt sie als String zurück) |
+| `lat` / `lon` | Epizentrum, WGS-84 Dezimalgrad |
+| `depth_km` | Hypozentrum-Tiefe, positive km (Z-Konventionen beider Provider normalisiert) |
+| `magnitude` | Gemeldete Magnitude |
+| `magnitude_type` | Magnituden-Skala (z. B. `ml`, `mb`) |
+| `place` | Freitext-Region (z. B. `'CANARY ISLANDS, SPAIN REGION'`) |
+| `url` | Event-Detail-Seite beim Provider |
+
+`sighting_seismic`-Korrelationstabelle — eine Zeile pro (Sichtung × Erdbeben)-Paar innerhalb des konfigurierten Fensters (aktuell **±200 km** und **±14 Tage** ab Position + `tour_start`-Zeitpunkt der Sichtung):
+
+| Spalte | Bedeutung |
+|---|---|
+| `sighting_id` | FK auf `sighting.id` |
+| `earthquake_id` | FK auf `earthquake.id` |
+| `distance_km` | Großkreis-Distanz Sichtungsposition → Epizentrum |
+| `hours_offset` | Vorzeichenbehaftete Stunden; **positiv = Erdbeben vor Sichtung** |
+| `magnitude` | Denormalisierter Magnituden-Snapshot zur schnellen Filterung |
+
+Ein Unique-Index auf `(sighting_id, earthquake_id)` dedupliziert die Paare.
+
+Hinweise:
+
+- Die Import-Bbox pro Organisation ist der Tracking-Area-Schwerpunkt (oder das Org-HQ, wenn keine Tracking-Area gesetzt ist) erweitert um **500 km** — weit genug, um vom Hafen-Ankerpunkt aus den Kanaren-Archipel + den marokkanischen Schelf abzudecken.
+- Die Minimum-Magnitude beträgt **M 2,5** (USGS' "significant"-Feed-Schwelle). Darunter sind USGS-Picks zumeist instrumentelles Rauschen aus weiter Ferne, werden für die Kanaren-Region aber dank EMSC-Regionalabdeckung trotzdem behalten.
+
 ## Koordinaten- & Zeit-Konventionen
 
 - **Koordinaten** sind **WGS84 Dezimalgrad**. Längengrad ist signiert (westlich = negativ).
@@ -134,6 +174,7 @@ Sichtungen ohne Tracking-Punkte fallen auf `source='manual_begin_end'` zurück: 
 - **Verhaltensmuster**: `behaviours` (JSON über `BehaviouralStates`), `reaction_id` (`EncounterCategories`).
 - **Bewegung / Kinematik**: `sighting_movement_track`-Segmente — Geschwindigkeits-Verteilungen, Turning-Angle-Histogramme, Heading-Rose-Diagramme, Aufenthaltszeit-Proxies.
 - **Jahresvergleich**: Eingebauter Year-Comparison-Tab arbeitet auf dem gleichen Datensatz wie die Karte.
+- **Verhaltensreaktion auf seismische Ereignisse** — Sichtungen mit nahen Erdbeben pairen (±14 Tage / ±200 km) und die vorzeichenbehaftete Stunden-Offset-Verteilung anschauen. Stark positive Schiefe deutet auf verzögerte Reaktionsmuster hin.
 
 ### Einschränkungen
 
