@@ -404,6 +404,12 @@ export {
     EarthquakeImpactResponse,
 } from './Routes/Main/Earthquake/Earthquake.js';
 export {
+    SchemaQuickConnectPayload,
+    QuickConnectPayload,
+    SchemaQuickConnectGenerateResponse,
+    QuickConnectGenerateResponse,
+} from './Routes/Main/QuickConnect/QuickConnect.js';
+export {
     SchemaMapCacheRequest,
     MapCacheRequest,
 } from './Routes/Map/MapCache.js';
@@ -471,6 +477,10 @@ export {
     SchemaMobileUserInfoResponse,
     MobileUserInfoResponse,
 } from './Routes/Mobile/Reuse/MobileReuseResponses.js';
+export {
+    SchemaMobileQuickConnectRequest,
+    MobileQuickConnectRequest,
+} from './Routes/Mobile/QuickConnect/MobileQuickConnect.js';
 export {
     SchemaOfficeReportFilter,
     OfficeReportFilter,

@@ -9785,7 +9785,7 @@
                         },
                         "pos": {
                           "x": 485,
-                          "y": 939
+                          "y": 1253
                         },
                         "fields": [
                           {
@@ -9967,7 +9967,7 @@
                         },
                         "pos": {
                           "x": 485,
-                          "y": 1271
+                          "y": 1582
                         },
                         "fields": [
                           {
@@ -10080,7 +10080,7 @@
                         },
                         "pos": {
                           "x": 485,
-                          "y": 1797
+                          "y": 2103
                         },
                         "fields": [
                           {
@@ -10138,7 +10138,7 @@
                         },
                         "pos": {
                           "x": 485,
-                          "y": 566
+                          "y": 561
                         },
                         "fields": [
                           {
@@ -10243,7 +10243,7 @@
                         },
                         "pos": {
                           "x": 40,
-                          "y": 323
+                          "y": 321
                         },
                         "fields": [
                           {
@@ -10268,7 +10268,7 @@
                         },
                         "pos": {
                           "x": 485,
-                          "y": 801
+                          "y": 794
                         },
                         "fields": [
                           {
@@ -10292,8 +10292,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 485,
+                          "y": 2384
                         },
                         "fields": [
                           {
@@ -10339,8 +10339,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 485,
+                          "y": 2617
                         },
                         "fields": [
                           {
@@ -10375,8 +10375,8 @@
                           "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 40,
+                          "y": 458
                         },
                         "fields": [
                           {
@@ -10400,8 +10400,8 @@
                           "type": "object"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 485,
+                          "y": 931
                         },
                         "fields": [
                           {
@@ -10436,8 +10436,8 @@
                           "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
                         },
                         "pos": {
-                          "x": 0,
-                          "y": 0
+                          "x": 485,
+                          "y": 1116
                         },
                         "fields": [
                           {
@@ -11322,6 +11322,122 @@
                               "types": []
                             },
                             "description": ""
+                          }
+                        ]
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
+              },
+              {
+                "unid": "41ab6489-3b9d-48c6-b5f8-6c4c9e748d8a",
+                "name": "QuickConnect",
+                "type": "folder",
+                "istoggle": true,
+                "entrys": [
+                  {
+                    "unid": "606fb6ae-0edb-4a26-8953-53d7a4299b5a",
+                    "name": "QuickConnect",
+                    "type": "file",
+                    "istoggle": true,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "2d097f16-4074-4294-9ef4-e3aa5d8610a0",
+                        "name": "QuickConnectPayload",
+                        "description": "Payload encoded into the Quick Connect QR code. The Flutter app parses this JSON after scanning and sends {otp} back to /mobile/quickconnect together with its device identity.",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 100,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "bc7cc9b7-5318-4a09-a774-3b6cbdb1d79d",
+                            "name": "version",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Payload version. Bump when the wire shape changes so the app can refuse incompatible QR codes."
+                          },
+                          {
+                            "unid": "10fe3a10-6d77-40c1-9dc9-c9b3d6a047ad",
+                            "name": "server",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Public base URL of the MWPA backend (scheme + host). Determined from X-Forwarded-* via Express trust proxy."
+                          },
+                          {
+                            "unid": "10e0c2e2-f4ee-40f7-9e38-df4efbec043f",
+                            "name": "username",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Username (display only - not required for the exchange, the OTP is sufficient)."
+                          },
+                          {
+                            "unid": "6d523f98-e39f-46cc-99a5-c9f26ff1a1a6",
+                            "name": "otp",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Single-use Quick Connect OTP (hex). Valid for ~60s, consumed by the first /mobile/quickconnect call."
+                          },
+                          {
+                            "unid": "ac6a41db-3960-486c-8b49-e4a25df9a322",
+                            "name": "expires_at",
+                            "type": {
+                              "type": "number",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "Absolute expiry as unix epoch ms - so the app can show a countdown without relying on its clock-of-issue."
+                          }
+                        ]
+                      },
+                      {
+                        "unid": "02ead018-c6e9-47b1-b4d1-bcde32abd2c1",
+                        "name": "QuickConnectGenerateResponse",
+                        "description": "Response of POST /json/quickconnect/generate. data is set on success.",
+                        "extend": {
+                          "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+                        },
+                        "pos": {
+                          "x": 500,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "1579ea10-df7d-4ee7-81c1-50c5c50e01ae",
+                            "name": "data",
+                            "type": {
+                              "type": "2d097f16-4074-4294-9ef4-e3aa5d8610a0",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "The QR payload. Only present when statusCode is ok."
                           }
                         ]
                       }
@@ -12561,6 +12677,75 @@
                 "schemas": [],
                 "enums": [],
                 "links": []
+              },
+              {
+                "unid": "0b84b7b7-e05e-43be-a8ce-198c2c2bee2f",
+                "name": "QuickConnect",
+                "type": "folder",
+                "istoggle": true,
+                "entrys": [
+                  {
+                    "unid": "8e590f15-d40a-461f-b37b-d409f7bee250",
+                    "name": "MobileQuickConnect",
+                    "type": "file",
+                    "istoggle": true,
+                    "entrys": [],
+                    "schemas": [
+                      {
+                        "unid": "8728e37f-ef09-4168-aaac-08fb57749602",
+                        "name": "MobileQuickConnectRequest",
+                        "description": "Body of POST /mobile/quickconnect. The app scans the QR, extracts the otp and posts it together with its device identity. The OTP alone identifies the user (single-use, ~60s TTL).",
+                        "extend": {
+                          "type": "object"
+                        },
+                        "pos": {
+                          "x": 100,
+                          "y": 100
+                        },
+                        "fields": [
+                          {
+                            "unid": "8bedf81e-f8cb-4a60-a7bf-201ce5b7755d",
+                            "name": "otp",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "d755bdb7-50f5-4811-9cd2-250b2863e2e6",
+                            "name": "deviceIdentity",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          },
+                          {
+                            "unid": "ea42b49d-d609-479e-b694-2bfab6988a8f",
+                            "name": "deviceDescription",
+                            "type": {
+                              "type": "string",
+                              "optional": false,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": ""
+                          }
+                        ]
+                      }
+                    ],
+                    "enums": [],
+                    "links": []
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "links": []
               }
             ],
             "schemas": [],
@@ -12730,7 +12915,7 @@
   },
   "editor": {
     "controls_width": 553,
-    "active_entry_unid": "d089eaba-8ce4-401d-9feb-3bf3cef184a8",
-    "active_entry_table_unid": "db36bc48-0c73-46a5-9197-18b4776ad5e7"
+    "active_entry_unid": "8e590f15-d40a-461f-b37b-d409f7bee250",
+    "active_entry_table_unid": "8728e37f-ef09-4168-aaac-08fb57749602"
   }
 }

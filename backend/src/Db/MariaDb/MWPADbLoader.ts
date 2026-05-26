@@ -31,6 +31,7 @@ import {SpeciesExternLink} from './Entities/SpeciesExternLink.js';
 import {SpeciesGroup} from './Entities/SpeciesGroup.js';
 import {User} from './Entities/User.js';
 import {UserGroups} from './Entities/UserGroups.js';
+import {UserQuickConnectToken} from './Entities/UserQuickConnectToken.js';
 import {UsersRights} from './Entities/UsersRights.js';
 import {UsersRoleRights} from './Entities/UsersRoleRights.js';
 import {UsersRoles} from './Entities/UsersRoles.js';
@@ -83,6 +84,7 @@ export class MWPADbLoader extends DBLoader {
             TourAisVessel,
             User,
             UserGroups,
+            UserQuickConnectToken,
             UsersRights,
             UsersRoleRights,
             UsersRoles,

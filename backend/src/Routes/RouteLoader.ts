@@ -12,6 +12,7 @@ import {Group} from './Main/Group.js';
 import {Login} from './Main/Login.js';
 import {Organization} from './Main/Organization.js';
 import {OrphanTracks} from './Main/OrphanTracks.js';
+import {QuickConnect} from './Main/QuickConnect.js';
 import {SightingMovement} from './Main/SightingMovement.js';
 import {Sightings} from './Main/Sightings.js';
 import {Species} from './Main/Species.js';
@@ -24,6 +25,7 @@ import {OfficeReport} from './Export/OfficeReport.js';
 import {MapCache} from './Map/MapCache.js';
 import {Info as MobileInfo} from './Mobile/Info.js';
 import {Login as MobileLogin} from './Mobile/Login.js';
+import {QuickConnect as MobileQuickConnect} from './Mobile/QuickConnect.js';
 import {Reuse as MobileReuse} from './Mobile/Reuse.js';
 import {Sightings as MobileSightings} from './Mobile/Sightings.js';
 import {SightingTourTracking as MobileSightingTourTracking} from './Mobile/SightingTourTracking.js';
@@ -61,6 +63,7 @@ export class RouteLoader extends HttpRouteLoader {
             new Group(),
             new Organization(),
             new OrphanTracks(),
+            new QuickConnect(),
             new Sightings(),
             new SightingMovement(),
             new Species(),
@@ -72,6 +75,7 @@ export class RouteLoader extends HttpRouteLoader {
             new OfficeReport(),
             new MobileInfo(),
             new MobileLogin(),
+            new MobileQuickConnect(),
             new MobileReuse(),
             new MobileSightings(),
             new MobileSightingTourTracking(),

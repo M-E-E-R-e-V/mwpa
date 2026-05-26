@@ -30,6 +30,7 @@ import {EncounterCategories} from './inc/Pages/EncounterCategories';
 import {ExternalTourSource} from './inc/Pages/ExternalTourSource';
 import {Services} from './inc/Pages/Services';
 import {Vehicle} from './inc/Pages/Vehicle';
+import {QuickConnectModal} from './inc/Pages/QuickConnect/QuickConnectModal';
 import {Lang_DE} from './langs/Lang_DE';
 import {Lang_EN} from './langs/Lang_EN';
 import {Lang_ES} from './langs/Lang_ES';
@@ -130,6 +131,18 @@ type SideMenuEntry = {
         } else {
             langNavbarLink.setActiv('us', true);
         }
+
+        // eslint-disable-next-line no-new
+        new NavbarLinkButton(
+            rightNavbar,
+            'fa-qrcode', async() => {
+                const modal = new QuickConnectModal(page.getWrapper().getContentWrapper().getContent().getElement());
+                modal.setOnHidden(async() => {
+                    modal.destroy();
+                });
+                await modal.open();
+            }
+        );
 
         // eslint-disable-next-line no-new
         new NavbarLinkFullsize(rightNavbar);
