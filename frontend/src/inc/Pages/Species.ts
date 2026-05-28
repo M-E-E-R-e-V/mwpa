@@ -28,6 +28,7 @@ import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species'
 import {SpeciesGroup as SpeciesGroupAPI} from '../Api/SpeciesGroup';
 import {Lang} from '../Lang';
 import {UtilOttLink} from '../Utils/UtilOttLink';
+import {UtilWormsLink} from '../Utils/UtilWormsLink';
 import {SpeciesGroupDisplay} from '../Widget/SpeciesGroupDisplay';
 import {BasePage} from './BasePage';
 import {SpeciesProfile as SpeciesProfilePage} from './Species/Profile';
@@ -36,7 +37,7 @@ import {SpeciesMergeModal} from './Species/SpeciesMergeModal';
 
 const PAGE_SIZE = 30;
 
-type SortKey = 'id' | 'name' | 'ottid' | 'group';
+type SortKey = 'id' | 'name' | 'ottid' | 'aphiaid' | 'group';
 type SortState = Record<SortKey, SortOrder>;
 
 const escapeHtml = (s: string): string => s
@@ -110,6 +111,7 @@ export class Species extends BasePage {
                 const aspecie: SpeciesEntry = {
                     id: tid,
                     ottid: this._speciesDialog.getOttId(),
+                    aphiaid: this._speciesDialog.getAphiaId(),
                     name: this._speciesDialog.getName(),
                     species_groupid: this._speciesDialog.getSpeciesGroup()
                 };
@@ -156,12 +158,13 @@ export class Species extends BasePage {
         // In-header quick search.
         const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
         const searchInput = new InputBottemBorderOnly2(searchSlot, undefined, InputType.text);
-        searchInput.setPlaceholder(`${lang.l('search name / group / ott-id …')}`);
+        searchInput.setPlaceholder(`${lang.l('search name / group / ott-id / WoRMS …')}`);
 
         const sort: SortState = {
             id: SortOrder.NONE,
             name: SortOrder.ASC,
             ottid: SortOrder.NONE,
+            aphiaid: SortOrder.NONE,
             group: SortOrder.NONE
         };
 
@@ -201,6 +204,8 @@ export class Species extends BasePage {
         // eslint-disable-next-line no-new
         new Th(trhead, makeSortColumn('Ott-Id', 'ottid'));
         // eslint-disable-next-line no-new
+        new Th(trhead, makeSortColumn('WoRMS', 'aphiaid'));
+        // eslint-disable-next-line no-new
         new Th(trhead, makeSortColumn('Species Group', 'group'));
         // eslint-disable-next-line no-new
         new Th(trhead, new LangText('Action'));
@@ -226,6 +231,18 @@ export class Species extends BasePage {
                 UtilOttLink.setDialog(ottBadge.getElement(), `ID: ${specie.ottid}`, specie.ottid);
             }
 
+            const aphiaIdTd = new Td(trbody, '');
+            const aphiaValue = specie.aphiaid ?? 0;
+            if (aphiaValue !== 0) {
+                const aphiaBadge = new Badge(
+                    aphiaIdTd,
+                    `<b style="color: ${UtilColor.getContrastYIQ('#1b6ec2')}">${aphiaValue}</b>`,
+                    BadgeType.info,
+                    '#1b6ec2'
+                );
+                UtilWormsLink.setDialog(aphiaBadge.getElement(), specie.name, aphiaValue);
+            }
+
             const speciesGroupTd = new Td(trbody, '');
             // eslint-disable-next-line no-new
             new SpeciesGroupDisplay(speciesGroupTd, specie.species_group ?? {
@@ -240,7 +257,7 @@ export class Species extends BasePage {
                 if (this._loadPageFn) {
                     this._loadPageFn(new SpeciesProfilePage(specie.id));
                 }
-            }, 'fa-solid fa-chart-column');
+            }, 'fas fa-chart-bar');
 
             btnMenu.addMenuItem('Edit', async(): Promise<void> => {
                 this._speciesDialog.resetValues();
@@ -248,6 +265,7 @@ export class Species extends BasePage {
                 this._speciesDialog.setId(specie.id);
                 this._speciesDialog.setName(specie.name);
                 this._speciesDialog.setOttId(specie.ottid);
+                this._speciesDialog.setAphiaId(specie.aphiaid ?? 0);
 
                 const groups = await SpeciesGroupAPI.getList();
                 if (groups) {
@@ -315,7 +333,10 @@ export class Species extends BasePage {
                     if (groupName.includes(term)) {
                         return true;
                     }
-                    return `${s.ottid}`.includes(term);
+                    if (`${s.ottid}`.includes(term)) {
+                        return true;
+                    }
+                    return `${s.aphiaid ?? 0}`.includes(term);
                 });
 
             const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder.NONE);
@@ -339,6 +360,10 @@ export class Species extends BasePage {
                         case 'ottid':
                             av = a.ottid;
                             bv = b.ottid;
+                            break;
+                        case 'aphiaid':
+                            av = a.aphiaid ?? 0;
+                            bv = b.aphiaid ?? 0;
                             break;
                         case 'group':
                             av = (a.species_group?.name ?? '').toLowerCase();

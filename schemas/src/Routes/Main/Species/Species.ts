@@ -27,6 +27,7 @@ export const SchemaSpeciesEntry = Vts.object({
     isdeleted: Vts.optional(Vts.boolean()),
     species_groupid: Vts.number(),
     species_group: Vts.optional(SchemaSpeciesEntryGroup),
+    aphiaid: Vts.optional(Vts.number({description: 'WoRMS aphiaID — marine species identifier (https://www.marinespecies.org). Optional/0 if not yet mapped.'})),
 }, {
     description: '',
 });

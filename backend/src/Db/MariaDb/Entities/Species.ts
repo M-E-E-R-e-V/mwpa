@@ -20,6 +20,17 @@ export class Species extends DBBaseEntityId {
     public ott_id!: number;
 
     /**
+     * WoRMS aphiaID — marine species identifier required for OBIS / EurOBIS /
+     * EMODnet Biology / Darwin Core Archive exports. 0 = not yet mapped.
+     * @see https://www.marinespecies.org/aphia.php?p=taxdetails&id=<id>
+     */
+    @Index()
+    @Column({
+        default: 0
+    })
+    public aphia_id!: number;
+
+    /**
      * name of specie
      */
     @Index()

@@ -9,6 +9,7 @@ export type SpeciesWithGroup = {
     id: number;
     name: string;
     ott_id: number;
+    aphia_id: number;
     isdeleted: boolean;
     species_groupid: number;
     group_name: string;
@@ -52,6 +53,7 @@ export class SpeciesRepository extends DBRepository<Species> {
             id: row.species_id,
             name: row.species_name,
             ott_id: row.species_ott_id,
+            aphia_id: row.species_aphia_id ?? 0,
             isdeleted: Boolean(row.species_isdeleted),
             species_groupid: row.group_id ?? 0,
             group_name: row.group_name ?? '',

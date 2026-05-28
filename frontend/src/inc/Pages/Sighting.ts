@@ -51,6 +51,7 @@ import {SightingYearCompare} from '../Widget/SightingYearCompare';
 import {SpeciesDisplay} from '../Widget/SpeciesDisplay';
 import {BasePage} from './BasePage';
 import {MovementSettingsModal} from './Sighting/MovementSettingsModal';
+import {SpeciesProfile as SpeciesProfilePage} from './Species/Profile';
 import {SightingDeletedModal} from './Sighting/SightingDeletedModal';
 import {SightingEditModal} from './Sighting/SightingEditModal';
 import {SightingFilter, SightingFilterValues} from './Sighting/SightingFilter';
@@ -1026,7 +1027,11 @@ export class Sighting extends BasePage {
 
             const speciesTd = new Td(trbody);
             // eslint-disable-next-line no-new
-            new SpeciesDisplay(speciesTd, entry, mspecies);
+            new SpeciesDisplay(speciesTd, entry, mspecies, (speciesId) => {
+                if (this._loadPageFn) {
+                    this._loadPageFn(new SpeciesProfilePage(speciesId));
+                }
+            });
             speciesTd.append(`<br>${escapeHtml(otherSpecies)}`);
 
             const speciesCountGroupTd = new Td(trbody);
@@ -1330,7 +1335,11 @@ export class Sighting extends BasePage {
             () => {
                 const div = jQuery('<div/>');
                 // eslint-disable-next-line no-new
-                new SpeciesDisplay(div, entry, mspecies);
+                new SpeciesDisplay(div, entry, mspecies, (speciesId) => {
+                    if (this._loadPageFn) {
+                        this._loadPageFn(new SpeciesProfilePage(speciesId));
+                    }
+                });
                 return div;
             },
             UtilLocation.geoLocationToOlCoordinates(bgeol)
