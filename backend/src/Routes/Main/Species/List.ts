@@ -18,6 +18,7 @@ export class List {
             id: row.id,
             name: row.name,
             ottid: row.ott_id,
+            aphiaid: row.aphia_id,
             isdeleted: row.isdeleted,
             species_groupid: row.species_groupid,
             species_group: {

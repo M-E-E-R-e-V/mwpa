@@ -34,6 +34,7 @@ export class Save {
 
         species.name = entry.name;
         species.ott_id = entry.ottid;
+        species.aphia_id = entry.aphiaid ?? 0;
         species.species_groupid = entry.species_groupid;
 
         await SpeciesRepository.getInstance().save(species);

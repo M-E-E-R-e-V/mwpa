@@ -2438,6 +2438,17 @@
                               "types": []
                             },
                             "description": ""
+                          },
+                          {
+                            "unid": "20634bb4-605e-41ba-9796-1c932e7c91d3",
+                            "name": "aphiaid",
+                            "type": {
+                              "type": "number",
+                              "optional": true,
+                              "array": false,
+                              "types": []
+                            },
+                            "description": "WoRMS aphiaID — marine species identifier (https://www.marinespecies.org). Optional/0 if not yet mapped."
                           }
                         ]
                       },
@@ -12915,7 +12926,7 @@
   },
   "editor": {
     "controls_width": 553,
-    "active_entry_unid": "8e590f15-d40a-461f-b37b-d409f7bee250",
-    "active_entry_table_unid": "8728e37f-ef09-4168-aaac-08fb57749602"
+    "active_entry_unid": "3747e5a4-a54d-4c8c-b187-7bebea8bc660",
+    "active_entry_table_unid": "904eef89-2f36-4a18-956c-1c87538f1f7b"
   }
 }

@@ -33,6 +33,19 @@ export class SpeciesEditModal extends ModalDialog {
     protected _ottId: InputBottemBorderOnly2;
 
     /**
+     * Input WoRMS aphia id
+     * @protected
+     */
+    protected _aphiaId: InputBottemBorderOnly2;
+
+    /**
+     * Anchor element that links to the marinespecies.org page for the
+     * currently-entered aphia id. Hidden when the input is empty/0.
+     * @protected
+     */
+    protected _aphiaLink: JQuery;
+
+    /**
      * Select species group
      * @protected
      */
@@ -53,6 +66,15 @@ export class SpeciesEditModal extends ModalDialog {
 
         const groupOttId = new FormGroup(bodyCard, 'Ott-Id');
         this._ottId = new InputBottemBorderOnly2(groupOttId, 'ottid', InputType.number);
+
+        const groupAphiaId = new FormGroup(bodyCard, 'WoRMS aphia-ID');
+        this._aphiaId = new InputBottemBorderOnly2(groupAphiaId, 'aphiaid', InputType.number);
+        this._aphiaLink = jQuery('<small class="form-text"><a href="#" target="_blank" rel="noopener noreferrer">Open on marinespecies.org</a></small>')
+            .hide()
+            .appendTo(groupAphiaId.getElement());
+        this._aphiaId.getElement().on('input change', () => {
+            this._updateAphiaLink();
+        });
 
         const groupSpeciesGroup = new FormGroup(bodyCard, 'Specie-Group');
         this._selectSpeciesGroup = new SelectBottemBorderOnly2(groupSpeciesGroup);
@@ -110,6 +132,39 @@ export class SpeciesEditModal extends ModalDialog {
     }
 
     /**
+     * Set the WoRMS aphia ID
+     * @param {number} id
+     */
+    public setAphiaId(id: number): void {
+        this._aphiaId.setValue(id === 0 ? '' : `${id}`);
+        this._updateAphiaLink();
+    }
+
+    /**
+     * Return the WoRMS aphia ID
+     * @returns {number}
+     */
+    public getAphiaId(): number {
+        return parseInt(this._aphiaId.getValue(), 10) || 0;
+    }
+
+    /**
+     * Show/hide the marinespecies.org link based on the current aphia id.
+     * @protected
+     */
+    protected _updateAphiaLink(): void {
+        const id = this.getAphiaId();
+        if (id > 0) {
+            this._aphiaLink
+                .find('a')
+                .attr('href', `https://www.marinespecies.org/aphia.php?p=taxdetails&id=${id}`);
+            this._aphiaLink.show();
+        } else {
+            this._aphiaLink.hide();
+        }
+    }
+
+    /**
      * Set species group list
      * @param {SpeciesGroupEntry[]} groups
      */
@@ -146,6 +201,8 @@ export class SpeciesEditModal extends ModalDialog {
     public override resetValues(): void {
         this.setId(null);
         this.setName('');
+        this.setOttId(0);
+        this.setAphiaId(0);
         this.setSpeciesGroup(0);
     }
 

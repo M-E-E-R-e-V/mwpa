@@ -1,7 +1,15 @@
 import {Badge, BadgeType, Component, UtilColor} from 'bambooo';
 import {SightingsEntry} from '../Api/Sightings';
 import {SpeciesEntry} from '../Api/Species';
-import {UtilOttLink} from '../Utils/UtilOttLink';
+import {UtilSpeciesContextMenu} from '../Utils/UtilSpeciesContextMenu';
+
+/**
+ * Optional callback fired when the user picks "Profiling" from the
+ * species context menu. The page that owns the SpeciesDisplay is
+ * responsible for actually loading the profile page (it owns
+ * `_loadPageFn`).
+ */
+export type SpeciesDisplayProfileFn = (speciesId: number) => void;
 
 export class SpeciesDisplay extends Component<HTMLSpanElement> {
 
@@ -23,18 +31,22 @@ export class SpeciesDisplay extends Component<HTMLSpanElement> {
         'Caretta caretta - Loggerhead sea turtle'
     ];
 
-    public constructor(element: Element|any, sighting: SightingsEntry, speciesList: Map<number, SpeciesEntry>) {
+    public constructor(
+        element: Element|any,
+        sighting: SightingsEntry,
+        speciesList: Map<number, SpeciesEntry>,
+        onProfile?: SpeciesDisplayProfileFn
+    ) {
         super();
 
         let specieName = '';
         let specieColor = '#ffffff';
-        let ottid: number|null = null;
+        let specie: SpeciesEntry|undefined;
 
-        const specie = speciesList.get(sighting.species_id!);
+        specie = speciesList.get(sighting.species_id!);
 
         if (specie) {
             specieName = specie.name.split(',')[0];
-            ottid = specie.ottid;
 
             if (specie.species_group) {
                 specieColor = specie.species_group?.color;
@@ -60,8 +72,16 @@ export class SpeciesDisplay extends Component<HTMLSpanElement> {
 
         this._element = this._badge.getElement();
 
-        if (ottid !== null) {
-            UtilOttLink.setDialog(this._element, specieName, ottid);
+        if (specie) {
+            // Left-click reveals the context menu with the two
+            // external taxon links + the internal profiling page.
+            UtilSpeciesContextMenu.attach(this._element, {
+                speciesId: specie.id,
+                speciesName: specieName,
+                ottId: specie.ottid,
+                aphiaId: specie.aphiaid ?? 0,
+                onProfile
+            });
         }
     }
 
