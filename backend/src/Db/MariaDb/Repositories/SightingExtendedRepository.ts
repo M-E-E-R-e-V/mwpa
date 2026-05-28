@@ -113,17 +113,54 @@ export class SightingExtendedRepository extends DBRepositoryUnid<SightingExtende
      * Up to `limit` non-deleted sightings whose `weather_last_update`
      * is NULL or older than `cutoff`. Filters out sightings without a
      * date too (WeatherService needs one to query the upstream).
+     *
+     * The `uvCutoff` / `uvSightingCutoffDate` parameters add a second
+     * channel: rows where the regular weather lookup succeeded
+     * (`weather_status = 'ok'`) but no UV value came back (NASA POWER
+     * lagged behind for that grid cell), and whose sighting itself is
+     * within the recent-data window, get re-tried on the shorter
+     * `uvCutoff` cadence so the UV column catches up automatically
+     * once NASA POWER's data is ingested. Pass `null` for either to
+     * disable this channel.
      */
-    public async findStaleForWeather(cutoff: Date, limit: number): Promise<Sighting[]> {
+    public async findStaleForWeather(
+        cutoff: Date,
+        limit: number,
+        uvCutoff: Date | null = null,
+        uvSightingCutoffDate: string | null = null
+    ): Promise<Sighting[]> {
         const repository = await this._repository;
-        return repository.manager.createQueryBuilder(Sighting, 's')
-        .leftJoin(SightingExtended, 'e', 'e.sighting_id = s.id')
-        .where('s.deleted = :deleted', {deleted: false})
-        .andWhere('s.location_begin <> \'\'')
-        .andWhere('s.date <> \'\'')
-        .andWhere('(e.weather_last_update IS NULL OR e.weather_last_update < :cutoff)', {cutoff: cutoff})
-        .limit(limit)
-        .getMany();
+        const qb = repository.manager.createQueryBuilder(Sighting, 's')
+            .leftJoin(SightingExtended, 'e', 'e.sighting_id = s.id')
+            .where('s.deleted = :deleted', {deleted: false})
+            .andWhere('s.location_begin <> \'\'')
+            .andWhere('s.date <> \'\'');
+
+        if (uvCutoff !== null && uvSightingCutoffDate !== null) {
+            qb.andWhere(
+                '(e.weather_last_update IS NULL'
+                + ' OR e.weather_last_update < :cutoff'
+                + ' OR ('
+                + '   e.weather_status = :okStatus'
+                + '   AND e.uv_index_day IS NULL'
+                + '   AND e.weather_last_update < :uvCutoff'
+                + '   AND s.date >= :uvSightingCutoffDate'
+                + ' ))',
+                {
+                    cutoff: cutoff,
+                    okStatus: 'ok',
+                    uvCutoff: uvCutoff,
+                    uvSightingCutoffDate: uvSightingCutoffDate
+                }
+            );
+        } else {
+            qb.andWhere(
+                '(e.weather_last_update IS NULL OR e.weather_last_update < :cutoff)',
+                {cutoff: cutoff}
+            );
+        }
+
+        return qb.limit(limit).getMany();
     }
 
     /**

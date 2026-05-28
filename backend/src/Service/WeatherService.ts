@@ -53,6 +53,25 @@ export class WeatherService extends ServiceJobAbstract {
     private static readonly REFRESH_INTERVAL_MS = 90 * 24 * 60 * 60 * 1000;
 
     /**
+     * Re-fetch UV-only when the regular lookup succeeded but
+     * `uv_index_day` is still NULL — covers the NASA POWER ingest
+     * lag. 7 days balances catching the backfill quickly against not
+     * burning the rate limit on grid cells that never get a value.
+     * @private
+     */
+    private static readonly UV_RETRY_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
+
+    /**
+     * Only retry UV for sightings within this many days of today.
+     * Older sightings whose UV never arrived have effectively missed
+     * the NASA POWER window — retrying them indefinitely would just
+     * burn cron capacity. One year is generous: NASA POWER usually
+     * catches up well inside three months.
+     * @private
+     */
+    private static readonly UV_RETRY_MAX_AGE_DAYS = 365;
+
+    /**
      * Earliest date Open-Meteo's ERA5 reanalysis covers.
      * @private
      */
@@ -235,10 +254,18 @@ export class WeatherService extends ServiceJobAbstract {
      */
     protected async _execute(): Promise<void> {
         const logger = Logger.getLogger();
-        const cutoff = new Date(Date.now() - WeatherService.REFRESH_INTERVAL_MS);
+        const now = Date.now();
+        const cutoff = new Date(now - WeatherService.REFRESH_INTERVAL_MS);
+        const uvCutoff = new Date(now - WeatherService.UV_RETRY_INTERVAL_MS);
+        const uvSightingCutoffDate = new Date(
+            now - WeatherService.UV_RETRY_MAX_AGE_DAYS * 24 * 60 * 60 * 1000
+        ).toISOString().slice(0, 10);
+
         const pending = await SightingExtendedRepository.getInstance().findStaleForWeather(
             cutoff,
-            WeatherService.MAX_PER_RUN
+            WeatherService.MAX_PER_RUN,
+            uvCutoff,
+            uvSightingCutoffDate
         );
 
         if (pending.length === 0) {
