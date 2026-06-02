@@ -58,6 +58,17 @@ export class CrossSpeciesAnalytics extends BasePage {
 
     protected override _name: string = CrossSpeciesAnalytics.NAME;
 
+    /**
+     * Latest fetched charts + stable color map, kept on the instance so the
+     * PDF handler can re-render the same data at print width without a
+     * second API round-trip.
+     */
+    private _lastCharts: SpeciesRegressionChart[] = [];
+
+    private _lastColors: Map<number, string> = new Map();
+
+    private _chartHosts: Record<string, HTMLElement> = {};
+
     public override async loadContent(): Promise<void> {
         const lang = Lang.i();
         const title = lang.l('Cross-species analytics');
@@ -69,8 +80,38 @@ export class CrossSpeciesAnalytics extends BasePage {
         const rowHead = new ContentRow(contentWrapper);
         const headCard = new Card(new ContentCol(rowHead, ContentColSize.col12));
         headCard.setTitle(new LangText(title));
+        headCard.getMainElement().addClass('print-include');
         const headBody = jQuery('<div class="card-body small text-muted"/>').appendTo(headCard.getBodyElement());
         headBody.text(lang.l('desc.regression.page'));
+
+        // PDF export button — sits in the head card so it's always visible
+        // at the top of the page. Hidden during @media print via CSS.
+        const exportWrap = jQuery('<div class="cross-species-export text-right mt-2"/>').appendTo(headBody);
+        const pdfBtn = jQuery<HTMLButtonElement>(
+            '<button type="button" class="btn btn-primary btn-sm">'
+            + `<i class="fa fa-file-pdf"></i> ${this._escape(lang.l('Generate PDF'))}`
+            + '</button>'
+        ).appendTo(exportWrap);
+
+        pdfBtn.on('click', async() => {
+            if (this._lastCharts.length === 0) {
+                return;
+            }
+            const originalLabel = pdfBtn.html();
+            pdfBtn.prop('disabled', true);
+            pdfBtn.html(
+                `<i class="fa fa-spinner fa-spin"></i> ${this._escape(lang.l('Generating…'))}`
+            );
+            try {
+                await this._generatePdf();
+            } catch (e) {
+                console.error('[Cross-species PDF] generate failed', e);
+                window.alert(`${lang.l('Download failed')}: ${(e as Error).message}`);
+            } finally {
+                pdfBtn.html(originalLabel);
+                pdfBtn.prop('disabled', false);
+            }
+        });
 
         // Four chart cards (each row owns one chart) -----------------------------------------------------------------
 
@@ -86,10 +127,22 @@ export class CrossSpeciesAnalytics extends BasePage {
             const row = new ContentRow(contentWrapper);
             const card = new Card(new ContentCol(row, ContentColSize.col12));
             card.setTitle(new LangText(spec.titleKey));
+            card.getMainElement().addClass('print-include');
             CrossSpeciesAnalytics._attachInfo(card, spec.titleKey, spec.descKey);
+
+            // Print-only description block — hidden on screen, shown when
+            // body has `mwpa-print-mode-species`. Mirrors the (i)-popover
+            // text so the PDF reader can interpret the chart without
+            // having opened the popover beforehand.
+            jQuery('<div class="cross-species-print-desc"/>')
+                .text(lang.l(spec.descKey))
+                .appendTo(card.getBodyElement());
+
             const host = jQuery<HTMLDivElement>('<div class="cross-species-chart"/>').appendTo(card.getBodyElement());
             hosts[spec.id] = host[0] as HTMLElement;
         }
+
+        this._chartHosts = hosts;
 
         this._onLoadTable = async(): Promise<void> => {
             headCard.showLoading();
@@ -101,12 +154,9 @@ export class CrossSpeciesAnalytics extends BasePage {
                 // Build a stable species→color map across every chart so
                 // the same species reads the same on every plot.
                 const colorBySpecies = CrossSpeciesAnalytics._buildColorMap(charts);
-                for (const chart of charts) {
-                    const host = hosts[chart.id];
-                    if (host) {
-                        CrossSpeciesAnalytics._renderScatter(host, chart, colorBySpecies);
-                    }
-                }
+                this._lastCharts = charts;
+                this._lastColors = colorBySpecies;
+                this._renderAll();
                 Lang.i().lAll();
             } finally {
                 headCard.hideLoading();
@@ -114,6 +164,58 @@ export class CrossSpeciesAnalytics extends BasePage {
         };
 
         await this._onLoadTable();
+    }
+
+    private _renderAll(): void {
+        for (const chart of this._lastCharts) {
+            const host = this._chartHosts[chart.id];
+            if (host) {
+                CrossSpeciesAnalytics._renderScatter(host, chart, this._lastColors);
+            }
+        }
+    }
+
+    /**
+     * Drive the browser's print dialog with body-level print-mode classes
+     * applied. The print stylesheet in mwpa.css pins each `.print-include`
+     * card to A4-landscape printable width, hides AdminLTE chrome, and
+     * reveals the `cross-species-print-desc` blocks. We re-render charts
+     * once at the constrained width (D3 hard-codes `width="…"` on the SVG
+     * from `host.clientWidth`) and again after print to restore normal
+     * on-screen layout.
+     */
+    private async _generatePdf(): Promise<void> {
+        const $body = jQuery('body');
+        $body.addClass('mwpa-print-mode mwpa-print-mode-species');
+
+        // Layout settle: requestAnimationFrame guarantees the new CSS width
+        // has been applied before D3 re-measures host.clientWidth.
+        await new Promise<void>((resolve) => {
+            window.requestAnimationFrame(() => resolve());
+        });
+
+        this._renderAll();
+
+        const cleanup = (): void => {
+            $body.removeClass('mwpa-print-mode mwpa-print-mode-species');
+            window.removeEventListener('afterprint', cleanup);
+            // Re-render so the on-screen layout (now back to wide) gets
+            // SVGs sized for the dashboard container, not the print page.
+            this._renderAll();
+        };
+        window.addEventListener('afterprint', cleanup);
+
+        try {
+            window.print();
+        } finally {
+            // Belt-and-braces: some browsers don't fire afterprint reliably.
+            window.setTimeout(cleanup, 1500);
+        }
+    }
+
+    private _escape(s: string): string {
+        return s.replace(/[&<>"']/gu, (ch) =>
+            ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'})[ch] ?? ch);
     }
 
     /**
