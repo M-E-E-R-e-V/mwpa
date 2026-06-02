@@ -69,6 +69,38 @@ export class SpeciesProfile extends BasePage {
      */
     protected _heatmap: BaseMap | null = null;
 
+    /**
+     * Latest fetched profile data. Kept on the instance so the PDF handler
+     * can re-render every chart at the print-target container width
+     * without a second API round-trip.
+     */
+    protected _profile: SpeciesProfileData | null = null;
+
+    /**
+     * Chart host references — populated in loadContent, consumed by
+     * _renderCharts() for both the initial render and the print-mode
+     * re-render. JQuery refs are convenient because the render methods
+     * accept either HTMLElement (via [0]) or the JQuery wrapper directly.
+     */
+    protected _hosts: {
+        kpiGrid?: JQuery<HTMLDivElement>;
+        monthlyHost?: JQuery<HTMLDivElement>;
+        hourlyHost?: JQuery<HTMLDivElement>;
+        sizeHost?: JQuery<HTMLDivElement>;
+        ratiosHost?: JQuery<HTMLDivElement>;
+        envGrid?: JQuery<HTMLDivElement>;
+        behaviourHost?: JQuery<HTMLDivElement>;
+        reactionHost?: JQuery<HTMLDivElement>;
+        movementBody?: JQuery<HTMLDivElement>;
+        spueHost?: JQuery<HTMLDivElement>;
+        yearlyHost?: JQuery<HTMLDivElement>;
+        cooccHost?: JQuery<HTMLDivElement>;
+        pressureGrid?: JQuery<HTMLDivElement>;
+        envExtraGrid?: JQuery<HTMLDivElement>;
+        mapHost?: JQuery<HTMLDivElement>;
+        seismicBody?: JQuery<HTMLDivElement>;
+    } = {};
+
     public constructor(speciesId: number) {
         super();
         this._speciesId = speciesId;
@@ -102,6 +134,7 @@ export class SpeciesProfile extends BasePage {
         const rowKpi = new ContentRow(this._wrapper.getContentWrapper().getContent());
         const kpiCard = new Card(new ContentCol(rowKpi, ContentColSize.col12));
         kpiCard.setTitle(new LangText(`${titleKey}${titleSuffix}`));
+        kpiCard.getMainElement().addClass('print-include');
 
         const kpiBody = jQuery('<div class="card-body"/>').appendTo(kpiCard.getBodyElement());
         const kpiGrid = jQuery<HTMLDivElement>(
@@ -113,6 +146,37 @@ export class SpeciesProfile extends BasePage {
             `<div class="kpi" data-kpi="p95"><div class="kpi-label text-muted small">${lang.l('p95 group')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
             '</div>'
         ).appendTo(kpiBody);
+        this._hosts.kpiGrid = kpiGrid;
+
+        // PDF export button — sits in the KPI card so it's at the top of
+        // the page. Hidden during @media print via the species-profile-export
+        // CSS rule.
+        const exportWrap = jQuery('<div class="species-profile-export text-right mt-2"/>').appendTo(kpiBody);
+        const pdfBtn = jQuery<HTMLButtonElement>(
+            '<button type="button" class="btn btn-primary btn-sm">'
+            + `<i class="fa fa-file-pdf"></i> ${SpeciesProfile._escape(lang.l('Generate PDF'))}`
+            + '</button>'
+        ).appendTo(exportWrap);
+
+        pdfBtn.on('click', async() => {
+            if (!this._profile) {
+                return;
+            }
+            const originalLabel = pdfBtn.html();
+            pdfBtn.prop('disabled', true);
+            pdfBtn.html(
+                `<i class="fa fa-spinner fa-spin"></i> ${SpeciesProfile._escape(lang.l('Generating…'))}`
+            );
+            try {
+                await this._generatePdf();
+            } catch (e) {
+                console.error('[Species profile PDF] generate failed', e);
+                window.alert(`${lang.l('Download failed')}: ${(e as Error).message}`);
+            } finally {
+                pdfBtn.html(originalLabel);
+                pdfBtn.prop('disabled', false);
+            }
+        });
 
         // Row 2 — time distribution (monthly + hourly side-by-side) ---------------------------------------------------
 
@@ -121,11 +185,13 @@ export class SpeciesProfile extends BasePage {
         monthlyCard.setTitle(new LangText('Sightings per month'));
         SpeciesProfile._attachInfo(monthlyCard, 'Sightings per month', 'desc.monthly');
         const monthlyHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(monthlyCard.getBodyElement());
+        this._hosts.monthlyHost = monthlyHost;
 
         const hourlyCard = new Card(new ContentCol(rowTime, ContentColSize.colMd6));
         hourlyCard.setTitle(new LangText('Sightings per hour-of-day'));
         SpeciesProfile._attachInfo(hourlyCard, 'Sightings per hour-of-day', 'desc.hourly');
         const hourlyHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(hourlyCard.getBodyElement());
+        this._hosts.hourlyHost = hourlyHost;
 
         // Row 3 — group size + ratios ---------------------------------------------------------------------------------
 
@@ -134,11 +200,13 @@ export class SpeciesProfile extends BasePage {
         sizeCard.setTitle(new LangText('Group size distribution'));
         SpeciesProfile._attachInfo(sizeCard, 'Group size distribution', 'desc.group_size');
         const sizeHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(sizeCard.getBodyElement());
+        this._hosts.sizeHost = sizeHost;
 
         const ratiosCard = new Card(new ContentCol(rowGroup, ContentColSize.colMd6));
         ratiosCard.setTitle(new LangText('Composition (sightings reporting …)'));
         SpeciesProfile._attachInfo(ratiosCard, 'Composition (sightings reporting …)', 'desc.group_ratios');
         const ratiosHost = jQuery<HTMLDivElement>('<div class="species-profile-ratios card-body"/>').appendTo(ratiosCard.getBodyElement());
+        this._hosts.ratiosHost = ratiosHost;
 
         // Row 4 — environment grid (4 mini-histograms) ----------------------------------------------------------------
 
@@ -155,6 +223,7 @@ export class SpeciesProfile extends BasePage {
             `<div class="col-md-3"><div class="text-muted small">${lang.l('Chl-a (mg/m³)')}</div><div class="species-profile-chart" data-env="chl"></div></div>` +
             '</div>'
         ).appendTo(envCard.getBodyElement());
+        this._hosts.envGrid = envGrid;
 
         // Row 5 — behaviour + reaction donuts -------------------------------------------------------------------------
 
@@ -163,11 +232,13 @@ export class SpeciesProfile extends BasePage {
         behaviourCard.setTitle(new LangText('Behaviour mix'));
         SpeciesProfile._attachInfo(behaviourCard, 'Behaviour mix', 'desc.behaviour');
         const behaviourHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(behaviourCard.getBodyElement());
+        this._hosts.behaviourHost = behaviourHost;
 
         const reactionCard = new Card(new ContentCol(rowBeh, ContentColSize.colMd6));
         reactionCard.setTitle(new LangText('Reaction to boat'));
         SpeciesProfile._attachInfo(reactionCard, 'Reaction to boat', 'desc.reaction');
         const reactionHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(reactionCard.getBodyElement());
+        this._hosts.reactionHost = reactionHost;
 
         // Row 6 — movement signature ----------------------------------------------------------------------------------
 
@@ -187,6 +258,7 @@ export class SpeciesProfile extends BasePage {
             `<div class="col-md-5"><div class="text-muted small">${lang.l('Dominant heading rose')}</div><div class="species-profile-chart" data-rose></div></div>` +
             '</div>'
         ).appendTo(movementCard.getBodyElement());
+        this._hosts.movementBody = movementBody;
 
         // Row 7 — SPUE (Sightings Per Unit Effort) --------------------------------------------------------------------
 
@@ -195,6 +267,7 @@ export class SpeciesProfile extends BasePage {
         spueCard.setTitle(new LangText('Sightings per tour-hour (SPUE)'));
         SpeciesProfile._attachInfo(spueCard, 'Sightings per tour-hour (SPUE)', 'desc.spue');
         const spueHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(spueCard.getBodyElement());
+        this._hosts.spueHost = spueHost;
 
         // Row 8 — yearly trend ----------------------------------------------------------------------------------------
 
@@ -203,12 +276,14 @@ export class SpeciesProfile extends BasePage {
         yearlyCard.setTitle(new LangText('Sightings per year'));
         SpeciesProfile._attachInfo(yearlyCard, 'Sightings per year', 'desc.yearly');
         const yearlyHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(yearlyCard.getBodyElement());
+        this._hosts.yearlyHost = yearlyHost;
 
         // Co-occurrence card next to yearly
         const cooccCard = new Card(new ContentCol(rowYearly, ContentColSize.colMd6));
         cooccCard.setTitle(new LangText('Co-occurring species (same tour)'));
         SpeciesProfile._attachInfo(cooccCard, 'Co-occurring species (same tour)', 'desc.cooccurrence');
         const cooccHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(cooccCard.getBodyElement());
+        this._hosts.cooccHost = cooccHost;
 
         // Row 9 — pressure indicators --------------------------------------------------------------------------------
 
@@ -224,6 +299,7 @@ export class SpeciesProfile extends BasePage {
             `<div class="col-md-4"><div class="text-muted small">${lang.l('Fishing hours (25 km, day)')}</div><div class="species-profile-chart" data-press="fishing"></div></div>` +
             '</div>'
         ).appendTo(pressureCard.getBodyElement());
+        this._hosts.pressureGrid = pressureGrid;
 
         // Row 10 — extra env distributions ---------------------------------------------------------------------------
 
@@ -244,6 +320,7 @@ export class SpeciesProfile extends BasePage {
             // so define it inline to avoid touching the global stylesheet.
             '<style>.col-md-2-4{flex:0 0 20%;max-width:20%;padding-right:7.5px;padding-left:7.5px;}</style>'
         ).appendTo(envExtraCard.getBodyElement());
+        this._hosts.envExtraGrid = envExtraGrid;
 
         // Row 11 — spatial heatmap ------------------------------------------------------------------------------------
 
@@ -252,6 +329,7 @@ export class SpeciesProfile extends BasePage {
         mapCard.setTitle(new LangText('Spatial distribution'));
         SpeciesProfile._attachInfo(mapCard, 'Spatial distribution', 'desc.heatmap');
         const mapHost = jQuery<HTMLDivElement>('<div class="species-profile-map" style="height: 360px;"/>').appendTo(mapCard.getBodyElement());
+        this._hosts.mapHost = mapHost;
 
         // Row 12 — seismic exposure -----------------------------------------------------------------------------------
 
@@ -273,6 +351,7 @@ export class SpeciesProfile extends BasePage {
             `<div class="col-md-4"><div class="text-muted small">${lang.l('Offset (h, +event before sighting)')}</div><div class="species-profile-chart" data-seismic="offset"></div></div>` +
             '</div></div>'
         ).appendTo(seismicCard.getBodyElement());
+        this._hosts.seismicBody = seismicBody;
 
         this._onLoadTable = async(): Promise<void> => {
             kpiCard.showLoading();
@@ -289,76 +368,8 @@ export class SpeciesProfile extends BasePage {
                     this._badge.setContent(`${profile.n_sightings}`);
                 }
 
-                SpeciesProfile._renderKpi(kpiGrid, profile);
-                SpeciesProfile._renderMonthly(monthlyHost[0] as HTMLElement, profile);
-                SpeciesProfile._renderHourly(hourlyHost[0] as HTMLElement, profile);
-                SpeciesProfile._renderBuckets(sizeHost[0] as HTMLElement, profile.group_size, '#2471A3');
-                SpeciesProfile._renderRatios(ratiosHost, profile);
-
-                envGrid.find('[data-env="distance"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env.distance_coast_m, '#17a2b8');
-                });
-                envGrid.find('[data-env="depth"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env.depth_m, '#6f42c1');
-                });
-                envGrid.find('[data-env="sst"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env.sst_c, '#dc3545');
-                });
-                envGrid.find('[data-env="chl"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env.chl_a_mg_m3, '#28a745');
-                });
-
-                SpeciesProfile._renderDonut(behaviourHost[0] as HTMLElement, profile.behaviour_mix);
-                SpeciesProfile._renderDonut(reactionHost[0] as HTMLElement, profile.reaction_mix);
-
-                SpeciesProfile._renderMovementKpi(movementBody, profile);
-                movementBody.find('[data-rose]').each((_i, el) => {
-                    SpeciesProfile._renderHeadingRose(el as HTMLElement, profile.movement.heading_rose);
-                });
-
-                SpeciesProfile._renderSpue(spueHost[0] as HTMLElement, profile.monthly_effort);
-                SpeciesProfile._renderYearly(yearlyHost[0] as HTMLElement, profile.yearly);
-                SpeciesProfile._renderCooccurrence(cooccHost[0] as HTMLElement, profile.cooccurrence);
-
-                pressureGrid.find('[data-press="beaufort"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.pressure.beaufort, '#0d6efd');
-                });
-                pressureGrid.find('[data-press="boats"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.pressure.other_boats, '#fd7e14');
-                });
-                pressureGrid.find('[data-press="fishing"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.pressure.fishing_hours_25km, '#c14953');
-                });
-
-                envExtraGrid.find('[data-envx="salinity"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.salinity_psu, '#264653');
-                });
-                envExtraGrid.find('[data-envx="sla"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.sla_cm, '#4a90c2');
-                });
-                envExtraGrid.find('[data-envx="current"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.current_speed_m_s, '#1d6f8a');
-                });
-                envExtraGrid.find('[data-envx="wave"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.wave_height_m, '#2a9d8f');
-                });
-                envExtraGrid.find('[data-envx="uv"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.uv_index, '#d4a017');
-                });
-
-                this._heatmap = SpeciesProfile._renderHeatmap(mapHost[0] as HTMLElement, profile.heatmap, this._heatmap);
-
-                SpeciesProfile._renderSeismicKpi(seismicBody, profile);
-                seismicBody.find('[data-seismic="mag"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.seismic.magnitude, '#dc3545');
-                });
-                seismicBody.find('[data-seismic="dist"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.seismic.distance_km, '#fd7e14');
-                });
-                seismicBody.find('[data-seismic="offset"]').each((_i, el) => {
-                    SpeciesProfile._renderBuckets(el as HTMLElement, profile.seismic.hours_offset, '#6f42c1');
-                });
-
+                this._profile = profile;
+                this._renderCharts({recreateHeatmap: true});
                 Lang.i().lAll();
             } finally {
                 kpiCard.hideLoading();
@@ -366,6 +377,181 @@ export class SpeciesProfile extends BasePage {
         };
 
         this._onLoadTable();
+    }
+
+    /**
+     * Walk through every chart host and re-render with the current
+     * `this._profile`. Used both on initial fetch and on entering print
+     * mode (so the d3 charts re-measure their constrained container width).
+     *
+     * `recreateHeatmap: true` tears down the OL map and rebuilds it from
+     * scratch — only required on the first render (when no map exists yet).
+     * For subsequent re-renders we call `updateSize()` on the existing map
+     * which is much faster and avoids a tile-flicker.
+     */
+    protected _renderCharts(opts: {recreateHeatmap: boolean;}): void {
+        const profile = this._profile;
+        if (!profile) {
+            return;
+        }
+        const h = this._hosts;
+
+        if (h.kpiGrid) {
+            SpeciesProfile._renderKpi(h.kpiGrid, profile);
+        }
+        if (h.monthlyHost) {
+            SpeciesProfile._renderMonthly(h.monthlyHost[0] as HTMLElement, profile);
+        }
+        if (h.hourlyHost) {
+            SpeciesProfile._renderHourly(h.hourlyHost[0] as HTMLElement, profile);
+        }
+        if (h.sizeHost) {
+            SpeciesProfile._renderBuckets(h.sizeHost[0] as HTMLElement, profile.group_size, '#2471A3');
+        }
+        if (h.ratiosHost) {
+            SpeciesProfile._renderRatios(h.ratiosHost, profile);
+        }
+
+        if (h.envGrid) {
+            h.envGrid.find('[data-env="distance"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env.distance_coast_m, '#17a2b8');
+            });
+            h.envGrid.find('[data-env="depth"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env.depth_m, '#6f42c1');
+            });
+            h.envGrid.find('[data-env="sst"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env.sst_c, '#dc3545');
+            });
+            h.envGrid.find('[data-env="chl"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env.chl_a_mg_m3, '#28a745');
+            });
+        }
+
+        if (h.behaviourHost) {
+            SpeciesProfile._renderDonut(h.behaviourHost[0] as HTMLElement, profile.behaviour_mix);
+        }
+        if (h.reactionHost) {
+            SpeciesProfile._renderDonut(h.reactionHost[0] as HTMLElement, profile.reaction_mix);
+        }
+
+        if (h.movementBody) {
+            SpeciesProfile._renderMovementKpi(h.movementBody, profile);
+            h.movementBody.find('[data-rose]').each((_i, el) => {
+                SpeciesProfile._renderHeadingRose(el as HTMLElement, profile.movement.heading_rose);
+            });
+        }
+
+        if (h.spueHost) {
+            SpeciesProfile._renderSpue(h.spueHost[0] as HTMLElement, profile.monthly_effort);
+        }
+        if (h.yearlyHost) {
+            SpeciesProfile._renderYearly(h.yearlyHost[0] as HTMLElement, profile.yearly);
+        }
+        if (h.cooccHost) {
+            SpeciesProfile._renderCooccurrence(h.cooccHost[0] as HTMLElement, profile.cooccurrence);
+        }
+
+        if (h.pressureGrid) {
+            h.pressureGrid.find('[data-press="beaufort"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.pressure.beaufort, '#0d6efd');
+            });
+            h.pressureGrid.find('[data-press="boats"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.pressure.other_boats, '#fd7e14');
+            });
+            h.pressureGrid.find('[data-press="fishing"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.pressure.fishing_hours_25km, '#c14953');
+            });
+        }
+
+        if (h.envExtraGrid) {
+            h.envExtraGrid.find('[data-envx="salinity"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.salinity_psu, '#264653');
+            });
+            h.envExtraGrid.find('[data-envx="sla"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.sla_cm, '#4a90c2');
+            });
+            h.envExtraGrid.find('[data-envx="current"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.current_speed_m_s, '#1d6f8a');
+            });
+            h.envExtraGrid.find('[data-envx="wave"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.wave_height_m, '#2a9d8f');
+            });
+            h.envExtraGrid.find('[data-envx="uv"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.uv_index, '#d4a017');
+            });
+        }
+
+        if (h.mapHost) {
+            if (opts.recreateHeatmap || !this._heatmap) {
+                this._heatmap = SpeciesProfile._renderHeatmap(h.mapHost[0] as HTMLElement, profile.heatmap, this._heatmap);
+            } else {
+                // Cheap path on print-mode toggle: keep the existing map,
+                // just nudge OL to re-measure the container.
+                this._heatmap.updateSize();
+            }
+        }
+
+        if (h.seismicBody) {
+            SpeciesProfile._renderSeismicKpi(h.seismicBody, profile);
+            h.seismicBody.find('[data-seismic="mag"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.seismic.magnitude, '#dc3545');
+            });
+            h.seismicBody.find('[data-seismic="dist"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.seismic.distance_km, '#fd7e14');
+            });
+            h.seismicBody.find('[data-seismic="offset"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.seismic.hours_offset, '#6f42c1');
+            });
+        }
+    }
+
+    /**
+     * Drive the browser's print dialog with `mwpa-print-mode` +
+     * `mwpa-print-mode-profile` on body. The print stylesheet pins the
+     * content area to A4-landscape printable width, reveals the hidden
+     * `species-profile-print-desc` blocks, and applies `page-break-inside:
+     * avoid` per card so charts don't get split across pages. Charts are
+     * re-rendered once before printing (so d3 picks up the new container
+     * width) and again on cleanup (back to dashboard width).
+     */
+    protected async _generatePdf(): Promise<void> {
+        const $body = jQuery('body');
+        $body.addClass('mwpa-print-mode mwpa-print-mode-profile');
+
+        // Layout settle: requestAnimationFrame guarantees the new CSS
+        // width has been applied before d3 re-measures host.clientWidth.
+        await new Promise<void>((resolve) => {
+            window.requestAnimationFrame(() => resolve());
+        });
+
+        this._renderCharts({recreateHeatmap: false});
+
+        // Give OL a moment to fetch tiles for the new viewport size. The
+        // fixed timeout is the same belt-and-braces wait used by the
+        // Sighting Datenblatt flow.
+        await new Promise<void>((resolve) => {
+            window.setTimeout(resolve, 800);
+        });
+
+        const cleanup = (): void => {
+            $body.removeClass('mwpa-print-mode mwpa-print-mode-profile');
+            window.removeEventListener('afterprint', cleanup);
+            // Re-render at the on-screen layout's wider container width.
+            this._renderCharts({recreateHeatmap: false});
+        };
+        window.addEventListener('afterprint', cleanup);
+
+        try {
+            window.print();
+        } finally {
+            // Belt-and-braces: some browsers don't fire afterprint reliably.
+            window.setTimeout(cleanup, 1500);
+        }
+    }
+
+    private static _escape(s: string): string {
+        return s.replace(/[&<>"']/gu, (ch) =>
+            ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'})[ch] ?? ch);
     }
 
     /**
@@ -569,12 +755,25 @@ export class SpeciesProfile extends BasePage {
      * translation layer; `descKey` should look up the longer description
      * in Lang_DE / Lang_ES (e.g. 'desc.monthly'). The English fallback is
      * the key itself when no entry is present.
+     *
+     * Side-effects beyond the popover: tags the card with `print-include`
+     * so the print stylesheet can target it, and prepends a hidden
+     * `species-profile-print-desc` block to the card body. The block is
+     * invisible on screen and revealed only when body has
+     * `mwpa-print-mode-profile` so the PDF reader can interpret the chart
+     * without opening the (i) popover.
      */
     private static _attachInfo(card: Card, titleKey: string, descKey: string): void {
         const lang = Lang.i();
         const tools = card.getToolsElement();
         const escape = (s: string): string => s.replace(/[&<>"']/g, (ch) =>
             ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'})[ch] ?? ch);
+
+        card.getMainElement().addClass('print-include');
+
+        jQuery('<div class="species-profile-print-desc"/>')
+            .text(lang.l(descKey))
+            .appendTo(card.getBodyElement());
 
         const btn = jQuery<HTMLButtonElement>(
             '<button type="button" class="btn btn-link btn-sm species-profile-info" ' +

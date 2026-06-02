@@ -262,6 +262,17 @@ body.mwpa-print-mode .tab-content > .tab-pane.print-include {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+  /* Pin the pane to the printable A4-landscape width (29.7cm − 2×1cm margin
+   * ≈ 27.7cm; rounded down to 27cm for a safety buffer). D3 charts measure
+   * their container via jQuery.width() and bake the result into a fixed
+   * SVG width attribute — without this constraint they pick up the screen
+   * width (often 1300+ px) and overflow the right page edge during print.
+   * Applied on-screen too so the measurement before window.print() is
+   * already at the target width. */
+  width: 27cm !important;
+  max-width: 27cm !important;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 body.mwpa-print-mode .tab-content > .tab-pane:not(.print-include) {
@@ -276,6 +287,11 @@ body.mwpa-print-mode .ol-viewport > div {
   max-height: 16cm !important;
 }
 
+@page {
+  size: A4 landscape;
+  margin: 1cm;
+}
+
 @media print {
   body.mwpa-print-mode .main-header,
   body.mwpa-print-mode .main-sidebar,
@@ -284,7 +300,9 @@ body.mwpa-print-mode .ol-viewport > div {
   body.mwpa-print-mode .nav-tabs,
   body.mwpa-print-mode .ol-control,
   body.mwpa-print-mode .layer-switcher,
-  body.mwpa-print-mode .sighting-export {
+  body.mwpa-print-mode .sighting-export,
+  body.mwpa-print-mode .cross-species-export,
+  body.mwpa-print-mode .species-profile-export {
     display: none !important;
   }
 
@@ -307,4 +325,118 @@ body.mwpa-print-mode .ol-viewport > div {
     color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+
+  /* Cross-species analytics page: each chart card on its own page so the
+   * description block + scatter + legend stay together. The head card
+   * (page-level explainer) also forces a break so it sits alone. */
+  body.mwpa-print-mode-species .card.print-include {
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+  body.mwpa-print-mode-species .card.print-include:last-of-type {
+    page-break-after: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Print stylesheet — Cross-species analytics page
+ *
+ * The page sets `body.mwpa-print-mode-species` (alongside the shared
+ * `mwpa-print-mode`) before calling window.print(). Each chart card is
+ * tagged `.print-include` and pinned to the printable A4-landscape width
+ * so D3 measures the right size for `clientWidth`. The hidden description
+ * blocks become visible so the PDF reader can interpret each chart without
+ * the on-screen (i)-popover.
+ * -------------------------------------------------------------------------- */
+body.mwpa-print-mode-species .content-wrapper {
+  /* AdminLTE indents content by sidebar width; print-mode also hides the
+   * sidebar, so we drop the offset on-screen too to avoid charts measuring
+   * a narrower-than-page width. */
+  margin-left: 0 !important;
+}
+
+body.mwpa-print-mode-species .card.print-include {
+  width: 27cm !important;
+  max-width: 27cm !important;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-bottom: 0.4cm;
+}
+
+body.mwpa-print-mode-species .cross-species-print-desc {
+  display: block;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #444;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.5rem;
+  border-left: 3px solid #2c7fb8;
+  background: #f6f8fa;
+}
+
+.cross-species-print-desc {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+ * Print stylesheet — Species Profile page
+ *
+ * Same approach as the Cross-species page: body gets
+ * `mwpa-print-mode mwpa-print-mode-profile`, every chart card is tagged
+ * `print-include` and gets a hidden `species-profile-print-desc` block
+ * (revealed only during print). Unlike Cross-species we DON'T force a
+ * page break per card — the Profile page has ~12 sections and a one-card-
+ * per-page layout would produce wasteful PDFs. Instead, `page-break-inside:
+ * avoid` keeps each card whole and the browser packs what fits.
+ *
+ * The Bootstrap col-md-6 layout is preserved so paired cards (Monthly /
+ * Hourly, Group size / Composition, Behaviour / Reaction, Yearly / Co-
+ * occurrence) sit side-by-side on the same printed page just like on
+ * screen — at 27cm content width each half-card is ~13cm wide, plenty
+ * for the d3 charts.
+ * -------------------------------------------------------------------------- */
+body.mwpa-print-mode-profile .content-wrapper {
+  /* Drop the AdminLTE sidebar offset so the printable area starts at the
+   * page edge (sidebar is hidden via @media print rules anyway). */
+  margin-left: 0 !important;
+}
+
+body.mwpa-print-mode-profile .content,
+body.mwpa-print-mode-profile .content > .container-fluid,
+body.mwpa-print-mode-profile .content > .container {
+  max-width: 27cm !important;
+  width: 27cm !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body.mwpa-print-mode-profile .card.print-include {
+  page-break-inside: avoid;
+  margin-bottom: 0.3cm;
+  /* Tighter header so each card uses less vertical space — the profile
+   * page has many of them and we want to maximise the number that fit
+   * per A4 sheet. */
+  break-inside: avoid;
+}
+
+body.mwpa-print-mode-profile .species-profile-print-desc {
+  display: block !important;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #444;
+  padding: 0.3rem 0.55rem;
+  margin-bottom: 0.35rem;
+  border-left: 3px solid #2c7fb8;
+  background: #f6f8fa;
+}
+
+.species-profile-print-desc {
+  display: none;
+}
+
+/* Hide the on-screen (i) popover trigger and any open popovers during
+ * print — the inline desc block is the canonical info on paper. */
+body.mwpa-print-mode-profile .species-profile-info,
+body.mwpa-print-mode-profile .popover {
+  display: none !important;
 }
