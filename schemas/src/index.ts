@@ -276,6 +276,12 @@ export {
     SightingEnvironmentEntry,
     SchemaSightingEnvironmentListResponse,
     SightingEnvironmentListResponse,
+    SchemaSightingCurrentRegionRequest,
+    SightingCurrentRegionRequest,
+    SchemaSightingCurrentRegionEntry,
+    SightingCurrentRegionEntry,
+    SchemaSightingCurrentRegionResponse,
+    SightingCurrentRegionResponse,
 } from './Routes/Main/Sightings/SightingEnvironment.js';
 export {
     SchemaSightingFishingVesselEntry,

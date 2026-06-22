@@ -279,6 +279,60 @@ export class SightingExtended extends DBBaseEntityUnid {
     public current_direction_deg_day!: number | null;
 
     /**
+     * Mean current speed (m/s) averaged over the regional patch around
+     * the sighting (typically ±0.5..1.0° at CMEMS 1/12°). Derived from
+     * the regional u/v field stored in {@link SightingCurrentField}.
+     * NULL when no regional patch was fetched.
+     */
+    @Column({
+        type: 'decimal',
+        precision: 4,
+        scale: 2,
+        nullable: true
+    })
+    public current_region_mean_speed_m_s_day!: number | null;
+
+    /**
+     * Maximum current speed (m/s) inside the regional patch — flags
+     * jet/edge structure that the point-sample misses.
+     */
+    @Column({
+        type: 'decimal',
+        precision: 4,
+        scale: 2,
+        nullable: true
+    })
+    public current_region_max_speed_m_s_day!: number | null;
+
+    /**
+     * Vertical vorticity ζ = ∂v/∂x − ∂u/∂y in 1/s at the sighting
+     * position, computed by central differences on the regional u/v
+     * patch. Mesoscale values are O(1e-5..1e-4) so we keep 7 fractional
+     * digits. Positive = cyclonic in the northern hemisphere; magnitude
+     * is the relevant signal (eddy activity).
+     */
+    @Column({
+        type: 'decimal',
+        precision: 8,
+        scale: 7,
+        nullable: true
+    })
+    public current_curl_s_inv_day!: number | null;
+
+    /**
+     * Horizontal divergence ∇·u = ∂u/∂x + ∂v/∂y in 1/s at the
+     * sighting position. Negative = convergence / front (often a
+     * prey-aggregation feature). Same magnitude range as the vorticity.
+     */
+    @Column({
+        type: 'decimal',
+        precision: 8,
+        scale: 7,
+        nullable: true
+    })
+    public current_divergence_s_inv_day!: number | null;
+
+    /**
      * Status of the ocean (biogeochemistry + sea-state altimetry)
      * lookup: '', 'ok', 'land', 'invalid_location', 'invalid_date',
      * 'no_data'. Empty = never tried.

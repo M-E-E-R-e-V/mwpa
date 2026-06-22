@@ -12,6 +12,7 @@ import {TruncateSightingExtendedSetup} from '../Db/MariaDb/Setup/TruncateSightin
 import {RouteLoader} from '../Routes/RouteLoader.js';
 import {AisPruneService} from '../Service/Ais/AisPruneService.js';
 import {LiveAisService} from '../Service/Ais/LiveAisService.js';
+import {CurrentFieldService} from '../Service/Currents/CurrentFieldService.js';
 import {DepthService} from '../Service/DepthService.js';
 import {EarthquakeService} from '../Service/EarthquakeService.js';
 import {ExternalTourService} from '../Service/ExternalTourService.js';
@@ -78,6 +79,7 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
         this._serviceManager.add(new DepthService());
         this._serviceManager.add(new WeatherService());
         this._serviceManager.add(new OceanService());
+        this._serviceManager.add(new CurrentFieldService());
         this._serviceManager.add(new FishingEffortService());
         this._serviceManager.add(new ExternalTourService());
         this._serviceManager.add(new LiveAisService());

@@ -30,6 +30,10 @@ export type SightingEnvironmentEntry = {
     sla_cm_day?: number;
     current_speed_m_s_day?: number;
     current_direction_deg_day?: number;
+    current_region_mean_speed_m_s_day?: number;
+    current_region_max_speed_m_s_day?: number;
+    current_curl_s_inv_day?: number;
+    current_divergence_s_inv_day?: number;
     sst_c_day?: number;
     air_temperature_c_day?: number;
     uv_index_day?: number;

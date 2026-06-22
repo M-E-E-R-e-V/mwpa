@@ -1,103 +1,132 @@
+import {get as getProjection} from 'ol/proj';
+import {getTopLeft, getWidth} from 'ol/extent';
 import BaseLayer from 'ol/layer/Base';
-import LayerGroup from 'ol/layer/Group';
 import TileLayer from 'ol/layer/Tile';
-import {TileWMS} from 'ol/source';
+import {WMTS} from 'ol/source';
+import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import {MapLayer} from '../MapLayer';
 
 /**
- * NASA GIBS sea-surface currents overlay.
+ * CMEMS surface-currents overlay.
  *
- * Renders the **OSCAR L4 Zonal** (east-west) component as a coloured
- * tile overlay on top of the base map. GIBS only publishes the U and V
- * components separately (no combined magnitude/direction layer), and
- * the data series in GIBS lags ~12+ months — at the time of writing
- * the latest available date is 2024-07-17 (5-day cadence).
+ * Pulls the daily-mean `sea_water_velocity` tiles from the public
+ * Copernicus Marine WMTS at `wmts.marine.copernicus.eu/teroWmts`. The
+ * upstream layer is the Global Analysis-Forecast Physics 1/12° product
+ * (`GLOBAL_ANALYSISFORECAST_PHY_001_024`), rendered server-side as
+ * coloured magnitude + vector overlay (`vectorStyle:solidAndVector,
+ * cmap:thermal`). Time defaults to today at 00:00 UTC — adjust
+ * {@link OceanCurrentsLayer.OVERRIDE_TIME} when porting to historical
+ * snapshots or hard-pinning a layer for screenshots.
  *
- * Implementation notes:
- *   - Uses TileWMS straight to GIBS WMS so the overlay sits exactly on
- *     the OSM tile grid (any BBOX is rendered server-side). The earlier
- *     attempt routed through the `/mapcache` slippy-tile proxy with the
- *     OSCAR-native `2km` matrix set — that matrix has a different scale
- *     denominator series than OSM and tiles ended up offset / wrong
- *     size, which is what the user saw as "komische karte".
- *   - `TIME` is set to a known-available OSCAR date. Bump it when you
- *     want fresher data — check the WMS Capabilities `<Extent>` for
- *     `OSCAR_Sea_Surface_Currents_Zonal` to see the cut-off.
- *   - Disk caching via `/mapcache` is out of scope (WMS uses query-param
- *     BBOX rather than path-based slippy coords). HTTP and OL in-memory
- *     caches still apply.
+ * No backend involvement: the WMTS host is public (no API key, no auth
+ * — verified by curl 2026-06). Tiles are time-aware so we deliberately
+ * skip the `/mapcache` slippy-proxy and let OpenLayers / the browser
+ * HTTP cache handle short-term reuse.
  *
- * Caveat: OSCAR is **global L4** at 1/3° (~33 km). For a single island
- * that's only a handful of pixels — useful as Canary-Current basin
- * context, not for fine-scale local flow. Per-sighting current speed
- * and direction (already in `sighting_extended` from the Ocean service)
- * are what to look at for site-level analysis.
+ * Replaces the NASA GIBS OSCAR overlay this class used to load. OSCAR
+ * was 1/3° (~33 km), lagged ~12 months in GIBS, and exposed U/V only as
+ * two separate scalar layers — practically unusable at island scale.
  *
- * Hidden by default so it doesn't compete with the productivity / SST
- * overlays on first open.
+ * Hidden by default so it doesn't fight the productivity / SST
+ * overlays on first map open.
  */
 export class OceanCurrentsLayer extends MapLayer {
 
     /**
-     * Hard-coded recent date inside OSCAR's GIBS coverage. Update when
-     * the layer feels stale — see the WMS Capabilities for cut-off.
+     * WMTS endpoint base. Public — no auth required.
      */
-    private static readonly OSCAR_TIME: string = '2024-07-17';
+    private static readonly WMTS_BASE = 'https://wmts.marine.copernicus.eu/teroWmts';
+
+    /**
+     * WMTS layer identifier (`{PRODUCT}/{datasetId}/{variable}`).
+     * Bump `datasetId` if the upstream version stamp (`_202406`) is
+     * retired — `GetCapabilities` is the source of truth.
+     */
+    private static readonly WMTS_LAYER =
+        'GLOBAL_ANALYSISFORECAST_PHY_001_024/'
+        + 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202406/'
+        + 'sea_water_velocity';
+
+    /**
+     * Style — coloured magnitude + overlaid vector arrows on top of
+     * the basemap. Alternatives: `vectorStyle:vector` (arrows only),
+     * `vectorStyle:solid` (magnitude colours only).
+     */
+    private static readonly WMTS_STYLE = 'vectorStyle:solidAndVector,cmap:thermal';
+
+    /**
+     * Optional hard-pin for the time dimension (`YYYY-MM-DDTHH:mm:ss.SSSZ`
+     * ISO). When `null`, today at 00:00 UTC is used. The upstream
+     * product is updated daily so "today" is almost always valid.
+     */
+    private static readonly OVERRIDE_TIME: string | null = null;
 
     /**
      * @protected
      */
-    protected _layer: LayerGroup | undefined;
+    protected _layer: TileLayer<WMTS> | undefined;
 
     public override getName(): string {
         return 'overlay_ocean_currents';
     }
 
     public override getTitle(): string {
-        return 'Ocean currents (OSCAR ⅓°)';
+        return 'Ocean currents (CMEMS 1/12°)';
     }
 
     public override getOlLayer(): BaseLayer {
         if (!this._layer) {
-            const zonal = new TileLayer({
-                source: new TileWMS({
-                    url: 'https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
-                    crossOrigin: 'anonymous',
-                    params: {
-                        LAYERS: 'OSCAR_Sea_Surface_Currents_Zonal',
-                        TIME: OceanCurrentsLayer.OSCAR_TIME,
-                        FORMAT: 'image/png',
-                        TRANSPARENT: true,
-                        VERSION: '1.1.1'
-                    }
-                }),
-                opacity: 0.55
-            });
-            zonal.set('title', 'OSCAR zonal (U, east-west)');
+            const projection = getProjection('EPSG:3857')!;
+            const extent = projection.getExtent();
+            const size = getWidth(extent) / 256;
+            const resolutions: number[] = [];
+            const matrixIds: string[] = [];
+            const maxZoom = 12;
 
-            const meridional = new TileLayer({
-                source: new TileWMS({
-                    url: 'https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
-                    crossOrigin: 'anonymous',
-                    params: {
-                        LAYERS: 'OSCAR_Sea_Surface_Currents_Meridional',
-                        TIME: OceanCurrentsLayer.OSCAR_TIME,
-                        FORMAT: 'image/png',
-                        TRANSPARENT: true,
-                        VERSION: '1.1.1'
-                    }
-                }),
-                opacity: 0.45
-            });
-            meridional.set('title', 'OSCAR meridional (V, north-south)');
+            for (let z = 0; z <= maxZoom; z++) {
+                resolutions.push(size / (2 ** z));
+                matrixIds.push(String(z));
+            }
 
-            this._layer = new LayerGroup({
-                layers: [zonal, meridional]
+            const tileGrid = new WMTSTileGrid({
+                origin: getTopLeft(extent),
+                resolutions: resolutions,
+                matrixIds: matrixIds
+            });
+
+            this._layer = new TileLayer({
+                source: new WMTS({
+                    url: OceanCurrentsLayer.WMTS_BASE,
+                    layer: OceanCurrentsLayer.WMTS_LAYER,
+                    matrixSet: 'EPSG:3857',
+                    format: 'image/png',
+                    projection: projection,
+                    tileGrid: tileGrid,
+                    style: OceanCurrentsLayer.WMTS_STYLE,
+                    crossOrigin: 'anonymous',
+                    dimensions: {
+                        time: OceanCurrentsLayer.OVERRIDE_TIME ?? OceanCurrentsLayer._todayUtcMidnight()
+                    },
+                    wrapX: true
+                }),
+                opacity: 0.6
             });
             this._layer.setVisible(false);
         }
 
         return this._layer;
+    }
+
+    /**
+     * ISO timestamp for today at 00:00 UTC — what the daily-mean layer
+     * is keyed on. Computed once per layer construction; an open map
+     * across midnight UTC keeps the previous day until reload, which
+     * is fine for the daily-mean product.
+     * @private
+     */
+    private static _todayUtcMidnight(): string {
+        const today = new Date().toISOString().slice(0, 10);
+        return `${today}T00:00:00.000Z`;
     }
 
 }
