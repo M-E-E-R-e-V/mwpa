@@ -4,6 +4,8 @@ import {DefaultHandlerReturn, DefaultReturn, HandlerResultType, SchemaDefaultRet
 import {
     RightSightings,
     SchemaMWPASessionData,
+    SchemaSightingCurrentRegionRequest,
+    SchemaSightingCurrentRegionResponse,
     SchemaSightingDeleteRequest,
     SchemaSightingEnvironmentListResponse,
     SchemaSightingFishingVesselListRequest,
@@ -13,6 +15,7 @@ import {
     SchemaSightingYearsResponse,
     SchemaSightingsFilter,
     SchemaSightingsListResponse,
+    SightingCurrentRegionResponse,
     SightingEnvironmentListResponse,
     SightingFishingVesselListResponse,
     SightingYearsResponse,
@@ -20,6 +23,7 @@ import {
 } from 'mwpa_schemas';
 import {checkMWPAUserIsLogin, checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
+import {CurrentRegion} from './Sightings/CurrentRegion.js';
 import {Delete} from './Sightings/Delete.js';
 import {Environment} from './Sightings/Environment.js';
 import {Excel} from './Sightings/Excel.js';
@@ -71,6 +75,23 @@ export class Sightings extends DefaultRoute {
                 description: 'Paginated list of non-deleted sightings joined with ocean (chl-a, salinity, currents) + GFW fishing-effort enrichment columns. Position is denormalised to lon/lat for direct map use.',
                 bodySchema: SchemaSightingsFilter,
                 responseBodySchema: SchemaSightingEnvironmentListResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._post(
+            '/json/sightings/currents/region',
+            checkMWPAUserIsLogin,
+            async(_req, _res, data): Promise<SightingCurrentRegionResponse> => {
+                return CurrentRegion.getRegion(data.body!);
+            },
+            {
+                description: 'Regional CMEMS surface-currents u/v patch around a single sighting.'
+                    + ' Payload is JSON-encoded inside `entry.grid_json` because vts does not model 2D arrays;'
+                    + ' the frontend JSON-parses it. Returns `entry: undefined` when no patch has been fetched yet.',
+                bodySchema: SchemaSightingCurrentRegionRequest,
+                responseBodySchema: SchemaSightingCurrentRegionResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,
             }

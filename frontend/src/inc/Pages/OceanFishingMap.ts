@@ -16,6 +16,7 @@ import {OceanCurrentsLayer} from '../Map/Layers/OceanCurrentsLayer';
 import {OsmBaseLayer} from '../Map/Layers/OsmBaseLayer';
 import {SeaSurfaceTemperatureMetricLayer} from '../Map/Layers/SeaSurfaceTemperatureMetricLayer';
 import {WaveHeightMetricLayer} from '../Map/Layers/WaveHeightMetricLayer';
+import {CurrentRegionQuiverModal} from '../Map/Widgets/CurrentRegionQuiverModal';
 import {MetricCharts} from '../Map/Widgets/MetricCharts';
 import {ProvenanceLegend} from '../Map/Widgets/ProvenanceLegend';
 import {BasePage} from './BasePage';
@@ -101,6 +102,7 @@ export class OceanFishingMap extends BasePage {
             this._map.unload();
             this._map = null;
         }
+        jQuery(document).off('click.cmemsRegion');
         this._metricLayers = [];
         this._legend = null;
         this._charts = null;
@@ -185,6 +187,21 @@ export class OceanFishingMap extends BasePage {
         this._map.load({
             initialCenterLonLat: initialCenter ?? [-17.3340221, 28.0525008],
             initialZoom: 8
+        });
+
+        /*
+         * Delegated click handler for the "Regional currents (quiver)"
+         * link rendered inside every map-feature popover. Bound once
+         * on the page so popovers (which mount/unmount their own
+         * tooltip nodes) don't need their own listeners.
+         */
+        jQuery(document).on('click.cmemsRegion', 'a.mwpa-cmems-region-link', (evt) => {
+            evt.preventDefault();
+            const sightingId = parseInt(jQuery(evt.currentTarget).attr('data-sighting-id') ?? '', 10);
+
+            if (Number.isFinite(sightingId)) {
+                CurrentRegionQuiverModal.show(sightingId, `Lat/Lon resolved from popover.`);
+            }
         });
 
         // Base + overlay layers ----------------------------------------------------------------
@@ -322,6 +339,13 @@ export class OceanFishingMap extends BasePage {
             `Salinity: ${fmt(r.salinity_psu_day, 2, 'PSU')}`,
             `SST: ${fmt(r.sst_c_day, 1, '°C')}`,
             `Current: ${fmt(r.current_speed_m_s_day, 2, 'm/s')}`,
+            r.current_region_mean_speed_m_s_day === undefined ? null
+                : `Region mean / max: ${fmt(r.current_region_mean_speed_m_s_day, 2, '')} / ${fmt(r.current_region_max_speed_m_s_day, 2, 'm/s')}`,
+            r.current_curl_s_inv_day === undefined ? null
+                : `Vorticity (curl): ${(r.current_curl_s_inv_day * 1e5).toFixed(2)} ×10⁻⁵/s`,
+            r.current_divergence_s_inv_day === undefined ? null
+                : `Divergence: ${(r.current_divergence_s_inv_day * 1e5).toFixed(2)} ×10⁻⁵/s`,
+            `<a href="#" class="mwpa-cmems-region-link" data-sighting-id="${r.id}">→ Regional currents (quiver)</a>`,
             `Depth: ${fmt(r.depth_m, 0, 'm')}`,
             '<i>— Weather —</i>',
             `Air temp: ${fmt(r.air_temperature_c_day, 1, '°C')}`,
