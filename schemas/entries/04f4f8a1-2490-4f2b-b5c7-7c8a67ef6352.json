@@ -1,0 +1,161 @@
+{
+  "schemas": [
+    {
+      "unid": "b0da2865-488f-433e-808d-d5e5afdde7e3",
+      "name": "SightingSaveResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "586a9ebd-b5ac-4cfe-a7ca-18d129289577",
+          "name": "unid",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "112b3682-6151-4f17-a0c5-e3dafeff310a",
+          "name": "canDelete",
+          "type": {
+            "type": "boolean",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "a11a1911-f93e-4bdb-b9fc-612ed8e67b57",
+      "name": "SightingImageExistRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 300
+      },
+      "fields": [
+        {
+          "unid": "fe287279-e26b-49b0-ab46-35916f93247e",
+          "name": "unid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "35e24cb6-8370-478e-aaa9-212a67636e10",
+          "name": "filename",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1bc38d9d-0198-4da9-99ae-b3df716c2a08",
+          "name": "size",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Mobile sends file size as string (toString()) for compat with the production Dart client."
+        }
+      ]
+    },
+    {
+      "unid": "3ea436d0-12ff-4381-9b02-f1ffabf2c3c6",
+      "name": "SightingImageExistResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 500
+      },
+      "fields": [
+        {
+          "unid": "68c5f693-53b4-444c-bf7f-3ef00981c9a4",
+          "name": "isExist",
+          "type": {
+            "type": "boolean",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "ce03bfe1-30fc-408b-ad36-4c2b60153026",
+      "name": "SightingImageSaveRequest",
+      "description": "Multipart fields for /mobile/sighting/image/save (file upload)",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 700
+      },
+      "fields": [
+        {
+          "unid": "24697a6f-1e08-4440-9f12-540e7b73a21c",
+          "name": "unid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "adc94be0-6e0a-4570-b056-3fab895c37cf",
+          "name": "filename",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "5c4a4c74-b7ad-4c8a-ad93-4c4d1cf10808",
+          "name": "size",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

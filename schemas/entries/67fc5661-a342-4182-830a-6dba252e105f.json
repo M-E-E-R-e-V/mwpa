@@ -1,0 +1,96 @@
+{
+  "schemas": [
+    {
+      "unid": "c70f1970-9de5-4a57-8da9-ad73b01face9",
+      "name": "TrackingAreaHomeData",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "fa33fed0-ab6d-4628-beaf-fe52e94aecdd",
+          "name": "coordinates",
+          "type": {
+            "type": "or",
+            "optional": false,
+            "array": true,
+            "types": [
+              {
+                "type": "number",
+                "optional": false,
+                "array": true,
+                "types": []
+              }
+            ]
+          },
+          "description": "Polygon outer ring as number[][] — list of [lon, lat] pairs (wire format kept compatible with the production mobile client which expects element[0]=lon, element[1]=lat)."
+        },
+        {
+          "unid": "b4fd67be-5701-4d88-9952-e0a960536db5",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b41e3b8f-e796-434b-9918-895f2990a11e",
+          "name": "create_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "31f1c336-e950-46ea-adfd-f9987bb7e98a",
+          "name": "update_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "5c512a3c-ece6-48aa-a603-ab280dfa459d",
+      "name": "TrackingAreaHomeResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "f28bd135-5ce8-44e9-bc60-365549f184b4",
+          "name": "data",
+          "type": {
+            "type": "c70f1970-9de5-4a57-8da9-ad73b01face9",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

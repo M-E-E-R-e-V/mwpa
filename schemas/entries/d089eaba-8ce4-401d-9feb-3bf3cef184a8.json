@@ -1,0 +1,683 @@
+{
+  "schemas": [
+    {
+      "unid": "5e80c13c-8756-4257-be21-d259b1bec980",
+      "name": "OrphanTracksFilter",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 485,
+        "y": 1253
+      },
+      "fields": [
+        {
+          "unid": "ca8df158-31bf-4c93-9e55-4cad1bfec74c",
+          "name": "period_from",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "65274300-710c-42ae-bc65-7c5562d014a9",
+          "name": "period_to",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b75cb978-8923-40e8-8f78-ecdbe45b9c3a",
+          "name": "device_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b159197c-70dd-44fb-8b0a-60471bffdba6",
+          "name": "limit",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "fe1b23f7-c4f9-4459-bc20-58302311edbe",
+          "name": "offset",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "49d4f62e-1e3e-41be-a798-3a78d26042ac",
+      "name": "OrphanTrackEntry",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 485,
+        "y": 40
+      },
+      "fields": [
+        {
+          "unid": "74e255e2-5dfa-4557-8784-7a9c1d7c3bed",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4c3ea370-f415-4578-854a-4ce7b1d13b74",
+          "name": "device_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "98f5efc6-ae94-4127-839f-5d128d4d49af",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c48a04c0-f312-4fbd-9e90-40baec396dba",
+          "name": "vehicle_driver_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f1097f64-12be-487d-8185-e810fbad5c97",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "001ccfdc-0e4e-4365-9106-01aa30607d0b",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4e3491c7-9c63-4120-ad41-f0d02275e70e",
+          "name": "count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "cb94ffc0-4a04-4a60-9f11-33843cb84a7e",
+          "name": "min_create_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "23cf79b0-0b63-46bf-8f46-8033549e94a5",
+          "name": "max_create_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "65468067-2410-46d1-a7a0-d7ce7bf9d39a",
+      "name": "OrphanTracksMatchCandidate",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 485,
+        "y": 1582
+      },
+      "fields": [
+        {
+          "unid": "412af41c-ce35-48a7-b8b9-0414f7e16595",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "42db6c06-bbe1-4c8b-aa50-e0cbbb70b6f2",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b5e6f33c-c576-4052-b90e-7221d6681ca0",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "cb9ad223-ba6d-4923-996c-36990f02c913",
+          "name": "vehicle_driver_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "7db83500-bd49-4ffb-8a93-e436b2c2c333",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a94d3294-9f29-4ba5-96bc-d32d255ad087",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2253f5d6-2d8e-4f57-9dcb-8e30ff34a243",
+          "name": "tour_end",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a707431b-53e2-4b13-b3ca-ad7ecdf23f8a",
+          "name": "count_sightings",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "9c3a201e-47a8-4f82-a2f5-a143f7523bcf",
+          "name": "count_trackings",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "75fa9f1e-cb4b-4a59-87b3-6ca82b838c47",
+      "name": "OrphanTracksMatchRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 485,
+        "y": 2103
+      },
+      "fields": [
+        {
+          "unid": "e315c6f4-ea55-4a85-b140-98407655cfea",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b8409928-228f-4cd9-93dc-cd1b5a09e2c9",
+          "name": "vehicle_driver_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "0fdb29c0-7c99-4b47-bd56-003ded0a5f73",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c3fe8d72-c432-4b08-9bbf-c360238938f4",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "d92b143d-d091-4e27-9d06-242e878f549b",
+      "name": "OrphanTracksAssignRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 485,
+        "y": 561
+      },
+      "fields": [
+        {
+          "unid": "45e1695c-66c7-4e06-8e87-207dfaf3180c",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4fe168e0-b0d4-470e-9e02-edcbbbe6eb66",
+          "name": "device_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "9e72f855-e6c0-4ec9-92b7-2684c0e18cf1",
+          "name": "target_tour_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "00fb3100-00d0-4517-88c3-679b47631ba3",
+      "name": "OrphanTracksListResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 40,
+        "y": 40
+      },
+      "fields": [
+        {
+          "unid": "c71a3a71-a759-498d-b343-d43b7349e9d0",
+          "name": "filter",
+          "type": {
+            "type": "5e80c13c-8756-4257-be21-d259b1bec980",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "09817815-bb0c-40dd-ab7c-ffe35882cdc6",
+          "name": "offset",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4236f98a-3968-42f3-802b-2df8abf0b25d",
+          "name": "count",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "996c4f8e-dd52-4347-a48a-1d177a450c7c",
+          "name": "list",
+          "type": {
+            "type": "49d4f62e-1e3e-41be-a798-3a78d26042ac",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "ef2a8843-b653-4581-b6d1-c6e4133e90ad",
+      "name": "OrphanTracksMatchResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 40,
+        "y": 321
+      },
+      "fields": [
+        {
+          "unid": "0aa4c9ae-6359-441a-a04d-76851132a18f",
+          "name": "list",
+          "type": {
+            "type": "65468067-2410-46d1-a7a0-d7ce7bf9d39a",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "16146af7-1167-474b-885a-7d438b00e247",
+      "name": "OrphanTracksAssignResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 485,
+        "y": 794
+      },
+      "fields": [
+        {
+          "unid": "8b898695-a4d8-4b6a-b440-551e86a3d440",
+          "name": "promoted",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "db36bc48-0c73-46a5-9197-18b4776ad5e7",
+      "name": "OrphanTracksPoint",
+      "description": "One decoded pending-track point — lat/lon + timestamp (s since epoch) for the map preview in the AssignModal",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 485,
+        "y": 2384
+      },
+      "fields": [
+        {
+          "unid": "c0585f1f-9f5e-47c0-a15e-6f59ce3b5fa2",
+          "name": "lat",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "75d2de90-4eba-431c-b0fd-fab754a589d2",
+          "name": "lon",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "88282402-a44f-4b07-85fe-86cf6df47ff7",
+          "name": "ts",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "create_datetime in seconds since epoch — matches the source row's value"
+        }
+      ]
+    },
+    {
+      "unid": "8a586098-1913-441f-afae-091c9f1ba586",
+      "name": "OrphanTracksPointsRequest",
+      "description": "Fetch decoded points for one orphan bucket (tour_fid + device_id) to draw on the AssignModal map",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 485,
+        "y": 2617
+      },
+      "fields": [
+        {
+          "unid": "feacad9f-240a-412d-80ca-5cf130244877",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b5279b60-28d6-4b90-abc8-480a437bcf90",
+          "name": "device_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "cc3ac1fe-1998-484b-8a5b-c353375e8fdb",
+      "name": "OrphanTracksPointsResponse",
+      "description": "Decoded points for an orphan bucket — ordered by timestamp ascending",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 40,
+        "y": 458
+      },
+      "fields": [
+        {
+          "unid": "3b00bd9f-8aca-45ca-8a7f-036f13733916",
+          "name": "points",
+          "type": {
+            "type": "db36bc48-0c73-46a5-9197-18b4776ad5e7",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "54dffe8e-a661-43ee-bc30-03d2d6930e00",
+      "name": "OrphanTracksDeleteRequest",
+      "description": "Drop the entire pending bucket for (tour_fid, device_id) without promoting — used when the admin decides the orphan is junk",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 485,
+        "y": 931
+      },
+      "fields": [
+        {
+          "unid": "f0e197f4-d04d-4ceb-a4d6-8eecb48206e2",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "cbb656e7-f9eb-427f-8ebd-2372578e7c20",
+          "name": "device_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "ca022e4e-ef76-48b4-b2c6-d55f228aa5d7",
+      "name": "OrphanTracksDeleteResponse",
+      "description": "Result of dropping an orphan bucket — `deleted` echoes the row count that was in the bucket before",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 485,
+        "y": 1116
+      },
+      "fields": [
+        {
+          "unid": "941589d2-5a8e-4028-8a44-bd74e8782c0e",
+          "name": "deleted",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

@@ -1,0 +1,53 @@
+{
+  "schemas": [
+    {
+      "unid": "8728e37f-ef09-4168-aaac-08fb57749602",
+      "name": "MobileQuickConnectRequest",
+      "description": "Body of POST /mobile/quickconnect. The app scans the QR, extracts the otp and posts it together with its device identity. The OTP alone identifies the user (single-use, ~60s TTL).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "8bedf81e-f8cb-4a60-a7bf-201ce5b7755d",
+          "name": "otp",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d755bdb7-50f5-4811-9cd2-250b2863e2e6",
+          "name": "deviceIdentity",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ea42b49d-d609-479e-b694-2bfab6988a8f",
+          "name": "deviceDescription",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

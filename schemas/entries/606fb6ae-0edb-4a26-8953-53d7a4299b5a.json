@@ -1,0 +1,100 @@
+{
+  "schemas": [
+    {
+      "unid": "2d097f16-4074-4294-9ef4-e3aa5d8610a0",
+      "name": "QuickConnectPayload",
+      "description": "Payload encoded into the Quick Connect QR code. The Flutter app parses this JSON after scanning and sends {otp} back to /mobile/quickconnect together with its device identity.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "bc7cc9b7-5318-4a09-a774-3b6cbdb1d79d",
+          "name": "version",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Payload version. Bump when the wire shape changes so the app can refuse incompatible QR codes."
+        },
+        {
+          "unid": "10fe3a10-6d77-40c1-9dc9-c9b3d6a047ad",
+          "name": "server",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Public base URL of the MWPA backend (scheme + host). Determined from X-Forwarded-* via Express trust proxy."
+        },
+        {
+          "unid": "10e0c2e2-f4ee-40f7-9e38-df4efbec043f",
+          "name": "username",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Username (display only - not required for the exchange, the OTP is sufficient)."
+        },
+        {
+          "unid": "6d523f98-e39f-46cc-99a5-c9f26ff1a1a6",
+          "name": "otp",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Single-use Quick Connect OTP (hex). Valid for ~60s, consumed by the first /mobile/quickconnect call."
+        },
+        {
+          "unid": "ac6a41db-3960-486c-8b49-e4a25df9a322",
+          "name": "expires_at",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Absolute expiry as unix epoch ms - so the app can show a countdown without relying on its clock-of-issue."
+        }
+      ]
+    },
+    {
+      "unid": "02ead018-c6e9-47b1-b4d1-bcde32abd2c1",
+      "name": "QuickConnectGenerateResponse",
+      "description": "Response of POST /json/quickconnect/generate. data is set on success.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 500,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "1579ea10-df7d-4ee7-81c1-50c5c50e01ae",
+          "name": "data",
+          "type": {
+            "type": "2d097f16-4074-4294-9ef4-e3aa5d8610a0",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "The QR payload. Only present when statusCode is ok."
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

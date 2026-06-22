@@ -1,0 +1,157 @@
+{
+  "schemas": [
+    {
+      "unid": "24621cc4-85a2-46e1-8940-07205d02f81b",
+      "name": "LoginIsLoginResponse",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 124,
+        "y": 67
+      },
+      "fields": [
+        {
+          "unid": "1b40dad0-2439-4468-b468-19e01de1fec0",
+          "name": "status",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "8767d992-e1aa-4df6-8513-1490e54261cc",
+      "name": "LogoutResponse",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 122,
+        "y": 189
+      },
+      "fields": [
+        {
+          "unid": "dbcea8f0-b98c-474a-add1-5802cc8ba8a6",
+          "name": "success",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "ae910201-4ede-4a9a-ac6a-6ea71e424af2",
+      "name": "LoginResponse",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 121,
+        "y": 315
+      },
+      "fields": [
+        {
+          "unid": "42a36f77-d82c-4d9d-8e7b-ead36d74ca56",
+          "name": "success",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d8fe1c00-5898-4d51-ac16-0144b32cab37",
+          "name": "error",
+          "type": {
+            "type": "or",
+            "optional": false,
+            "array": false,
+            "types": [
+              {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              {
+                "type": "null",
+                "optional": false,
+                "array": false,
+                "types": []
+              }
+            ]
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "9e320aad-4f80-4dd0-8e55-0658b3144681",
+      "name": "LoginRequest",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 121,
+        "y": 484
+      },
+      "fields": [
+        {
+          "unid": "3dc8daaa-c5ee-48b3-9184-061a24a08a7f",
+          "name": "email",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4dc9c139-0d1f-48c6-a348-0c6b362674d1",
+          "name": "password",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    }
+  ],
+  "enums": [],
+  "links": []
+}

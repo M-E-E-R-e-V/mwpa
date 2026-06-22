@@ -1,0 +1,136 @@
+{
+  "schemas": [
+    {
+      "unid": "0a375d21-3eda-432e-ad7c-a9ed60f4b522",
+      "name": "OfficeReportFilter",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 108,
+        "y": 15
+      },
+      "fields": [
+        {
+          "unid": "90162813-60a4-4619-b902-ea4bf14d0e48",
+          "name": "external_receiver_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d9486f60-e273-42bc-a0e4-c32ef0c4dc28",
+          "name": "year",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Restrict the export to sightings whose date falls within this calendar year. Omit for all years."
+        },
+        {
+          "unid": "b629c151-016c-4a5b-b85b-f3b5478c0e0d",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Restrict the export to one vehicle (boat). Required by AROC: 1 file per boat per semester. Omit to include all boats."
+        },
+        {
+          "unid": "ed8bb23c-b408-4684-98d9-1b1a51e6e96b",
+          "name": "semester",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Half-year filter: 1 = Jan–Jun, 2 = Jul–Dec. Combine with year. Omit for the full year."
+        },
+        {
+          "unid": "bd26d088-82a9-41ba-b9d8-8f65d41f7186",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Restrict the export to sightings belonging to this organization. Combine with vehicle_id to scope further. Omit to include all organizations the caller has access to."
+        }
+      ]
+    },
+    {
+      "unid": "e805a9d5-df79-43fc-a5c3-4584ed48f89c",
+      "name": "ExternalReceiverEntry",
+      "description": "One row of the external_receiver table — used by the AROC-report receiver picker.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 650,
+        "y": 249
+      },
+      "fields": [
+        {
+          "unid": "46011026-cc24-4db6-a8ce-ff49a03ef37f",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b1eb6d55-d84d-4c49-80bc-f8fd71412375",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "8722a061-d0ee-45db-8ef9-277dacbb6b74",
+      "name": "ExternalReceiverListResponse",
+      "description": "Response of GET /json/officereport/receivers — used to fill the receiver dropdown.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 104,
+        "y": 367
+      },
+      "fields": [
+        {
+          "unid": "755a1ed3-d39c-4bf4-bbee-a63104a1436a",
+          "name": "list",
+          "type": {
+            "type": "e805a9d5-df79-43fc-a5c3-4584ed48f89c",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

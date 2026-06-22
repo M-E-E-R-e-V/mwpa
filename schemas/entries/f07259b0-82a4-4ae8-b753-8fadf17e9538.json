@@ -1,0 +1,612 @@
+{
+  "schemas": [
+    {
+      "unid": "8d6c415f-b67f-4a1b-b465-ff4fb5e50a83",
+      "name": "ToursTrackingRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "328fa76d-5e6d-46cb-b87a-3d08c94c6171",
+          "name": "tour_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "3e65f915-6690-4a61-b671-ef43ae9d1e70",
+      "name": "ToursTrackingSightingExtended",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "dbcb5266-fbda-43e1-a824-d631f12a04ce",
+          "name": "unid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "9bf41ea9-8371-451d-a731-32105bec30c8",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3a2a5805-0335-4c12-afa9-8a7962b0fab3",
+          "name": "data",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "a4b678f9-0c04-4cee-bfba-911f0b992c1c",
+      "name": "ToursTrackingSightingData",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "6f15cb60-cccb-41f6-9ea9-f008a58ba1b1",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "03457398-d2f0-40bf-9c6d-01594cbd997a",
+          "name": "location_begin",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "198980af-5e51-47ee-a8e8-8fbb51e8c3df",
+          "name": "location_end",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "fb12094b-cdc1-495d-a9cd-d1bdc56ade1f",
+          "name": "pointtype",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c9a88bff-efea-4638-9cae-218088569b4c",
+          "name": "species_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f10a8be2-8c79-477d-aab8-8d709bdb3f56",
+          "name": "species_name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "87ef999c-ba55-4856-9065-e0ad4bb66210",
+          "name": "species_count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1605cd1a-d861-4816-a447-fad0f23f4f43",
+          "name": "distance_coast",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "0bda9e37-c77a-442b-9de2-e913c057a02f",
+          "name": "files",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "382d04e8-fd46-465e-af46-441cd787d04d",
+          "name": "extended",
+          "type": {
+            "type": "3e65f915-6690-4a61-b671-ef43ae9d1e70",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "e9b503e4-4f48-4712-9a97-c49f0a985573",
+      "name": "ToursTrackingData",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 508,
+        "y": 11
+      },
+      "fields": [
+        {
+          "unid": "25f3a993-6b63-4158-a66d-b61b6b88b1cc",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "cce9f9d3-83e9-4c6d-8e48-25e8ba6ec4ff",
+          "name": "start",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4ec40da8-ebf0-4de1-8b6b-0ab56f03bd00",
+          "name": "end",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f9933085-1587-4d10-b41b-856525ef4c89",
+          "name": "positions",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a505f9d2-ff17-43fd-96d7-37a41f95a4dd",
+          "name": "sightings",
+          "type": {
+            "type": "a4b678f9-0c04-4cee-bfba-911f0b992c1c",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "fa359a27-11e3-4891-8401-12571fce21af",
+          "name": "org_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "c14a4338-1649-40b8-9d67-0f20d7d2147f",
+      "name": "ToursTrackingResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 100,
+        "y": 350
+      },
+      "fields": [
+        {
+          "unid": "297a6681-bdf1-484d-9733-44392ec69e45",
+          "name": "tracking",
+          "type": {
+            "type": "e9b503e4-4f48-4712-9a97-c49f0a985573",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "2bd83cbc-647f-4b92-bbc6-5b6a5367ebcf",
+      "name": "ToursTrackingDeleteRequest",
+      "description": "Delete tracking points within a time range from a tour (admin only)",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 90,
+        "y": 1208
+      },
+      "fields": [
+        {
+          "unid": "44246afe-e89e-4604-b485-b5781f00c439",
+          "name": "tour_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "34f34ee2-d027-4020-a673-e83277c742b0",
+          "name": "timestamp_from",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Inclusive ms epoch start of range"
+        },
+        {
+          "unid": "9006b6bc-d079-404f-9257-211660d54542",
+          "name": "timestamp_to",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Inclusive ms epoch end of range"
+        }
+      ]
+    },
+    {
+      "unid": "251afda0-a6ec-40db-a903-2b88e43480be",
+      "name": "ToursTrackingDeleteResponse",
+      "description": "Number of deleted tracking points",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 61,
+        "y": 215
+      },
+      "fields": [
+        {
+          "unid": "3de7811f-c214-46ff-8322-daab3b98b8a4",
+          "name": "deleted",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "fd3ad426-5739-4bcd-99ac-a3cee69e5707",
+      "name": "ToursTrackingTransferRequest",
+      "description": "Transfer tracking points within a time range from one tour to another (admin only)",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 623,
+        "y": 1099
+      },
+      "fields": [
+        {
+          "unid": "036d98da-8766-4f3b-9adf-5a14ac554146",
+          "name": "tour_id_from",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "05a3b876-724a-42bf-9b96-a8c40f365189",
+          "name": "tour_id_to",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "772035c5-dee7-41c7-829c-8009d8c77e7f",
+          "name": "timestamp_from",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e0ea031e-2ba2-4c7d-aaab-050e8f71cd3e",
+          "name": "timestamp_to",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "f05e7862-1172-4580-953d-358b3bce1033",
+      "name": "ToursTrackingTransferResponse",
+      "description": "Number of transferred tracking points",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 561,
+        "y": 991
+      },
+      "fields": [
+        {
+          "unid": "85a290a1-fdad-488a-9c33-9b1b5945dc1c",
+          "name": "transferred",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "5dcfeb67-71c1-4abb-b073-1c7fe267f268",
+      "name": "ToursTrackingNeighborsRequest",
+      "description": "Lookup previous/next-day tours for a given tour (same vehicle)",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 26,
+        "y": 461
+      },
+      "fields": [
+        {
+          "unid": "c92f15d5-bccc-48a0-9fa5-c16bf6e680a5",
+          "name": "tour_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "9aef7610-6f0f-48fa-8e6c-c1eb017ac761",
+      "name": "ToursTrackingNeighborTour",
+      "description": "Compact tour reference for neighbor selection",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 150,
+        "y": 852
+      },
+      "fields": [
+        {
+          "unid": "0b84bf9b-c422-4093-8661-400ce1f15992",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b3a9b847-8e8f-4761-85db-e76f3186b85c",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "519f654d-963e-4bdd-91ca-a324f707e263",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "60561308-3eab-4e25-bbc7-106b5a251258",
+          "name": "tour_end",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "af643e36-5cd4-4d5c-8b02-b3d5955a547a",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "6bde62e7-a153-42ec-a67d-d2aa284d7b62",
+          "name": "count_trackings",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "54c4c049-620f-4b39-8921-ceff88843e3f",
+      "name": "ToursTrackingNeighborsResponse",
+      "description": "Optional previous/next tour for same vehicle",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "c9e7bf99-8543-4ff3-8cb6-0829ce4651de",
+          "name": "prev",
+          "type": {
+            "type": "9aef7610-6f0f-48fa-8e6c-c1eb017ac761",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2d4a2f97-cd37-404f-898e-e173b0a969e6",
+          "name": "next",
+          "type": {
+            "type": "9aef7610-6f0f-48fa-8e6c-c1eb017ac761",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "a905e9f3-283b-4ddf-b269-8518aa05d161",
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+      "pos": {
+        "x": 1500,
+        "y": 50
+      }
+    }
+  ]
+}

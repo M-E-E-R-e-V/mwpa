@@ -1,0 +1,134 @@
+{
+  "schemas": [
+    {
+      "unid": "ca235e84-824c-4841-b0bf-12e24581c306",
+      "name": "VehicleEntry",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "3f202fe2-fd0e-4041-8f53-5229d4083ad2",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Vehicle id"
+        },
+        {
+          "unid": "96716c7f-2e68-4ca0-ac7e-11f5599e563a",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Vehicle name (description column in DB)"
+        },
+        {
+          "unid": "15fc3b9e-de84-4968-b14f-405beea7a702",
+          "name": "isdeleted",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Soft-deleted flag"
+        },
+        {
+          "unid": "e705834c-1725-4ad5-aa2d-aec9ac5f26c2",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Organization the vehicle belongs to"
+        },
+        {
+          "unid": "ec1c4c34-4b24-49e5-8867-1383a3a3ba12",
+          "name": "in_use",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Whether the vehicle is currently active in use. Drives visibility in operational pickers (tour creation, AROC report). Independent of soft-delete."
+        }
+      ]
+    },
+    {
+      "unid": "da4bee40-ce80-4e51-be3b-eb0f96e4c89f",
+      "name": "VehicleListResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 100,
+        "y": 300
+      },
+      "fields": [
+        {
+          "unid": "1c08b1ff-b98b-4a34-ae7e-79ddb19dcee9",
+          "name": "list",
+          "type": {
+            "type": "ca235e84-824c-4841-b0bf-12e24581c306",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "681502c8-7d5d-4aef-a319-d353b2caecf2",
+      "name": "VehicleDeleteRequest",
+      "description": "Body of POST /json/vehicle/delete — soft-deletes the vehicle with the given id.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 600
+      },
+      "fields": [
+        {
+          "unid": "401b87aa-d513-4189-ae70-97f2fb14f1cf",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Vehicle id to delete"
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "3c907461-9029-442a-b23d-292723b69052",
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+      "pos": {
+        "x": 1000,
+        "y": 100
+      }
+    }
+  ]
+}

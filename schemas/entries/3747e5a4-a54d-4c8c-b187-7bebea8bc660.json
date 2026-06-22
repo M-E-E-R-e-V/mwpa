@@ -1,0 +1,228 @@
+{
+  "schemas": [
+    {
+      "unid": "4632c80a-bd6c-4813-8ba2-a8021bed0605",
+      "name": "SpeciesEntryGroup",
+      "description": "Embedded species group info inside SpeciesEntry",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1100,
+        "y": 200
+      },
+      "fields": [
+        {
+          "unid": "fb27621b-622c-43b2-b91b-f117b5f22f70",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "076b6120-4d79-46c0-babc-84ee48046a73",
+          "name": "color",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "904eef89-2f36-4a18-956c-1c87538f1f7b",
+      "name": "SpeciesEntry",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "683f2b1b-9d35-492c-b77e-88b9a38e5d6c",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a8e9501f-6657-4080-ab07-397233422f7f",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "cabcc111-a5d7-469e-8e0d-97687a1756ec",
+          "name": "ottid",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Open Tree of Life ID"
+        },
+        {
+          "unid": "e251fc68-d4fe-47cf-bb26-ba550d9c1256",
+          "name": "isdeleted",
+          "type": {
+            "type": "boolean",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "79ec2227-cc73-452d-a2c8-4aaee777e8c3",
+          "name": "species_groupid",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "9bc05fca-da06-4d13-a3c2-fb588e708798",
+          "name": "species_group",
+          "type": {
+            "type": "4632c80a-bd6c-4813-8ba2-a8021bed0605",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "20634bb4-605e-41ba-9796-1c932e7c91d3",
+          "name": "aphiaid",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "WoRMS aphiaID — marine species identifier (https://www.marinespecies.org). Optional/0 if not yet mapped."
+        }
+      ]
+    },
+    {
+      "unid": "fd0595a6-bcb2-45ce-81ef-6902752bacd1",
+      "name": "SpeciesListResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 100,
+        "y": 200
+      },
+      "fields": [
+        {
+          "unid": "ff47321b-00a2-45b7-9035-1c1a1f63f11c",
+          "name": "list",
+          "type": {
+            "type": "904eef89-2f36-4a18-956c-1c87538f1f7b",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "72432746-a254-4596-93f8-c8e449fa3b74",
+      "name": "SpeciesMergeRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 500
+      },
+      "fields": [
+        {
+          "unid": "b5d39d27-ac46-412c-9e8e-1bd770d1c50d",
+          "name": "source_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "8fef6baa-5782-4a72-b012-b5a4c4c538f0",
+          "name": "destination_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "be2809c4-1d76-4ff8-8f58-dee002c952a6",
+      "name": "SpeciesDeleteRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 700
+      },
+      "fields": [
+        {
+          "unid": "cd66beb1-ad44-48e2-b418-d113bd92b1c7",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "c1a26abe-8466-46b8-a696-aedf19ac08ae",
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+      "pos": {
+        "x": 1100,
+        "y": 50
+      }
+    }
+  ]
+}

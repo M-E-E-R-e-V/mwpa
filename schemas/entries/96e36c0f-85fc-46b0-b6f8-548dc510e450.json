@@ -1,0 +1,285 @@
+{
+  "schemas": [
+    {
+      "unid": "e67f0343-4b11-4918-9ddc-3652b7d202bf",
+      "name": "MwpaRights",
+      "extend": {
+        "type": "or",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        },
+        "or_values": [
+          {
+            "type": "a479578c-5ad0-4a2e-b67f-a8d8eb469a26"
+          },
+          {
+            "type": "08512fff-df08-45fc-962d-7a6847feac3d"
+          },
+          {
+            "type": "7956a0b1-76a7-4d7d-a7a9-accafb558bab"
+          },
+          {
+            "type": "df743aca-d0d5-4e56-94f7-f6851246cff4"
+          },
+          {
+            "type": "b2ae8a1c-9013-4205-b6af-0dd53036be47"
+          },
+          {
+            "type": "04c1475e-660f-42ed-a474-a1d476f75fc6"
+          },
+          {
+            "type": "583a107b-7922-4e10-abc8-7c1477d42e58"
+          }
+        ]
+      },
+      "pos": {
+        "x": 41,
+        "y": 227
+      },
+      "fields": [],
+      "description": ""
+    }
+  ],
+  "enums": [
+    {
+      "unid": "7e3a0f63-f0b7-4714-8156-d3ce7d483bd0",
+      "name": "Role",
+      "pos": {
+        "x": 92,
+        "y": 50
+      },
+      "values": [
+        {
+          "unid": "94e7ecdc-9603-437b-afa7-0fdfe3a520b2",
+          "name": "root",
+          "value": "root"
+        },
+        {
+          "unid": "2fe56d52-690e-4f0e-998d-8b8c8b834da6",
+          "name": "user",
+          "value": "user"
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "a479578c-5ad0-4a2e-b67f-a8d8eb469a26",
+      "name": "RightUsers",
+      "pos": {
+        "x": 400,
+        "y": 351
+      },
+      "values": [
+        {
+          "unid": "09d3437f-bbaa-45b1-8b0b-ef96fbf96b3f",
+          "name": "users",
+          "value": "users"
+        },
+        {
+          "unid": "d004d281-6bf1-4796-b899-6158cec7d8c7",
+          "name": "users_read",
+          "value": "users_read"
+        },
+        {
+          "unid": "4eb68a3d-f76e-4f04-bb7c-9c2f900cebbf",
+          "name": "users_write",
+          "value": "users_write"
+        },
+        {
+          "unid": "60d7569c-4973-4ecc-b1c4-d5036832e5ec",
+          "name": "users_delete",
+          "value": "users_delete"
+        },
+        {
+          "unid": "a93fb7d6-91ac-4dc3-a6f8-d6b4d7f18f3d",
+          "name": "users_roles_read",
+          "value": "users_roles_read"
+        },
+        {
+          "unid": "a7754345-1c07-4e1a-969b-0eda57e2d019",
+          "name": "users_roles_write",
+          "value": "users_roles_write"
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "08512fff-df08-45fc-962d-7a6847feac3d",
+      "name": "RightSettings",
+      "pos": {
+        "x": 40,
+        "y": 338
+      },
+      "values": [
+        {
+          "unid": "16fa5c9a-4a6f-42ea-8542-c0c5b1acc4aa",
+          "name": "settings",
+          "value": "settings"
+        },
+        {
+          "unid": "6e171717-3fe2-4c75-8b78-b5390f1d4c56",
+          "name": "settings_read",
+          "value": "settings_read"
+        },
+        {
+          "unid": "38e72a3b-1d52-4dac-8f77-e0da77738396",
+          "name": "settings_write",
+          "value": "settings_write"
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "7956a0b1-76a7-4d7d-a7a9-accafb558bab",
+      "name": "RightService",
+      "pos": {
+        "x": 40,
+        "y": 545
+      },
+      "values": [
+        {
+          "unid": "820b8961-0496-4af9-afe4-a0b586391740",
+          "name": "service",
+          "value": "service"
+        },
+        {
+          "unid": "a53d3cd2-fae8-4034-955c-423fb796dac9",
+          "name": "service_status",
+          "value": "service_status"
+        },
+        {
+          "unid": "803248c9-cfdd-4a6a-974a-57189faf9602",
+          "name": "service_start",
+          "value": "service_start"
+        },
+        {
+          "unid": "315d678d-1100-4a5c-9ae6-9eb51e883a3e",
+          "name": "service_stop",
+          "value": "service_stop"
+        },
+        {
+          "unid": "2cf1c906-bf54-4d63-b734-4aca9d99f92e",
+          "name": "service_invoke",
+          "value": "service_invoke"
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "df743aca-d0d5-4e56-94f7-f6851246cff4",
+      "name": "RightUser",
+      "pos": {
+        "x": 354,
+        "y": 705
+      },
+      "values": [
+        {
+          "unid": "39d8256e-5a18-4163-8afb-9e853c46fd5c",
+          "name": "user",
+          "value": "user"
+        },
+        {
+          "unid": "83a27b27-99fe-412a-989a-c29d1501edb6",
+          "name": "user_read",
+          "value": "user_read"
+        },
+        {
+          "unid": "66433267-8c71-4bcd-8549-1f945219a9a5",
+          "name": "user_write",
+          "value": "user_write"
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "b2ae8a1c-9013-4205-b6af-0dd53036be47",
+      "name": "RightSightings",
+      "pos": {
+        "x": 882,
+        "y": 294
+      },
+      "values": [
+        {
+          "unid": "08469770-4ca5-45d1-9642-986383cf8091",
+          "name": "sightings",
+          "value": "sightings"
+        },
+        {
+          "unid": "9a043c13-6a8b-4b84-8be2-1850ed309ca7",
+          "name": "sightings_read",
+          "value": "sightings_read"
+        },
+        {
+          "unid": "58b00f75-57a3-4d72-94a2-e71661dc863d",
+          "name": "sightings_write",
+          "value": "sightings_write"
+        },
+        {
+          "unid": "9ed2c859-35c6-4e93-96b0-67af87805708",
+          "name": "sightings_mobile_read",
+          "value": "sightings_mobile_read"
+        },
+        {
+          "unid": "edc2aaad-5d07-47e7-97d9-574d23c669cc",
+          "name": "sightings_mobile_write",
+          "value": "sightings_mobile_write"
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "04c1475e-660f-42ed-a474-a1d476f75fc6",
+      "name": "RightApi",
+      "pos": {
+        "x": 851,
+        "y": 39
+      },
+      "values": [
+        {
+          "unid": "78325b72-12e3-46a3-95b1-3e0da26c36f7",
+          "name": "web",
+          "value": "web"
+        },
+        {
+          "unid": "0b7d20ad-11bc-4a06-b07b-66149dbbf27d",
+          "name": "mobile",
+          "value": "mobile"
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "583a107b-7922-4e10-abc8-7c1477d42e58",
+      "name": "RightTours",
+      "description": "Rights for tours/tracking edit (admin-gated tracking modifications)",
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "values": [
+        {
+          "unid": "42536143-775f-4795-bd4e-bd6e95283d35",
+          "name": "tours",
+          "value": "tours"
+        },
+        {
+          "unid": "e7e3d2ca-296a-4db6-ba9d-5ecd1f0e6aa1",
+          "name": "tours_read",
+          "value": "tours_read"
+        },
+        {
+          "unid": "ef268736-1257-4a21-a9a0-eb244fc4098b",
+          "name": "tours_write",
+          "value": "tours_write"
+        },
+        {
+          "unid": "7edeb631-24eb-4400-8145-2f99499f5fd7",
+          "name": "tours_tracking_edit",
+          "value": "tours_tracking_edit"
+        }
+      ]
+    }
+  ],
+  "links": []
+}

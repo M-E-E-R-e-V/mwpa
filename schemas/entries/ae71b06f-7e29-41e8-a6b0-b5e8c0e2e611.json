@@ -1,0 +1,42 @@
+{
+  "schemas": [
+    {
+      "unid": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699",
+      "name": "DefaultMobileV1Return",
+      "description": "Mobile-V1 base response: like figtree-schemas DefaultReturn, but statusCode is a number to match the production Dart client (mwpa-app StatusCodes.dart uses int).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 200,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "305650ed-0bc3-43b4-bb56-7c4053e5341a",
+          "name": "statusCode",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "HTTP-style status code as number (200, 401, 403, 500, ...)."
+        },
+        {
+          "unid": "f474efc4-15a9-467a-aea9-efc7359d5589",
+          "name": "msg",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Optional message, set on error responses."
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

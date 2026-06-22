@@ -1,0 +1,274 @@
+{
+  "schemas": [
+    {
+      "unid": "1c307ce7-4149-47b1-a212-39bbbd0eb6d2",
+      "name": "OpenTourVehicle",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "224675d3-87a2-499c-a26c-22ba0d23f060",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "6f634d52-cb85-4452-a625-a91499ce2c4c",
+          "name": "description",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "78a34ed6-e57f-4fbb-a293-6fd89c103090",
+      "name": "OpenTourVehicleDriver",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1100,
+        "y": 300
+      },
+      "fields": [
+        {
+          "unid": "db688434-a806-41f7-bac6-d68145ab1d47",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3d9d7146-5a51-4197-b92d-6e3aac6dd9f6",
+          "name": "description",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "9ffebc9e-f8ae-4e4c-91c7-952b690857b4",
+      "name": "OpenTourOrganization",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1100,
+        "y": 500
+      },
+      "fields": [
+        {
+          "unid": "cb4b2ae9-36d6-4647-9736-42244473aa83",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "dd90bd6c-e5d0-49ec-b4d2-8e7eb7c909e9",
+          "name": "description",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "47ca8af6-ca68-4cb6-a86b-94f8ee0e6eb6",
+          "name": "country",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "31c94581-ed37-404a-b545-f198ec0fb26e",
+          "name": "location",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "fed078df-eb42-4a5d-aa8b-4cdf38b5fa41",
+          "name": "lat",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "874ad524-c10f-4433-963e-2b878e896818",
+          "name": "lon",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "aab95799-52fb-4583-8df5-4c4f962e64c9",
+      "name": "OpenTour",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 300
+      },
+      "fields": [
+        {
+          "unid": "7177e8d3-2495-48f0-a48d-7ec3ed7319d7",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a17acf9a-7320-4543-be16-d92f9d0586dc",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "27693874-a7be-4b78-8ace-0ed888b8e27a",
+          "name": "tour_end",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c84045bc-1cc3-45a4-b2f5-6d1f6d782b8e",
+          "name": "status",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "72f8f96f-ea59-4c88-bc09-75c381c4c179",
+          "name": "vehicle_driver",
+          "type": {
+            "type": "78a34ed6-e57f-4fbb-a293-6fd89c103090",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "fb6bd414-c518-42fe-aaf8-61c1eb7cddc6",
+          "name": "vehicle",
+          "type": {
+            "type": "1c307ce7-4149-47b1-a212-39bbbd0eb6d2",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c0befd60-cf65-4cac-91c5-40e596bc672c",
+          "name": "organization",
+          "type": {
+            "type": "9ffebc9e-f8ae-4e4c-91c7-952b690857b4",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "bbad32ce-dfdc-4341-bc9c-1720d4074d12",
+      "name": "OpenTourResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 300
+      },
+      "fields": [
+        {
+          "unid": "74d4c092-5822-4734-92ac-2712eced41ad",
+          "name": "data",
+          "type": {
+            "type": "aab95799-52fb-4583-8df5-4c4f962e64c9",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

@@ -1,0 +1,186 @@
+{
+  "schemas": [
+    {
+      "unid": "56c8792c-a36a-4703-bf81-69d4706f1afe",
+      "name": "OrganizationTrackingAreaRequest",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 221,
+        "y": 146
+      },
+      "fields": [
+        {
+          "unid": "2e6e845b-8b8c-4f7a-aa49-23df08d5fcc5",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b15f09ac-4720-495b-ab7c-11809d77ce24",
+          "name": "organization",
+          "type": {
+            "type": "4d35bc77-1921-42c6-b5f4-d435eca2fa56",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "4d35bc77-1921-42c6-b5f4-d435eca2fa56",
+      "name": "OrganizationTrackingAreaRequestOrg",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 758,
+        "y": 80
+      },
+      "fields": [
+        {
+          "unid": "5b9915a6-3942-4321-a79a-01ead898e30c",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3d9ebc49-3f01-4db0-b428-ccf00aba2ec2",
+          "name": "area_type",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "4a75fc30-0d71-42f6-9e22-84df07679acc",
+      "name": "OrganizationTrackingAreaEntry",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 772,
+        "y": 432
+      },
+      "fields": [
+        {
+          "unid": "0b984221-355f-4856-a178-59b0fa0f949c",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "10d21645-35a7-499a-a32e-365dcecb0361",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4be6480b-4144-45e1-8273-520ee0010e0f",
+          "name": "area_type",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a7440800-3474-4116-af5e-5b639c336041",
+          "name": "geojsonstr",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "0750e099-ba5c-4d92-a349-9ebda5d14cd4",
+      "name": "OrganizationTrackingAreaResponse",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 209,
+        "y": 325
+      },
+      "fields": [
+        {
+          "unid": "a9dfcf60-ce2a-4cc4-9840-ed22b58db291",
+          "name": "data",
+          "type": {
+            "type": "4a75fc30-0d71-42f6-9e22-84df07679acc",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "9a6a8a7a-b300-4750-90ae-11086c115bba",
+      "pos": {
+        "x": 814,
+        "y": 219
+      },
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+    }
+  ]
+}

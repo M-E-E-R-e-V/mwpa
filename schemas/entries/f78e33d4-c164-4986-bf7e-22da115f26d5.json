@@ -1,0 +1,517 @@
+{
+  "schemas": [
+    {
+      "unid": "a14eaf66-9a7f-4407-8507-32cdde43830b",
+      "name": "SightingMovementTrackEntry",
+      "description": "One segment (point N → point N+1) of a sighting movement, ready for map rendering.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1200,
+        "y": 506
+      },
+      "fields": [
+        {
+          "unid": "3d0e08b7-7b98-497a-a64d-0957192b5331",
+          "name": "sequence_no",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Position inside the movement (0..N-1)"
+        },
+        {
+          "unid": "3c825278-61ec-43f2-b059-e1fb1523eae4",
+          "name": "start_lat",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "WGS84 latitude (decimal degrees)"
+        },
+        {
+          "unid": "7ca7aa70-805d-46b4-b581-8dcb8a2ec2d4",
+          "name": "start_lon",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "WGS84 longitude (decimal degrees)"
+        },
+        {
+          "unid": "d41bbca3-eb7f-43ff-93c7-382469bfbb9f",
+          "name": "end_lat",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "WGS84 latitude (decimal degrees)"
+        },
+        {
+          "unid": "b915cdee-6442-4250-9614-eccd5500e95b",
+          "name": "end_lon",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "WGS84 longitude (decimal degrees)"
+        },
+        {
+          "unid": "908fc129-1980-4533-9d5b-d4ed1ae9ddfd",
+          "name": "start_dt",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Unix-seconds; 0 when unknown (manual_begin_end source)"
+        },
+        {
+          "unid": "f61c3639-e4ac-4a1e-a73d-74b34765cad1",
+          "name": "end_dt",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Unix-seconds; 0 when unknown"
+        },
+        {
+          "unid": "e6326991-71d1-42bf-a4af-edb4b28c720d",
+          "name": "distance_m",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Great-circle distance in metres"
+        },
+        {
+          "unid": "2f4a3c1b-622f-4a50-8a9c-fa42ae70283a",
+          "name": "duration_s",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "end_dt - start_dt in seconds; 0 when timing unknown"
+        },
+        {
+          "unid": "16b1a425-8d6e-4700-ae12-d976e57aeb60",
+          "name": "speed_mps",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "distance_m / duration_s; null when duration_s is 0"
+        },
+        {
+          "unid": "06349176-1907-4829-973c-14826c7d6685",
+          "name": "heading_deg",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Initial bearing 0..360 (0 = North); null when start==end"
+        },
+        {
+          "unid": "5c953fa2-0743-4efe-89d7-c6aa7eabefb5",
+          "name": "turning_angle_deg",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Signed change vs previous heading (-180..180); null for first segment"
+        },
+        {
+          "unid": "9a9f0859-5f0f-4c21-9387-4e457ec8ee09",
+          "name": "quality",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "'good' or 'bad' (GPS-jump suspect)"
+        }
+      ]
+    },
+    {
+      "unid": "41e4f986-4906-4cb9-8ccc-fd03ed817e7e",
+      "name": "SightingMovementEntry",
+      "description": "Per-sighting movement: aggregated header + full segment list. One entry per sighting that has a computed movement.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 659,
+        "y": 43
+      },
+      "fields": [
+        {
+          "unid": "339883ee-4afc-40a5-8c4d-e5c690c68848",
+          "name": "sighting_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Owning sighting id"
+        },
+        {
+          "unid": "7660265a-9e7c-48c2-91d7-71770eea6ebb",
+          "name": "source",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "'tracking' | 'manual_begin_end' | 'hybrid'"
+        },
+        {
+          "unid": "ba05b70a-7b38-42db-a51d-a4a0e2ac2c53",
+          "name": "segment_count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Number of segments in tracks[]"
+        },
+        {
+          "unid": "0be37314-763d-408a-993d-5ca463ffad13",
+          "name": "total_distance_m",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Sum of all segment distances"
+        },
+        {
+          "unid": "ac539b9e-0fb0-4d2f-9708-8f6dc65e206f",
+          "name": "total_duration_s",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Sum of all segment durations"
+        },
+        {
+          "unid": "d5ac75d1-ec36-4838-b19d-ec3d8cec67cc",
+          "name": "avg_speed_mps",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Mean speed across good segments; null when no timed data"
+        },
+        {
+          "unid": "215c0331-73f1-45de-9df5-8beabf02c304",
+          "name": "max_speed_mps",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Peak good-segment speed"
+        },
+        {
+          "unid": "79e1b36a-658b-434f-a2fa-65190db120cb",
+          "name": "dominant_heading_deg",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Circular mean of segment headings (0..360)"
+        },
+        {
+          "unid": "54533b5d-0573-4d8a-8636-9c4bf976d396",
+          "name": "heading_variance_deg",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "\"straight vs erratic\" proxy"
+        },
+        {
+          "unid": "d6f4f5f9-c7e2-445e-8672-64182f7f2686",
+          "name": "bbox_min_lat",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Bounding box (null when no points)"
+        },
+        {
+          "unid": "5eafa162-0ed7-44fb-9b7d-5063a6e4c75a",
+          "name": "bbox_min_lon",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Bounding box"
+        },
+        {
+          "unid": "f3afeeec-e3fd-4d46-b1de-7a7bcabe5219",
+          "name": "bbox_max_lat",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Bounding box"
+        },
+        {
+          "unid": "e992680f-b62e-49e8-86e6-2fb6858a89e5",
+          "name": "bbox_max_lon",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Bounding box"
+        },
+        {
+          "unid": "425df203-f557-4828-8472-596f47bfa745",
+          "name": "first_dt",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Unix-seconds of first segment start (0 when unknown)"
+        },
+        {
+          "unid": "66cf66dc-9aa4-4350-8014-93461be3f603",
+          "name": "last_dt",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Unix-seconds of last segment end"
+        },
+        {
+          "unid": "55977751-8ce2-4337-874c-3f4ae6e5a7f3",
+          "name": "computed_at",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Unix-seconds when this row was (re)computed"
+        },
+        {
+          "unid": "244d902b-0cdc-485a-b0a8-f2f0f000fb6f",
+          "name": "tracks",
+          "type": {
+            "type": "a14eaf66-9a7f-4407-8507-32cdde43830b",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Segments in sequence_no order"
+        }
+      ]
+    },
+    {
+      "unid": "31dfd30b-a2cd-49f5-a553-035c63bd6346",
+      "name": "SightingMovementListRequest",
+      "description": "Body of POST /json/sighting/movement/list — bulk fetch by sighting ids. Missing ids (no computed movement) are omitted from the response.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 37,
+        "y": 57
+      },
+      "fields": [
+        {
+          "unid": "bc243427-046f-416e-8330-079e334b49f3",
+          "name": "sighting_ids",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Sighting ids to fetch movements for. Unknown / uncomputed ids are silently skipped in the response."
+        }
+      ]
+    },
+    {
+      "unid": "65168769-cd8d-4f82-957d-fa6964f84727",
+      "name": "SightingMovementListResponse",
+      "description": "Response of POST /json/sighting/movement/list — movements for the requested sightings.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 36,
+        "y": 175
+      },
+      "fields": [
+        {
+          "unid": "0c1e27ba-6c77-463f-a8e6-6d5ca9d50305",
+          "name": "list",
+          "type": {
+            "type": "41e4f986-4906-4cb9-8ccc-fd03ed817e7e",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Movements for the requested sightings (subset)."
+        }
+      ]
+    },
+    {
+      "unid": "8be34039-f961-4f67-9482-97a018dea166",
+      "name": "MovementConfigEntry",
+      "description": "Movement-rebuild tunables. Sourced from / written to the `sighting_movement.config` row in the `settings` table. All fields are required on save; the loader fills in defaults when reading a partial row.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 484,
+        "y": 938
+      },
+      "fields": [
+        {
+          "unid": "274b3c95-be2b-4b8e-ba12-44eea17dc566",
+          "name": "default_lead_minutes",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Minutes added before the recorded sighting start, so the rendered track shows the boat's approach. Non-negative."
+        },
+        {
+          "unid": "47e7116f-c344-4b15-9be2-a737889f4fa6",
+          "name": "default_trail_minutes",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Minutes added after the recorded sighting end. Non-negative."
+        },
+        {
+          "unid": "70c701a7-6336-4dae-a639-b8dfc65a952a",
+          "name": "prefer_sighting_duration",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "When true, lead/trail buffer is applied around the recorded duration. When false, the recorded duration is used strictly."
+        },
+        {
+          "unid": "7f3567c2-c291-4f2a-97e0-b7b2a4b1ad17",
+          "name": "outlier_speed_kmh",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "GPS-jump detector — segment speeds above this value are flagged as `bad` quality and excluded from aggregates. Positive."
+        },
+        {
+          "unid": "e68639bf-2b39-45f9-89b5-674cbf37054e",
+          "name": "default_local_tz",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "IANA timezone used to interpret legacy `duration_from`/`duration_until` HH:MM strings on sightings without a GPS-fix timestamp (e.g. `Atlantic/Canary`). Must be a zone moment-timezone recognises."
+        }
+      ]
+    },
+    {
+      "unid": "f8281142-c3a6-45e9-bd64-6cf611a1bd82",
+      "name": "MovementConfigResponse",
+      "description": "Response body of GET /json/sighting/movement/config and POST /json/sighting/movement/config — current persisted config plus the default statusCode/msg envelope.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 26,
+        "y": 708
+      },
+      "fields": [
+        {
+          "unid": "43d12c00-815e-432b-8e10-4de0783b87e0",
+          "name": "config",
+          "type": {
+            "type": "8be34039-f961-4f67-9482-97a018dea166",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Current persisted config. Omitted on error responses (FORBIDDEN / INTERNAL_ERROR)."
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "959b8ed8-5431-4b9d-ade7-aeaf721e4fa0",
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+      "pos": {
+        "x": 213,
+        "y": 411
+      }
+    }
+  ]
+}

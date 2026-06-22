@@ -1,0 +1,188 @@
+{
+  "schemas": [
+    {
+      "unid": "e6083f79-b3a6-48eb-a3b0-bcd09672b80c",
+      "name": "DevicesEntry",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 97,
+        "y": 86
+      },
+      "fields": [
+        {
+          "unid": "477b224f-638e-4179-98ed-3be9624884da",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "7f5319f6-ed9f-4720-bad9-f480717ff427",
+          "name": "identity",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Mobile-side device identifier (UUID-ish)."
+        },
+        {
+          "unid": "7089b189-cbdb-40e9-8ae2-63d348e5fd73",
+          "name": "description",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "023e89dc-c937-4248-94d9-936a737cac16",
+          "name": "user_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "fa3a8628-275d-4af5-b4d9-b0e1f9a6c308",
+          "name": "user_name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "13a35db7-caec-48f6-b846-d31d338138d6",
+          "name": "user_email",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "88fe0947-fee4-4e62-ad84-e78fdb7699a6",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "12da4532-8ec2-48ff-b9a5-fefe30afba4f",
+          "name": "organization_name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "53abbd0c-230a-43a0-8b03-ecab03da990b",
+          "name": "create_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a25d13ce-cc1f-4315-8e99-4691cd22de56",
+          "name": "update_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d5c674a8-78e8-4bde-90f4-ea7c52cdeece",
+          "name": "sighting_count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "fb3d59f3-ffa9-4add-9a9d-3d66528e2308",
+          "name": "tour_count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "be7d3360-ca46-427e-82a8-201c9d1e488c",
+          "name": "last_sighting_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Most recent sighting upload timestamp from this device; 0 if none."
+        }
+      ]
+    },
+    {
+      "unid": "9d650d28-8207-4633-9589-04020e5fcfe0",
+      "name": "DevicesListResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 512,
+        "y": 243
+      },
+      "fields": [
+        {
+          "unid": "e8b1f868-ea1d-4aaa-aaf4-01fb77f2a7b6",
+          "name": "list",
+          "type": {
+            "type": "e6083f79-b3a6-48eb-a3b0-bcd09672b80c",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

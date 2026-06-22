@@ -1,0 +1,565 @@
+{
+  "schemas": [
+    {
+      "unid": "1ade1539-7fec-46fc-9057-e60d648089ff",
+      "name": "UserInfoData",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 959,
+        "y": 30
+      },
+      "fields": [
+        {
+          "unid": "57c2e76d-587f-49c9-aa48-a3c9d1a3d7c8",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1d6262f1-cd5f-4605-b78f-54ce6ab1cb31",
+          "name": "username",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "0681e007-0183-4e7f-96a6-2feb1fe570e0",
+          "name": "fullname",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "cad2474f-f53d-42ed-900b-0e5e8a6d49b0",
+          "name": "email",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "993f9516-02f9-4a04-a444-015bfc87c1e0",
+          "name": "isAdmin",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "e4cd5623-35fa-4cc8-87eb-765acffb7c4b",
+      "name": "UserInfoGroup",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 873,
+        "y": 357
+      },
+      "fields": [
+        {
+          "unid": "83055436-f748-4488-871d-af2d2605693a",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4845319b-4ba7-45aa-9a36-ada33a8205b7",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "749dffa0-3608-417a-8037-85d41c33ff79",
+      "name": "UserInfoOrg",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 876,
+        "y": 516
+      },
+      "fields": [
+        {
+          "unid": "b7de7860-4983-498b-8fb6-547f72fe0e15",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4766d30c-d38e-4b32-9978-980dc256e673",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "03439348-2979-44ab-b7e3-d6868e361691",
+          "name": "lat",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "7a4b4e95-785c-43ca-a912-76444e819cd4",
+          "name": "lon",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "4a5659e6-cb31-4d47-ac60-ebdc1ebd3411",
+      "name": "UserInfo",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 517,
+        "y": 191
+      },
+      "fields": [
+        {
+          "unid": "24b7ea85-06c8-44f9-a592-ce8eab64fbe2",
+          "name": "islogin",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "5eac082f-55d1-4c42-a7de-239d91246331",
+          "name": "user",
+          "type": {
+            "type": "1ade1539-7fec-46fc-9057-e60d648089ff",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "803072d8-c08e-4a03-b1b8-6304912b0dd0",
+          "name": "group",
+          "type": {
+            "type": "e4cd5623-35fa-4cc8-87eb-765acffb7c4b",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b0a86153-e7a3-4bcc-bc0e-83d9d24feff3",
+          "name": "organization",
+          "type": {
+            "type": "749dffa0-3608-417a-8037-85d41c33ff79",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "0592be3a-af28-46dc-a700-9e8347e60a68",
+      "name": "UserInfoResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 72,
+        "y": 31
+      },
+      "fields": [
+        {
+          "unid": "b56a0b12-07cd-4f8e-85b2-81d6e4bd33e3",
+          "name": "data",
+          "type": {
+            "type": "4a5659e6-cb31-4d47-ac60-ebdc1ebd3411",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "d6cf573e-f1cc-4d6d-95ae-18cf8dbc6ba7",
+      "name": "UserListFilterShow",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1089,
+        "y": 775
+      },
+      "fields": [
+        {
+          "unid": "c985e8df-7174-465a-b98f-27abd1aa8a53",
+          "name": "show_disabled",
+          "type": {
+            "type": "boolean",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "10abc19e-e847-446d-8e54-da0fdf0ea6ce",
+      "name": "UserListFilter",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 731,
+        "y": 819
+      },
+      "fields": [
+        {
+          "unid": "2d92aba0-17f0-47b6-8391-6c510a8d4dcf",
+          "name": "filter",
+          "type": {
+            "type": "d6cf573e-f1cc-4d6d-95ae-18cf8dbc6ba7",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c630d833-95bc-4195-b1ef-f0a7429bf65e",
+          "name": "limit",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ddce42b0-9b18-4bbf-9341-cf35a11a45a5",
+          "name": "offset",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "6710bb21-dfa5-497a-bc9c-00349036242a",
+      "name": "UserData",
+      "description": "Used for save and list. extends UserInfoData with credentials and disable flag",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 454,
+        "y": 456
+      },
+      "fields": [
+        {
+          "unid": "1b7c31ba-8503-4fcf-a9d3-bea6698f3dcd",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b9247f7f-6f31-4ea8-b041-8b6bed0156f0",
+          "name": "username",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "dd5c4dcf-6ca6-456b-891c-ee4c449d2b3e",
+          "name": "fullname",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a27f239e-e58a-47e2-a5e9-a5f909af75d1",
+          "name": "email",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "5c48cc7a-a5c5-4566-8832-8a66c691d082",
+          "name": "isAdmin",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "8b453d32-bd5a-437a-97e2-b770fe749c21",
+          "name": "main_groupid",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e1e2a775-d944-4a7c-8ccf-65e516da542c",
+          "name": "password",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a6ed93e5-f4a3-4c50-9ea4-1353b9b5db5f",
+          "name": "password_repeat",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "bb8d5628-dc95-4113-8df3-9302eeb579ba",
+          "name": "pin",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "35d0ce98-9e47-47ae-a055-bb48946dce4f",
+          "name": "pin_repeat",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "6e1c5562-403b-4efa-851e-cad35fa3ccd9",
+          "name": "disable",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "3e836b41-732a-4e2f-bd55-01a6078e899f",
+      "name": "UserListResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 100,
+        "y": 350
+      },
+      "fields": [
+        {
+          "unid": "9387a163-c638-4aef-998c-5db94e7bfd11",
+          "name": "list",
+          "type": {
+            "type": "6710bb21-dfa5-497a-bc9c-00349036242a",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "873a7227-46cd-479e-bedc-4819548a8b9c",
+      "name": "UserSavePasswordRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 600
+      },
+      "fields": [
+        {
+          "unid": "41b2c6f5-252e-48b1-8ba6-4384dfc524d6",
+          "name": "password",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "8d7d87c7-da72-427e-a046-34b211ffecbd",
+          "name": "repeatpassword",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "195901d3-64d5-4d64-b288-a0757ac505b2",
+      "name": "UserSavePinRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 800
+      },
+      "fields": [
+        {
+          "unid": "9911fb4e-11da-4134-8f92-c64b89343460",
+          "name": "pin",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a4561bcb-1430-4a75-a2bc-17b98b294f56",
+          "name": "repeatpin",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "8b1cac94-2165-46a9-846d-a75dc8a33847",
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+      "pos": {
+        "x": 542,
+        "y": 21
+      }
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "schemas": [
+    {
+      "unid": "9aadf4df-2b44-44cb-911f-a93c86cf3047",
+      "name": "SightingTourTrackingEntry",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "50922ab8-77ce-4c8d-95f3-2fa90da7e9a4",
+          "name": "unid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "5341a529-d657-43b1-b940-1f220a2eee75",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "eefb16c1-d03e-4e48-b0ea-9c75ca455c09",
+          "name": "location",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f4c0207f-fc4d-4239-95b0-8f648a507aea",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "84d9a55a-a95b-4605-a90e-be7351a048b3",
+      "name": "SightingTourTrackingRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "a5a8de39-ad93-4626-ac5e-570b53554f99",
+          "name": "list",
+          "type": {
+            "type": "9aadf4df-2b44-44cb-911f-a93c86cf3047",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "42c1f8c1-60d6-4486-ae21-8105053fe8cb",
+      "name": "SightingTourTrackingCheckRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 350
+      },
+      "fields": [
+        {
+          "unid": "896cd6f3-aaa8-4556-b7eb-1f2d95db77d4",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "dd3817e3-b750-47f7-b38b-8ae70b275067",
+          "name": "count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "4aa7c624-8b73-41be-a870-59407b088e0e",
+      "name": "SightingTourTrackingCheckResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 600
+      },
+      "fields": [
+        {
+          "unid": "067ab96a-9c75-4a5c-b47b-43c8e1322b53",
+          "name": "isComplete",
+          "type": {
+            "type": "boolean",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "374937ec-b796-4468-b38e-bcddc421e90b",
+          "name": "canDelete",
+          "type": {
+            "type": "boolean",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

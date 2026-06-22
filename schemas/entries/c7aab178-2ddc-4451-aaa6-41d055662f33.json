@@ -1,0 +1,340 @@
+{
+  "schemas": [
+    {
+      "unid": "1fe4453f-9f17-48be-ac44-52740d38bece",
+      "name": "OrganizationEntry",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 1101,
+        "y": 412
+      },
+      "fields": [
+        {
+          "unid": "e029c751-851e-49a5-bdea-2f274a255a93",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "66aa55d7-ff5b-4821-8402-4dc93d9eeb4a",
+          "name": "description",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "b928dbcb-d40c-4624-86bb-f5ce65e23fd4",
+      "name": "OrganizationUserListResponse",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 87,
+        "y": 252
+      },
+      "fields": [
+        {
+          "unid": "a677493b-0b06-4b0d-98d7-6e441abb0c0a",
+          "name": "list",
+          "type": {
+            "type": "1fe4453f-9f17-48be-ac44-52740d38bece",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "fbfb302b-fd63-46ed-9b9e-3e714c7a1fc7",
+      "name": "OrganizationFullEntry",
+      "extend": {
+        "type": "1fe4453f-9f17-48be-ac44-52740d38bece",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 594,
+        "y": 497
+      },
+      "fields": [
+        {
+          "unid": "9ed2a660-16e5-49d2-9c97-690ecc5b79c9",
+          "name": "location",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1e91fea1-583b-4848-bc5e-495575096cd2",
+          "name": "lat",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "51b3bbee-a8e7-4670-938f-f6b2689a6a18",
+          "name": "lon",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "7538516c-2dc0-45b8-85e4-5a9f917fc0bd",
+          "name": "country",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f56763e7-2184-4c44-ba6f-f43e4910f60b",
+          "name": "province",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Provincia of the company seat — feeds AROC datos GENERALES."
+        },
+        {
+          "unid": "971c4e23-7dec-44fd-90e9-8eb0c4bc8828",
+          "name": "island",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Isla — feeds AROC datos GENERALES."
+        },
+        {
+          "unid": "acb79ad5-cbf6-49bc-a926-71b6c75aa244",
+          "name": "port",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Puerto — feeds AROC datos GENERALES."
+        },
+        {
+          "unid": "badc5597-1010-49f2-9051-47dc2cb3a416",
+          "name": "email",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Contact e-mail of the company — AROC datos GENERALES."
+        },
+        {
+          "unid": "a74df49f-a7f8-40a8-ac0c-62b4c12e6ba2",
+          "name": "web",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Public web address of the company — AROC datos GENERALES."
+        },
+        {
+          "unid": "2aae9726-ae7c-4b43-b14b-6346a948e639",
+          "name": "aroc_reference",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "AROC authorization reference (Referencia) — written into datos GENERALES B5."
+        },
+        {
+          "unid": "1e735504-5b9f-4b2e-806f-7609f43e1ab8",
+          "name": "aroc_region",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "AROC region code (CAN/RES/AND)."
+        },
+        {
+          "unid": "b34b5005-cdfd-40f2-92dc-27a935686cf1",
+          "name": "aroc_number",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "AROC authorization number (Número)."
+        },
+        {
+          "unid": "e024b6e5-cc94-42ae-860d-6c76c3e04691",
+          "name": "aroc_authorized_boats",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Number of authorized boats under the AROC reference. 0 = unset."
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "271c055a-8033-4766-97f7-304853bc6503",
+      "name": "OrganizationListResponse",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 87,
+        "y": 382
+      },
+      "fields": [
+        {
+          "unid": "c7b73994-597e-4d40-8223-6b11aec356fc",
+          "name": "list",
+          "type": {
+            "type": "fbfb302b-fd63-46ed-9b9e-3e714c7a1fc7",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "e5b5fa7a-945a-47ff-b91b-c3dad737b564",
+      "name": "OrganizationGetRequest",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 89,
+        "y": 507
+      },
+      "fields": [
+        {
+          "unid": "b8a8ac94-b44e-436a-9612-e27200325ed9",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "70c8e171-dca1-4eba-96d2-5a01c8d1e454",
+      "name": "OrganizationResponse",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 88,
+        "y": 642
+      },
+      "fields": [
+        {
+          "unid": "277ed7ac-ebd7-475e-8453-6097d8272780",
+          "name": "data",
+          "type": {
+            "type": "fbfb302b-fd63-46ed-9b9e-3e714c7a1fc7",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "591c9ece-30b5-4358-98c0-96704afe5eb5",
+      "pos": {
+        "x": 696,
+        "y": 96
+      },
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+    },
+    {
+      "unid": "c7296afb-5147-4fd2-90fb-511b0016b55c",
+      "pos": {
+        "x": 1417,
+        "y": 104
+      },
+      "link_unid": "580ae090-16b8-40d2-8ea1-849c90537a8e"
+    }
+  ]
+}

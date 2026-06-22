@@ -1,0 +1,566 @@
+{
+  "schemas": [
+    {
+      "unid": "97ed86b2-f43b-4437-8b91-ad05f14d8ab1",
+      "name": "ExternalTourSourceEntry",
+      "description": "One row from organization_external_tour_source — provider config for an organization (e.g. FareHarbor pull settings).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 410,
+        "y": 598
+      },
+      "fields": [
+        {
+          "unid": "a7f88b00-89f0-4f0c-a9b6-52e795dfb651",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Row id. 0 on save means insert."
+        },
+        {
+          "unid": "21bf747b-7e73-4f5e-8fa6-9e5869afc2a5",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3da70bfa-2446-4091-be8c-3058e0a02151",
+          "name": "provider",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Provider key, e.g. 'fareharbor'."
+        },
+        {
+          "unid": "9e6b38e4-8894-4403-af14-afa3fffd0935",
+          "name": "base_url",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a35fd2f3-64d8-4b9d-aa8b-3ace131a7f92",
+          "name": "company_shortname",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "FareHarbor URL slug (e.g. 'whalewatching-gomera')."
+        },
+        {
+          "unid": "748aa1f9-d2f4-46c8-90ae-216a69b2d6f2",
+          "name": "item_pks",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Provider item ids to pull (empty array = all items the provider exposes)."
+        },
+        {
+          "unid": "de40e6d1-7ba4-45cf-8c62-19ce8aaf8294",
+          "name": "enabled",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f629605d-4350-4731-8952-c846abe1969f",
+          "name": "last_full_pull_at",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Unix seconds of last successful refresh; 0/undefined = never."
+        },
+        {
+          "unid": "0a3efc6f-3f30-46a2-b1f9-ce937aa02c15",
+          "name": "last_error",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Last failure message (cleared on next successful pull)."
+        }
+      ]
+    },
+    {
+      "unid": "90a07d85-3ff7-46eb-8010-ba6ae2059a8a",
+      "name": "ExternalTourCustomerType",
+      "description": "Per-customer-type pricing breakdown carried inside an ExternalTourEntry.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 500,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "a2deb91b-d9cd-43b9-9372-753472f8834a",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "52d70c41-62b6-4461-8d6e-10d7b60dd00f",
+          "name": "note",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "69a7832b-e99e-4a34-8231-7c44ce17ea09",
+          "name": "capacity",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3c3905fc-cd6c-4ed0-9082-b017501d7548",
+          "name": "price_cents",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "95a2dac8-7644-45cb-ac23-43b4a007dd2b",
+          "name": "currency",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "7f720141-94e7-4df1-95e1-84e578f2dd1c",
+      "name": "ExternalTourEntry",
+      "description": "One row from external_tour — a planned tour slot pulled from an external booking provider.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 900,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "27900fba-fc83-4af0-9ddd-f5fd34e8a760",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "8455bee5-1c63-40d4-a4bf-afff35fe53f5",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e3a166b8-9fff-4a90-9671-86602f007e07",
+          "name": "source_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "efbd19fc-120b-44ab-a33b-14098012dea0",
+          "name": "provider",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "5af97e6d-ae64-4511-9388-e829877b91ed",
+          "name": "external_id",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "298b37cd-278d-48f2-9f58-1cc39528fb03",
+          "name": "item_pk",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4f4a48c8-5c00-4f55-bb63-e24e36cacb54",
+          "name": "item_name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "65b8b373-9ba7-4438-b500-34fc61dfb343",
+          "name": "start_at",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Local wall-clock start time as unix seconds."
+        },
+        {
+          "unid": "dd9b1207-6bfb-4b2b-b9f8-0a2ad326f9ee",
+          "name": "start_at_utc",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ee03d480-3355-4484-ac60-ce095b157eb1",
+          "name": "end_at",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ea1183e7-6cad-4adf-9636-aab9007f9465",
+          "name": "duration_text",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1b240b92-eac6-48bf-a0c9-2fc0eca63343",
+          "name": "meeting_lat",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "279b5ee8-da52-4c54-99e4-8c3e9dc0a41a",
+          "name": "meeting_lon",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f0ec10c1-150a-483f-8847-7253a03cca74",
+          "name": "meeting_name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1b2e5e02-d710-43c2-8837-35f9e5018393",
+          "name": "capacity_bookable",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "6c63ba28-d7b6-48f6-ad88-760d83c5d536",
+          "name": "capacity_reserved",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "359ab1c9-1171-482a-8a51-be866e682430",
+          "name": "is_bookable",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c809186a-c6df-4999-8d90-2b4da739ffe7",
+          "name": "is_sold_out",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "19de0a3a-d4d8-40e1-ba61-ccc216a15267",
+          "name": "customer_types",
+          "type": {
+            "type": "90a07d85-3ff7-46eb-8010-ba6ae2059a8a",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ad5beda3-4630-4c77-8346-99f2784850b3",
+          "name": "currency",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "cf405aa6-5ca8-4e89-8c82-526daaa8024a",
+          "name": "last_seen_at",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ea04243d-224d-43ff-b3ef-ba9d467f28fd",
+          "name": "last_updated_at",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "f605375c-3b4c-4e20-b208-0dbd30b1d9f4",
+      "name": "ExternalTourSourceListResponse",
+      "description": "List of source-config rows. Extends DefaultReturn for status code envelope.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 30,
+        "y": 120
+      },
+      "fields": [
+        {
+          "unid": "ce0b4dc4-7a16-4e2b-9ec3-908565ca3fc1",
+          "name": "list",
+          "type": {
+            "type": "97ed86b2-f43b-4437-8b91-ad05f14d8ab1",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "b5ac4ee3-f7d7-450f-9c2a-fc084093a068",
+      "name": "ExternalTourSourceDeleteRequest",
+      "description": "Delete one source-config by id.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 30,
+        "y": 257
+      },
+      "fields": [
+        {
+          "unid": "8b05d881-8f81-451a-b4dc-919e455be221",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "09d5d6c2-a7a4-4a15-932b-5ccb10179cd4",
+      "name": "ExternalTourListRequest",
+      "description": "Filter the planned tour slots by org + UTC window (inclusive).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 32,
+        "y": 487
+      },
+      "fields": [
+        {
+          "unid": "18ee857d-0463-4bc7-9fae-1a1d7aa968fa",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "When omitted, returns slots for every org the caller can see."
+        },
+        {
+          "unid": "7dec83c5-d085-4e37-9b9f-acbc926d17fa",
+          "name": "from_utc",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Lower-bound start_at_utc in unix seconds (inclusive); default = now."
+        },
+        {
+          "unid": "8e9b4883-8ef5-489b-9ce3-85c5a46a4fca",
+          "name": "to_utc",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Upper-bound start_at_utc in unix seconds (inclusive); default = now+60d."
+        }
+      ]
+    },
+    {
+      "unid": "9b58f95a-0df4-4c36-b4c2-3ca451c9fbf5",
+      "name": "ExternalTourListResponse",
+      "description": "Planned tour slots within the requested window.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 29,
+        "y": 371
+      },
+      "fields": [
+        {
+          "unid": "4ca0a864-1509-422e-a26b-ca22a47c5b40",
+          "name": "list",
+          "type": {
+            "type": "7f720141-94e7-4df1-95e1-84e578f2dd1c",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}
