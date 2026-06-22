@@ -1,0 +1,131 @@
+{
+  "schemas": [
+    {
+      "unid": "8ff30d4d-db6c-4a09-96b9-100bf2c2e302",
+      "name": "EncounterCategorieEntry",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 842,
+        "y": 227
+      },
+      "fields": [
+        {
+          "unid": "cafac58f-3198-472f-8cc4-51d3b06f9c7e",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "0a89ee44-0b80-48ab-9b9a-8aa9e6b10da7",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a5ff21dd-d3da-4239-9c1d-26e8dbea0828",
+          "name": "description",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4885059e-1500-4107-abfe-ec12daa4f212",
+          "name": "isdeleted",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "ed3fa7e3-ec8c-4fc1-a47c-012ba45e1217",
+      "name": "EncounterCategoriesResponse",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 202,
+        "y": 83
+      },
+      "fields": [
+        {
+          "unid": "e6ca331e-571e-43f6-a55a-56840bdc18b1",
+          "name": "list",
+          "type": {
+            "type": "8ff30d4d-db6c-4a09-96b9-100bf2c2e302",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    },
+    {
+      "unid": "ebb2363d-b8d9-46ac-ba30-f3e956a99607",
+      "name": "EncounterCategorieDeleteRequest",
+      "description": "Soft-delete one encounter category by id.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 500
+      },
+      "fields": [
+        {
+          "unid": "bfd4a4b0-a45d-4885-9e6c-799247e2819c",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "b9fa77ae-e5ed-400f-b1b1-1156319a85b5",
+      "pos": {
+        "x": 912,
+        "y": 42
+      },
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+    }
+  ]
+}

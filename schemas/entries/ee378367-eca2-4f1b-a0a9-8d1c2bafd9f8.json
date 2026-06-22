@@ -1,0 +1,605 @@
+{
+  "schemas": [
+    {
+      "unid": "605e306e-dfb5-4dc7-a0e2-f1efd1148584",
+      "name": "ToursFilter",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 695,
+        "y": 28
+      },
+      "fields": [
+        {
+          "unid": "05f48b57-0c97-439f-bf57-eacf8784bcfe",
+          "name": "year",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1c71e225-7275-4c1e-b74c-42fbd1ebde7e",
+          "name": "limit",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "797aaf40-5b96-4606-8cfb-583e5a868c5f",
+          "name": "offset",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "54a6189d-75f6-4ddc-8cb9-9b7b948b8931",
+          "name": "order",
+          "type": {
+            "type": "90140e0a-1a87-47aa-99ea-b89dca1d894f",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Per-column sort directions (id, date, tour_start, tour_end, created/updated, count_sightings, count_trackings). Empty string means do-not-sort."
+        },
+        {
+          "unid": "399eb263-45a3-4f0d-a7c2-c5fa8e693ac3",
+          "name": "period_from",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "ISO date YYYY-MM-DD; lower bound for tour date (inclusive)"
+        },
+        {
+          "unid": "86bf79e5-0dd1-4ae1-823f-7192734ede99",
+          "name": "period_to",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "ISO date YYYY-MM-DD; upper bound for tour date (inclusive)"
+        },
+        {
+          "unid": "f2b1059b-3ee1-4d38-8fa1-840217c2585d",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Filter by vehicle id"
+        },
+        {
+          "unid": "61694fb0-d720-4b73-97f1-a160d0e05f25",
+          "name": "vehicle_driver_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Filter by vehicle driver id"
+        },
+        {
+          "unid": "2308214c-9384-4c1b-9f01-47bf0c744732",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Filter by organization id (only effective when current user has access)"
+        },
+        {
+          "unid": "f79bc8e9-68d2-4d32-b072-737e88a25c2c",
+          "name": "search",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Free-text search applied as LIKE on record_by_persons + tour_fid"
+        },
+        {
+          "unid": "0a03a68d-1838-4b38-9187-929cfc187f8a",
+          "name": "only_without_tracks",
+          "type": {
+            "type": "boolean",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "When true, return only tours that have zero rows in sighting_tour_tracking"
+        }
+      ]
+    },
+    {
+      "unid": "9df45264-31b6-48ca-b84b-7eb5654dc7f7",
+      "name": "TourEntry",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 809,
+        "y": 599
+      },
+      "fields": [
+        {
+          "unid": "617dddc6-3ca6-44f4-9a47-cb588929a002",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "532c43f3-5fde-4d2c-a310-9f3c38b5945e",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c992f0c1-b57d-40ce-a589-2abc4ab85eea",
+          "name": "device_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a7cec0e6-9b82-4e66-9d84-020d936d41f4",
+          "name": "creater_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1b9b457f-38a1-4f63-8f98-cd89d53611ba",
+          "name": "create_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a405e640-30fb-4ed6-9eae-1d13df07fbed",
+          "name": "update_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f386eade-a05f-4a41-8435-52ff15b09e65",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "00b021b9-40a0-48bc-a46a-e52ad8c27b96",
+          "name": "vehicle_driver_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f06d804b-3cef-46b0-b53e-916f31ac1e9b",
+          "name": "beaufort_wind",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b7da50b4-2c8b-42c8-8b07-86d06da84ea2",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "12b9fb46-9296-4285-85a4-690b2645eda9",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "43401e19-7f44-447f-b070-94c766caf759",
+          "name": "tour_end",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "8caff12e-37a3-4d88-8ab5-be296cca004a",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b19bc970-d7d3-498a-9511-1ab3f7ed8eec",
+          "name": "status",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "335e1ecd-abc6-4711-bf20-a7e5a5eee295",
+          "name": "record_by_persons",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "575a8c64-a969-4568-a479-b4d319f8ca4e",
+          "name": "count_sightings",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "357e1552-d280-4294-b08d-6ce0586de10a",
+          "name": "count_trackings",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "98b86f4d-e703-4c3e-996e-b43389633a14",
+      "name": "ToursDevice",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 540,
+        "y": 901
+      },
+      "fields": [
+        {
+          "unid": "a83670a7-46ec-4f7a-b32b-74e98a3ce7d8",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "6b83d608-5480-45db-a0e9-00d15aa6a57e",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "35a1f0be-0967-4783-b5f1-265a52b6d248",
+      "name": "ToursCreater",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 220,
+        "y": 734
+      },
+      "fields": [
+        {
+          "unid": "0598aec3-8e12-4ef5-ba56-2f3827678965",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "5b047c80-b452-4318-986f-a4d60c488ed1",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "6000de9d-fefb-47eb-8ecf-aff0fa8aab3e",
+      "name": "ToursListResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 92,
+        "y": 290
+      },
+      "fields": [
+        {
+          "unid": "abb66b63-b70d-4923-9a45-d6fff53119ae",
+          "name": "filter",
+          "type": {
+            "type": "605e306e-dfb5-4dc7-a0e2-f1efd1148584",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2d1cc7a7-06b0-45bb-9187-28ec06ffe29a",
+          "name": "offset",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1963cb6f-9078-45f0-8920-10b153052e0b",
+          "name": "count",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d2f706f7-90e2-4d5a-8e8c-24f498bb4c80",
+          "name": "list",
+          "type": {
+            "type": "9df45264-31b6-48ca-b84b-7eb5654dc7f7",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e062f19e-e7aa-4419-aeff-d3928de811fe",
+          "name": "devices",
+          "type": {
+            "type": "98b86f4d-e703-4c3e-996e-b43389633a14",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "9e754107-e9a5-49a6-bcef-b2db7cf83967",
+          "name": "creaters",
+          "type": {
+            "type": "35a1f0be-0967-4783-b5f1-265a52b6d248",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "90140e0a-1a87-47aa-99ea-b89dca1d894f",
+      "name": "ToursFilterOrder",
+      "description": "Sort directions per orderable column. Empty string means 'do not sort by this column'.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1181,
+        "y": 466
+      },
+      "fields": [
+        {
+          "unid": "11f7e7b0-78da-4ae0-8dd7-0d6743b729be",
+          "name": "id",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "583c3715-6356-4e14-b9a4-5ee545552c5b",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e0b4ae61-effb-4e44-b5af-0ebb0b0b984c",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "acb02988-6831-4568-88bb-28eec2840ca8",
+          "name": "tour_end",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "272a506d-55f8-4cfd-8b07-0ca563133314",
+          "name": "create_datetime",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2776289b-56ed-4c82-9c95-f36f5c407479",
+          "name": "update_datetime",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "32058cbb-a1a2-4a85-a534-c9a70eff54c8",
+          "name": "count_sightings",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "460b8a05-57a4-4101-a5e8-c5360b6877fd",
+          "name": "count_trackings",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "81a3e291-8c81-4cb9-9a54-70fe4d917440",
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+      "pos": {
+        "x": 100,
+        "y": 50
+      }
+    }
+  ]
+}

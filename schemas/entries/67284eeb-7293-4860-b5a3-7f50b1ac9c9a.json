@@ -1,0 +1,147 @@
+{
+  "schemas": [
+    {
+      "unid": "62d495d2-7ec0-4824-988c-2dc9591b0339",
+      "name": "SightingFishingVesselEntry",
+      "description": "One fishing vessel that was active in the 25 km buffer of a sighting on the sighting day, as reported by GFW. Hours = apparent fishing hours of THIS vessel inside the buffer that day.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "0405dc14-ca1e-455f-9122-0d5ff0234ff6",
+          "name": "sighting_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b8e52f0f-a4fa-4d86-af70-4053d71c021a",
+          "name": "vessel_id",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "GFW vessel id (stable across reports). Use for /vessels/{id} lookups."
+        },
+        {
+          "unid": "47100543-ea87-4841-a764-d6d7875b229a",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Vessel name from GFW /vessels/{id} enrichment; empty when not yet fetched."
+        },
+        {
+          "unid": "e1a80a96-6159-4bd6-8d9a-9244ad670d8e",
+          "name": "mmsi",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "69b85411-b6eb-4cd8-bf0d-e252ccf160d1",
+          "name": "flag",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "ISO-3 country code (ESP, MAR, JPN, ...)."
+        },
+        {
+          "unid": "59fa754e-df89-446d-a623-502503895afa",
+          "name": "gear_type",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "GFW gear-type code: trawlers, longliners, purse_seines, drifting_longlines, ..."
+        },
+        {
+          "unid": "c6c47603-4915-4778-82c2-a83f43471357",
+          "name": "hours",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Apparent fishing hours this vessel logged inside the 25 km buffer on the sighting day."
+        }
+      ]
+    },
+    {
+      "unid": "8631a6a1-2ef5-4ee0-be71-5244a0e4af89",
+      "name": "SightingFishingVesselListRequest",
+      "description": "Bulk-fetch fishing vessels for a set of sighting ids — same shape as SightingMovementListRequest so the frontend pattern can be reused.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "d5f7a8ca-f693-49c9-829a-b79debd87e1d",
+          "name": "sighting_ids",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "92f3b4d0-37f4-4641-96b3-490e90eb9770",
+      "name": "SightingFishingVesselListResponse",
+      "description": "Fishing vessels grouped by sighting_id. Sightings with no vessels (no fishing activity / no GFW data / sighting not yet processed) are absent from the list.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 1100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "2162a354-dee4-41f1-8c8b-b095f7342953",
+          "name": "list",
+          "type": {
+            "type": "62d495d2-7ec0-4824-988c-2dc9591b0339",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

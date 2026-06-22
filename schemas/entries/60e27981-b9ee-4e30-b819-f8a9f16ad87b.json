@@ -1,0 +1,51 @@
+{
+  "schemas": [
+    {
+      "unid": "a9023e90-d063-474f-87c0-a92137d6bdae",
+      "name": "InfoResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "0992614e-ec26-4a5a-a810-3245285b6c5f",
+          "name": "version_api_login",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f79ad1d0-e1b7-4818-a470-317a946fa0b9",
+          "name": "version_api_sync",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "02317296-c5e4-467d-9b04-a142d2b5513d",
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+      "pos": {
+        "x": 808,
+        "y": 253
+      }
+    }
+  ]
+}

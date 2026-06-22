@@ -1,0 +1,394 @@
+{
+  "schemas": [
+    {
+      "unid": "9a088f3c-9a19-46f3-898e-1fd60a9fc0b4",
+      "name": "TypeSighting",
+      "description": "Common sighting properties shared between web and mobile request/response shapes",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 200,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "5576aff9-dd9f-4f53-be71-44d642f05ee0",
+          "name": "unid",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "9fb6eb8f-e98d-4316-87fa-b2bcc4722821",
+          "name": "creater_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "152f67a6-2abb-45b5-b511-79813739d750",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a8f1518a-3adc-4d58-a646-9209ed7e9693",
+          "name": "vehicle_driver_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4a96d6ac-bca6-4b16-9d29-b6f9f85d195e",
+          "name": "beaufort_wind",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1e5ae7f0-d401-4dce-b6e2-adf6b1fa807c",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4b78675f-23d7-41ff-9738-9c7cb3e966bd",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "858b012c-a559-418f-93ef-1cc1eef64d07",
+          "name": "tour_end",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b3036624-e876-418e-a7a1-b87b23f7ccd1",
+          "name": "duration_from",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f50b04a8-c5c9-4b10-a4a9-41d08359f3ec",
+          "name": "duration_until",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "15e0c033-6da4-4fcd-a446-4b51b1a7e752",
+          "name": "location_begin",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "23ab1228-a90c-48f8-8e6e-1f5f1d0efb69",
+          "name": "location_end",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c5414641-c469-476b-8e8a-44f4256fa92f",
+          "name": "photo_taken",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c22bee58-72cf-4f5b-879e-7acbb7cb971d",
+          "name": "distance_coast",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b13175b5-e017-4d57-a8e9-b4df94758400",
+          "name": "distance_coast_estimation_gps",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "0051cdfe-f164-4376-a400-ac5f8da8a736",
+          "name": "species_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d8ac0df7-6550-4b05-b8ef-c319c6b33815",
+          "name": "species_count",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4fad9580-af9e-4a74-a34e-2a19e6f97f61",
+          "name": "juveniles",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "66bb3f76-fe94-4cb8-bae3-08118a9dda32",
+          "name": "calves",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "c8d93d7f-70a2-4eb2-a208-020c4f6eaabe",
+          "name": "newborns",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e3d8041e-5a4f-47e1-9ace-ac3026b35f98",
+          "name": "behaviours",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b0940897-bc7b-4f54-ac6b-a31b26484785",
+          "name": "subgroups",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "7394c8b6-194f-4337-bfb6-0763e9ce84ea",
+          "name": "group_structure_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "8a237a15-7628-4ed1-ab13-a608abdd65b3",
+          "name": "reaction_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2b7b9feb-b59e-4113-a3b4-9fb6a8baffa0",
+          "name": "freq_behaviour",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e22a3520-a9d6-43e9-b999-a0b7651e37a4",
+          "name": "recognizable_animals",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3ba2de7f-62f3-4a4d-b4c6-fcfddd4671a4",
+          "name": "other_species",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "851f3beb-d21f-472d-8068-c5191fbc2e4b",
+          "name": "other",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "86aeb5b5-af16-4f79-aeb7-f5019bb7936d",
+          "name": "other_vehicle",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "169fa76b-2795-4ca5-b099-0db27d679d6d",
+          "name": "note",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "06947c04-87b7-4b50-b174-f6fa1c8cd4b2",
+          "name": "sightingType",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "850a32f8-b9db-4794-baac-ae26032ede84",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Sent by the mobile client (computed client-side); the server recomputes via UtilTourFid.createTourFid and ignores this value, but Vts strict mode requires the field to be declared."
+        },
+        {
+          "unid": "d37a073b-b48f-4a6c-924e-ade7f79947fa",
+          "name": "image",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Local image filename on the mobile client. Sent by the app, ignored by the server (image upload happens via /mobile/sighting/image/save)."
+        },
+        {
+          "unid": "4a364078-2132-44c1-98aa-0f5cb4d14a71",
+          "name": "beaufort_wind_old",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Legacy numeric beaufort field — mobile always sends 0 to \"reset\" the deprecated column. Server ignores it."
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

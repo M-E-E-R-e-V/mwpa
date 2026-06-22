@@ -1,0 +1,97 @@
+{
+  "schemas": [
+    {
+      "unid": "0f84b73c-93bf-42e7-af82-d78575c3abb7",
+      "name": "BackendConfigOptions",
+      "extend": {
+        "type": "cf3c56f2-a0a5-42bb-812d-cec317d21f18",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 126,
+        "y": 84
+      },
+      "fields": [
+        {
+          "unid": "bb742d8b-3f36-4f77-aaa2-2abcaa9daea7",
+          "name": "datadir",
+          "type": {
+            "type": "or",
+            "optional": false,
+            "array": false,
+            "types": [
+              {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              {
+                "type": "null",
+                "optional": false,
+                "array": false,
+                "types": []
+              }
+            ]
+          },
+          "description": ""
+        }
+      ],
+      "description": ""
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "3fe67b7d-4b30-44cf-9db1-92670ab25c46",
+      "pos": {
+        "x": 276,
+        "y": 458
+      },
+      "link_unid": "e39f54d3-0add-45fc-96b1-2c7815c6f679"
+    },
+    {
+      "unid": "59e86243-cad6-41bb-b98e-7f6351038ef1",
+      "pos": {
+        "x": 309,
+        "y": 280
+      },
+      "link_unid": "cf3c56f2-a0a5-42bb-812d-cec317d21f18"
+    },
+    {
+      "unid": "5183939d-9ba1-4743-996f-afe020e5307a",
+      "pos": {
+        "x": 760,
+        "y": 292
+      },
+      "link_unid": "5c2e4fd7-62ed-46be-afe6-2a9cb05fe3a2"
+    },
+    {
+      "unid": "72febad6-8aef-4189-84fa-ca550ecc42bf",
+      "pos": {
+        "x": 680,
+        "y": 463
+      },
+      "link_unid": "dbcb39be-f755-4dbf-b147-e58a58b7903f"
+    },
+    {
+      "unid": "3b5a9f5d-520d-467f-ae62-aaa4ec9a8493",
+      "pos": {
+        "x": 680,
+        "y": 204
+      },
+      "link_unid": "3ec71c52-2bda-42d6-be26-a499170b09fd"
+    },
+    {
+      "unid": "2131fb9e-8f2d-43ef-aba1-3b6659eff463",
+      "pos": {
+        "x": 641,
+        "y": 695
+      },
+      "link_unid": "460bc080-4cb8-4b4e-a185-67ef02eb6764"
+    }
+  ]
+}

@@ -1,0 +1,856 @@
+{
+  "schemas": [
+    {
+      "unid": "2a7642b3-8087-46d2-9076-2052a8aca022",
+      "name": "EarthquakeEntry",
+      "description": "One imported earthquake event (USGS or other source)",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 454,
+        "y": 40
+      },
+      "fields": [
+        {
+          "unid": "fce73019-cc81-47a7-b237-bfa492818427",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ec47ca57-ccb1-448a-8e79-19377d3f6bf4",
+          "name": "source",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Provider tag — 'usgs' for now; future expansion: 'emsc'"
+        },
+        {
+          "unid": "0c7f4fb2-8b83-4577-a1a9-73a5e5bee00f",
+          "name": "source_event_id",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Stable provider ID, e.g. USGS 'us7000xyz' — used for upsert"
+        },
+        {
+          "unid": "b8d383eb-b599-4b5d-9661-96944a5a6a08",
+          "name": "event_time_ms",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Event origin time (ms epoch, UTC)"
+        },
+        {
+          "unid": "fd685daa-604b-4d82-a086-78cb9439ff65",
+          "name": "lat",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "facb3130-3170-4911-8443-6b3a2f713e1b",
+          "name": "lon",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b3303c44-2df2-46af-846f-3ce39713784b",
+          "name": "depth_km",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d7c0c397-db61-463d-9b57-58ef6ccf4950",
+          "name": "magnitude",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "40c22c56-e48e-49a2-a890-6fe0b4f6efc2",
+          "name": "magnitude_type",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "'ml', 'mw', 'mb', etc."
+        },
+        {
+          "unid": "25c704f1-3f7a-475b-9b81-9375a94f1744",
+          "name": "place",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Free-form locality from provider, e.g. \"12 km SW of Adeje, Spain\""
+        },
+        {
+          "unid": "ecd3f7d4-c675-4e0b-8a7f-93e44d81fe34",
+          "name": "url",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Provider's detail page for the event"
+        }
+      ]
+    },
+    {
+      "unid": "b75de24d-9a97-4bf6-8830-b80221d604b5",
+      "name": "EarthquakeFilter",
+      "description": "Paginated earthquake list filter",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 473,
+        "y": 655
+      },
+      "fields": [
+        {
+          "unid": "9ff66224-b21d-419b-b0a9-66b29f11e1c6",
+          "name": "period_from",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e70661d2-9285-4c93-b4dd-e79b005c8f13",
+          "name": "period_to",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "805eecd7-5f73-42a9-bd63-be20cc127e4f",
+          "name": "min_magnitude",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "76f872cc-b4dd-4718-88f7-3fec192f988a",
+          "name": "limit",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "8c1ce952-6ebd-4eef-9db1-6a0de1d3be84",
+          "name": "offset",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "6d3660ff-9095-43c0-8384-caa9c78961d9",
+      "name": "EarthquakeListResponse",
+      "description": "Earthquake list response",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 40,
+        "y": 40
+      },
+      "fields": [
+        {
+          "unid": "dfb0324d-a643-4927-bb44-8ede09940888",
+          "name": "filter",
+          "type": {
+            "type": "b75de24d-9a97-4bf6-8830-b80221d604b5",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3100c6a9-dacf-44c0-8633-8e5c04d0923f",
+          "name": "count",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "6ddfab56-a54d-441f-a0c2-103248b9353e",
+          "name": "list",
+          "type": {
+            "type": "2a7642b3-8087-46d2-9076-2052a8aca022",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "5b30aa0a-5fc2-49cb-93e7-72cf4b3967a5",
+      "name": "EarthquakeRecorrelateResponse",
+      "description": "Result of a manual sighting_seismic recompute (admin)",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 24,
+        "y": 591
+      },
+      "fields": [
+        {
+          "unid": "d4b199c6-a006-4c60-928e-47068daea767",
+          "name": "events",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Earthquakes processed"
+        },
+        {
+          "unid": "d2add171-2c80-4753-be47-ec9ca05079b7",
+          "name": "correlations",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "sighting_seismic rows written"
+        }
+      ]
+    },
+    {
+      "unid": "de7d78e1-2186-4732-b261-476827c4bcd6",
+      "name": "SightingSeismicEntry",
+      "description": "Per-sighting correlation to a nearby earthquake",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 754,
+        "y": 45
+      },
+      "fields": [
+        {
+          "unid": "97fdd91c-0ce0-4292-9067-76767c3b31a1",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "100366da-6b75-41d9-bdb3-8cc3f197eb39",
+          "name": "sighting_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "77332a8e-e2f8-43ca-b278-4559bebe1bc9",
+          "name": "earthquake_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "65183457-0513-497b-b718-55c28e9a968c",
+          "name": "distance_km",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "12b38db2-f228-40ce-80bf-124e3e177a27",
+          "name": "hours_offset",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Hours between earthquake event_time and sighting tour_start (signed: positive = earthquake before sighting)"
+        },
+        {
+          "unid": "5744d139-d39a-41df-85cb-1da41e280eef",
+          "name": "magnitude",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Snapshot of earthquake.magnitude at correlation time (denormalised for fast lookups)"
+        }
+      ]
+    },
+    {
+      "unid": "51b2ae05-4013-4898-95ac-cca8ef92f9db",
+      "name": "EarthquakeImpactRequest",
+      "description": "Request shape for the impact-analysis endpoint — either pin an earthquake_id (from the table) or a date (all events that day); window_days picks the ±N-day correlation slice (1/3/7/14)",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "87660354-49db-42f1-ab38-3a143e1f0792",
+          "name": "earthquake_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e7ee1655-d9f9-4ddb-9618-9278be86bbcd",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "YYYY-MM-DD UTC; used when earthquake_id is not set — all earthquakes on that day are aggregated"
+        },
+        {
+          "unid": "cfb3149e-2d8a-4675-bcfb-85afa1c9fa70",
+          "name": "window_days",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "±N-day slice of the stored ±14d correlations — UI exposes 1 / 3 / 7 / 14"
+        },
+        {
+          "unid": "ee845292-91f4-479d-ae2d-b20a424abf86",
+          "name": "earthquake_ids",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": "Set of earthquake_ids — used when the user has filtered the events list and wants the impact across all of them. Wins over earthquake_id and date when supplied."
+        }
+      ]
+    },
+    {
+      "unid": "2213ceb4-ad00-471c-bcf3-1abe6dc379e1",
+      "name": "EarthquakeImpactBucket",
+      "description": "One bucket label + count, reused across all 4 analytics histograms",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "693def69-0d1e-41cf-bb13-41ce125fba2f",
+          "name": "key",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "6bbdbf00-c26d-41b5-85c5-b097b7d7a2fc",
+          "name": "count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "97916b30-20e8-4301-8411-790f46ff6565",
+      "name": "EarthquakeImpactSighting",
+      "description": "One affected sighting × earthquake row — enriched with species/behaviour/encounter names so the frontend can render directly",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "e3700b9a-d8a2-442e-bb65-ff6625cf6e3b",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "0f928147-30db-410c-93bb-75f5c3bbb81d",
+          "name": "earthquake_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b7d1e060-fe00-4edf-a261-f97be6554bc3",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e860263c-7938-429a-8673-954c63ddf3cd",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4af92b80-266e-4922-a4f3-d8daf2168625",
+          "name": "lat",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f4ccf868-3d57-4459-b6dd-5253dc6ce930",
+          "name": "lon",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b1c84dd2-19a1-41a6-af0e-7ac2d3014d31",
+          "name": "species_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "7fa8cd79-254a-4922-84ac-a96ac37d2731",
+          "name": "species_name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ab3d50a8-2445-43e5-a54e-1b47afb4d723",
+          "name": "behaviour_label",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Comma-separated behaviour-state names resolved from sighting.behaviours (which stores comma-separated IDs)"
+        },
+        {
+          "unid": "4d7b19db-fb64-4029-8dbd-99599ae28eb0",
+          "name": "encounter_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "cbd912f8-4b35-4597-acf5-e46727886b88",
+          "name": "encounter_name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "357216c8-a345-42d8-b948-0afc0c089a08",
+          "name": "distance_km",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "9b9b7774-6bf4-41c0-afa0-9cc195ee1ec8",
+          "name": "hours_offset",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Signed hours: positive = earthquake before sighting"
+        },
+        {
+          "unid": "0de2c300-e8b8-4eba-b634-4bab430de9b8",
+          "name": "magnitude",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "3bbdfc60-df8b-4543-8085-9bbaf70275a7",
+      "name": "EarthquakeImpactTrackSegment",
+      "description": "One movement-track polyline segment — shape mirrors what the frontend MovementTracksLayer.setMovements() expects",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "404c3d47-8cad-46f6-9392-fa55e10b1a11",
+          "name": "start_lat",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b92c2ae3-8687-48f4-9456-1e7cca148211",
+          "name": "start_lon",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2bbdcddd-0e32-4ea7-a2f5-d007d7035ce6",
+          "name": "end_lat",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "af6eda90-05c5-4a9f-b9ef-ccf06de4aa57",
+          "name": "end_lon",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "673719bb-8ce0-4061-a683-74915f1d6f7c",
+          "name": "quality",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "\"good\" or \"bad\" — MovementTracksLayer renders bad segments dashed"
+        }
+      ]
+    },
+    {
+      "unid": "a0aa752d-dd19-4082-af89-b9fd13a241e6",
+      "name": "EarthquakeImpactTrack",
+      "description": "Movement tracks for one affected sighting (zero or more good/bad segments)",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "a74c245c-f3a6-4a22-878b-4bd786d18745",
+          "name": "sighting_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "964d1669-73bc-4f43-9430-81523aaf85ea",
+          "name": "tracks",
+          "type": {
+            "type": "3bbdfc60-df8b-4543-8085-9bbaf70275a7",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "4842a911-9701-424e-9bd3-274cb751e4ae",
+      "name": "EarthquakeImpactAnalytics",
+      "description": "Aggregated analytics for the Auswertung card — by species / behaviour / encounter / signed hours-offset",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "36773077-3549-4c11-bcfd-d9dafbf11819",
+          "name": "by_species",
+          "type": {
+            "type": "2213ceb4-ad00-471c-bcf3-1abe6dc379e1",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2b7459ec-100a-4f70-af3d-0efccaa0faa7",
+          "name": "by_behaviour",
+          "type": {
+            "type": "2213ceb4-ad00-471c-bcf3-1abe6dc379e1",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4152ff7d-3209-47be-9fb0-11874a0019f0",
+          "name": "by_encounter",
+          "type": {
+            "type": "2213ceb4-ad00-471c-bcf3-1abe6dc379e1",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b0acd490-6ee4-4f23-aeb6-c964d4976f55",
+          "name": "hours_offset_hist",
+          "type": {
+            "type": "2213ceb4-ad00-471c-bcf3-1abe6dc379e1",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Signed hours-offset buckets (e.g. \"-72..-48\", \"-48..-24\", \"-24..0\", \"0..24\", ...)"
+        }
+      ]
+    },
+    {
+      "unid": "f4b18667-94ad-428d-b369-7e1c8596599f",
+      "name": "EarthquakeImpactResponse",
+      "description": "Result of /json/earthquake/impact — focus earthquakes + affected sightings + their movement tracks + analytics buckets",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "020c22d5-c982-46cd-babc-613ece576bfb",
+          "name": "earthquakes",
+          "type": {
+            "type": "2a7642b3-8087-46d2-9076-2052a8aca022",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "0e8f29d2-2650-4acb-8527-85a122d0f72b",
+          "name": "sightings",
+          "type": {
+            "type": "97916b30-20e8-4301-8411-790f46ff6565",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "9db9fdf3-f863-4aa2-a000-b0de1be142d1",
+          "name": "tracks",
+          "type": {
+            "type": "a0aa752d-dd19-4082-af89-b9fd13a241e6",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "15f7a904-1f1b-47c0-bda7-3a915ee44225",
+          "name": "analytics",
+          "type": {
+            "type": "4842a911-9701-424e-9bd3-274cb751e4ae",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

@@ -1,0 +1,51 @@
+{
+  "schemas": [
+    {
+      "unid": "7c359819-ae09-4a21-af52-d9951adb4d56",
+      "name": "MobileLoginRequest",
+      "description": "Extends LoginRequest (email, password) with mobile-specific deviceIdentity and deviceDescription",
+      "extend": {
+        "type": "9e320aad-4f80-4dd0-8e55-0658b3144681"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "bb23230e-f82a-4c09-9e0a-7064ba5f1138",
+          "name": "deviceIdentity",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "370629f8-74ae-4750-8afc-e000fc7407db",
+          "name": "deviceDescription",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "7cf8178b-566b-4b67-a147-9ec00571748d",
+      "link_unid": "9e320aad-4f80-4dd0-8e55-0658b3144681",
+      "pos": {
+        "x": 600,
+        "y": 62
+      }
+    }
+  ]
+}

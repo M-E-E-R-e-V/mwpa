@@ -1,0 +1,79 @@
+{
+  "schemas": [
+    {
+      "unid": "b149303e-442d-4f5e-b7d1-783e6772c7d8",
+      "name": "MapCacheRequest",
+      "extend": {
+        "type": "object",
+        "options": {
+          "not_export": false,
+          "ignore_additional_items": false
+        }
+      },
+      "pos": {
+        "x": 137,
+        "y": 64
+      },
+      "fields": [
+        {
+          "unid": "a8664bdd-ee7e-478a-ac26-36481b9833ae",
+          "name": "server",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Server name for request"
+        },
+        {
+          "unid": "88ddba32-ec0b-40b3-9122-7a7ec3b2aa60",
+          "name": "z",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b802129b-d806-4ba5-85c9-47fa7a85358a",
+          "name": "x",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "eab91150-4d73-4a86-83fd-dd51b0c80613",
+          "name": "y",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3fcaed28-9ba1-480d-9a1f-2c3e949711b3",
+          "name": "fileformat",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ],
+      "description": "Path variables for map cache call"
+    }
+  ],
+  "enums": [],
+  "links": []
+}

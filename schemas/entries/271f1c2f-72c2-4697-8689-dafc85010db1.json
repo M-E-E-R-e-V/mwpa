@@ -1,0 +1,22 @@
+{
+  "schemas": [],
+  "enums": [
+    {
+      "unid": "acdd01d5-cc0c-4a87-8c0b-203620c84c20",
+      "name": "ENV_MWPA",
+      "pos": {
+        "x": 197,
+        "y": 100
+      },
+      "values": [
+        {
+          "unid": "cfde2f66-d792-42af-b342-6dab5ec42867",
+          "name": "MWPA_DATA_DIR",
+          "value": "MPWA_DATA_DIR"
+        }
+      ],
+      "description": ""
+    }
+  ],
+  "links": []
+}

@@ -1,0 +1,156 @@
+{
+  "schemas": [
+    {
+      "unid": "848bcd0c-d948-4895-9c4e-78b4b24ce81f",
+      "name": "MobileBehaviouralStatesResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "367a42ae-08a6-4c73-8b7f-83946ad5ea2e",
+          "name": "list",
+          "type": {
+            "type": "b0b1973d-4644-4580-b8d3-25e8a802ebd1",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "1e14ccb5-91e3-40d7-81f6-036af25a7728",
+      "name": "MobileEncounterCategoriesResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 250
+      },
+      "fields": [
+        {
+          "unid": "6b07d0be-c85d-47d3-8364-3cc64ee2a701",
+          "name": "list",
+          "type": {
+            "type": "8ff30d4d-db6c-4a09-96b9-100bf2c2e302",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "85af59b6-7427-452b-a066-59db6b11efb3",
+      "name": "MobileSpeciesListResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "f0014bb5-0e28-46d4-bf76-b67de7bc87d0",
+          "name": "list",
+          "type": {
+            "type": "904eef89-2f36-4a18-956c-1c87538f1f7b",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "fe370a77-d26f-4eba-b950-07d7576fa5e2",
+      "name": "MobileVehicleListResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 550
+      },
+      "fields": [
+        {
+          "unid": "b9b6a936-5e23-4cc1-bc14-119f349fe87d",
+          "name": "list",
+          "type": {
+            "type": "ca235e84-824c-4841-b0bf-12e24581c306",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "bdc1f0d4-0250-4d22-8f09-4b71dd27b54c",
+      "name": "MobileVehicleDriverListResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 700
+      },
+      "fields": [
+        {
+          "unid": "a5ec7b9e-a971-49ec-bcd2-bdd88df91011",
+          "name": "list",
+          "type": {
+            "type": "eccd2f0a-ca0d-42d3-8ee6-57cdcd237f20",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "6c2c000a-e97c-4828-9615-39777add340f",
+      "name": "MobileUserInfoResponse",
+      "description": "",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 850
+      },
+      "fields": [
+        {
+          "unid": "2131a693-cbc3-491c-81be-940cd0023b64",
+          "name": "data",
+          "type": {
+            "type": "4a5659e6-cb31-4d47-ac60-ebdc1ebd3411",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": []
+}

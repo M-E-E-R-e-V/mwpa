@@ -1,0 +1,870 @@
+{
+  "schemas": [
+    {
+      "unid": "cb3acd53-2bc4-4d64-9a04-32d22473b9b5",
+      "name": "SightingsFilterOrder",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1119,
+        "y": 137
+      },
+      "fields": [
+        {
+          "unid": "041da381-71c7-497d-bdc1-1c4d3bdd0375",
+          "name": "id",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f7893f9b-7d5d-4ce4-a61e-b266b72d3d1e",
+          "name": "tour_id",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "03087c04-74ef-4fd9-a7db-d00cf1821557",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "5326edd4-fd0d-4077-9c28-a998f6eda604",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "11107c44-f37a-4d57-84bd-672a719fb03e",
+          "name": "create_datetime",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "423c0ae7-8b3f-443c-8aa9-d2768d572fbd",
+          "name": "update_datetime",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "e604664a-0ed1-4102-bf16-31b09597815c",
+      "name": "SightingsFilter",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 768,
+        "y": 22
+      },
+      "fields": [
+        {
+          "unid": "b932c8eb-151a-4517-89f5-6bfcd563a094",
+          "name": "order",
+          "type": {
+            "type": "cb3acd53-2bc4-4d64-9a04-32d22473b9b5",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b4cc7466-5e8a-48fb-8750-cc4b09a9a3a5",
+          "name": "limit",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "fbe632f4-a8f5-404e-aa5b-a24c94a93d3e",
+          "name": "offset",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "049b3b68-24b8-4136-a938-f2e2ff7199f6",
+          "name": "period_from",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "ISO date YYYY-MM-DD; lower bound for sighting date (inclusive)"
+        },
+        {
+          "unid": "d015b8dd-f52c-4cc2-9eb9-40a5fe12b6fe",
+          "name": "period_to",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "ISO date YYYY-MM-DD; upper bound for sighting date (inclusive)"
+        },
+        {
+          "unid": "3c82a76d-55bb-46f6-9351-78b3a75b881c",
+          "name": "species_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Filter by species id"
+        },
+        {
+          "unid": "09666f1f-f3d1-46bc-ba05-26bf9a607bc0",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Filter by organization id"
+        },
+        {
+          "unid": "a7c147e5-0649-49cf-ad86-2d8ea9f0a69e",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Filter by vehicle id"
+        },
+        {
+          "unid": "0ada8efc-22e2-4724-8aa4-7d6b22e2c652",
+          "name": "vehicle_driver_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Filter by vehicle driver id"
+        },
+        {
+          "unid": "778f20be-028b-414c-afc5-80d30380a921",
+          "name": "search",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Free-text search applied as LIKE on note + recognizable_animals"
+        }
+      ]
+    },
+    {
+      "unid": "e208b3f7-2e1a-4ab2-8a1e-f7c9096d8854",
+      "name": "SightingsEntry",
+      "description": "Sighting list entry — extends TypeSighting with response-side fields",
+      "extend": {
+        "type": "9a088f3c-9a19-46f3-898e-1fd60a9fc0b4"
+      },
+      "pos": {
+        "x": 451,
+        "y": 424
+      },
+      "fields": [
+        {
+          "unid": "90b5e162-58e9-4c83-9e5c-43d26168d22c",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2cb992ba-980a-4def-91db-8982d296dbe6",
+          "name": "creater_name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "817e9e0b-ad24-4852-a835-0e772887da53",
+          "name": "create_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a06be52d-8670-4185-879c-cf3edef24be8",
+          "name": "update_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "aba6ce1c-8988-4c5a-bd33-877067e0457e",
+          "name": "device_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "331bbe6e-3e41-4072-a8fb-8c78f02d91a0",
+          "name": "tour_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1bee8ef6-b8d2-4740-8d36-94b1f6be28ac",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e76bab1c-8f38-43f7-bc0b-2737690afcf6",
+          "name": "hash",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1941a603-95e8-4601-a3cb-d96b24b7d6dc",
+          "name": "hash_import_count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "1ecb0d90-4aea-4b5e-8d95-b70e25bd0b45",
+          "name": "source_import_file",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "03874d0f-81bf-4585-b133-4a6f04f545f9",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b8b6ad11-0e56-4d2e-ae32-8cbdf740eb89",
+          "name": "files",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b52896bb-a784-4c62-b2fd-263e2f274f42",
+          "name": "pointtype",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3a3f856e-00f1-4124-82ec-5ab4200b76c6",
+          "name": "species_name",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a337dea7-e270-4678-bf51-ad9158ceea5b",
+          "name": "track_point_count",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Number of GPS tracking points the boat recorded during the sighting window (segment_count + 1 for source='tracking', omitted for manual_begin_end / no movement row). Lets the list-UI show which sightings actually have a real GPS track."
+        }
+      ]
+    },
+    {
+      "unid": "95323aed-a213-4419-a77f-4e5c320abd47",
+      "name": "SightingsListResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 100,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "5f88dd24-ddc9-4687-8edf-a5b02485213c",
+          "name": "filter",
+          "type": {
+            "type": "e604664a-0ed1-4102-bf16-31b09597815c",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f8099216-3674-4403-9894-d42ed8791857",
+          "name": "offset",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3afe54af-167b-419a-a2f8-9170bba7f37b",
+          "name": "count",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e36e8b61-be08-4369-bc39-546ae73ef40f",
+          "name": "list",
+          "type": {
+            "type": "e208b3f7-2e1a-4ab2-8a1e-f7c9096d8854",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "f11bab3d-3451-4593-a7c0-b3684d808d51",
+      "name": "SightingDeleteRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "4ebfed49-5ff7-4920-921e-233ab19ff3d5",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "41116f2a-4142-450c-83e1-5f6767ece2eb",
+          "name": "description",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "cd5d31b1-5996-4eaf-ade3-21c69bf20d75",
+      "name": "SightingGPSUpdateData",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 873,
+        "y": 615
+      },
+      "fields": [
+        {
+          "unid": "6ca5d2ba-2c8d-4704-af2c-d5e2264f8746",
+          "name": "notHaveLocation",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3e4e41ef-ee88-4676-afe0-c703479cc4e4",
+          "name": "notHaveTimestamp",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "107c4523-8047-47fb-9853-601ca0349997",
+          "name": "haveSameDate",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d4098619-5e5f-4296-b137-a649601f7776",
+          "name": "newDate",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "39270fae-04c3-4db1-ba05-01bcfa10b4b6",
+      "name": "SightingGPSUpdateResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 750,
+        "y": 910
+      },
+      "fields": [
+        {
+          "unid": "04b65087-2289-4495-8db2-656d4381f8c8",
+          "name": "data",
+          "type": {
+            "type": "cd5d31b1-5996-4eaf-ade3-21c69bf20d75",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "766e510e-c0d5-4004-b073-47eb975252ae",
+      "name": "SightingWeatherRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 600
+      },
+      "fields": [
+        {
+          "unid": "9d88b734-9c2a-4da6-95a5-a848c79eae32",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "82bb6ea9-6068-4997-a10d-c32bf808913f",
+      "name": "SightingImageGetRequest",
+      "description": "Path params for /json/sightings/getimage/:id/:filename",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 800
+      },
+      "fields": [
+        {
+          "unid": "a552e833-6b81-4faa-b9f4-2de742012fd2",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "fe799bf3-5ffb-41e3-8084-abfcc48a63d2",
+          "name": "filename",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+      "name": "SightingSaveRequest",
+      "description": "Update payload for an existing sighting (admin only). All fields are required; pass empty string / 0 to clear.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1202,
+        "y": 516
+      },
+      "fields": [
+        {
+          "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "33f93358-e484-403b-93e3-037437a59d13",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+          "name": "vehicle_driver_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+          "name": "beaufort_wind",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+        },
+        {
+          "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+          "name": "date",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+          "name": "tour_start",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+          "name": "tour_end",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+          "name": "duration_from",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+          "name": "duration_until",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+          "name": "location_begin",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+        },
+        {
+          "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+          "name": "location_end",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+        },
+        {
+          "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+          "name": "species_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+          "name": "species_count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+          "name": "reaction_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+          "name": "other",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+          "name": "other_vehicle",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+          "name": "note",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "a5c3541e-980a-4a08-9934-33d90dd151d1",
+      "name": "SightingYearsResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 100,
+        "y": 1050
+      },
+      "fields": [
+        {
+          "unid": "140f53c2-ed74-4036-bad1-b1789c741523",
+          "name": "years",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "ec122d5d-6baa-443a-a789-338f9ab4a8f3",
+      "link_unid": "9a088f3c-9a19-46f3-898e-1fd60a9fc0b4",
+      "pos": {
+        "x": 1500,
+        "y": 400
+      }
+    },
+    {
+      "unid": "015481bb-6b7e-484c-944d-8d69f80078fe",
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+      "pos": {
+        "x": 1500,
+        "y": 50
+      }
+    }
+  ]
+}

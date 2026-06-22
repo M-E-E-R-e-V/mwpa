@@ -1,0 +1,87 @@
+{
+  "schemas": [
+    {
+      "unid": "d6f0bb7a-aedc-4a3a-9c46-20036e9abfcf",
+      "name": "SpeciesGroupEntry",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "b34cd731-7b02-4ffd-bdfe-8f5f7ed63001",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ab311f3c-3f1e-4fd7-b162-0524975b6891",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "8cc6cfeb-e12b-4670-bbde-bbc1683f21b7",
+          "name": "color",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "df2115f2-17de-4887-93f4-a91d0692565a",
+      "name": "SpeciesGroupListResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 100,
+        "y": 300
+      },
+      "fields": [
+        {
+          "unid": "3d515f8c-3f5c-42f8-85e7-0e067c8ea758",
+          "name": "list",
+          "type": {
+            "type": "d6f0bb7a-aedc-4a3a-9c46-20036e9abfcf",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "83825f8b-d61c-409d-a071-b70d8f0fe945",
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+      "pos": {
+        "x": 1000,
+        "y": 100
+      }
+    }
+  ]
+}

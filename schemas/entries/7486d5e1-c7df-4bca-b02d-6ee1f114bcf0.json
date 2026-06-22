@@ -1,0 +1,134 @@
+{
+  "schemas": [
+    {
+      "unid": "d73795ca-7f81-4194-87c0-889b8f4b5102",
+      "name": "VehicleDriverEntryUser",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 951,
+        "y": 278
+      },
+      "fields": [
+        {
+          "unid": "b2515e26-a722-427e-83d7-6a3f75397af6",
+          "name": "user_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "18a61eaf-cea1-4edf-9cfb-c406e854de5f",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "eccd2f0a-ca0d-42d3-8ee6-57cdcd237f20",
+      "name": "VehicleDriverEntry",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "a10e7a6c-c3b9-4c15-8255-ce7904bfdf7e",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "cec609b8-340d-4c6c-8673-78d544a02e67",
+          "name": "description",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "05ec324d-2dc5-426c-8bc9-60948562c3d0",
+          "name": "isdeleted",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "18b4609d-9590-44aa-8b0b-4b0febc97930",
+          "name": "user",
+          "type": {
+            "type": "d73795ca-7f81-4194-87c0-889b8f4b5102",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "63a65e97-7e4d-4875-94e8-30904f63ac95",
+      "name": "VehicleDriverListResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 100,
+        "y": 300
+      },
+      "fields": [
+        {
+          "unid": "7a5a0040-f089-4719-99d3-b01696fece57",
+          "name": "list",
+          "type": {
+            "type": "eccd2f0a-ca0d-42d3-8ee6-57cdcd237f20",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [
+    {
+      "unid": "635e95cf-a01c-4bb6-8c89-278c1ae04e1d",
+      "link_unid": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599",
+      "pos": {
+        "x": 1100,
+        "y": 100
+      }
+    }
+  ]
+}
