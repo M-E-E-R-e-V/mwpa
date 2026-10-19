@@ -2,6 +2,131 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Available MCP Servers
+
+### synaipse
+
+Synaipse is the persistent long-term memory system for this project.
+
+Synaipse contains:
+
+- Architecture decisions
+- Project knowledge
+- Technical documentation
+- Coding standards
+- Known issues and solutions
+- Research notes
+- TODOs
+- Lessons learned
+- API knowledge
+- Development history
+
+### How Claude reaches Synaipse
+
+Synaipse is accessed **exclusively through MCP tools** exposed by the
+`synaipse` server in `.mcp.json`. Always use the tool — never touch the
+synaipse repository or its vault on disk. The MCP layer handles project
+scoping (the `X-Synaipse-Project: swipemeister` header pins every write
+into `Memory/swipemeister/`), frontmatter, link rewriting, and git
+autocommit. Direct file I/O bypasses all of that and corrupts the index.
+
+Tool mapping for common user phrases:
+
+- "search synaipse for X" / "was wissen wir über X" → `synaipse_search`
+- "verwandte notes zu X" → `synaipse_related`, `synaipse_backlinks`
+- "dokumentiere in synaipse" / "save to memory" → `synaipse_write_note`
+- "update die note über X" → `synaipse_read_note` then `synaipse_update_note`
+- "was steht an" / "recent" / "stale" → `synaipse_todos`, `synaipse_recent`, `synaipse_stale`
+- "gib mir den projekt-kontext" / cold-start of a session → `synaipse_prime`
+
+Do NOT:
+
+- Open, read, or edit files under the synaipse codebase
+- Read or grep the vault directory directly
+- Reimplement search by walking the vault
+
+### Memory First Policy
+
+For every non-trivial task, Claude must follow this workflow:
+
+SEARCH MEMORY
+→ ANALYZE
+→ IMPLEMENT
+→ STORE KNOWLEDGE
+
+Before starting work:
+
+1. Search Synaipse for relevant knowledge.
+2. Check existing architecture decisions.
+3. Check known solutions.
+4. Check known issues and workarounds.
+5. Review related project documentation.
+
+After completing work:
+
+1. Store newly discovered knowledge.
+2. Store important implementation details.
+3. Store architecture decisions.
+4. Store lessons learned.
+5. Update outdated information.
+6. Link related knowledge entries.
+
+Knowledge stored in Synaipse takes precedence over assumptions.
+
+If required information cannot be found:
+
+1. Identify the knowledge gap.
+2. Continue with best effort.
+3. Suggest creating a new memory entry.
+
+### Knowledge Categories
+
+When storing information, classify it into one of the following categories:
+
+- architecture
+- decisions
+- implementation
+- bugs
+- solutions
+- infrastructure
+- development
+- documentation
+- research
+- api
+- standards
+- todos
+
+### Architecture Decision Records
+
+Important technical decisions must be documented.
+
+Store:
+
+- Problem
+- Context
+- Alternatives considered
+- Final decision
+- Consequences
+
+### Lessons Learned
+
+When solving a difficult problem, store:
+
+- Root cause
+- Investigation process
+- Final solution
+- Future recommendations
+
+### Code Reuse
+
+Before generating new implementations:
+
+- Search for existing patterns.
+- Search for similar implementations.
+- Follow established project conventions.
+
+Avoid creating duplicate solutions when an existing pattern already exists.
+
 ## Repository layout
 
 npm workspaces monorepo with three packages that build in order:
