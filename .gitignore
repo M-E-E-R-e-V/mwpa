@@ -24,3 +24,9 @@
 /old-backend/
 /mwpa_*.tar
 /doc/
+
+# npm-gui / nppm tooling workdir (backups, cache, history)
+/.nppm/
+
+# vtseditor migration backups
+/schemas/*.backup.json

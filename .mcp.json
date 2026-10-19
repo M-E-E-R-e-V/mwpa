@@ -1,8 +1,13 @@
 {
   "mcpServers": {
+    "synaipse": {
+      "type": "http",
+      "url": "http://localhost:5200/synaipse/mcp",
+      "headers": {"X-Synaipse-Project": "mwpa"}
+    },
     "vtseditor": {
       "type": "http",
-      "url": "http://localhost:5162/mcp"
+      "url": "http://localhost:5200/vtseditor/mwpa/mcp"
     }
   }
 }
