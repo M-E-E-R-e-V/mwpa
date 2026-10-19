@@ -913,6 +913,28 @@
           "description": ""
         },
         {
+          "unid": "c38a9590-d36d-4a91-bcb6-cc36046d2e18",
+          "name": "current_region_speed_m_s",
+          "type": {
+            "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Histogram of the CMEMS regional-mean current speed (m/s) at sightings."
+        },
+        {
+          "unid": "5e6f1dec-dcd1-44b2-bb60-4bac6fe382a3",
+          "name": "current_coastal_component_m_s",
+          "type": {
+            "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Histogram of the signed coastal (cross-shore) current component (m/s); negative = onshore, positive = offshore."
+        },
+        {
           "unid": "a7aea947-be66-4310-8816-81289a22f075",
           "name": "wave_height_m",
           "type": {
@@ -933,6 +955,17 @@
             "types": []
           },
           "description": ""
+        },
+        {
+          "unid": "3304075c-411c-440d-b887-ff849bf6305d",
+          "name": "wind_speed_m_s",
+          "type": {
+            "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Histogram of the 10 m wind speed (m/s, day mean) at sightings. From WeatherService / Open-Meteo."
         }
       ]
     },

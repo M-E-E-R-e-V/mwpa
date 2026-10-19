@@ -378,8 +378,11 @@ export class SightingRepository extends DBRepository<Sighting> {
         salinity_psu_day: number | null;
         sla_cm_day: number | null;
         current_speed_m_s_day: number | null;
+        current_region_mean_speed_m_s_day: number | null;
+        current_coastal_component_m_s_day: number | null;
         wave_height_m_day: number | null;
         uv_index_day: number | null;
+        wind_speed_m_s_day: number | null;
         avg_speed_mps: number | null;
         max_speed_mps: number | null;
         total_distance_m: number | null;
@@ -412,8 +415,11 @@ export class SightingRepository extends DBRepository<Sighting> {
             .addSelect('e.salinity_psu_day', 'salinity_psu_day')
             .addSelect('e.sla_cm_day', 'sla_cm_day')
             .addSelect('e.current_speed_m_s_day', 'current_speed_m_s_day')
+            .addSelect('e.current_region_mean_speed_m_s_day', 'current_region_mean_speed_m_s_day')
+            .addSelect('e.current_coastal_component_m_s_day', 'current_coastal_component_m_s_day')
             .addSelect('e.wave_height_m_day', 'wave_height_m_day')
             .addSelect('e.uv_index_day', 'uv_index_day')
+            .addSelect('e.wind_speed_m_s_day', 'wind_speed_m_s_day')
             .addSelect('m.avg_speed_mps', 'avg_speed_mps')
             .addSelect('m.max_speed_mps', 'max_speed_mps')
             .addSelect('m.total_distance_m', 'total_distance_m')

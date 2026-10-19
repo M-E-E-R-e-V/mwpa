@@ -214,8 +214,11 @@ export const SchemaSpeciesProfileEnvExtra = Vts.object({
     salinity_psu: Vts.array(SchemaSpeciesProfileBucket),
     sla_cm: Vts.array(SchemaSpeciesProfileBucket),
     current_speed_m_s: Vts.array(SchemaSpeciesProfileBucket),
+    current_region_speed_m_s: Vts.array(SchemaSpeciesProfileBucket),
+    current_coastal_component_m_s: Vts.array(SchemaSpeciesProfileBucket),
     wave_height_m: Vts.array(SchemaSpeciesProfileBucket),
     uv_index: Vts.array(SchemaSpeciesProfileBucket),
+    wind_speed_m_s: Vts.array(SchemaSpeciesProfileBucket),
 }, {
     description: 'Additional environmental distributions (salinity, SLA, currents, waves, UV)',
 });

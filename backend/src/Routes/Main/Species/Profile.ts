@@ -44,8 +44,11 @@ export type SightingProfileRow = {
     salinity_psu_day: number | null;
     sla_cm_day: number | null;
     current_speed_m_s_day: number | null;
+    current_region_mean_speed_m_s_day: number | null;
+    current_coastal_component_m_s_day: number | null;
     wave_height_m_day: number | null;
     uv_index_day: number | null;
+    wind_speed_m_s_day: number | null;
     avg_speed_mps: number | null;
     max_speed_mps: number | null;
     total_distance_m: number | null;
@@ -81,8 +84,11 @@ export class Profile {
     private static readonly SALINITY_EDGES_PSU = [34, 35, 36, 37, 38, 39];
     private static readonly SLA_EDGES_CM = [-20, -10, -5, 0, 5, 10, 20];
     private static readonly CURRENT_EDGES_M_S = [0, 0.1, 0.25, 0.5, 1];
+    private static readonly CURRENT_REGION_EDGES_M_S = [0, 0.1, 0.25, 0.5, 1];
+    private static readonly CURRENT_COASTAL_EDGES_M_S = [-1, -0.5, -0.25, -0.1, 0, 0.1, 0.25, 0.5, 1];
     private static readonly WAVE_EDGES_M = [0, 0.5, 1, 1.5, 2, 3];
     private static readonly UV_EDGES = [0, 2, 4, 6, 8, 10];
+    private static readonly WIND_EDGES_M_S = [0, 2, 4, 6, 8, 10, 14, 18];
 
     // Phase 3 — pressure histograms
     private static readonly BEAUFORT_EDGES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -385,8 +391,11 @@ export class Profile {
         const salinity: number[] = [];
         const sla: number[] = [];
         const currentSpeed: number[] = [];
+        const currentRegionSpeed: number[] = [];
+        const currentCoastal: number[] = [];
         const waveHeight: number[] = [];
         const uvIndex: number[] = [];
+        const windSpeed: number[] = [];
         const beaufort: number[] = [];
         const otherBoats: number[] = [];
         const fishingHours: number[] = [];
@@ -468,11 +477,20 @@ export class Profile {
             if (r.current_speed_m_s_day !== null && r.current_speed_m_s_day !== undefined && Number.isFinite(r.current_speed_m_s_day)) {
                 currentSpeed.push(r.current_speed_m_s_day);
             }
+            if (r.current_region_mean_speed_m_s_day !== null && r.current_region_mean_speed_m_s_day !== undefined && Number.isFinite(r.current_region_mean_speed_m_s_day)) {
+                currentRegionSpeed.push(r.current_region_mean_speed_m_s_day);
+            }
+            if (r.current_coastal_component_m_s_day !== null && r.current_coastal_component_m_s_day !== undefined && Number.isFinite(r.current_coastal_component_m_s_day)) {
+                currentCoastal.push(r.current_coastal_component_m_s_day);
+            }
             if (r.wave_height_m_day !== null && r.wave_height_m_day !== undefined && Number.isFinite(r.wave_height_m_day)) {
                 waveHeight.push(r.wave_height_m_day);
             }
             if (r.uv_index_day !== null && r.uv_index_day !== undefined && Number.isFinite(r.uv_index_day)) {
                 uvIndex.push(r.uv_index_day);
+            }
+            if (r.wind_speed_m_s_day !== null && r.wind_speed_m_s_day !== undefined && Number.isFinite(r.wind_speed_m_s_day)) {
+                windSpeed.push(r.wind_speed_m_s_day);
             }
 
             // Pressure
@@ -615,8 +633,11 @@ export class Profile {
                 salinity_psu: Profile._bucketize(salinity, Profile.SALINITY_EDGES_PSU),
                 sla_cm: Profile._bucketize(sla, Profile.SLA_EDGES_CM),
                 current_speed_m_s: Profile._bucketize(currentSpeed, Profile.CURRENT_EDGES_M_S),
+                current_region_speed_m_s: Profile._bucketize(currentRegionSpeed, Profile.CURRENT_REGION_EDGES_M_S),
+                current_coastal_component_m_s: Profile._bucketize(currentCoastal, Profile.CURRENT_COASTAL_EDGES_M_S),
                 wave_height_m: Profile._bucketize(waveHeight, Profile.WAVE_EDGES_M),
-                uv_index: Profile._bucketize(uvIndex, Profile.UV_EDGES)
+                uv_index: Profile._bucketize(uvIndex, Profile.UV_EDGES),
+                wind_speed_m_s: Profile._bucketize(windSpeed, Profile.WIND_EDGES_M_S)
             },
             pressure: {
                 beaufort: Profile._bucketize(beaufort, Profile.BEAUFORT_EDGES),

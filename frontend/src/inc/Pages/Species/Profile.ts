@@ -313,8 +313,11 @@ export class SpeciesProfile extends BasePage {
             `<div class="col-md-2-4"><div class="text-muted small">${lang.l('Salinity (PSU)')}</div><div class="species-profile-chart" data-envx="salinity"></div></div>` +
             `<div class="col-md-2-4"><div class="text-muted small">${lang.l('SLA (cm)')}</div><div class="species-profile-chart" data-envx="sla"></div></div>` +
             `<div class="col-md-2-4"><div class="text-muted small">${lang.l('Current speed (m/s)')}</div><div class="species-profile-chart" data-envx="current"></div></div>` +
+            `<div class="col-md-2-4"><div class="text-muted small">${lang.l('Region current (m/s)')}</div><div class="species-profile-chart" data-envx="current_region"></div></div>` +
+            `<div class="col-md-2-4"><div class="text-muted small">${lang.l('Coastal current (m/s, ±)')}</div><div class="species-profile-chart" data-envx="current_coastal"></div></div>` +
             `<div class="col-md-2-4"><div class="text-muted small">${lang.l('Wave height (m)')}</div><div class="species-profile-chart" data-envx="wave"></div></div>` +
             `<div class="col-md-2-4"><div class="text-muted small">${lang.l('UV index')}</div><div class="species-profile-chart" data-envx="uv"></div></div>` +
+            `<div class="col-md-2-4"><div class="text-muted small">${lang.l('Wind speed (m/s)')}</div><div class="species-profile-chart" data-envx="wind"></div></div>` +
             '</div>' +
             // Custom 5-column row helper — Bootstrap 4 doesn't ship col-md-2-4,
             // so define it inline to avoid touching the global stylesheet.
@@ -473,11 +476,20 @@ export class SpeciesProfile extends BasePage {
             h.envExtraGrid.find('[data-envx="current"]').each((_i, el) => {
                 SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.current_speed_m_s, '#1d6f8a');
             });
+            h.envExtraGrid.find('[data-envx="current_region"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.current_region_speed_m_s, '#14566b');
+            });
+            h.envExtraGrid.find('[data-envx="current_coastal"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.current_coastal_component_m_s, '#0f7b8a');
+            });
             h.envExtraGrid.find('[data-envx="wave"]').each((_i, el) => {
                 SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.wave_height_m, '#2a9d8f');
             });
             h.envExtraGrid.find('[data-envx="uv"]').each((_i, el) => {
                 SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.uv_index, '#d4a017');
+            });
+            h.envExtraGrid.find('[data-envx="wind"]').each((_i, el) => {
+                SpeciesProfile._renderBuckets(el as HTMLElement, profile.env_extra.wind_speed_m_s, '#6a5acd');
             });
         }
 
