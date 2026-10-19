@@ -184,6 +184,71 @@ export class SightingExtended extends DBBaseEntityUnid {
     public wave_direction_deg_hour!: number | null;
 
     /**
+     * Wind speed at 10 m, day mean (m/s). From WeatherService / Open-Meteo.
+     */
+    @Column({
+        type: 'decimal',
+        precision: 4,
+        scale: 2,
+        nullable: true
+    })
+    public wind_speed_m_s_day!: number | null;
+
+    /**
+     * Wind speed at 10 m at the sighting hour (m/s).
+     */
+    @Column({
+        type: 'decimal',
+        precision: 4,
+        scale: 2,
+        nullable: true
+    })
+    public wind_speed_m_s_hour!: number | null;
+
+    /**
+     * Wind direction at 10 m, day circular mean (degrees, 0..359;
+     * meteorological convention — direction the wind comes FROM).
+     */
+    @Column({
+        type: 'smallint',
+        nullable: true
+    })
+    public wind_direction_deg_day!: number | null;
+
+    /**
+     * Wind direction at 10 m at the sighting hour (degrees, direction FROM).
+     */
+    @Column({
+        type: 'smallint',
+        nullable: true
+    })
+    public wind_direction_deg_hour!: number | null;
+
+    /**
+     * Wind gusts at 10 m, day peak (m/s) — the day MAX of the hourly
+     * gusts, not the mean (a gust is already a peak quantity; the daily
+     * maximum is the meaningful stress summary).
+     */
+    @Column({
+        type: 'decimal',
+        precision: 4,
+        scale: 2,
+        nullable: true
+    })
+    public wind_gusts_m_s_day!: number | null;
+
+    /**
+     * Wind gusts at 10 m at the sighting hour (m/s).
+     */
+    @Column({
+        type: 'decimal',
+        precision: 4,
+        scale: 2,
+        nullable: true
+    })
+    public wind_gusts_m_s_hour!: number | null;
+
+    /**
      * Local-time hour of day (0..23) used for the *_hour samples. NULL
      * when no hour was known on the sighting.
      */

@@ -55,6 +55,9 @@ export const SchemaSightingEnvironmentEntry = Vts.object({
     wave_height_m_day: Vts.optional(Vts.number({description: 'Significant wave height, day mean (m).'})),
     wave_period_s_day: Vts.optional(Vts.number()),
     wave_direction_deg_day: Vts.optional(Vts.number()),
+    wind_speed_m_s_day: Vts.optional(Vts.number({description: 'Wind speed at 10 m, day mean (m/s). From WeatherService / Open-Meteo.'})),
+    wind_direction_deg_day: Vts.optional(Vts.number({description: 'Wind direction at 10 m, day circular mean (degrees, 0..359, direction the wind comes FROM).'})),
+    wind_gusts_m_s_day: Vts.optional(Vts.number({description: 'Wind gusts at 10 m, day peak (m/s) — the daily maximum of the hourly gusts.'})),
     weather_status: Vts.optional(Vts.string()),
 }, {
     description: 'One sighting with its ocean + fishing-effort enrichment columns. Position is denormalized to lon/lat so the frontend doesn\'t have to re-parse location_begin.',

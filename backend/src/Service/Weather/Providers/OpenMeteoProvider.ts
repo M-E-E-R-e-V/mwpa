@@ -18,6 +18,9 @@ type OpenMeteoForecastHourly = {
     time?: string[];
     temperature_2m?: (number | null)[];
     uv_index?: (number | null)[];
+    wind_speed_10m?: (number | null)[];
+    wind_direction_10m?: (number | null)[];
+    wind_gusts_10m?: (number | null)[];
 };
 
 type OpenMeteoForecastResponse = {
@@ -145,6 +148,26 @@ export class OpenMeteoProvider implements WeatherProvider {
             if (uvMax !== null) {
                 day.uv_index = OpenMeteoProvider._round(uvMax, 1);
             }
+
+            const windSpeed = OpenMeteoProvider._mean(airTemp.wind_speed_10m);
+
+            if (windSpeed !== null) {
+                day.wind_speed_m_s = OpenMeteoProvider._round(windSpeed, 2);
+            }
+
+            const windDir = OpenMeteoProvider._meanDirection(airTemp.wind_direction_10m);
+
+            if (windDir !== null) {
+                day.wind_direction_deg = Math.round(windDir);
+            }
+
+            // Gusts are a peak quantity — the day MAX is the meaningful
+            // summary (stress indicator), not the mean.
+            const gustMax = OpenMeteoProvider._max(airTemp.wind_gusts_10m);
+
+            if (gustMax !== null) {
+                day.wind_gusts_m_s = OpenMeteoProvider._round(gustMax, 2);
+            }
         }
 
         const idx = OpenMeteoProvider._findHourIndex(times, hour);
@@ -187,6 +210,24 @@ export class OpenMeteoProvider implements WeatherProvider {
 
                 if (uv !== null) {
                     hourSample.uv_index = OpenMeteoProvider._round(uv, 1);
+                }
+
+                const windSpeed = OpenMeteoProvider._at(airTemp.wind_speed_10m, idx);
+
+                if (windSpeed !== null) {
+                    hourSample.wind_speed_m_s = OpenMeteoProvider._round(windSpeed, 2);
+                }
+
+                const windDir = OpenMeteoProvider._at(airTemp.wind_direction_10m, idx);
+
+                if (windDir !== null) {
+                    hourSample.wind_direction_deg = Math.round(windDir);
+                }
+
+                const gust = OpenMeteoProvider._at(airTemp.wind_gusts_10m, idx);
+
+                if (gust !== null) {
+                    hourSample.wind_gusts_m_s = OpenMeteoProvider._round(gust, 2);
                 }
             }
         }
@@ -265,7 +306,8 @@ export class OpenMeteoProvider implements WeatherProvider {
             longitude: `${longitude}`,
             start_date: isoDate,
             end_date: isoDate,
-            hourly: 'temperature_2m,uv_index',
+            hourly: 'temperature_2m,uv_index,wind_speed_10m,wind_direction_10m,wind_gusts_10m',
+            wind_speed_unit: 'ms',
             timezone: 'auto'
         });
 
@@ -423,7 +465,10 @@ export class OpenMeteoProvider implements WeatherProvider {
             && sample.uv_index === undefined
             && sample.wave_height_m === undefined
             && sample.wave_period_s === undefined
-            && sample.wave_direction_deg === undefined;
+            && sample.wave_direction_deg === undefined
+            && sample.wind_speed_m_s === undefined
+            && sample.wind_direction_deg === undefined
+            && sample.wind_gusts_m_s === undefined;
     }
 
     /**

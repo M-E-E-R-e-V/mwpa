@@ -412,6 +412,39 @@
           "description": ""
         },
         {
+          "unid": "e2114ed6-e1ce-4131-89b3-f45b59d87971",
+          "name": "wind_speed_m_s_day",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Wind speed at 10 m, day mean (m/s). From WeatherService / Open-Meteo."
+        },
+        {
+          "unid": "270eefa1-12c9-4619-9330-dea6b8b20de5",
+          "name": "wind_direction_deg_day",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Wind direction at 10 m, day circular mean (degrees, 0..359, direction the wind comes FROM)."
+        },
+        {
+          "unid": "53af3c48-fa61-42e3-8325-9a3f362d6d5a",
+          "name": "wind_gusts_m_s_day",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Wind gusts at 10 m, day peak (m/s) — the daily maximum of the hourly gusts."
+        },
+        {
           "unid": "69f1e0f1-144b-4e7c-90d4-f882b6ac642d",
           "name": "weather_status",
           "type": {

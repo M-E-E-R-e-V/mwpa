@@ -354,6 +354,8 @@ export class OceanFishingMap extends BasePage {
             `Wave height: ${fmt(r.wave_height_m_day, 2, 'm')}`,
             `Wave period: ${fmt(r.wave_period_s_day, 1, 's')}`,
             r.uv_index_day === undefined ? null : `UV index: ${fmt(r.uv_index_day, 1, '')}`,
+            r.wind_speed_m_s_day === undefined ? null
+                : `Wind: ${fmt(r.wind_speed_m_s_day, 1, 'm/s')}${typeof r.wind_direction_deg_day === 'number' ? ` @ ${Math.round(r.wind_direction_deg_day)}°` : ''}${typeof r.wind_gusts_m_s_day === 'number' ? ` (gust ${fmt(r.wind_gusts_m_s_day, 1, 'm/s')})` : ''}`,
             '<i>— Fishing —</i>',
             `Fishing (25 km): ${fmt(r.fishing_hours_day_25km, 1, 'h/day')}`,
             `Vessels (25 km): ${typeof r.vessel_count_day_25km === 'number' ? r.vessel_count_day_25km : '—'}`,

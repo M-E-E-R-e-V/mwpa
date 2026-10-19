@@ -84,7 +84,8 @@ export class WeatherService extends ServiceJobAbstract {
      */
     private static readonly METRIC_KEYS: (keyof WeatherSample)[] = [
         'sst_c', 'air_temperature_c', 'uv_index',
-        'wave_height_m', 'wave_period_s', 'wave_direction_deg'
+        'wave_height_m', 'wave_period_s', 'wave_direction_deg',
+        'wind_speed_m_s', 'wind_direction_deg', 'wind_gusts_m_s'
     ];
 
     private readonly _registry: WeatherProviderRegistry;
@@ -147,6 +148,12 @@ export class WeatherService extends ServiceJobAbstract {
             wave_period_s_hour: hourSample?.wave_period_s ?? null,
             wave_direction_deg_day: day?.wave_direction_deg ?? null,
             wave_direction_deg_hour: hourSample?.wave_direction_deg ?? null,
+            wind_speed_m_s_day: day?.wind_speed_m_s ?? null,
+            wind_speed_m_s_hour: hourSample?.wind_speed_m_s ?? null,
+            wind_direction_deg_day: day?.wind_direction_deg ?? null,
+            wind_direction_deg_hour: hourSample?.wind_direction_deg ?? null,
+            wind_gusts_m_s_day: day?.wind_gusts_m_s ?? null,
+            wind_gusts_m_s_hour: hourSample?.wind_gusts_m_s ?? null,
             weather_hour_used: pickedHour,
             weather_status: status,
             weather_last_update: new Date(),

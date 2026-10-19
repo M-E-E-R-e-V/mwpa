@@ -41,6 +41,9 @@ export type SightingEnvironmentEntry = {
     wave_height_m_day?: number;
     wave_period_s_day?: number;
     wave_direction_deg_day?: number;
+    wind_speed_m_s_day?: number;
+    wind_direction_deg_day?: number;
+    wind_gusts_m_s_day?: number;
     weather_status?: string;
     depth_m?: number;
     ocean_status?: string;

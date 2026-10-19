@@ -18,6 +18,21 @@ export type WeatherSample = {
     wave_height_m?: number;
     wave_period_s?: number;
     wave_direction_deg?: number;
+    /**
+     * Wind speed at 10 m (m/s). Day = mean over the hourly samples.
+     */
+    wind_speed_m_s?: number;
+    /**
+     * Wind direction at 10 m (degrees, 0..359, direction FROM). Day =
+     * circular mean. Hour = exact hourly value.
+     */
+    wind_direction_deg?: number;
+    /**
+     * Wind gusts at 10 m (m/s). For day samples this is the **daily
+     * maximum** (peak gust), not the mean. For hour samples it's the
+     * exact hourly value.
+     */
+    wind_gusts_m_s?: number;
 };
 
 /**
