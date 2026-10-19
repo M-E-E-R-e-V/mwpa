@@ -12,7 +12,8 @@ export class Tile {
 
     private static MAP_SERVER: Map<string, string> = new Map([
         ['openstreetmap', 'https://tile.openstreetmap.org/{z}/{x}/{y}.{f}'],
-        ['tms-relieve.idee.es', 'https://tms-relieve.idee.es/1.0.0/relieve/{z}/{x}/{y}.{f}']
+        ['tms-relieve.idee.es', 'https://tms-relieve.idee.es/1.0.0/relieve/{z}/{x}/{y}.{f}'],
+        ['emodnet-bathymetry', 'https://tiles.emodnet-bathymetry.eu/latest/mean_atlas_land/web_mercator/{z}/{x}/{y}.{f}']
     ]);
 
     /**

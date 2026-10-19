@@ -8,8 +8,8 @@ import {LineString, Point} from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import {fromLonLat} from 'ol/proj';
-import OSM from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
+import XYZ from 'ol/source/XYZ';
 import CircleStyle from 'ol/style/Circle';
 import {Fill, RegularShape, Stroke, Style, Text} from 'ol/style';
 import {AisLive as AisLiveAPI, AisLiveVesselEntry, AisVesselTrackPoint} from '../Api/AisLive';
@@ -150,7 +150,7 @@ export class AisLiveMap extends BasePage {
         this._map = new OlMap({
             target: mapDiv[0],
             layers: [
-                new TileLayer({source: new OSM()}),
+                new TileLayer({source: new XYZ({url: '/mapcache/openstreetmap/{z}/{x}/{y}.png'})}),
                 trackLayer,
                 vesselLayer
             ],

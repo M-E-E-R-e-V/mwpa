@@ -5,8 +5,8 @@ import {Draw, Modify, Snap} from 'ol/interaction';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import {fromLonLat} from 'ol/proj';
-import {OSM} from 'ol/source';
 import VectorSource from 'ol/source/Vector';
+import XYZ from 'ol/source/XYZ';
 
 /**
  * OrganizationTrackingAreaModal
@@ -85,7 +85,8 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
         });
 
         const tileLayer = new TileLayer({
-            source: new OSM({
+            source: new XYZ({
+                url: '/mapcache/openstreetmap/{z}/{x}/{y}.png',
                 wrapX: false
             })
         });
