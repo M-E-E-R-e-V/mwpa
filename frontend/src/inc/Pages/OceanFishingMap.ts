@@ -345,6 +345,8 @@ export class OceanFishingMap extends BasePage {
                 : `Vorticity (curl): ${(r.current_curl_s_inv_day * 1e5).toFixed(2)} ×10⁻⁵/s`,
             r.current_divergence_s_inv_day === undefined ? null
                 : `Divergence: ${(r.current_divergence_s_inv_day * 1e5).toFixed(2)} ×10⁻⁵/s`,
+            r.current_coastal_component_m_s_day === undefined ? null
+                : `Coastal (cross-shore): ${fmt(r.current_coastal_component_m_s_day, 2, 'm/s')}${typeof r.current_coastal_component_m_s_day === 'number' ? ` (${r.current_coastal_component_m_s_day >= 0 ? 'offshore' : 'onshore'})` : ''}`,
             `<a href="#" class="mwpa-cmems-region-link" data-sighting-id="${r.id}">→ Regional currents (quiver)</a>`,
             `Depth: ${fmt(r.depth_m, 0, 'm')}`,
             '<i>— Weather —</i>',

@@ -39,6 +39,7 @@ export const SchemaSightingEnvironmentEntry = Vts.object({
     current_region_max_speed_m_s_day: Vts.optional(Vts.number({description: 'Day-mean of the cell-wise max current speed (m/s) inside the regional patch, from CMEMS.'})),
     current_curl_s_inv_day: Vts.optional(Vts.number({description: 'Vertical vorticity (curl = dv/dx - du/dy) in 1/s at the sighting position, derived from the regional CMEMS u/v patch. Positive = cyclonic in northern hemisphere; magnitude flags eddy activity.'})),
     current_divergence_s_inv_day: Vts.optional(Vts.number({description: 'Horizontal divergence (du/dx + dv/dy) in 1/s at the sighting position, derived from the regional CMEMS u/v patch. Negative = convergence (front).'})),
+    current_coastal_component_m_s_day: Vts.optional(Vts.number({description: 'Signed cross-shore component of the current (m/s): projection of the regional patch centre u/v onto the offshore normal of the nearest coast. Positive = seaward (offshore), negative = shoreward (onshore). NULL when no coast lies within the search radius or the centre current vector is missing.'})),
     sst_c_day: Vts.optional(Vts.number()),
     depth_m: Vts.optional(Vts.number()),
     ocean_status: Vts.optional(Vts.string()),

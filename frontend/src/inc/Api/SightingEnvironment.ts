@@ -34,6 +34,7 @@ export type SightingEnvironmentEntry = {
     current_region_max_speed_m_s_day?: number;
     current_curl_s_inv_day?: number;
     current_divergence_s_inv_day?: number;
+    current_coastal_component_m_s_day?: number;
     sst_c_day?: number;
     air_temperature_c_day?: number;
     uv_index_day?: number;

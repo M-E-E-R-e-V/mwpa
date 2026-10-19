@@ -5,6 +5,7 @@ import {SightingCurrentFieldRepository} from '../../Db/MariaDb/Repositories/Sigh
 import {SightingExtendedRepository} from '../../Db/MariaDb/Repositories/SightingExtendedRepository.js';
 import {UtilIsInSea} from '../../Utils/UtilIsInSea.js';
 import {CmemsRegionalPatch, CmemsWmtsClient} from './CmemsWmtsClient.js';
+import {CoastalComponent} from './CoastalComponent.js';
 import {CurrentRegionAggregates} from './CurrentRegionAggregates.js';
 
 /**
@@ -151,18 +152,23 @@ export class CurrentFieldService extends ServiceJobAbstract {
             return;
         }
 
-        await CurrentFieldService._persist(sighting.id, patch);
+        await CurrentFieldService._persist(sighting.id, coords, patch);
     }
 
     /**
-     * Write the patch + the four derived scalars in two repository
-     * calls. The aggregates merge with the existing extended row via
-     * the same upsert path the other services use, so unrelated
-     * columns (depth, weather, ocean scalars) stay intact.
+     * Write the patch + the derived scalars in two repository calls. The
+     * aggregates merge with the existing extended row via the same upsert
+     * path the other services use, so unrelated columns (depth, weather,
+     * ocean scalars) stay intact.
      * @private
      */
-    private static async _persist(sightingId: number, patch: CmemsRegionalPatch): Promise<void> {
+    private static async _persist(
+        sightingId: number,
+        coords: {latitude: number; longitude: number;},
+        patch: CmemsRegionalPatch
+    ): Promise<void> {
         const aggregates = CurrentRegionAggregates.compute(patch.grid);
+        const coastalComponent = CoastalComponent.compute(coords.latitude, coords.longitude, patch.grid);
         const fieldRow: Partial<SightingCurrentField> = {
             sighting_id: sightingId,
             bbox_west: patch.grid.grid_lon[0],
@@ -200,11 +206,16 @@ export class CurrentFieldService extends ServiceJobAbstract {
             provenance.current_divergence_s_inv_day = patch.source;
         }
 
+        if (coastalComponent !== null) {
+            provenance.current_coastal_component_m_s_day = patch.source;
+        }
+
         await extendedRepo.upsertBySighting(sightingId, {
             current_region_mean_speed_m_s_day: aggregates.meanSpeedMs,
             current_region_max_speed_m_s_day: aggregates.maxSpeedMs,
             current_curl_s_inv_day: aggregates.curlSinv,
             current_divergence_s_inv_day: aggregates.divergenceSinv,
+            current_coastal_component_m_s_day: coastalComponent,
             provenance: provenance
         });
     }

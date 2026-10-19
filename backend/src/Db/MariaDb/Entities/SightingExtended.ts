@@ -333,6 +333,23 @@ export class SightingExtended extends DBBaseEntityUnid {
     public current_divergence_s_inv_day!: number | null;
 
     /**
+     * Signed coastal (cross-shore) component of the current in m/s at the
+     * sighting: the projection of the regional patch's centre-cell u/v
+     * onto the offshore unit normal of the nearest coast. Positive =
+     * current flows seaward (offshore), negative = shoreward (onshore) —
+     * the sign relevant to coastal upwelling / downwelling regimes. NULL
+     * when no coast lies within the search radius (open ocean) or the
+     * centre current vector is missing.
+     */
+    @Column({
+        type: 'decimal',
+        precision: 4,
+        scale: 2,
+        nullable: true
+    })
+    public current_coastal_component_m_s_day!: number | null;
+
+    /**
      * Status of the ocean (biogeochemistry + sea-state altimetry)
      * lookup: '', 'ok', 'land', 'invalid_location', 'invalid_date',
      * 'no_data'. Empty = never tried.

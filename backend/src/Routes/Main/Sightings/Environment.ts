@@ -180,6 +180,7 @@ export class Environment {
                 current_region_max_speed_m_s_day: Environment._num(ext?.current_region_max_speed_m_s_day),
                 current_curl_s_inv_day: Environment._num(ext?.current_curl_s_inv_day),
                 current_divergence_s_inv_day: Environment._num(ext?.current_divergence_s_inv_day),
+                current_coastal_component_m_s_day: Environment._num(ext?.current_coastal_component_m_s_day),
                 sst_c_day: Environment._num(ext?.sst_c_day),
                 air_temperature_c_day: Environment._num(ext?.air_temperature_c_day),
                 uv_index_day: Environment._num(ext?.uv_index_day),
