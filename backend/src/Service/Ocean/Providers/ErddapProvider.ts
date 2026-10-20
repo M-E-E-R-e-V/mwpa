@@ -173,25 +173,42 @@ export class ErddapProvider implements OceanProvider {
     ): Promise<OceanInfo | null> {
         const day: OceanSample = {};
 
+        // Each dataset can live on a different ERDDAP host (chl-a/SSS on
+        // coastwatch.noaa.gov, altimetry on coastwatch.pfeg.noaa.gov). Isolate
+        // every fetch so one unreachable host (upstream outage) only drops its
+        // own field instead of aborting the whole enrichment — otherwise a dead
+        // chl-a host would also take down the working currents/SLA.
         for (const dataset of ErddapProvider.SINGLE_VAR_DATASETS) {
-            // eslint-disable-next-line no-await-in-loop
-            const value = await this._fetchSingleVar(dataset, latitude, longitude, isoDate);
+            try {
+                // eslint-disable-next-line no-await-in-loop
+                const value = await this._fetchSingleVar(dataset, latitude, longitude, isoDate);
 
-            if (value !== null) {
-                day[dataset.targetField] = value;
+                if (value !== null) {
+                    day[dataset.targetField] = value;
+                }
+            } catch (e) {
+                Logger.getLogger().warn(
+                    `ErddapProvider: '${dataset.label}' fetch failed (${dataset.server}): ${ErddapProvider._errText(e)}`
+                );
             }
         }
 
-        const altimetry = await this._fetchAltimetry(latitude, longitude, isoDate);
+        try {
+            const altimetry = await this._fetchAltimetry(latitude, longitude, isoDate);
 
-        if (altimetry !== null) {
-            if (altimetry.speed !== null && altimetry.direction !== null) {
-                day.current_speed_m_s = altimetry.speed;
-                day.current_direction_deg = altimetry.direction;
+            if (altimetry !== null) {
+                if (altimetry.speed !== null && altimetry.direction !== null) {
+                    day.current_speed_m_s = altimetry.speed;
+                    day.current_direction_deg = altimetry.direction;
+                }
+                if (altimetry.slaCm !== null) {
+                    day.sla_cm = altimetry.slaCm;
+                }
             }
-            if (altimetry.slaCm !== null) {
-                day.sla_cm = altimetry.slaCm;
-            }
+        } catch (e) {
+            Logger.getLogger().warn(
+                `ErddapProvider: altimetry fetch failed (${ErddapProvider.ALTIMETRY_DATASET.server}): ${ErddapProvider._errText(e)}`
+            );
         }
 
         if (ErddapProvider._isEmpty(day)) {
@@ -210,6 +227,33 @@ export class ErddapProvider implements OceanProvider {
      * return the mean of finite values, or null when nothing matched.
      * @private
      */
+    /**
+     * Flatten an error for logging. Node's global `fetch` reports every
+     * network failure as the opaque message 'fetch failed' and hides the
+     * real reason (ETIMEDOUT, ENOTFOUND, ECONNREFUSED, cert errors) in
+     * `error.cause`. Append that cause so the logs name the actual problem.
+     * @param {unknown} e
+     * @return {string}
+     * @private
+     */
+    private static _errText(e: unknown): string {
+        if (!(e instanceof Error)) {
+            return String(e);
+        }
+
+        const cause = (e as {cause?: unknown}).cause;
+
+        if (cause instanceof Error) {
+            const code = (cause as {code?: unknown}).code;
+
+            return code === undefined ?
+                `${e.message}: ${cause.message}` :
+                `${e.message}: ${String(code)} ${cause.message}`;
+        }
+
+        return e.message;
+    }
+
     private async _fetchSingleVar(
         dataset: SingleVarDataset,
         latitude: number,
