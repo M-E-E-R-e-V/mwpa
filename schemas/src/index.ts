@@ -284,6 +284,16 @@ export {
     SightingCurrentRegionResponse,
 } from './Routes/Main/Sightings/SightingEnvironment.js';
 export {
+    SchemaBlacklistEntry,
+    BlacklistEntry,
+    SchemaBlacklistListResponse,
+    BlacklistListResponse,
+    SchemaBlacklistUnblockRequest,
+    BlacklistUnblockRequest,
+    SchemaBlacklistUnblockResponse,
+    BlacklistUnblockResponse,
+} from './Routes/Main/Blacklist.js';
+export {
     SchemaSightingFishingVesselEntry,
     SightingFishingVesselEntry,
     SchemaSightingFishingVesselListRequest,

@@ -1,4 +1,5 @@
 import {BaseHttpServerOptions, HttpServer, HttpService} from '@stefanwerfling/figtree';
+import {RateLimitRegistry} from '../RateLimitRegistry.js';
 import {MWPAHttpServer} from './MWPAHttpServer.js';
 
 /**
@@ -22,7 +23,13 @@ export class MWPAHttpService extends HttpService {
      * @protected
      */
     protected override _createServer(options: BaseHttpServerOptions): HttpServer {
-        return new MWPAHttpServer(options);
+        const server = new MWPAHttpServer(options);
+
+        // Hand the server to the registry so Blacklist/unblock can reset
+        // limiter keys via server.resetLimiterIP().
+        RateLimitRegistry.getInstance().setServer(server);
+
+        return server;
     }
 
 }

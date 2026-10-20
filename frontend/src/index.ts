@@ -27,6 +27,7 @@ import {ToursExternal} from './inc/Pages/ToursExternal';
 import {Users as UsersPage} from './inc/Pages/Users';
 import {AisLiveMap} from './inc/Pages/AisLiveMap';
 import {EncounterCategories} from './inc/Pages/EncounterCategories';
+import {Blacklist as BlacklistPage} from './inc/Pages/Blacklist';
 import {ExternalTourSource} from './inc/Pages/ExternalTourSource';
 import {Services} from './inc/Pages/Services';
 import {Vehicle} from './inc/Pages/Vehicle';
@@ -322,6 +323,14 @@ type SideMenuEntry = {
                             name: 'admin-services',
                             onClick: (): void => {
                                 loadPage(new Services());
+                            }
+                        },
+                        {
+                            title: 'Blacklist',
+                            icon: 'fa-solid fa-ban',
+                            name: 'admin-blacklist',
+                            onClick: (): void => {
+                                loadPage(new BlacklistPage());
                             }
                         }
                     ]

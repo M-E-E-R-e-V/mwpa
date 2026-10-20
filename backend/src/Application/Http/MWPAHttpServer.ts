@@ -1,4 +1,7 @@
-import {HttpServer} from '@stefanwerfling/figtree';
+import {Request, Response} from 'express';
+import {HttpServer, Logger} from '@stefanwerfling/figtree';
+import {RateLimitRegistry} from '../RateLimitRegistry.js';
+import {UserAgentInfo} from '../UserAgentInfo.js';
 
 /**
  * MWPA-flavoured HTTP server.
@@ -32,6 +35,32 @@ export class MWPAHttpServer extends HttpServer {
                 'https://onezoom.org'
             ]
         };
+    }
+
+    /**
+     * Record every rate-limit block into the {@link RateLimitRegistry} (so the
+     * admin Blacklist page can list + unblock them) and log the client's
+     * browser info alongside the block. All other behaviour is inherited.
+     * @param {Request} req
+     * @param {Response} res
+     * @protected
+     */
+    protected override async _limiterHandler(req: Request, res: Response): Promise<void> {
+        const userAgent = typeof req.headers['user-agent'] === 'string' ? req.headers['user-agent'] : '';
+        const info = UserAgentInfo.parse(userAgent);
+
+        RateLimitRegistry.getInstance().record(req.ip, req.url, userAgent);
+
+        Logger.getLogger().warn(
+            'MWPAHttpServer::_limiterHandler: blocked %s browser="%s" os="%s" path=%s ua="%s"',
+            req.ip ?? '',
+            info.browser,
+            info.os,
+            req.url,
+            userAgent
+        );
+
+        return super._limiterHandler(req, res);
     }
 
 }

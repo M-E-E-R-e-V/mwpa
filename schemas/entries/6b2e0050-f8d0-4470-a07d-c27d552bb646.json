@@ -1,0 +1,195 @@
+{
+  "schemas": [
+    {
+      "unid": "2c2b7edf-cf82-4a32-9d24-3bc7d0eb06d2",
+      "name": "BlacklistEntry",
+      "description": "One IP currently blocked by the rate limiter.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 40,
+        "y": 40
+      },
+      "fields": [
+        {
+          "unid": "c45c1daf-b230-4be5-86d7-6dd5829804c2",
+          "name": "ip",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2776bdb8-f184-48c1-a6ed-d6b47f244700",
+          "name": "count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "21f64774-7cdf-46df-b8c6-48a4bf6552f6",
+          "name": "first_blocked",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Epoch ms of the first block."
+        },
+        {
+          "unid": "02cab6e1-1b62-495e-8f40-e0f463f275ae",
+          "name": "last_blocked",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Epoch ms of the most recent block."
+        },
+        {
+          "unid": "49a6eb3d-124e-4a5d-a6c4-87f0f8551859",
+          "name": "last_path",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "The last path the IP was refused on."
+        },
+        {
+          "unid": "f259884a-025b-484e-9eba-8481bb9317f6",
+          "name": "user_agent",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "0bdba097-67f6-4091-8f00-c7be4feb8f29",
+          "name": "browser",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Parsed browser label from the User-Agent."
+        },
+        {
+          "unid": "143ea3d8-0bfd-47f6-be4c-fb6af044c65d",
+          "name": "os",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Parsed OS label from the User-Agent."
+        },
+        {
+          "unid": "aca8cc8a-8ddf-42f6-b160-5faf399b78c8",
+          "name": "hostname",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Best-effort reverse-DNS (PTR) hostname of the IP."
+        }
+      ]
+    },
+    {
+      "unid": "828fac09-2b7c-4ea6-ab85-a19f53abe5f8",
+      "name": "BlacklistListResponse",
+      "description": "Response of /json/blacklist/list — the IPs currently blocked by the rate limiter.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 450,
+        "y": 40
+      },
+      "fields": [
+        {
+          "unid": "9fc73af8-6da0-4f06-981f-30d319d1550b",
+          "name": "list",
+          "type": {
+            "type": "2c2b7edf-cf82-4a32-9d24-3bc7d0eb06d2",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "72be39b5-b73e-4f85-ab0b-b57fbf5e82ef",
+      "name": "BlacklistUnblockRequest",
+      "description": "Unblock (reset the rate limiter for) a single IP.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 450,
+        "y": 320
+      },
+      "fields": [
+        {
+          "unid": "6a3dc88e-1fc4-4d4f-ae9e-9ec8098e3c23",
+          "name": "ip",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "dfa6bf30-fc6f-4215-9088-5586b45ea6e1",
+      "name": "BlacklistUnblockResponse",
+      "description": "Response of /json/blacklist/unblock.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 860,
+        "y": 320
+      },
+      "fields": [
+        {
+          "unid": "d84966ee-b3cc-40e3-8ca5-7a581c8fbf79",
+          "name": "success",
+          "type": {
+            "type": "boolean",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [],
+  "history": {}
+}
