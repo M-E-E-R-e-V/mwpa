@@ -1,8 +1,11 @@
 import {Logger} from '@stefanwerfling/figtree';
 import {SightingEnrichmentPatch} from '../../Db/MariaDb/Repositories/SightingEnrichmentRepository.js';
 import {AstronomyEnricher} from './Enrichers/AstronomyEnricher.js';
+import {BgcEnricher} from './Enrichers/BgcEnricher.js';
 import {DerivedEnricher} from './Enrichers/DerivedEnricher.js';
+import {HumanPressureEnricher} from './Enrichers/HumanPressureEnricher.js';
 import {MeteoExtraEnricher} from './Enrichers/MeteoExtraEnricher.js';
+import {TideEnricher} from './Enrichers/TideEnricher.js';
 import {UpwellingEnricher} from './Enrichers/UpwellingEnricher.js';
 import {Enricher, EnrichmentContext} from './Types.js';
 
@@ -48,7 +51,10 @@ export class EnricherRegistry {
             new AstronomyEnricher(),
             new MeteoExtraEnricher(),
             new UpwellingEnricher(),
-            new DerivedEnricher()
+            new DerivedEnricher(),
+            new BgcEnricher(),
+            new TideEnricher(),
+            new HumanPressureEnricher()
         ];
     }
 
