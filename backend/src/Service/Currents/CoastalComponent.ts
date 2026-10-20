@@ -65,7 +65,7 @@ export class CoastalComponent {
             return null;
         }
 
-        const normal = CoastalComponent._offshoreNormal(latDeg, lonDeg);
+        const normal = CoastalComponent.offshoreNormal(latDeg, lonDeg);
 
         if (normal === null) {
             return null;
@@ -105,9 +105,11 @@ export class CoastalComponent {
      * Offshore unit normal (east, north) of the nearest coast, derived by
      * ring-sampling the land/sea mask. Null when no land is found within the
      * radius, or the land samples cancel to an ambiguous direction.
-     * @private
+     *
+     * Public so other derived metrics (e.g. the Ekman upwelling index) can
+     * reuse the same coast-geometry probe instead of duplicating it.
      */
-    private static _offshoreNormal(latDeg: number, lonDeg: number): {east: number; north: number;} | null {
+    public static offshoreNormal(latDeg: number, lonDeg: number): {east: number; north: number;} | null {
         const latRad = latDeg * Math.PI / 180;
         const cosLat = Math.cos(latRad);
 
