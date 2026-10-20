@@ -5,8 +5,10 @@ import {
     SightingEnvironmentProvenance,
     SightingsFilter
 } from 'mwpa_schemas';
+import {SightingEnrichment} from '../../../Db/MariaDb/Entities/SightingEnrichment.js';
 import {SightingExtended} from '../../../Db/MariaDb/Entities/SightingExtended.js';
 import {SightingFishingEffort} from '../../../Db/MariaDb/Entities/SightingFishingEffort.js';
+import {SightingEnrichmentRepository} from '../../../Db/MariaDb/Repositories/SightingEnrichmentRepository.js';
 import {SightingExtendedRepository} from '../../../Db/MariaDb/Repositories/SightingExtendedRepository.js';
 import {SightingFishingEffortRepository} from '../../../Db/MariaDb/Repositories/SightingFishingEffortRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
@@ -59,7 +61,8 @@ export class Environment {
      */
     private static _mergeProvenance(
         oceanProv: Record<string, string> | null,
-        fishingProv: Record<string, string> | null
+        fishingProv: Record<string, string> | null,
+        enrichmentProv: Record<string, string> | null
     ): SightingEnvironmentProvenance[] | undefined {
         const out: SightingEnvironmentProvenance[] = [];
 
@@ -70,6 +73,11 @@ export class Environment {
         }
         if (fishingProv) {
             for (const [field, source] of Object.entries(fishingProv)) {
+                out.push({field: field, source: source});
+            }
+        }
+        if (enrichmentProv) {
+            for (const [field, source] of Object.entries(enrichmentProv)) {
                 out.push({field: field, source: source});
             }
         }
@@ -132,10 +140,12 @@ export class Environment {
         }
 
         const sightingIds = rows.map((r) => r.id);
+        const sightingUnids = rows.map((r) => r.unid).filter((u) => u !== '');
 
-        const [extendedRows, fishingRows] = await Promise.all([
+        const [extendedRows, fishingRows, enrichmentRows] = await Promise.all([
             SightingExtendedRepository.getInstance().findManyBySightings(sightingIds),
-            SightingFishingEffortRepository.getInstance().findManyBySightings(sightingIds)
+            SightingFishingEffortRepository.getInstance().findManyBySightings(sightingIds),
+            SightingEnrichmentRepository.getInstance().findManyBySightingUnids(sightingUnids)
         ]);
 
         const extByS = new Map<number, SightingExtended>();
@@ -145,6 +155,11 @@ export class Environment {
         const fishBys = new Map<number, SightingFishingEffort>();
         for (const f of fishingRows) {
             fishBys.set(f.sighting_id, f);
+        }
+        // Enrichment is keyed by the sighting's stable unid, not its id.
+        const enrByUnid = new Map<string, SightingEnrichment>();
+        for (const enr of enrichmentRows) {
+            enrByUnid.set(enr.sighting_unid, enr);
         }
 
         const list: SightingEnvironmentEntry[] = [];
@@ -157,6 +172,7 @@ export class Environment {
 
             const ext = extByS.get(entry.id);
             const fish = fishBys.get(entry.id);
+            const enr = enrByUnid.get(entry.unid);
 
             const species = speciesMap.get(entry.species_id);
             const pointtype = species?.species_group?.name?.toLowerCase() ?? 'none';
@@ -201,9 +217,24 @@ export class Environment {
                 top_flag: Environment._str(fish?.top_flag),
                 fishing_status: Environment._str(fish?.fishing_status),
 
+                moon_phase: Environment._num(enr?.moon_phase),
+                moon_illumination_pct: Environment._num(enr?.moon_illumination_pct),
+                sun_elevation_deg: Environment._num(enr?.sun_elevation_deg),
+                sun_azimuth_deg: Environment._num(enr?.sun_azimuth_deg),
+                day_length_h: Environment._num(enr?.day_length_h),
+                pressure_msl_hpa_day: Environment._num(enr?.pressure_msl_hpa_day),
+                cloud_cover_pct_day: Environment._num(enr?.cloud_cover_pct_day),
+                visibility_m_day: Environment._num(enr?.visibility_m_day),
+                precipitation_mm_day: Environment._num(enr?.precipitation_mm_day),
+                upwelling_index_day: Environment._num(enr?.upwelling_index_day),
+                seabed_slope_deg: Environment._num(enr?.seabed_slope_deg),
+                sst_front_grad_c_km_day: Environment._num(enr?.sst_front_grad_c_km_day),
+                enrichment_status: Environment._str(enr?.enrichment_status),
+
                 provenance: Environment._mergeProvenance(
                     ext?.provenance ?? null,
-                    fish?.provenance ?? null
+                    fish?.provenance ?? null,
+                    enr?.provenance ?? null
                 )
             });
         }

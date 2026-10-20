@@ -55,6 +55,20 @@ export type SightingEnvironmentEntry = {
     top_flag?: string;
     fishing_status?: string;
 
+    moon_phase?: number;
+    moon_illumination_pct?: number;
+    sun_elevation_deg?: number;
+    sun_azimuth_deg?: number;
+    day_length_h?: number;
+    pressure_msl_hpa_day?: number;
+    cloud_cover_pct_day?: number;
+    visibility_m_day?: number;
+    precipitation_mm_day?: number;
+    upwelling_index_day?: number;
+    seabed_slope_deg?: number;
+    sst_front_grad_c_km_day?: number;
+    enrichment_status?: string;
+
     provenance?: SightingEnvironmentProvenanceEntry[];
 };
 

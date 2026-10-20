@@ -356,6 +356,22 @@ export class OceanFishingMap extends BasePage {
             r.uv_index_day === undefined ? null : `UV index: ${fmt(r.uv_index_day, 1, '')}`,
             r.wind_speed_m_s_day === undefined ? null
                 : `Wind: ${fmt(r.wind_speed_m_s_day, 1, 'm/s')}${typeof r.wind_direction_deg_day === 'number' ? ` @ ${Math.round(r.wind_direction_deg_day)}°` : ''}${typeof r.wind_gusts_m_s_day === 'number' ? ` (gust ${fmt(r.wind_gusts_m_s_day, 1, 'm/s')})` : ''}`,
+            r.pressure_msl_hpa_day === undefined ? null : `Pressure: ${fmt(r.pressure_msl_hpa_day, 0, 'hPa')}`,
+            r.cloud_cover_pct_day === undefined ? null : `Cloud cover: ${fmt(r.cloud_cover_pct_day, 0, '%')}`,
+            r.visibility_m_day === undefined ? null : `Visibility: ${fmt(r.visibility_m_day / 1000, 1, 'km')}`,
+            r.precipitation_mm_day === undefined ? null : `Precipitation: ${fmt(r.precipitation_mm_day, 1, 'mm')}`,
+            '<i>— Sky &amp; Light —</i>',
+            r.sun_elevation_deg === undefined ? null
+                : `Sun elevation: ${fmt(r.sun_elevation_deg, 1, '°')}${typeof r.sun_azimuth_deg === 'number' ? ` @ ${Math.round(r.sun_azimuth_deg)}°` : ''}`,
+            r.day_length_h === undefined ? null : `Day length: ${fmt(r.day_length_h, 1, 'h')}`,
+            r.moon_phase === undefined ? null
+                : `Moon: ${fmt(r.moon_illumination_pct, 0, '%')} lit (phase ${fmt(r.moon_phase, 2, '')})`,
+            '<i>— Derived —</i>',
+            r.upwelling_index_day === undefined ? null
+                : `Upwelling index: ${fmt(r.upwelling_index_day, 1, 'm³/s per 100 m')}`,
+            r.seabed_slope_deg === undefined ? null : `Seabed slope: ${fmt(r.seabed_slope_deg, 1, '°')}`,
+            r.sst_front_grad_c_km_day === undefined ? null
+                : `SST front: ${fmt(r.sst_front_grad_c_km_day, 3, '°C/km')}`,
             '<i>— Fishing —</i>',
             `Fishing (25 km): ${fmt(r.fishing_hours_day_25km, 1, 'h/day')}`,
             `Vessels (25 km): ${typeof r.vessel_count_day_25km === 'number' ? r.vessel_count_day_25km : '—'}`,
