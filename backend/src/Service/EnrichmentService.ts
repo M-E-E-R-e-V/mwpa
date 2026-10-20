@@ -30,12 +30,13 @@ export class EnrichmentService extends ServiceJobAbstract {
     public static readonly NAME = 'enrichment';
 
     /**
-     * Sightings processed per cron tick. The dominant cost is the single
-     * Open-Meteo call in the meteo enricher (~1.2 s rate-limited), so 20 ≈
-     * 25 s — comfortable inside the 5-minute window.
+     * Sightings processed per cron tick. The DerivedEnricher adds several
+     * upstream calls per sighting (bathymetry stencil + SST neighbours), so
+     * the budget is modest to stay well inside the 5-minute window; the
+     * backlog drains over successive ticks.
      * @private
      */
-    private static readonly MAX_PER_RUN = 20;
+    private static readonly MAX_PER_RUN = 12;
 
     /**
      * Re-compute rows older than this. Astronomy is date-fixed and the
