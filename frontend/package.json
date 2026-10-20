@@ -1,6 +1,6 @@
 {
   "name": "mwpa_frontend",
-  "version": "1.0.39",
+  "version": "1.0.40",
   "description": "Mammals watchig process analyse frontend",
   "main": "dist/main.js",
   "scripts": {

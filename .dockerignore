@@ -10,6 +10,16 @@ backend/src
 backend/test
 backend/tsconfig*.json
 
+# Frontend is served pre-built (dist + assets); its sources/build config
+# aren't needed in the runtime image (package.json is kept for the
+# workspace definition).
+frontend/src
+frontend/test
+frontend/gulpfile.js
+frontend/webpack.config.js
+frontend/tsconfig.json
+frontend/vitest.config.ts
+
 # Repo housekeeping
 .git
 .idea
