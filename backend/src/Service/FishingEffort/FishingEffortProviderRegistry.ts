@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {GfwProvider} from './Providers/GfwProvider.js';
 import {FishingEffortInfo, FishingEffortProvider} from './Types.js';
 

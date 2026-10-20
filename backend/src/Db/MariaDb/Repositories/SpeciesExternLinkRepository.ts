@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {SpeciesExternLink} from '../Entities/SpeciesExternLink.js';
 
 /**

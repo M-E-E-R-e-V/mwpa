@@ -1,4 +1,4 @@
-import {DBRepositoryBase} from 'figtree';
+import {DBRepositoryBase} from '@stefanwerfling/figtree';
 import {In} from 'typeorm';
 import {GroupsRoles} from '../Entities/GroupsRoles.js';
 

@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {SightingCurrentFieldGrid} from '../../Db/MariaDb/Entities/SightingCurrentField.js';
 import {httpGetWithRetry} from '../Common/HttpGet.js';
 import {RateLimiter} from '../Common/RateLimiter.js';

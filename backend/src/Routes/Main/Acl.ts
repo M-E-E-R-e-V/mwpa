@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {DefaultRoute} from 'figtree';
+import {DefaultRoute} from '@stefanwerfling/figtree';
 import {DefaultReturn, SchemaDefaultReturn, StatusCodes} from 'figtree-schemas';
 import {Vts} from 'vts';
 import {

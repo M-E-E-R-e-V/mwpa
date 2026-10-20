@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import Path from 'path';
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {DefaultMobileV1Return} from 'mwpa_schemas';
 import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';

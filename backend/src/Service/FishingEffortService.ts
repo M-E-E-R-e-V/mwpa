@@ -1,4 +1,4 @@
-import {Logger, ServiceJobAbstract} from 'figtree';
+import {Logger, ServiceJobAbstract} from '@stefanwerfling/figtree';
 import {
     SightingFishingEffortPatch,
     SightingFishingEffortRepository

@@ -1,4 +1,4 @@
-import {HttpServer} from 'figtree';
+import {HttpServer} from '@stefanwerfling/figtree';
 
 /**
  * MWPA-flavoured HTTP server.

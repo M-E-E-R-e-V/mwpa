@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {In} from 'typeorm';
 import {SightingMovement} from '../Entities/SightingMovement.js';
 

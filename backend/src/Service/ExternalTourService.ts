@@ -1,4 +1,4 @@
-import {Logger, ServiceJobAbstract} from 'figtree';
+import {Logger, ServiceJobAbstract} from '@stefanwerfling/figtree';
 import {OrganizationExternalTourSource} from '../Db/MariaDb/Entities/OrganizationExternalTourSource.js';
 import {ExternalTourRepository, ExternalTourUpsertPatch} from '../Db/MariaDb/Repositories/ExternalTourRepository.js';
 import {OrganizationExternalTourSourceRepository} from '../Db/MariaDb/Repositories/OrganizationExternalTourSourceRepository.js';

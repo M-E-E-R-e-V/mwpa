@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {SightingTourTracking} from '../../Db/MariaDb/Entities/SightingTourTracking.js';
 import {SightingTourTrackingPendingRepository} from '../../Db/MariaDb/Repositories/SightingTourTrackingPendingRepository.js';
 import {SightingTourTrackingRepository} from '../../Db/MariaDb/Repositories/SightingTourTrackingRepository.js';

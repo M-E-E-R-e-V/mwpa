@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {DefaultRoute} from 'figtree';
+import {DefaultRoute} from '@stefanwerfling/figtree';
 import {DefaultHandlerReturn, HandlerResultType} from 'figtree-schemas';
 import {SchemaMapCacheRequest} from 'mwpa_schemas';
 import {Tile} from './Tile/Tile.js';

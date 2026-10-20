@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {httpGetWithRetry} from '../../Common/HttpGet.js';
 import {RateLimiter} from '../../Common/RateLimiter.js';
 import {OceanInfo, OceanProvider, OceanSample} from '../Types.js';

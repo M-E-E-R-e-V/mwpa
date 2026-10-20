@@ -1,4 +1,4 @@
-import {Logger, ServiceJobAbstract} from 'figtree';
+import {Logger, ServiceJobAbstract} from '@stefanwerfling/figtree';
 import {LiveAisTrackRepository} from '../../Db/MariaDb/Repositories/LiveAisTrackRepository.js';
 import {AisSettings} from './AisSettings.js';
 

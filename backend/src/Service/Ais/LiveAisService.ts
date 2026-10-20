@@ -1,4 +1,4 @@
-import {Logger, ServiceAbstract} from 'figtree';
+import {Logger, ServiceAbstract} from '@stefanwerfling/figtree';
 import {ServiceStatus} from 'figtree-schemas';
 import {WebSocket} from 'ws';
 import {AisVesselRepository} from '../../Db/MariaDb/Repositories/AisVesselRepository.js';

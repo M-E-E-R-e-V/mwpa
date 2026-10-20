@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {Between, In, LessThan, MoreThanOrEqual} from 'typeorm';
 import {LiveAisTrack} from '../Entities/LiveAisTrack.js';
 

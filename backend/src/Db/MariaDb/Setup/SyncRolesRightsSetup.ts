@@ -1,4 +1,4 @@
-import {DBSetupHook, Logger} from 'figtree';
+import {DBSetupHook, Logger} from '@stefanwerfling/figtree';
 import {ACLRbac} from '../../../ACL/ACLRbac.js';
 import {GroupsRolesRepository} from '../Repositories/GroupsRolesRepository.js';
 import {UsersRightsRepository} from '../Repositories/UsersRightsRepository.js';

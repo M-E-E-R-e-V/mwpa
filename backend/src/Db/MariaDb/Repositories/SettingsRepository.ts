@@ -1,4 +1,4 @@
-import {DBRepositoryUnid} from 'figtree';
+import {DBRepositoryUnid} from '@stefanwerfling/figtree';
 import {Settings} from '../Entities/Settings.js';
 
 /**

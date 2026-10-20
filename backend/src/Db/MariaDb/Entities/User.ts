@@ -1,4 +1,4 @@
-import {DBBaseEntityId} from 'figtree';
+import {DBBaseEntityId} from '@stefanwerfling/figtree';
 import {Entity, Column, Index} from 'typeorm';
 
 /**

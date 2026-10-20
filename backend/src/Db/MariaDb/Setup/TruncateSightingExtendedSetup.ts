@@ -1,4 +1,4 @@
-import {DBHelper, DBSetupHook, Logger} from 'figtree';
+import {DBHelper, DBSetupHook, Logger} from '@stefanwerfling/figtree';
 
 /**
  * One-shot wipe of `sighting_extended` after the schema flip from the

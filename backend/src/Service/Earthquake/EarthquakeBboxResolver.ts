@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {OrganizationRepository} from '../../Db/MariaDb/Repositories/OrganizationRepository.js';
 import {OrganizationTrackingAreaRepository} from '../../Db/MariaDb/Repositories/OrganizationTrackingAreaRepository.js';
 import {EarthquakeBbox} from '../../Db/MariaDb/Repositories/EarthquakeRepository.js';

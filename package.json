@@ -34,7 +34,7 @@
     "eslint": "^9.19.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "figtree": "git+https://github.com/stefanwerfling/figtree.git#claude",
+    "@stefanwerfling/figtree": "git+https://github.com/stefanwerfling/figtree.git#main",
     "npm-check-updates": "^18.0.1",
     "typescript": "^5.8.3",
     "vtseditor": "github:stefanwerfling/vtseditor"

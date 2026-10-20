@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {Between, FindOptionsWhere, In, LessThanOrEqual, MoreThanOrEqual, Raw} from 'typeorm';
 import {Earthquake} from '../Entities/Earthquake.js';
 

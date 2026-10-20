@@ -1,4 +1,4 @@
-import {DBHelper, DBSetupHook, Logger} from 'figtree';
+import {DBHelper, DBSetupHook, Logger} from '@stefanwerfling/figtree';
 
 /**
  * One-shot conversion of user-entered text columns on `sighting` from the

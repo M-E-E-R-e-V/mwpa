@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {Vts} from 'vts';
 import {v4 as uuidv4} from 'uuid';
 import {SightingSaveResponse, TypeSighting} from 'mwpa_schemas';

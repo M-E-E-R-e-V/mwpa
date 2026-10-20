@@ -1,4 +1,4 @@
-import {DBRepositoryUnid} from 'figtree';
+import {DBRepositoryUnid} from '@stefanwerfling/figtree';
 import {In} from 'typeorm';
 import {SightingTourTracking} from '../Entities/SightingTourTracking.js';
 

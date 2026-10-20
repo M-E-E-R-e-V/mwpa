@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {DefaultRoute} from 'figtree';
+import {DefaultRoute} from '@stefanwerfling/figtree';
 import {checkMWPAUserIsLogin} from '../AuthCheck.js';
 import {SchemaBehaviouralStatesResponse} from 'mwpa_schemas';
 import {List} from './BehaviouralStates/List.js';

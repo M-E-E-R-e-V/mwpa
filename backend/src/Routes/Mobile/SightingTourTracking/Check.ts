@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {Vts} from 'vts';
 import {SightingTourTrackingCheckRequest, SightingTourTrackingCheckResponse} from 'mwpa_schemas';
 import {Const} from '../../../Const.js';

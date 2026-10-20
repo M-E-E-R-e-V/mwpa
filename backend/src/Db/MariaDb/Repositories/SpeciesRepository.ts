@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {Species} from '../Entities/Species.js';
 import {SpeciesGroup} from '../Entities/SpeciesGroup.js';
 

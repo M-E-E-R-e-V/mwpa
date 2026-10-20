@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {EncounterCategories} from '../Entities/EncounterCategories.js';
 
 /**

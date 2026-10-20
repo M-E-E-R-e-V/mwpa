@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {DefaultRoute, Logger} from 'figtree';
+import {DefaultRoute, Logger} from '@stefanwerfling/figtree';
 import {DefaultReturn, SchemaDefaultReturn, StatusCodes} from 'figtree-schemas';
 import {
     MovementConfigEntry,

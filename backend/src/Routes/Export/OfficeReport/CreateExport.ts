@@ -2,7 +2,7 @@ import fs from 'fs';
 import JSZip from 'jszip';
 import moment from 'moment';
 import Path from 'path';
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {OfficeReportFilter} from 'mwpa_schemas';
 import {Between, FindOptionsWhere, In, Raw} from 'typeorm';
 import {Sighting as SightingDB} from '../../../Db/MariaDb/Entities/Sighting.js';

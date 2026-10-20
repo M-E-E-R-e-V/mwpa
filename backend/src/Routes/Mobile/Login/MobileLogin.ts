@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {Vts} from 'vts';
 import {LoginResponse, MobileLoginRequest} from 'mwpa_schemas';
 import {Devices as DevicesDB} from '../../../Db/MariaDb/Entities/Devices.js';

@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {DefaultRoute} from 'figtree';
+import {DefaultRoute} from '@stefanwerfling/figtree';
 import {DefaultHandlerReturn, DefaultReturn, HandlerResultType, SchemaDefaultReturn, StatusCodes} from 'figtree-schemas';
 import {
     RightSightings,

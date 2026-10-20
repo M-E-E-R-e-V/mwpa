@@ -1,4 +1,4 @@
-import {ACL, BackendApp} from 'figtree';
+import {ACL, BackendApp} from '@stefanwerfling/figtree';
 import {MWPAHttpService} from './Http/MWPAHttpService.js';
 import {MWPAMariaDBService} from './MWPAMariaDBService.js';
 import {ConfigOptions, DefaultArgs, SchemaDefaultArgs} from 'figtree-schemas';

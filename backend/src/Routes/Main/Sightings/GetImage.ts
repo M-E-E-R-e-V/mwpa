@@ -1,5 +1,5 @@
 import {Response} from 'express';
-import {FileHelper, HttpFileStream, Logger} from 'figtree';
+import {FileHelper, HttpFileStream, Logger} from '@stefanwerfling/figtree';
 import Path from 'path';
 import {SightingImageGetRequest} from 'mwpa_schemas';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';

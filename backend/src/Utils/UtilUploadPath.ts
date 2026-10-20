@@ -1,4 +1,4 @@
-import {DirHelper} from 'figtree';
+import {DirHelper} from '@stefanwerfling/figtree';
 import Path from 'path';
 import {MWPAConfig} from '../Config/MWPAConfig.js';
 

@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {BehaviouralStates} from '../Entities/BehaviouralStates.js';
 
 /**

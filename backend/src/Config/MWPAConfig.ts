@@ -1,4 +1,4 @@
-import {Config, ConfigBackend} from 'figtree';
+import {Config, ConfigBackend} from '@stefanwerfling/figtree';
 import {BackendConfigOptions, ENV_MWPA, SchemaBackendConfigOptions} from 'mwpa_schemas';
 
 /**

@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import moment from 'moment-timezone';
 import {Sighting} from '../../Db/MariaDb/Entities/Sighting.js';
 import {SightingMovement} from '../../Db/MariaDb/Entities/SightingMovement.js';

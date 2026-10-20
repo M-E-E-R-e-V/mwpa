@@ -1,4 +1,4 @@
-import {HttpRouteLoader, IDefaultRoute, ServiceRoute, SwaggerUIRoute} from 'figtree';
+import {HttpRouteLoader, IDefaultRoute, ServiceRoute, SwaggerUIRoute} from '@stefanwerfling/figtree';
 import {Backend} from '../Application/Backend.js';
 import {checkMWPAAdminIsLogin} from './AuthCheck.js';
 import {Acl} from './Main/Acl.js';

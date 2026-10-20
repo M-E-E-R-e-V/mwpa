@@ -1,4 +1,4 @@
-import {DBRepositoryUnid} from 'figtree';
+import {DBRepositoryUnid} from '@stefanwerfling/figtree';
 import {DeepPartial, In} from 'typeorm';
 import {Sighting} from '../Entities/Sighting.js';
 import {SightingExtended} from '../Entities/SightingExtended.js';

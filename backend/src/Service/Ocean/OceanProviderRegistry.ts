@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {ErddapProvider} from './Providers/ErddapProvider.js';
 import {OceanInfo, OceanProvider} from './Types.js';
 

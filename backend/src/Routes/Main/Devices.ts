@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {DefaultRoute} from 'figtree';
+import {DefaultRoute} from '@stefanwerfling/figtree';
 import {StatusCodes} from 'figtree-schemas';
 import {In} from 'typeorm';
 import {

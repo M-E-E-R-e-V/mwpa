@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {Between, FindOptionsOrder, FindOptionsWhere, In, Like, Raw} from 'typeorm';
 import {Sighting} from '../Entities/Sighting.js';
 

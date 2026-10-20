@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {DefaultRoute} from 'figtree';
+import {DefaultRoute} from '@stefanwerfling/figtree';
 import {InfoResponse, SchemaInfoResponse} from 'mwpa_schemas';
 import {Const} from '../../Const.js';
 import {MobileV1StatusCode} from './MobileV1.js';

@@ -1,4 +1,4 @@
-import {ACLRbac as TACLRbac} from 'figtree';
+import {ACLRbac as TACLRbac} from '@stefanwerfling/figtree';
 import {MwpaRights, RightService, RightSightings, RightTours, RightUsers, Role} from 'mwpa_schemas';
 import {Rbac} from 'rbac-simple';
 

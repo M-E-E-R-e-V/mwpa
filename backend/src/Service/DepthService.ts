@@ -1,4 +1,4 @@
-import {Logger, ServiceJobAbstract} from 'figtree';
+import {Logger, ServiceJobAbstract} from '@stefanwerfling/figtree';
 import {Sighting} from '../Db/MariaDb/Entities/Sighting.js';
 import {SightingExtendedRepository, SightingExtendedPatch} from '../Db/MariaDb/Repositories/SightingExtendedRepository.js';
 import {UtilIsInSea} from '../Utils/UtilIsInSea.js';

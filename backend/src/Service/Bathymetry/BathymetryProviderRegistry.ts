@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {EMODnetProvider} from './Providers/EMODnetProvider.js';
 import {NoaaEtopoProvider} from './Providers/NoaaEtopoProvider.js';
 import {BathymetryProvider, DepthInfo} from './Types.js';

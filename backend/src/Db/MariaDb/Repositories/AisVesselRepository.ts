@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {In} from 'typeorm';
 import {AisVessel} from '../Entities/AisVessel.js';
 

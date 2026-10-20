@@ -1,5 +1,5 @@
 import {Response} from 'express';
-import {FileHelper, Logger, StringHelper} from 'figtree';
+import {FileHelper, Logger, StringHelper} from '@stefanwerfling/figtree';
 import fs from 'fs/promises';
 import {MapCacheRequest} from 'mwpa_schemas';
 import Path from 'path';

@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import {Router} from 'express';
-import {DefaultRoute, Logger} from 'figtree';
+import {DefaultRoute, Logger} from '@stefanwerfling/figtree';
 import {
     LoginIsLoginResponse,
     LoginRequest, LoginResponse, LogoutResponse,

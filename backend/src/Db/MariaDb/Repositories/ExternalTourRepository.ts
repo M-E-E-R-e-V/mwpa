@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {Between, In, MoreThanOrEqual} from 'typeorm';
 import {ExternalTour} from '../Entities/ExternalTour.js';
 

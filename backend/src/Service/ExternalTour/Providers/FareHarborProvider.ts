@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {ExternalTourProvider, ExternalTourSlot, ExternalTourSourceConfig} from '../Types.js';
 
 /**

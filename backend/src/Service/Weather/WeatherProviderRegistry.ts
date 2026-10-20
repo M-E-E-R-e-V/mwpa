@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {NasaPowerProvider} from './Providers/NasaPowerProvider.js';
 import {OpenMeteoProvider} from './Providers/OpenMeteoProvider.js';
 import {WeatherInfo, WeatherProvider, WeatherSample} from './Types.js';

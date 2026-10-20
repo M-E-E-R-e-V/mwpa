@@ -1,4 +1,4 @@
-import {DBLoader, DbSetupState} from 'figtree';
+import {DBLoader, DbSetupState} from '@stefanwerfling/figtree';
 import {EntitySchema, MixedList} from 'typeorm';
 import {AisVessel} from './Entities/AisVessel.js';
 import {BehaviouralStates} from './Entities/BehaviouralStates.js';

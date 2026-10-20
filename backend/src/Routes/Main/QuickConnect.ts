@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import {Request, Router} from 'express';
-import {DefaultRoute, Logger} from 'figtree';
+import {DefaultRoute, Logger} from '@stefanwerfling/figtree';
 import {StatusCodes} from 'figtree-schemas';
 import {
     MWPASessionUserData,

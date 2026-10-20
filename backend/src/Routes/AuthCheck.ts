@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import {ACL, DefaultRouteCheckUserIsLogin, RouteError} from 'figtree';
+import {ACL, DefaultRouteCheckUserIsLogin, RouteError} from '@stefanwerfling/figtree';
 import {SchemaRequestData, StatusCodes} from 'figtree-schemas';
 import {MWPASessionUserData, SchemaMWPASessionData} from 'mwpa_schemas';
 import {Vts} from 'vts';

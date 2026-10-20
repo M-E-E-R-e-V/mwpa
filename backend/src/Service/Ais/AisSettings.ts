@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {SettingsRepository} from '../../Db/MariaDb/Repositories/SettingsRepository.js';
 
 /**

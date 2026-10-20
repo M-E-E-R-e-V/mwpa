@@ -1,4 +1,4 @@
-import {Logger, ServiceJobAbstract} from 'figtree';
+import {Logger, ServiceJobAbstract} from '@stefanwerfling/figtree';
 import {Earthquake} from '../Db/MariaDb/Entities/Earthquake.js';
 import {EarthquakeRepository} from '../Db/MariaDb/Repositories/EarthquakeRepository.js';
 import {SightingRepository} from '../Db/MariaDb/Repositories/SightingRepository.js';

@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {DefaultRoute} from 'figtree';
+import {DefaultRoute} from '@stefanwerfling/figtree';
 import {checkMWPAUserIsLogin} from '../AuthCheck.js';
 import {DefaultHandlerReturn, HandlerResultType, StatusCodes} from 'figtree-schemas';
 import {In} from 'typeorm';

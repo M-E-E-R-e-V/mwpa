@@ -1,4 +1,4 @@
-import {DBHelper, Logger, MariaDBService, ServiceError} from 'figtree';
+import {DBHelper, Logger, MariaDBService, ServiceError} from '@stefanwerfling/figtree';
 import {SchemaConfigDbOptionsMySql, ServiceStatus} from 'figtree-schemas';
 import {MWPAConfig} from '../Config/MWPAConfig.js';
 
@@ -56,6 +56,12 @@ export class MWPAMariaDBService extends MariaDBService {
                 );
             }
 
+            // Mirror figtree 1.1.0 MariaDBService.start(): when a baseline is
+            // configured, defer the migration run so runMigrations() can stamp
+            // the baseline row first (auto-baseline of a pre-existing schema).
+            const migrationsRun = this._options.migrationsRun ?? true;
+            const baseline = this._options.baseline;
+
             await DBHelper.init({
                 type: 'mysql',
                 host: tConfig.db.mysql.host,
@@ -70,9 +76,13 @@ export class MWPAMariaDBService extends MariaDBService {
                 charset: 'utf8mb4_unicode_ci',
                 entities: await this._loader.loadEntities(),
                 migrations: this._loader.loadMigrations(),
-                migrationsRun: this._options.migrationsRun ?? true,
+                migrationsRun: baseline ? false : migrationsRun,
                 synchronize: this._options.synchronize ?? true
             });
+
+            if (baseline && migrationsRun) {
+                await DBHelper.runMigrations(undefined, baseline);
+            }
 
             await this._runSetupHooks();
         } catch (error) {

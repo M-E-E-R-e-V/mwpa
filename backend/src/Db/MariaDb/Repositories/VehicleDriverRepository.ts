@@ -1,4 +1,4 @@
-import {DBRepository} from 'figtree';
+import {DBRepository} from '@stefanwerfling/figtree';
 import {User} from '../Entities/User.js';
 import {VehicleDriver} from '../Entities/VehicleDriver.js';
 

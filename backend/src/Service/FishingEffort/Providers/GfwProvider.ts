@@ -1,4 +1,4 @@
-import {Logger} from 'figtree';
+import {Logger} from '@stefanwerfling/figtree';
 import {RateLimiter} from '../../Common/RateLimiter.js';
 import {FishingEffortInfo, FishingEffortProvider, FishingEffortSample, FishingEffortVessel} from '../Types.js';
 
