@@ -2,7 +2,7 @@
   "projects": [
     {
       "name": "MWPA",
-      "schemaPath": "./schemas/schemas.json",
+      "schemaPath": "./schemas/schema.json",
       "code": {
         "schemaPrefix": "Schema",
         "createTypes": true,

@@ -151,7 +151,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 
 | Package | Role |
 |---|---|
-| [`schemas/`](schemas/) | Runtime types &amp; validators (using `vts`), generated from `schemas/schemas.json` via [vtseditor](https://github.com/stefanwerfling/vtseditor). Shared by backend &amp; frontend. |
+| [`schemas/`](schemas/) | Runtime types &amp; validators (using `vts`), generated from `schemas/schema.json` via [vtseditor](https://github.com/stefanwerfling/vtseditor). Shared by backend &amp; frontend. |
 | [`backend/`](backend/) | Node.js Express app on the [`figtree`](https://github.com/stefanwerfling/figtree) framework — services, repositories, REST routes. |
 | [`frontend/`](frontend/) | Browser SPA — webpack bundle, AdminLTE 3 + jQuery + Bootstrap 4 + the in-house [`bambooo`](https://github.com/stefanwerfling/bambooo) widget library. |
 
