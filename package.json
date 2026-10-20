@@ -5,8 +5,6 @@
   "scripts": {
     "npm-check-updates": "cd ./schemas/ && npm-check-updates && cd ../backend/ && npm-check-updates && cd ../frontend/ && npm-check-updates",
     "compile": "cd ./schemas/ && npm run compile && cd ../backend/ && npm run compile && cd ../frontend/ && gulp default",
-    "update-bambooo": "cd ./frontend && npm run update-bambooo",
-    "update-figtree": "cd ./backend/ && npm run update-figtree",
     "update-vtseditor": "npm install git+https://github.com/stefanwerfling/vtseditor.git --force"
   },
   "repository": {
