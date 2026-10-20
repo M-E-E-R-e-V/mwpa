@@ -26,8 +26,8 @@ Synaipse contains:
 Synaipse is accessed **exclusively through MCP tools** exposed by the
 `synaipse` server in `.mcp.json`. Always use the tool — never touch the
 synaipse repository or its vault on disk. The MCP layer handles project
-scoping (the `X-Synaipse-Project: swipemeister` header pins every write
-into `Memory/swipemeister/`), frontmatter, link rewriting, and git
+scoping (the `X-Synaipse-Project: mwpa` header pins every write
+into `Memory/mwpa/`), frontmatter, link rewriting, and git
 autocommit. Direct file I/O bypasses all of that and corrupts the index.
 
 Tool mapping for common user phrases:
