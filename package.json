@@ -5,6 +5,7 @@
   "scripts": {
     "npm-check-updates": "cd ./schemas/ && npm-check-updates && cd ../backend/ && npm-check-updates && cd ../frontend/ && npm-check-updates",
     "compile": "cd ./schemas/ && npm run compile && cd ../backend/ && npm run compile && cd ../frontend/ && gulp default",
+    "update-bambooo": "cd ./frontend && npm run update-bambooo",
     "update-vtseditor": "npm install git+https://github.com/stefanwerfling/vtseditor.git --force"
   },
   "repository": {
@@ -32,7 +33,7 @@
     "eslint": "^9.19.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "@stefanwerfling/figtree": "git+https://github.com/stefanwerfling/figtree.git#main",
+    "@stefanwerfling/figtree": "git+https://github.com/stefanwerfling/figtree.git#8836536e83051037fd2189742cf4859ee990bb3c",
     "npm-check-updates": "^18.0.1",
     "typescript": "^5.8.3",
     "vtseditor": "github:stefanwerfling/vtseditor"

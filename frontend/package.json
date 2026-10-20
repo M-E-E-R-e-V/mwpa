@@ -7,7 +7,8 @@
     "npm-check-updates": "npm-check-updates",
     "gulp-copy-data": "gulp copy-data",
     "gulp-build-webpack": "gulp build-webpack",
-    "test": "vitest run"
+    "test": "vitest run",
+    "update-bambooo": "npm install git+https://github.com/stefanwerfling/bambooo.git --force"
   },
   "keywords": [],
   "author": "Stefan Werfling",

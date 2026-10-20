@@ -9,7 +9,7 @@
     "bcrypt": "^6.0.0",
     "exceljs": "^4.3.0",
     "express": "^5.1.0",
-    "@stefanwerfling/figtree": "github:stefanwerfling/figtree#main",
+    "@stefanwerfling/figtree": "git+https://github.com/stefanwerfling/figtree.git#8836536e83051037fd2189742cf4859ee990bb3c",
     "figtree-schemas": "git+https://github.com/stefanwerfling/figtree-schemas.git",
     "geojson-geometries-lookup": "^0.5.0",
     "jszip": "^3.10.1",
