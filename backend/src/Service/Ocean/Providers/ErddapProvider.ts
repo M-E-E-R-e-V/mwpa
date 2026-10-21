@@ -105,30 +105,17 @@ export class ErddapProvider implements OceanProvider {
     /**
      * Single-variable datasets. Variable name and dataset id must
      * match the upstream ERDDAP catalog entry.
+     *
+     * Intentionally EMPTY: chl-a + salinity moved to {@link CmemsOceanProvider}
+     * (public Copernicus Marine WMTS, global, current) because their only
+     * ERDDAP home — NOAA CoastWatch Central (coastwatch.noaa.gov) — has been
+     * unreliable (503 / timeouts). This provider now serves only the
+     * altimetric currents + SLA from the healthy pfeg node ({@link
+     * ALTIMETRY_DATASET}); the OceanProviderRegistry merges the two sources.
+     * Re-add entries here if a reliable ERDDAP chl/sss host returns.
      * @private
      */
-    private static readonly SINGLE_VAR_DATASETS: SingleVarDataset[] = [
-        {
-            label: 'chl-a (NOAA-20 VIIRS L3 daily)',
-            server: 'https://coastwatch.noaa.gov/erddap',
-            datasetId: 'noaacwN20VIIRSchlaDaily',
-            variable: 'chlor_a',
-            timeToleranceDays: 2,
-            earliestIsoDate: '2018-01-01',
-            targetField: 'chl_a_mg_m3',
-            hasAltitude: true
-        },
-        {
-            label: 'salinity (SMOS L3 daily 0.25°)',
-            server: 'https://coastwatch.noaa.gov/erddap',
-            datasetId: 'noaacwSMOSsssDaily',
-            variable: 'sss',
-            timeToleranceDays: 3,
-            earliestIsoDate: '2010-06-01',
-            targetField: 'salinity_psu',
-            hasAltitude: true
-        }
-    ];
+    private static readonly SINGLE_VAR_DATASETS: SingleVarDataset[] = [];
 
     /**
      * NOAA CoastWatch altimetry-derived sea-surface height + geostrophic
@@ -241,10 +228,10 @@ export class ErddapProvider implements OceanProvider {
             return String(e);
         }
 
-        const cause = (e as {cause?: unknown}).cause;
+        const cause = (e as {cause?: unknown;}).cause;
 
         if (cause instanceof Error) {
-            const code = (cause as {code?: unknown}).code;
+            const code = (cause as {code?: unknown;}).code;
 
             return code === undefined ?
                 `${e.message}: ${cause.message}` :

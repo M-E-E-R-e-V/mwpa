@@ -149,6 +149,86 @@ export class CmemsWmtsClient {
     }
 
     /**
+     * Fetch a single scalar variable (e.g. surface chlorophyll `CHL`,
+     * salinity `so`) at a point on the given ISO date from an arbitrary
+     * CMEMS WMTS layer (`{PRODUCT}/{datasetId}/{variable}`). The caller owns
+     * the layer id + date-range selection (NRT vs reprocessed). Returns null
+     * on non-2xx, out-of-range time, no-data pixel or a malformed payload.
+     */
+    public async getScalar(
+        wmtsLayer: string,
+        latitude: number,
+        longitude: number,
+        isoDate: string
+    ): Promise<number | null> {
+        const url = this._buildScalarUrl(wmtsLayer, latitude, longitude, isoDate);
+        const response = await this._limiter.schedule(async() => httpGetWithRetry(url));
+
+        if (response.status !== 200) {
+            return null;
+        }
+
+        return CmemsWmtsClient._parseScalarResponse(response.body);
+    }
+
+    /**
+     * Build a scalar `GetFeatureInfo` URL — same pixel/time anchoring as
+     * {@link _buildFeatureInfoUrl} but with an empty style (no vector
+     * overlay) so scalar layers return their `value` property.
+     * @private
+     */
+    private _buildScalarUrl(
+        wmtsLayer: string,
+        latitude: number,
+        longitude: number,
+        isoDate: string
+    ): string {
+        const {tileMatrix, tileRow, tileCol, i, j} = CmemsWmtsClient._lonLatToTilePixel(longitude, latitude);
+        const params = new URLSearchParams({
+            service: 'WMTS',
+            request: 'GetFeatureInfo',
+            version: '1.0.0',
+            layer: wmtsLayer,
+            tilematrixset: 'EPSG:3857',
+            tilematrix: String(tileMatrix),
+            tilerow: String(tileRow),
+            tilecol: String(tileCol),
+            style: '',
+            format: 'image/png',
+            infoformat: 'application/json',
+            i: String(i),
+            j: String(j),
+            time: `${isoDate}T00:00:00.000Z`
+        });
+
+        return `${CmemsWmtsClient.BASE_URL}?${params.toString()}`;
+    }
+
+    /**
+     * Parse a scalar GetFeatureInfo payload: `features[0].properties.value`.
+     * @private
+     */
+    private static _parseScalarResponse(body: string): number | null {
+        try {
+            const data = JSON.parse(body) as {
+                features?: {
+                    properties?: {
+                        value?: number | null;
+                    };
+                }[];
+            };
+
+            const raw = data.features?.[0]?.properties?.value ?? null;
+
+            return typeof raw === 'number' && Number.isFinite(raw) ? raw : null;
+        } catch (e) {
+            Logger.getLogger().debug(`CmemsWmtsClient: scalar parse failure: ${(e as Error).message}`);
+
+            return null;
+        }
+    }
+
+    /**
      * Fetch a regular `nLat × nLon` grid of u/v vectors around the
      * sighting position, with `stepDeg` between cells. The grid is
      * centred on `(latitude, longitude)` and may extend slightly past
