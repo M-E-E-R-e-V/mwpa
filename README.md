@@ -178,6 +178,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 - Encounter categories, behavioural states, external receivers (AROC)
 - **Orphan tracks** admin page — buckets of pending GPS points whose parent tour never landed (typical when crew/boat is corrected after the fact). Includes a map preview of the actual points so the admin can decide *assign-vs-delete* before re-pointing them at a different `SightingTour`.
 - Bulk re-derivation of analytics (e.g. movement tracks, sighting × earthquake correlations)
+- **Historical data import** — a one-time importer (`backend/scripts/import-sighting-old.cjs`) loads the hand-maintained pre-app records (a legacy spreadsheet export kept under the gitignored `data/` dir, ~14.5k sightings back to 1995) into a separate read-only `sighting_old` table. It runs in two phases: a **conflict gate** first aborts the whole run (importing nothing) if any Excel row collides with an existing app sighting on *date + species + time (±30 min)*, then a dry-run-by-default import maps every column, resolves species names to the app's species list, and bulk-inserts. See [doc/sighting-old-import-mapping.md](doc/sighting-old-import-mapping.md) for the full column mapping and species synonym table.
 
 ### For researchers
 
@@ -189,6 +190,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 - **Seismic correlation** — hourly cron pulls earthquakes from USGS + EMSC (FDSNWS) for every org's tracking area, joins to nearby sightings within ±14 days / 200 km, exposes them on the per-species profile and an interactive impact-analysis page (pick a window — ±24 h / 3 d / 7 d / 14 d — see affected sightings, their movement tracks, and analytics buckets by species / behaviour / encounter / hours-offset)
 - Cross-species regression matrix with Simpson's-paradox visibility (per-species + pooled regression lines on the same plot)
 - **Effort-only tours** — legs without sightings are still preserved server-side from the uploaded GPS track, so they appear in sighting-rate and survey-effort analyses
+- **Historical hand-recorded sightings** (1995 → pre-app, imported into `sighting_old`) are browsable in the same sightings list: a *"show old data"* filter toggle mixes them in by date, each flagged read-only with an "ALT" badge. ~83 % carry coordinates and so also appear on the map; the rest are still listed with species, date and counts
 
 ## Tech stack
 
