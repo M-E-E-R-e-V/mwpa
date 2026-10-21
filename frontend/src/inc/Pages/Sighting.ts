@@ -221,7 +221,8 @@ export class Sighting extends BasePage {
             organization_id: 0,
             vehicle_id: 0,
             vehicle_driver_id: 0,
-            search: ''
+            search: '',
+            include_old: false
         };
 
         let inHeaderSearch = '';
@@ -274,6 +275,10 @@ export class Sighting extends BasePage {
             const search = inHeaderSearch !== '' ? inHeaderSearch : filterValues.search;
             if (search !== '') {
                 apiFilter.search = search;
+            }
+
+            if (filterValues.include_old) {
+                apiFilter.include_old = true;
             }
 
             return apiFilter;
@@ -989,10 +994,19 @@ export class Sighting extends BasePage {
             const term = activeHighlight();
             const trbody = new Tr(table.getTbody());
 
+            /* Historical hand-maintained rows (sighting_old): muted style + "ALT" badge, read-only. */
+            if (entry.is_old) {
+                trbody.getElement().addClass('mwpa-old-row').css('background-color', '#f5f1e8');
+            }
+
             const date = moment(entry.date?.split(' ')[0]);
 
+            const oldBadge = entry.is_old
+                ? ' <span class="badge badge-secondary" title="Alte Daten – manuell erfasst, schreibgeschützt"><i class="fas fa-archive"></i> ALT</span>'
+                : '';
+
             // eslint-disable-next-line no-new
-            new Td(trbody, `<b>#${entry.id}</b><br>#${entry.tour_id}<br>${date.format('YYYY.MM.DD')}`);
+            new Td(trbody, `<b>#${entry.id}</b>${oldBadge}<br>#${entry.tour_id}<br>${date.format('YYYY.MM.DD')}`);
 
             const vehicleName = mvehicles.get(entry.vehicle_id!)?.name ?? '';
             const driverName = mdrivers.get(entry.vehicle_driver_id!)?.user.name ?? '';
@@ -1114,6 +1128,13 @@ export class Sighting extends BasePage {
             }
 
             const tdAction = new Td(trbody, '');
+
+            // Old (hand-imported) rows are read-only — no edit/delete menu.
+            if (entry.is_old) {
+                tdAction.append('<small class="text-muted"><i class="fas fa-lock"></i></small>');
+                return;
+            }
+
             const abtnMenu = new ButtonMenu(tdAction, IconFa.bars, true, ButtonType.borderless);
 
             abtnMenu.addMenuItem('Edit', () => {
@@ -1308,6 +1329,7 @@ export class Sighting extends BasePage {
             filterValues.vehicle_id = values.vehicle_id;
             filterValues.vehicle_driver_id = values.vehicle_driver_id;
             filterValues.search = values.search;
+            filterValues.include_old = values.include_old;
 
             tableWrapper.reset();
         });

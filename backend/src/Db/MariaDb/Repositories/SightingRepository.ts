@@ -129,6 +129,107 @@ export class SightingRepository extends DBRepository<Sighting> {
     }
 
     /**
+     * Load many sightings by id (used to hydrate a combined list page).
+     * @param {number[]} ids
+     * @return {Sighting[]}
+     */
+    public async findManyByIds(ids: number[]): Promise<Sighting[]> {
+        if (ids.length === 0) {
+            return [];
+        }
+        const repository = await this._repository;
+        return repository.find({where: {id: In(ids)}});
+    }
+
+    /**
+     * Date-ordered page of (id, isOld) keys across `sighting` and
+     * `sighting_old` for the "show old data" list view. Merges + paginates in
+     * one UNION so interleaved old/new rows page correctly; the caller
+     * hydrates the ids from each table. Order fixed to the list default
+     * (date desc, tour_start desc, id desc). Period/species/free-text filters
+     * apply to both tables; the org scope applies to the app table only
+     * (old data has no organisation and is shared history).
+     * @param {number} skip
+     * @param {number} take
+     * @param {number[] | undefined} organizationIds
+     * @param {SightingFilterCriteria} filter
+     * @return {{keys: {id: number; isOld: boolean;}[]; count: number;}}
+     */
+    public async findCombinedPage(
+        skip: number,
+        take: number,
+        organizationIds: number[] | undefined,
+        filter?: SightingFilterCriteria
+    ): Promise<{keys: {id: number; isOld: boolean;}[]; count: number;}> {
+        const repository = await this._repository;
+        const manager = repository.manager;
+        const appWhere: string[] = ['s.deleted = 0'];
+        const appParams: unknown[] = [];
+        const oldWhere: string[] = ['o.deleted = 0'];
+        const oldParams: unknown[] = [];
+
+        if (organizationIds !== undefined) {
+            if (organizationIds.length === 0) {
+                appWhere.push('1 = 0');
+            } else {
+                appWhere.push(`s.organization_id IN (${organizationIds.map(() => '?').join(',')})`);
+                appParams.push(...organizationIds);
+            }
+        }
+
+        const from = (filter?.period_from ?? '').trim();
+        const to = (filter?.period_to ?? '').trim();
+        if (from !== '') {
+            appWhere.push('s.date >= ?');
+            appParams.push(from);
+            oldWhere.push('o.date >= ?');
+            oldParams.push(from);
+        }
+        if (to !== '') {
+            appWhere.push('s.date <= ?');
+            appParams.push(to);
+            oldWhere.push('o.date <= ?');
+            oldParams.push(to);
+        }
+        if (filter?.species_id !== undefined) {
+            appWhere.push('s.species_id = ?');
+            appParams.push(filter.species_id);
+            oldWhere.push('o.species_id = ?');
+            oldParams.push(filter.species_id);
+        }
+        const search = (filter?.search ?? '').trim();
+        if (search !== '') {
+            const like = `%${search}%`;
+            appWhere.push('(s.note LIKE ? OR s.recognizable_animals LIKE ?)');
+            appParams.push(like, like);
+            oldWhere.push('(o.note LIKE ? OR o.species_name_raw LIKE ?)');
+            oldParams.push(like, like);
+        }
+
+        const inner = 'SELECT s.id AS id, s.date AS dt, s.tour_start AS ts, 0 AS is_old '
+            + `FROM sighting s WHERE ${appWhere.join(' AND ')} `
+            + 'UNION ALL '
+            + 'SELECT o.id AS id, o.date AS dt, o.tour_start AS ts, 1 AS is_old '
+            + `FROM sighting_old o WHERE ${oldWhere.join(' AND ')}`;
+
+        const countRows = await manager.query(
+            `SELECT COUNT(*) AS c FROM (${inner}) u`,
+            [...appParams, ...oldParams]
+        ) as {c: number | string;}[];
+
+        const pageRows = await manager.query(
+            `SELECT u.id AS id, u.is_old AS is_old FROM (${inner}) u `
+            + 'ORDER BY u.dt DESC, u.ts DESC, u.id DESC LIMIT ? OFFSET ?',
+            [...appParams, ...oldParams, take, skip]
+        ) as {id: number; is_old: number;}[];
+
+        return {
+            keys: pageRows.map((r) => ({id: Number(r.id), isOld: Number(r.is_old) === 1})),
+            count: Number(countRows[0]?.c ?? 0)
+        };
+    }
+
+    /**
      * Reassign all sightings from sourceSpeciesId to destinationSpeciesId.
      * @param {number} sourceSpeciesId
      * @param {number} destinationSpeciesId

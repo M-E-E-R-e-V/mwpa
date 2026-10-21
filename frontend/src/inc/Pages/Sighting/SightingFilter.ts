@@ -28,6 +28,7 @@ export type SightingFilterValues = {
     vehicle_id: number;
     vehicle_driver_id: number;
     search: string;
+    include_old: boolean;
 };
 
 export type SightingFilterApplyFn = (values: SightingFilterValues) => void;
@@ -85,6 +86,11 @@ export class SightingFilter extends Card {
         const groupSearch = new FormGroup(row.createCol(2), new LangText('Search'));
         this._inputSearch = new InputBottemBorderOnly2(groupSearch, undefined, InputType.text);
         this._inputSearch.setPlaceholder('note / recognizable …');
+
+        /* "Show old data" toggle — mixes the hand-maintained historical sightings (sighting_old) into the list. */
+        const oldWrap = jQuery('<div class="pt-1"/>').appendTo(body);
+        jQuery('<input type="checkbox" id="mwpa-filter-include-old">').appendTo(oldWrap);
+        jQuery('<label for="mwpa-filter-include-old" class="ml-1 mb-0"/>').text('Alte Daten (manuell erfasst) einblenden').appendTo(oldWrap);
 
         // Buttons row, right-aligned, no separate footer to keep the card flat.
         const actions = jQuery('<div class="text-right pt-1"/>').appendTo(body);
@@ -199,7 +205,8 @@ export class SightingFilter extends Card {
             organization_id: Number.isFinite(organizationId) ? organizationId : 0,
             vehicle_id: Number.isFinite(vehicleId) ? vehicleId : 0,
             vehicle_driver_id: Number.isFinite(driverId) ? driverId : 0,
-            search: this._inputSearch.getValue().trim()
+            search: this._inputSearch.getValue().trim(),
+            include_old: jQuery('#mwpa-filter-include-old').prop('checked') === true
         };
     }
 
@@ -213,6 +220,7 @@ export class SightingFilter extends Card {
         this._selectVehicle.setSelectedValue('');
         this._selectDriver.setSelectedValue('');
         this._inputSearch.setValue('');
+        jQuery('#mwpa-filter-include-old').prop('checked', false);
     }
 
     /**

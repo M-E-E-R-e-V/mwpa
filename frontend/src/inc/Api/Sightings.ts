@@ -24,6 +24,7 @@ export type SightingsFilter = {
     vehicle_id?: number;
     vehicle_driver_id?: number;
     search?: string;
+    include_old?: boolean;
 };
 
 /**
@@ -74,6 +75,7 @@ export type SightingsEntry = {
     pointtype?: string;
     species_name?: string;
     track_point_count?: number;
+    is_old?: boolean;
 };
 
 /**

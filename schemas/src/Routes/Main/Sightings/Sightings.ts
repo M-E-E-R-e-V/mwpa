@@ -35,6 +35,7 @@ export const SchemaSightingsFilter = Vts.object({
     vehicle_id: Vts.optional(Vts.number({description: 'Filter by vehicle id'})),
     vehicle_driver_id: Vts.optional(Vts.number({description: 'Filter by vehicle driver id'})),
     search: Vts.optional(Vts.string({description: 'Free-text search applied as LIKE on note + recognizable_animals'})),
+    include_old: Vts.optional(Vts.boolean({description: 'When true, the list mixes in historical hand-maintained sightings (sighting_old) alongside the app sightings, ordered by date. Default off.'})),
 }, {
     description: '',
 });
@@ -64,6 +65,7 @@ export const SchemaSightingsEntry = SchemaTypeSighting.extend({
     pointtype: Vts.optional(Vts.string()),
     species_name: Vts.optional(Vts.string()),
     track_point_count: Vts.optional(Vts.number({description: 'Number of GPS tracking points the boat recorded during the sighting window (segment_count + 1 for source=\'tracking\', omitted for manual_begin_end / no movement row). Lets the list-UI show which sightings actually have a real GPS track.'})),
+    is_old: Vts.optional(Vts.boolean({description: 'True when this entry comes from the hand-maintained historical table (sighting_old), not the app table. Drives the "old data" row badge + read-only in the list UI.'})),
 }, {
     description: 'Sighting list entry — extends TypeSighting with response-side fields',
 });
