@@ -23,6 +23,7 @@ import {SightingFishingEffort} from './Entities/SightingFishingEffort.js';
 import {SightingFishingVessel} from './Entities/SightingFishingVessel.js';
 import {SightingMovement} from './Entities/SightingMovement.js';
 import {SightingMovementTrack} from './Entities/SightingMovementTrack.js';
+import {SightingOld} from './Entities/SightingOld.js';
 import {SightingSeismic} from './Entities/SightingSeismic.js';
 import {SightingTour} from './Entities/SightingTour.js';
 import {SightingTourTracking} from './Entities/SightingTourTracking.js';
@@ -77,6 +78,7 @@ export class MWPADbLoader extends DBLoader {
             SightingFishingVessel,
             SightingMovement,
             SightingMovementTrack,
+            SightingOld,
             SightingSeismic,
             SightingTour,
             SightingTourTracking,
