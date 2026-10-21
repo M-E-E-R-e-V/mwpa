@@ -209,6 +209,7 @@ export class Environment {
                 weather_status: Environment._str(ext?.weather_status),
                 depth_m: Environment._num(ext?.depth_m),
                 ocean_status: Environment._str(ext?.ocean_status),
+                coordinate_uncertainty_m: Environment._num(ext?.coordinate_uncertainty_m),
 
                 fishing_hours_day_25km: Environment._num(fish?.fishing_hours_day_25km),
                 fishing_hours_day_50km: Environment._num(fish?.fishing_hours_day_50km),

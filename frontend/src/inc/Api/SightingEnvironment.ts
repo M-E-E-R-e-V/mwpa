@@ -47,6 +47,7 @@ export type SightingEnvironmentEntry = {
     weather_status?: string;
     depth_m?: number;
     ocean_status?: string;
+    coordinate_uncertainty_m?: number;
 
     fishing_hours_day_25km?: number;
     fishing_hours_day_50km?: number;

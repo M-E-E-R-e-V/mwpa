@@ -349,6 +349,7 @@ export class OceanFishingMap extends BasePage {
                 : `Coastal (cross-shore): ${fmt(r.current_coastal_component_m_s_day, 2, 'm/s')}${typeof r.current_coastal_component_m_s_day === 'number' ? ` (${r.current_coastal_component_m_s_day >= 0 ? 'offshore' : 'onshore'})` : ''}`,
             `<a href="#" class="mwpa-cmems-region-link" data-sighting-id="${r.id}">→ Regional currents (quiver)</a>`,
             `Depth: ${fmt(r.depth_m, 0, 'm')}`,
+            r.coordinate_uncertainty_m === undefined ? null : `Coord. uncertainty: ${fmt(r.coordinate_uncertainty_m, 0, 'm')}`,
             '<i>— Weather —</i>',
             `Air temp: ${fmt(r.air_temperature_c_day, 1, '°C')}`,
             `Wave height: ${fmt(r.wave_height_m_day, 2, 'm')}`,

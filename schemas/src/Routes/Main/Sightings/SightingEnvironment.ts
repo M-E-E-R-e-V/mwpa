@@ -43,6 +43,7 @@ export const SchemaSightingEnvironmentEntry = Vts.object({
     sst_c_day: Vts.optional(Vts.number()),
     depth_m: Vts.optional(Vts.number()),
     ocean_status: Vts.optional(Vts.string()),
+    coordinate_uncertainty_m: Vts.optional(Vts.number({description: 'Darwin-Core coordinateUncertaintyInMeters: per-species-class default + GPS accuracy. From sighting_extended (species_class).'})),
     fishing_hours_day_25km: Vts.optional(Vts.number()),
     fishing_hours_day_50km: Vts.optional(Vts.number()),
     vessel_count_day_25km: Vts.optional(Vts.number()),
