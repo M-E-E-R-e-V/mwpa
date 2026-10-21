@@ -135,8 +135,8 @@ function mapActivity(name: string): string {
  * MEER reaction (encounter_categories.name) → AROC `Comportamiento` (column AL).
  * The AROC dropdown only has 3 values: atraídos / indiferentes / esquivos
  * (per the "Ayuda" sheet) — there's no "indeterminado" option in this column.
- * 'Proximity' is intentionally unmapped (the 2026-02 mapping decision); 'Unknown'
- * also stays empty since AROC has no equivalent.
+ * 'Proximity' is intentionally unmapped (per the 2026-02 mapping decision);
+ * 'Unknown' also stays empty since AROC has no equivalent.
  */
 function mapReaction(name: string): string {
     switch (name.trim().toLowerCase()) {
