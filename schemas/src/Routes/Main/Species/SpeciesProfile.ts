@@ -276,6 +276,7 @@ export const SchemaSpeciesProfile = Vts.object({
     period_from: Vts.string({description: 'Actual date range used (resolved from request or auto-extended to data range)'}),
     period_to: Vts.string(),
     n_sightings: Vts.number(),
+    n_unique_tours: Vts.number({description: 'Number of distinct tours (tour_fid) the sightings came from. The cluster unit for pseudo-replication: sightings on one tour share boat/crew/weather and are not independent, so n_sightings alone overstates the effective sample size.'}),
     group_size_total: Vts.number({description: 'Sum of species_count across all sightings'}),
     group_size_p50: Vts.number({description: 'Median species_count per sighting'}),
     group_size_p95: Vts.number(),

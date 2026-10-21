@@ -418,7 +418,15 @@ export class Profile {
         let dataMinDate = '';
         let dataMaxDate = '';
 
+        // Pseudo-replication: the tour is the cluster unit. Count distinct
+        // non-empty tour_fids so the UI can show how many independent surveys
+        // the n_sightings actually came from.
+        const uniqueTours = new Set<string>();
+
         for (const r of rows) {
+            if (r.tour_fid && r.tour_fid.trim() !== '') {
+                uniqueTours.add(r.tour_fid);
+            }
             // Monthly bucket — date is YYYY-MM-DD.
             const ym = (r.date ?? '').substring(0, 7);
             if (ym.length === 7) {
@@ -603,6 +611,7 @@ export class Profile {
             period_from: request.period_from ?? dataMinDate,
             period_to: request.period_to ?? dataMaxDate,
             n_sightings: rows.length,
+            n_unique_tours: uniqueTours.size,
             group_size_total: totalCount,
             group_size_p50: Profile._percentile(groupSizes, 50),
             group_size_p95: Profile._percentile(groupSizes, 95),

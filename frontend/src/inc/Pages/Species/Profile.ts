@@ -141,6 +141,7 @@ export class SpeciesProfile extends BasePage {
             '<div class="d-flex flex-wrap" style="gap: 1.5rem;">' +
             `<div class="kpi" data-kpi="period"><div class="kpi-label text-muted small">${lang.l('Period')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
             `<div class="kpi" data-kpi="n"><div class="kpi-label text-muted small">${lang.l('Sightings')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
+            `<div class="kpi" data-kpi="tours" title="${lang.l('Distinct tours the sightings came from — the cluster unit. Sightings on one tour are not independent.')}"><div class="kpi-label text-muted small">${lang.l('Unique tours')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
             `<div class="kpi" data-kpi="total"><div class="kpi-label text-muted small">${lang.l('Animals (sum)')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
             `<div class="kpi" data-kpi="p50"><div class="kpi-label text-muted small">${lang.l('Median group')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
             `<div class="kpi" data-kpi="p95"><div class="kpi-label text-muted small">${lang.l('p95 group')}</div><div class="kpi-value h5 mb-0">–</div></div>` +
@@ -1047,6 +1048,7 @@ export class SpeciesProfile extends BasePage {
 
         set('period', period);
         set('n', `${profile.n_sightings}`);
+        set('tours', `${profile.n_unique_tours}`);
         set('total', `${profile.group_size_total}`);
         set('p50', `${profile.group_size_p50.toFixed(1)}`);
         set('p95', `${profile.group_size_p95.toFixed(1)}`);
