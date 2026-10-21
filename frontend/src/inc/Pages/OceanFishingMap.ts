@@ -424,7 +424,17 @@ export class OceanFishingMap extends BasePage {
             r.pressure_msl_hpa_day === undefined && r.cloud_cover_pct_day === undefined ? null : '<i>— Weather —</i>',
             r.pressure_msl_hpa_day === undefined ? null : `Pressure: ${fmt(r.pressure_msl_hpa_day, 0, 'hPa')}`,
             r.cloud_cover_pct_day === undefined ? null : `Cloud cover: ${fmt(r.cloud_cover_pct_day, 0, '%')}`,
-            r.precipitation_mm_day === undefined ? null : `Precipitation: ${fmt(r.precipitation_mm_day, 1, 'mm')}`
+            r.precipitation_mm_day === undefined ? null : `Precipitation: ${fmt(r.precipitation_mm_day, 1, 'mm')}`,
+            r.upwelling_index_day === undefined && r.seabed_slope_deg === undefined
+                && r.sst_front_grad_c_km_day === undefined && r.chl_front_grad_mg_m3_km_day === undefined ? null : '<i>— Derived —</i>',
+            r.upwelling_index_day === undefined ? null
+                : `Upwelling index: ${fmt(r.upwelling_index_day, 1, 'm³/s per 100 m')}`,
+            r.seabed_slope_deg === undefined ? null : `Seabed slope: ${fmt(r.seabed_slope_deg, 1, '°')}`,
+            r.shelf_distance_km === undefined ? null : `Shelf-break dist: ${fmt(r.shelf_distance_km, 1, 'km')}`,
+            r.sst_front_grad_c_km_day === undefined ? null
+                : `SST front: ${fmt(r.sst_front_grad_c_km_day, 3, '°C/km')}`,
+            r.chl_front_grad_mg_m3_km_day === undefined ? null
+                : `Chl front: ${fmt(r.chl_front_grad_mg_m3_km_day, 4, 'mg/m³/km')}`
         ];
 
         return rows.filter((row): row is string => row !== null).join('<br>');
@@ -481,6 +491,8 @@ export class OceanFishingMap extends BasePage {
             r.shelf_distance_km === undefined ? null : `Shelf-break dist: ${fmt(r.shelf_distance_km, 1, 'km')}`,
             r.sst_front_grad_c_km_day === undefined ? null
                 : `SST front: ${fmt(r.sst_front_grad_c_km_day, 3, '°C/km')}`,
+            r.chl_front_grad_mg_m3_km_day === undefined ? null
+                : `Chl front: ${fmt(r.chl_front_grad_mg_m3_km_day, 4, 'mg/m³/km')}`,
             '<i>— Fishing —</i>',
             `Fishing (25 km): ${fmt(r.fishing_hours_day_25km, 1, 'h/day')}`,
             `Vessels (25 km): ${typeof r.vessel_count_day_25km === 'number' ? r.vessel_count_day_25km : '—'}`,

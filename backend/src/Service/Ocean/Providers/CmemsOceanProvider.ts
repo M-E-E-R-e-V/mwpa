@@ -99,6 +99,31 @@ export class CmemsOceanProvider implements OceanProvider {
     }
 
     /**
+     * Surface chlorophyll-a (mg/m³) at a single point, or null. Exposes just
+     * the chl read (NRT→reprocessed layer fallback) for callers that need a
+     * point value outside the full {@link getOcean} merge — e.g. the
+     * chlorophyll-front stencil in the DerivedEnricher. Returns null before
+     * the ocean-colour era, on a no-data pixel, or on a negative reading.
+     */
+    public async getChlScalar(
+        latitude: number,
+        longitude: number,
+        isoDate: string
+    ): Promise<number | null> {
+        if (isoDate < CmemsOceanProvider.EARLIEST_ISO_DATE) {
+            return null;
+        }
+
+        const chl = await this._firstScalar(CmemsOceanProvider.CHL_LAYERS, latitude, longitude, isoDate);
+
+        if (chl === null || chl < 0) {
+            return null;
+        }
+
+        return CmemsOceanProvider._round(chl, 3);
+    }
+
+    /**
      * Try each layer in order, returning the first non-null scalar value.
      * @private
      */

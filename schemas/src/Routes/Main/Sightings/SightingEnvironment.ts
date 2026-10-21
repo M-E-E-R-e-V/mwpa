@@ -73,6 +73,7 @@ export const SchemaSightingEnvironmentEntry = Vts.object({
     seabed_slope_deg: Vts.optional(Vts.number({description: 'Seabed slope (degrees) at the sighting, from a bathymetry stencil. From sighting_enrichment (derived).'})),
     shelf_distance_km: Vts.optional(Vts.number({description: 'Estimated distance (km) to the 200 m shelf-break isobath, from the bathymetry stencil. From sighting_enrichment (derived).'})),
     sst_front_grad_c_km_day: Vts.optional(Vts.number({description: 'SST horizontal gradient magnitude (°C per km) — thermal-front strength. From sighting_enrichment (derived).'})),
+    chl_front_grad_mg_m3_km_day: Vts.optional(Vts.number({description: 'Surface-chlorophyll horizontal gradient magnitude (mg/m³ per km) — productivity-front strength. From sighting_enrichment (derived).'})),
     enrichment_status: Vts.optional(Vts.string({description: 'Overall enrichment row status (\'ok\', \'invalid_location\', \'invalid_date\', …). From sighting_enrichment.'})),
 }, {
     description: 'One sighting with its ocean + fishing-effort enrichment columns. Position is denormalized to lon/lat so the frontend doesn\'t have to re-parse location_begin.',

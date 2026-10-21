@@ -29,6 +29,12 @@ export type EnrichmentExisting = {
      */
     depthM: number | null;
 
+    /**
+     * Day-mean surface chlorophyll-a (mg/m³), or null. Reused as the centre
+     * sample of the chlorophyll-front stencil to save one fetch.
+     */
+    chlADay: number | null;
+
 };
 
 /**

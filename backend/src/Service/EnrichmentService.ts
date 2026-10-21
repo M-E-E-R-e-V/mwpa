@@ -144,7 +144,7 @@ export class EnrichmentService extends ServiceJobAbstract {
      * @private
      */
     private static _emptyExisting(): EnrichmentExisting {
-        return {sstCDay: null, windSpeedMsDay: null, windDirectionDegDay: null, depthM: null};
+        return {sstCDay: null, windSpeedMsDay: null, windDirectionDegDay: null, depthM: null, chlADay: null};
     }
 
     /**
@@ -163,7 +163,8 @@ export class EnrichmentService extends ServiceJobAbstract {
             sstCDay: EnrichmentService._num(ext.sst_c_day),
             windSpeedMsDay: EnrichmentService._num(ext.wind_speed_m_s_day),
             windDirectionDegDay: EnrichmentService._num(ext.wind_direction_deg_day),
-            depthM: EnrichmentService._num(ext.depth_m)
+            depthM: EnrichmentService._num(ext.depth_m),
+            chlADay: EnrichmentService._num(ext.chl_a_mg_m3_day)
         };
     }
 

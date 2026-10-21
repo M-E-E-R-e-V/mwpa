@@ -133,6 +133,7 @@ export class OldPoints {
                 seabed_slope_deg: OldPoints._num(enr?.seabed_slope_deg),
                 shelf_distance_km: OldPoints._num(enr?.shelf_distance_km),
                 sst_front_grad_c_km_day: OldPoints._num(enr?.sst_front_grad_c_km_day),
+                chl_front_grad_mg_m3_km_day: OldPoints._num(enr?.chl_front_grad_mg_m3_km_day),
                 enrichment_status: enr?.enrichment_status === '' ? undefined : enr?.enrichment_status
             });
         }

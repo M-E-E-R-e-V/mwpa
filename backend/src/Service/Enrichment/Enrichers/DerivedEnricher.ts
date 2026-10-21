@@ -1,6 +1,7 @@
 import {BathymetryProviderRegistry} from '../../Bathymetry/BathymetryProviderRegistry.js';
 import {RateLimiter} from '../../Common/RateLimiter.js';
 import {httpGetWithRetry} from '../../Common/HttpGet.js';
+import {CmemsOceanProvider} from '../../Ocean/Providers/CmemsOceanProvider.js';
 import {Enricher, EnricherResult, EnrichmentContext} from '../Types.js';
 
 /**
@@ -25,10 +26,13 @@ type MarineResponse = {
  *   - sst_front_grad_c_km_day: SST horizontal gradient (thermal-front
  *     strength) from Open-Meteo SST at the centre + one eastward + one
  *     northward neighbour.
- *
- * Deliberately NOT computed here (column stays null): the chlorophyll front —
- * its ERDDAP source is flaky/offline and a stencil there is 3 calls/point. The
- * column exists so it can be filled later without a schema change.
+ *   - chl_front_grad_mg_m3_km_day: surface-chlorophyll horizontal gradient
+ *     (productivity-front strength) from the CMEMS ocean-colour WMTS at the
+ *     centre + one eastward + one northward neighbour. Uses a wider stencil
+ *     step than SST ({@link CHL_STEP_KM}) because the CMEMS chl grid is ~4 km,
+ *     so a 2 km step would sample the same cell and read a zero gradient.
+ *     Only covers the ocean-colour era (CMEMS chl starts 1997-09); older
+ *     sightings leave the column null.
  *
  * This is the costliest enricher (several upstream calls per sighting), which
  * is why the service's per-tick budget is modest.
@@ -46,6 +50,15 @@ export class DerivedEnricher implements Enricher {
      * @private
      */
     private static readonly STEP_KM = 2;
+
+    /**
+     * Stencil half-step (km) for the chlorophyll front. Wider than
+     * {@link STEP_KM} because the CMEMS ocean-colour grid is ~4 km — a 2 km
+     * step would land the neighbour samples in the same grid cell and read a
+     * spurious zero gradient. 6 km reliably crosses into the adjacent cell.
+     * @private
+     */
+    private static readonly CHL_STEP_KM = 6;
 
     /**
      * Metres per degree of latitude (mean).
@@ -76,10 +89,13 @@ export class DerivedEnricher implements Enricher {
 
     private readonly _bathymetry: BathymetryProviderRegistry;
 
+    private readonly _chl: CmemsOceanProvider;
+
     private readonly _limiter = new RateLimiter(1200);
 
-    public constructor(bathymetry?: BathymetryProviderRegistry) {
+    public constructor(bathymetry?: BathymetryProviderRegistry, chl?: CmemsOceanProvider) {
         this._bathymetry = bathymetry ?? new BathymetryProviderRegistry();
+        this._chl = chl ?? new CmemsOceanProvider();
     }
 
     public getName(): string {
@@ -107,6 +123,13 @@ export class DerivedEnricher implements Enricher {
         if (sstGrad !== null) {
             fields.sst_front_grad_c_km_day = DerivedEnricher._round(sstGrad, 4);
             provenance.sst_front_grad_c_km_day = DerivedEnricher.NAME;
+        }
+
+        const chlGrad = await this._chlFront(ctx);
+
+        if (chlGrad !== null) {
+            fields.chl_front_grad_mg_m3_km_day = DerivedEnricher._round(chlGrad, 4);
+            provenance.chl_front_grad_mg_m3_km_day = DerivedEnricher.NAME;
         }
 
         if (Object.keys(provenance).length > 0) {
@@ -197,6 +220,36 @@ export class DerivedEnricher implements Enricher {
     }
 
     /**
+     * Surface-chlorophyll horizontal-gradient magnitude (mg/m³ per km) from
+     * CMEMS ocean-colour at the centre, one eastward and one northward
+     * neighbour (forward difference), using the wider {@link CHL_STEP_KM}
+     * stencil. Reuses the stored centre chl when present to save a WMTS call.
+     * Null when any required sample is missing (cloud gap, out-of-era, land).
+     * @private
+     */
+    private async _chlFront(ctx: EnrichmentContext): Promise<number | null> {
+        const stepKm = DerivedEnricher.CHL_STEP_KM;
+        const offsets = DerivedEnricher._degOffsets(ctx.latitude, stepKm);
+
+        const [centre, east, north] = await Promise.all([
+            ctx.existing.chlADay === null
+                ? this._chl.getChlScalar(ctx.latitude, ctx.longitude, ctx.isoDate)
+                : Promise.resolve(ctx.existing.chlADay),
+            this._chl.getChlScalar(ctx.latitude, ctx.longitude + offsets.dLon, ctx.isoDate),
+            this._chl.getChlScalar(ctx.latitude + offsets.dLat, ctx.longitude, ctx.isoDate)
+        ]);
+
+        if (centre === null || east === null || north === null) {
+            return null;
+        }
+
+        const dcdx = (east - centre) / stepKm;
+        const dcdy = (north - centre) / stepKm;
+
+        return Math.sqrt((dcdx * dcdx) + (dcdy * dcdy));
+    }
+
+    /**
      * Day-mean SST (°C) at a point from Open-Meteo marine, or null.
      * @private
      */
@@ -226,11 +279,12 @@ export class DerivedEnricher implements Enricher {
     }
 
     /**
-     * Latitude/longitude step (degrees) for STEP_KM at this latitude.
+     * Latitude/longitude step (degrees) for `stepKm` (default {@link STEP_KM})
+     * at this latitude.
      * @private
      */
-    private static _degOffsets(latDeg: number): {dLat: number; dLon: number;} {
-        const dLat = (DerivedEnricher.STEP_KM * 1000) / DerivedEnricher.M_PER_DEG_LAT;
+    private static _degOffsets(latDeg: number, stepKm: number = DerivedEnricher.STEP_KM): {dLat: number; dLon: number;} {
+        const dLat = (stepKm * 1000) / DerivedEnricher.M_PER_DEG_LAT;
         const cosLat = Math.cos((latDeg * Math.PI) / 180);
         const dLon = Math.abs(cosLat) < 1e-9 ? dLat : dLat / cosLat;
 

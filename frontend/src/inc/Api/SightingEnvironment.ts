@@ -69,6 +69,7 @@ export type SightingEnvironmentEntry = {
     seabed_slope_deg?: number;
     shelf_distance_km?: number;
     sst_front_grad_c_km_day?: number;
+    chl_front_grad_mg_m3_km_day?: number;
     enrichment_status?: string;
 
     provenance?: SightingEnvironmentProvenanceEntry[];
