@@ -550,6 +550,107 @@ export class SightingRepository extends DBRepository<Sighting> {
     }
 
     /**
+     * All non-deleted sightings across species for the R-export, joined with
+     * the env (sighting_extended), movement and fishing-effort tables and the
+     * species name. One flat row per sighting — the external GLMM groups on
+     * `tour_fid`. Same org-scoping rule as the profile (via vehicle).
+     */
+    public async findAllForExport(
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        organizationIds: number[] | undefined
+    ): Promise<Array<{
+        id: number;
+        unid: string;
+        date: string;
+        tour_start: string;
+        tour_fid: string;
+        vehicle_id: number;
+        vehicle_driver_id: number;
+        organization_id: number;
+        species_id: number;
+        species_name: string | null;
+        species_count: number;
+        juveniles: number;
+        calves: number;
+        newborns: number;
+        distance_coast: string;
+        beaufort_wind: number;
+        location_begin: string;
+        depth_m: number | null;
+        sst_c_day: number | null;
+        chl_a_mg_m3_day: number | null;
+        salinity_psu_day: number | null;
+        sla_cm_day: number | null;
+        current_speed_m_s_day: number | null;
+        wave_height_m_day: number | null;
+        uv_index_day: number | null;
+        wind_speed_m_s_day: number | null;
+        avg_speed_mps: number | null;
+        max_speed_mps: number | null;
+        total_distance_m: number | null;
+        fishing_hours_day_25km: number | null;
+    }>> {
+        if (organizationIds !== undefined && organizationIds.length === 0) {
+            return [];
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('s')
+            .select('s.id', 'id')
+            .addSelect('s.unid', 'unid')
+            .addSelect('s.date', 'date')
+            .addSelect('s.tour_start', 'tour_start')
+            .addSelect('s.tour_fid', 'tour_fid')
+            .addSelect('s.vehicle_id', 'vehicle_id')
+            .addSelect('s.vehicle_driver_id', 'vehicle_driver_id')
+            .addSelect('s.organization_id', 'organization_id')
+            .addSelect('s.species_id', 'species_id')
+            .addSelect('sp.name', 'species_name')
+            .addSelect('s.species_count', 'species_count')
+            .addSelect('s.juveniles', 'juveniles')
+            .addSelect('s.calves', 'calves')
+            .addSelect('s.newborns', 'newborns')
+            .addSelect('s.distance_coast', 'distance_coast')
+            .addSelect('s.beaufort_wind', 'beaufort_wind')
+            .addSelect('s.location_begin', 'location_begin')
+            .addSelect('e.depth_m', 'depth_m')
+            .addSelect('e.sst_c_day', 'sst_c_day')
+            .addSelect('e.chl_a_mg_m3_day', 'chl_a_mg_m3_day')
+            .addSelect('e.salinity_psu_day', 'salinity_psu_day')
+            .addSelect('e.sla_cm_day', 'sla_cm_day')
+            .addSelect('e.current_speed_m_s_day', 'current_speed_m_s_day')
+            .addSelect('e.wave_height_m_day', 'wave_height_m_day')
+            .addSelect('e.uv_index_day', 'uv_index_day')
+            .addSelect('e.wind_speed_m_s_day', 'wind_speed_m_s_day')
+            .addSelect('m.avg_speed_mps', 'avg_speed_mps')
+            .addSelect('m.max_speed_mps', 'max_speed_mps')
+            .addSelect('m.total_distance_m', 'total_distance_m')
+            .addSelect('f.fishing_hours_day_25km', 'fishing_hours_day_25km')
+            .leftJoin('species', 'sp', 'sp.id = s.species_id')
+            .leftJoin('sighting_extended', 'e', 'e.sighting_id = s.id')
+            .leftJoin('sighting_movement', 'm', 'm.sighting_id = s.id')
+            .leftJoin('sighting_fishing_effort', 'f', 'f.sighting_id = s.id')
+            .where('s.deleted = :del', {del: false});
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+        if (from !== '') {
+            qb.andWhere('s.date >= :from', {from});
+        }
+        if (to !== '') {
+            qb.andWhere('s.date <= :to', {to});
+        }
+
+        if (organizationIds !== undefined) {
+            qb.innerJoin('vehicle', 'v', 'v.id = s.vehicle_id')
+                .andWhere('v.organization_id IN (:...orgIds)', {orgIds: organizationIds});
+        }
+
+        return qb.orderBy('s.date', 'ASC').addOrderBy('s.id', 'ASC').getRawMany();
+    }
+
+    /**
      * Year × Species sighting counts — one row per (species_id, year)
      * with the species' name and species_group color attached. Used by
      * the cross-species regression matrix for Year × SPUE.

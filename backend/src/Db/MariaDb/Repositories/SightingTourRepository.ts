@@ -293,6 +293,65 @@ export class SightingTourRepository extends DBRepository<SightingTour> {
     }
 
     /**
+     * All tours in the period / org scope for the R-export tours.csv — the
+     * effort denominators and the random-effect grouping table. One row per
+     * tour, with a derived `duration_hours` (same HH:mm diff as
+     * {@link aggregateMonthlyTourHours}). Org-scoped on `st.organization_id`
+     * (populated on tours, matching the SPUE pipeline).
+     */
+    public async findAllForExport(
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        organizationIds: number[] | undefined
+    ): Promise<Array<{
+        id: number;
+        tour_fid: string;
+        date: string;
+        tour_start: string;
+        tour_end: string;
+        vehicle_id: number;
+        vehicle_driver_id: number;
+        organization_id: number;
+        duration_hours: number | string | null;
+    }>> {
+        if (organizationIds !== undefined && organizationIds.length === 0) {
+            return [];
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('st')
+            .select('st.id', 'id')
+            .addSelect('st.tour_fid', 'tour_fid')
+            .addSelect('st.date', 'date')
+            .addSelect('st.tour_start', 'tour_start')
+            .addSelect('st.tour_end', 'tour_end')
+            .addSelect('st.vehicle_id', 'vehicle_id')
+            .addSelect('st.vehicle_driver_id', 'vehicle_driver_id')
+            .addSelect('st.organization_id', 'organization_id')
+            .addSelect(
+                'GREATEST(0, ' +
+                'TIME_TO_SEC(STR_TO_DATE(NULLIF(st.tour_end, \'\'), \'%H:%i\')) - ' +
+                'TIME_TO_SEC(STR_TO_DATE(NULLIF(st.tour_start, \'\'), \'%H:%i\'))' +
+                ') / 3600.0',
+                'duration_hours'
+            );
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+        if (from !== '') {
+            qb.andWhere('st.date >= :from', {from});
+        }
+        if (to !== '') {
+            qb.andWhere('st.date <= :to', {to});
+        }
+        if (organizationIds !== undefined) {
+            qb.andWhere('st.organization_id IN (:...orgIds)', {orgIds: organizationIds});
+        }
+
+        return qb.orderBy('st.date', 'ASC').addOrderBy('st.id', 'ASC').getRawMany();
+    }
+
+    /**
      * Closest tour for the same vehicle whose date sits immediately before
      * the given anchor date — used by the tracking-edit UI to suggest a
      * "previous day" tour when shifting points across midnight.
