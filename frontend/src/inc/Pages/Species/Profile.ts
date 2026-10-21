@@ -20,6 +20,7 @@ import {
     SpeciesProfileHeatmapPoint,
     SpeciesProfileIcc,
     SpeciesProfileMonthlyEffort,
+    SpeciesProfileResponseBin,
     SpeciesProfileSpatial,
     SpeciesProfileYearly
 } from '../../Api/Species';
@@ -104,6 +105,7 @@ export class SpeciesProfile extends BasePage {
         sizeHost?: JQuery<HTMLDivElement>;
         ratiosHost?: JQuery<HTMLDivElement>;
         envGrid?: JQuery<HTMLDivElement>;
+        respGrid?: JQuery<HTMLDivElement>;
         behaviourHost?: JQuery<HTMLDivElement>;
         reactionHost?: JQuery<HTMLDivElement>;
         movementBody?: JQuery<HTMLDivElement>;
@@ -254,6 +256,24 @@ export class SpeciesProfile extends BasePage {
             '</div>'
         ).appendTo(envCard.getBodyElement());
         this._hosts.envGrid = envGrid;
+
+        // Row 4b — environmental response curves (target-group, effort-corrected) -------------------------------------
+
+        const rowResp = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const respCard = new Card(new ContentCol(rowResp, ContentColSize.col12));
+        respCard.setTitle(new LangText('Environmental response (effort-corrected)'));
+        jQuery('<div class="species-profile-print-desc text-muted small p-2"/>')
+            .text(lang.l('Target species’ share of ALL sightings per environment bin (background = where surveying happened), with a Wilson 95% band. Unlike the raw histograms above, this is not inflated by how much was surveyed at each value.'))
+            .appendTo(respCard.getBodyElement());
+        const respGrid = jQuery<HTMLDivElement>(
+            '<div class="row p-2">' +
+            `<div class="col-md-3"><div class="text-muted small">${lang.l('Distance to coast (m)')}</div><div class="species-profile-chart" data-resp="distance"></div></div>` +
+            `<div class="col-md-3"><div class="text-muted small">${lang.l('Sea depth (m)')}</div><div class="species-profile-chart" data-resp="depth"></div></div>` +
+            `<div class="col-md-3"><div class="text-muted small">${lang.l('SST (°C)')}</div><div class="species-profile-chart" data-resp="sst"></div></div>` +
+            `<div class="col-md-3"><div class="text-muted small">${lang.l('Chl-a (mg/m³)')}</div><div class="species-profile-chart" data-resp="chl"></div></div>` +
+            '</div>'
+        ).appendTo(respCard.getBodyElement());
+        this._hosts.respGrid = respGrid;
 
         // Row 5 — behaviour + reaction donuts -------------------------------------------------------------------------
 
@@ -489,6 +509,22 @@ export class SpeciesProfile extends BasePage {
             });
             h.envGrid.find('[data-env="chl"]').each((_i, el) => {
                 SpeciesProfile._renderBuckets(el as HTMLElement, profile.env.chl_a_mg_m3, '#28a745');
+            });
+        }
+
+        if (h.respGrid) {
+            const resp = profile.response;
+            h.respGrid.find('[data-resp="distance"]').each((_i, el) => {
+                SpeciesProfile._renderResponseCurve(el as HTMLElement, resp ? resp.distance_coast_m : []);
+            });
+            h.respGrid.find('[data-resp="depth"]').each((_i, el) => {
+                SpeciesProfile._renderResponseCurve(el as HTMLElement, resp ? resp.depth_m : []);
+            });
+            h.respGrid.find('[data-resp="sst"]').each((_i, el) => {
+                SpeciesProfile._renderResponseCurve(el as HTMLElement, resp ? resp.sst_c : []);
+            });
+            h.respGrid.find('[data-resp="chl"]').each((_i, el) => {
+                SpeciesProfile._renderResponseCurve(el as HTMLElement, resp ? resp.chl_a : []);
             });
         }
 
@@ -1337,6 +1373,69 @@ export class SpeciesProfile extends BasePage {
             .attr('fill', color)
             .append('title')
             .text((b: SpeciesProfileBucket, i: number) => `${labels[i]}: ${b.count}`);
+    }
+
+    /**
+     * Target-group response curve: the species' proportion of all sightings
+     * per environment bin (line) with its Wilson 95 % band. y-axis is a
+     * percentage; x-axis the environment bins.
+     */
+    private static _renderResponseCurve(host: HTMLElement, bins: SpeciesProfileResponseBin[]): void {
+        d3.select(host).selectAll('*').remove();
+        if (bins.length === 0) {
+            jQuery(host).text(Lang.i().l('No data'));
+            return;
+        }
+
+        const width = Math.max(220, (host.clientWidth || 300) - 16);
+        const height = 160;
+        const margin = {top: 12, right: 8, bottom: 36, left: 38};
+        const innerW = width - margin.left - margin.right;
+        const innerH = height - margin.top - margin.bottom;
+
+        const svg = d3.select(host).append('svg').attr('width', width).attr('height', height);
+        const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+        const labels = bins.map((b: SpeciesProfileResponseBin) =>
+            b.bucket_min === b.bucket_max
+                ? `${SpeciesProfile._compact(b.bucket_min)}+`
+                : `${SpeciesProfile._compact(b.bucket_min)}–${SpeciesProfile._compact(b.bucket_max)}`);
+
+        const x = d3.scalePoint().domain(labels).range([0, innerW]).padding(0.5);
+        const yMax = Math.min(1, Math.max(0.05, d3.max(bins, (b: SpeciesProfileResponseBin) => b.ci_hi) ?? 0.1));
+        const y = d3.scaleLinear().domain([0, yMax]).nice().range([innerH, 0]);
+
+        g.append('g')
+            .attr('transform', `translate(0,${innerH})`)
+            .call(d3.axisBottom(x))
+            .selectAll('text')
+            .style('font-size', '9px')
+            .attr('transform', 'rotate(-40)')
+            .style('text-anchor', 'end');
+        g.append('g').call(d3.axisLeft(y).ticks(4).tickFormat((d: number) => `${Math.round(d * 100)}%`));
+
+        const area = d3.area()
+            .x((_d: SpeciesProfileResponseBin, i: number) => x(labels[i]))
+            .y0((d: SpeciesProfileResponseBin) => y(d.ci_lo))
+            .y1((d: SpeciesProfileResponseBin) => y(d.ci_hi));
+        g.append('path').datum(bins).attr('fill', 'rgba(36,113,163,0.18)').attr('d', area);
+
+        const line = d3.line()
+            .x((_d: SpeciesProfileResponseBin, i: number) => x(labels[i]))
+            .y((d: SpeciesProfileResponseBin) => y(d.proportion));
+        g.append('path').datum(bins).attr('fill', 'none').attr('stroke', '#2471A3').attr('stroke-width', 1.5).attr('d', line);
+
+        g.selectAll('circle')
+            .data(bins)
+            .enter()
+            .append('circle')
+            .attr('cx', (_d: SpeciesProfileResponseBin, i: number) => x(labels[i]))
+            .attr('cy', (d: SpeciesProfileResponseBin) => y(d.proportion))
+            .attr('r', 2.5)
+            .attr('fill', '#2471A3')
+            .append('title')
+            .text((d: SpeciesProfileResponseBin, i: number) =>
+                `${labels[i]}: ${(d.proportion * 100).toFixed(1)}% (${d.n_target}/${d.n_total})`);
     }
 
     /**

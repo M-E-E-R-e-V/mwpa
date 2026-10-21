@@ -579,6 +579,17 @@
             "types": []
           },
           "description": "KDE utilisation distribution + Getis-Ord Gi* hotspot grid. Absent when there are too few positioned sightings to estimate."
+        },
+        {
+          "unid": "26211858-590c-4702-8bd4-4466f05d6098",
+          "name": "response",
+          "type": {
+            "type": "7df8fab2-42a8-4bc7-8e1c-12ad3723266b",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Target-group-background environmental response curves. Absent when there is no background to compare against."
         }
       ]
     },
@@ -1410,6 +1421,155 @@
             "types": []
           },
           "description": "Gaussian KDE bandwidth (km, Silverman rule)."
+        }
+      ]
+    },
+    {
+      "unid": "442dd068-b97b-44db-805f-8b691692d19c",
+      "name": "SpeciesProfileResponseBin",
+      "description": "One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI. An effort-corrected preference (background = where surveying happened).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1900,
+        "y": 300
+      },
+      "fields": [
+        {
+          "unid": "82aa1c6d-cee3-4ada-82be-26bd53c2e1b4",
+          "name": "bucket_min",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Bin lower edge (inclusive)."
+        },
+        {
+          "unid": "c7a80fbb-af8f-47ba-8f62-fb3ebe7ceb20",
+          "name": "bucket_max",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Bin upper edge (exclusive); equal to bucket_min for the open tail bin."
+        },
+        {
+          "unid": "1d6f5cb2-a5ed-4eb9-b8dc-a0ece93f45d7",
+          "name": "n_target",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Target-species sightings in this bin."
+        },
+        {
+          "unid": "ba46d139-c07a-460e-83a6-005bc9195614",
+          "name": "n_total",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "All sightings (any species) in this bin — the background."
+        },
+        {
+          "unid": "b1751c68-0892-4504-91dd-6a83b94cb886",
+          "name": "proportion",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "n_target / n_total — the effort-corrected preference, 0..1."
+        },
+        {
+          "unid": "f2ea664f-9f79-4fac-95fa-9ec427c36de6",
+          "name": "ci_lo",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Wilson 95% CI lower bound."
+        },
+        {
+          "unid": "65d946dc-0c10-4ac0-bd4e-abf57d630e4f",
+          "name": "ci_hi",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Wilson 95% CI upper bound."
+        }
+      ]
+    },
+    {
+      "unid": "7df8fab2-42a8-4bc7-8e1c-12ad3723266b",
+      "name": "SpeciesProfileEnvResponse",
+      "description": "Target-group-background environmental response curves (effort-corrected preference vs raw histograms). Per covariate: the target species' proportion of all sightings per environment bin, with Wilson 95% CIs.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1900,
+        "y": 700
+      },
+      "fields": [
+        {
+          "unid": "1f1c1895-0f3f-4496-84e4-e254c2cabe95",
+          "name": "sst_c",
+          "type": {
+            "type": "442dd068-b97b-44db-805f-8b691692d19c",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Response vs sea-surface temperature (°C)."
+        },
+        {
+          "unid": "8ab0b3d6-3b99-4c0f-afc0-8b795c8c61a3",
+          "name": "chl_a",
+          "type": {
+            "type": "442dd068-b97b-44db-805f-8b691692d19c",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Response vs surface chlorophyll-a (mg/m³)."
+        },
+        {
+          "unid": "4637c61d-8e25-49f8-999d-f00fb1c4ae2a",
+          "name": "depth_m",
+          "type": {
+            "type": "442dd068-b97b-44db-805f-8b691692d19c",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Response vs sea-floor depth (m)."
+        },
+        {
+          "unid": "f61395d0-a6ab-4e6f-9477-5d1c77fc14a5",
+          "name": "distance_coast_m",
+          "type": {
+            "type": "442dd068-b97b-44db-805f-8b691692d19c",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "Response vs distance to coast (m)."
         }
       ]
     }
@@ -2260,6 +2420,310 @@
                 "types": []
               },
               "description": "Per-metric intraclass correlation across tours (pseudo-replication diagnostic). Empty when there are too few tours to decompose the variance."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792623459196,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "a4bb653e-2ebb-4f66-9004-28f190d2d627",
+          "name": "SpeciesProfile",
+          "description": "Aggregated profile of a species over a (filtered) timeframe",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 449,
+            "y": -2
+          },
+          "fields": [
+            {
+              "unid": "ade6f840-2177-4640-8cee-0dfbcea35f2c",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "f2a6e2b6-7e09-42f4-b5bb-c9c429115413",
+              "name": "species_name",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "1b87556d-b09c-4ba1-804e-18075217e6ce",
+              "name": "period_from",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Actual date range used (resolved from request or auto-extended to data range)"
+            },
+            {
+              "unid": "9eac6b88-ef20-4c5b-8f0a-f1a7caac7022",
+              "name": "period_to",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "75ee061d-3da5-441b-94d1-cc46a702814f",
+              "name": "n_sightings",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "4d4f5a11-128b-4d7f-afec-d7c6d59ed722",
+              "name": "group_size_total",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sum of species_count across all sightings"
+            },
+            {
+              "unid": "40ec75bf-7773-4870-95ef-f6b94345185a",
+              "name": "group_size_p50",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Median species_count per sighting"
+            },
+            {
+              "unid": "2d400bf0-cacc-4e6e-a7f0-2360949471ab",
+              "name": "group_size_p95",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e7bf1a1c-eec6-4565-a6de-6978f48518ca",
+              "name": "monthly",
+              "type": {
+                "type": "7b87e404-1037-4c9a-aecc-771d5089af9c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48defc1f-a83a-4bac-9504-d7fbbe038d80",
+              "name": "hourly",
+              "type": {
+                "type": "999351a2-dc38-430e-81cd-df4a55a0da8a",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "5753139b-2992-4905-a2d9-4eece53737e5",
+              "name": "group_size",
+              "type": {
+                "type": "aacd5e40-9170-4059-a8b8-b8762639bea6",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Histogram of species_count per sighting"
+            },
+            {
+              "unid": "a4ed62f9-2b09-499f-bde3-8aa453028f09",
+              "name": "group_ratios",
+              "type": {
+                "type": "7af7ca70-7108-4ffd-a033-c38ef07d49ec",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e9c1be00-6c3d-4292-a4e7-c4edba6964e4",
+              "name": "env",
+              "type": {
+                "type": "55e54a3b-8c17-416a-9070-ebb14be0b30d",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a601a791-5bbb-4e2c-a3c0-1d3579dc745f",
+              "name": "behaviour_mix",
+              "type": {
+                "type": "4846e026-b4dc-4800-9069-492a38bb2485",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "88431262-05a0-40c3-96cc-c28edff91162",
+              "name": "reaction_mix",
+              "type": {
+                "type": "4846e026-b4dc-4800-9069-492a38bb2485",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "b12f28c7-0ab7-402f-bc7d-dede38efe65a",
+              "name": "movement",
+              "type": {
+                "type": "4eb56a56-823f-4d46-8da1-9f19890a97fd",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "675ecfbe-8743-46db-922a-335e18932341",
+              "name": "heatmap",
+              "type": {
+                "type": "1fa9329f-d2f5-4a87-a9a8-33468fc5aceb",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a33a65f3-ace5-4175-a6a2-2bf80bbe5235",
+              "name": "monthly_effort",
+              "type": {
+                "type": "fac7e959-2d31-4a08-bafb-beed770f5eb1",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d615a687-0c0a-481c-ab2d-10f0990a2e45",
+              "name": "yearly",
+              "type": {
+                "type": "22d685eb-960d-4b71-9a67-a1abd461e745",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "7a6dcc83-f9fb-4a9b-918e-283929dd6c97",
+              "name": "env_extra",
+              "type": {
+                "type": "0fc2aa6a-0cf0-4e9e-b347-a90d2e431fac",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "79a72173-25ca-4d4c-b33b-2433212984af",
+              "name": "pressure",
+              "type": {
+                "type": "3283d734-0e04-41e6-accf-2c7471a96148",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "66ea5761-064b-4a07-974d-2c9e499487cc",
+              "name": "cooccurrence",
+              "type": {
+                "type": "4846e026-b4dc-4800-9069-492a38bb2485",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "bfca74c7-65f3-4bd2-b93b-e8c90250c7ea",
+              "name": "seismic",
+              "type": {
+                "type": "72224cf1-c06f-4811-b07c-36fdd348af62",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "fd9120f8-bea2-4cc9-94ce-5c4befb13aaa",
+              "name": "n_unique_tours",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Number of distinct tours (tour_fid) the sightings came from. The cluster unit for pseudo-replication: sightings on one tour share boat/crew/weather and are not independent, so n_sightings alone overstates the effective sample size."
+            },
+            {
+              "unid": "bc0fa8ab-cfab-4056-a0f1-d54419097abe",
+              "name": "icc",
+              "type": {
+                "type": "8ff1d2df-ae4b-497e-bf5a-409e186fb2c1",
+                "optional": true,
+                "array": true,
+                "types": []
+              },
+              "description": "Per-metric intraclass correlation across tours (pseudo-replication diagnostic). Empty when there are too few tours to decompose the variance."
+            },
+            {
+              "unid": "2e23c015-90d1-451a-945d-23ce5efa987f",
+              "name": "spatial",
+              "type": {
+                "type": "d9653cc0-f374-429a-9cfe-074d74573641",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "KDE utilisation distribution + Getis-Ord Gi* hotspot grid. Absent when there are too few positioned sightings to estimate."
             }
           ]
         }
@@ -3466,6 +3930,565 @@
                 "types": []
               },
               "description": "The meaningful grid cells (inside the 95% UD or near-significant Gi*)."
+            }
+          ]
+        }
+      }
+    ],
+    "442dd068-b97b-44db-805f-8b691692d19c": [
+      {
+        "ts": 1792623412755,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "442dd068-b97b-44db-805f-8b691692d19c",
+          "name": "SpeciesProfileResponseBin",
+          "description": "One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI. An effort-corrected preference (background = where surveying happened).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 300
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1792623414596,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "442dd068-b97b-44db-805f-8b691692d19c",
+          "name": "SpeciesProfileResponseBin",
+          "description": "One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI. An effort-corrected preference (background = where surveying happened).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "82aa1c6d-cee3-4ada-82be-26bd53c2e1b4",
+              "name": "bucket_min",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin lower edge (inclusive)."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792623416694,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "442dd068-b97b-44db-805f-8b691692d19c",
+          "name": "SpeciesProfileResponseBin",
+          "description": "One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI. An effort-corrected preference (background = where surveying happened).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "82aa1c6d-cee3-4ada-82be-26bd53c2e1b4",
+              "name": "bucket_min",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin lower edge (inclusive)."
+            },
+            {
+              "unid": "c7a80fbb-af8f-47ba-8f62-fb3ebe7ceb20",
+              "name": "bucket_max",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin upper edge (exclusive); equal to bucket_min for the open tail bin."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792623418456,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "442dd068-b97b-44db-805f-8b691692d19c",
+          "name": "SpeciesProfileResponseBin",
+          "description": "One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI. An effort-corrected preference (background = where surveying happened).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "82aa1c6d-cee3-4ada-82be-26bd53c2e1b4",
+              "name": "bucket_min",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin lower edge (inclusive)."
+            },
+            {
+              "unid": "c7a80fbb-af8f-47ba-8f62-fb3ebe7ceb20",
+              "name": "bucket_max",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin upper edge (exclusive); equal to bucket_min for the open tail bin."
+            },
+            {
+              "unid": "1d6f5cb2-a5ed-4eb9-b8dc-a0ece93f45d7",
+              "name": "n_target",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Target-species sightings in this bin."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792623420521,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "442dd068-b97b-44db-805f-8b691692d19c",
+          "name": "SpeciesProfileResponseBin",
+          "description": "One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI. An effort-corrected preference (background = where surveying happened).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "82aa1c6d-cee3-4ada-82be-26bd53c2e1b4",
+              "name": "bucket_min",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin lower edge (inclusive)."
+            },
+            {
+              "unid": "c7a80fbb-af8f-47ba-8f62-fb3ebe7ceb20",
+              "name": "bucket_max",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin upper edge (exclusive); equal to bucket_min for the open tail bin."
+            },
+            {
+              "unid": "1d6f5cb2-a5ed-4eb9-b8dc-a0ece93f45d7",
+              "name": "n_target",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Target-species sightings in this bin."
+            },
+            {
+              "unid": "ba46d139-c07a-460e-83a6-005bc9195614",
+              "name": "n_total",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "All sightings (any species) in this bin — the background."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792623422694,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "442dd068-b97b-44db-805f-8b691692d19c",
+          "name": "SpeciesProfileResponseBin",
+          "description": "One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI. An effort-corrected preference (background = where surveying happened).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "82aa1c6d-cee3-4ada-82be-26bd53c2e1b4",
+              "name": "bucket_min",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin lower edge (inclusive)."
+            },
+            {
+              "unid": "c7a80fbb-af8f-47ba-8f62-fb3ebe7ceb20",
+              "name": "bucket_max",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin upper edge (exclusive); equal to bucket_min for the open tail bin."
+            },
+            {
+              "unid": "1d6f5cb2-a5ed-4eb9-b8dc-a0ece93f45d7",
+              "name": "n_target",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Target-species sightings in this bin."
+            },
+            {
+              "unid": "ba46d139-c07a-460e-83a6-005bc9195614",
+              "name": "n_total",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "All sightings (any species) in this bin — the background."
+            },
+            {
+              "unid": "b1751c68-0892-4504-91dd-6a83b94cb886",
+              "name": "proportion",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "n_target / n_total — the effort-corrected preference, 0..1."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792623424908,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "442dd068-b97b-44db-805f-8b691692d19c",
+          "name": "SpeciesProfileResponseBin",
+          "description": "One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI. An effort-corrected preference (background = where surveying happened).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "82aa1c6d-cee3-4ada-82be-26bd53c2e1b4",
+              "name": "bucket_min",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin lower edge (inclusive)."
+            },
+            {
+              "unid": "c7a80fbb-af8f-47ba-8f62-fb3ebe7ceb20",
+              "name": "bucket_max",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Bin upper edge (exclusive); equal to bucket_min for the open tail bin."
+            },
+            {
+              "unid": "1d6f5cb2-a5ed-4eb9-b8dc-a0ece93f45d7",
+              "name": "n_target",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Target-species sightings in this bin."
+            },
+            {
+              "unid": "ba46d139-c07a-460e-83a6-005bc9195614",
+              "name": "n_total",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "All sightings (any species) in this bin — the background."
+            },
+            {
+              "unid": "b1751c68-0892-4504-91dd-6a83b94cb886",
+              "name": "proportion",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "n_target / n_total — the effort-corrected preference, 0..1."
+            },
+            {
+              "unid": "f2ea664f-9f79-4fac-95fa-9ec427c36de6",
+              "name": "ci_lo",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Wilson 95% CI lower bound."
+            }
+          ]
+        }
+      }
+    ],
+    "7df8fab2-42a8-4bc7-8e1c-12ad3723266b": [
+      {
+        "ts": 1792623450300,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "7df8fab2-42a8-4bc7-8e1c-12ad3723266b",
+          "name": "SpeciesProfileResponse",
+          "description": "Target-group-background environmental response curves (effort-corrected preference vs raw histograms). Per covariate: the target species' proportion of all sightings per environment bin, with Wilson 95% CIs.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 700
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1792623452243,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "7df8fab2-42a8-4bc7-8e1c-12ad3723266b",
+          "name": "SpeciesProfileResponse",
+          "description": "Target-group-background environmental response curves (effort-corrected preference vs raw histograms). Per covariate: the target species' proportion of all sightings per environment bin, with Wilson 95% CIs.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 700
+          },
+          "fields": [
+            {
+              "unid": "1f1c1895-0f3f-4496-84e4-e254c2cabe95",
+              "name": "sst_c",
+              "type": {
+                "type": "442dd068-b97b-44db-805f-8b691692d19c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Response vs sea-surface temperature (°C)."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792623454531,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "7df8fab2-42a8-4bc7-8e1c-12ad3723266b",
+          "name": "SpeciesProfileResponse",
+          "description": "Target-group-background environmental response curves (effort-corrected preference vs raw histograms). Per covariate: the target species' proportion of all sightings per environment bin, with Wilson 95% CIs.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 700
+          },
+          "fields": [
+            {
+              "unid": "1f1c1895-0f3f-4496-84e4-e254c2cabe95",
+              "name": "sst_c",
+              "type": {
+                "type": "442dd068-b97b-44db-805f-8b691692d19c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Response vs sea-surface temperature (°C)."
+            },
+            {
+              "unid": "8ab0b3d6-3b99-4c0f-afc0-8b795c8c61a3",
+              "name": "chl_a",
+              "type": {
+                "type": "442dd068-b97b-44db-805f-8b691692d19c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Response vs surface chlorophyll-a (mg/m³)."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792623457082,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "7df8fab2-42a8-4bc7-8e1c-12ad3723266b",
+          "name": "SpeciesProfileResponse",
+          "description": "Target-group-background environmental response curves (effort-corrected preference vs raw histograms). Per covariate: the target species' proportion of all sightings per environment bin, with Wilson 95% CIs.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 700
+          },
+          "fields": [
+            {
+              "unid": "1f1c1895-0f3f-4496-84e4-e254c2cabe95",
+              "name": "sst_c",
+              "type": {
+                "type": "442dd068-b97b-44db-805f-8b691692d19c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Response vs sea-surface temperature (°C)."
+            },
+            {
+              "unid": "8ab0b3d6-3b99-4c0f-afc0-8b795c8c61a3",
+              "name": "chl_a",
+              "type": {
+                "type": "442dd068-b97b-44db-805f-8b691692d19c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Response vs surface chlorophyll-a (mg/m³)."
+            },
+            {
+              "unid": "4637c61d-8e25-49f8-999d-f00fb1c4ae2a",
+              "name": "depth_m",
+              "type": {
+                "type": "442dd068-b97b-44db-805f-8b691692d19c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Response vs sea-floor depth (m)."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792623544343,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "7df8fab2-42a8-4bc7-8e1c-12ad3723266b",
+          "name": "SpeciesProfileResponse",
+          "description": "Target-group-background environmental response curves (effort-corrected preference vs raw histograms). Per covariate: the target species' proportion of all sightings per environment bin, with Wilson 95% CIs.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 700
+          },
+          "fields": [
+            {
+              "unid": "1f1c1895-0f3f-4496-84e4-e254c2cabe95",
+              "name": "sst_c",
+              "type": {
+                "type": "442dd068-b97b-44db-805f-8b691692d19c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Response vs sea-surface temperature (°C)."
+            },
+            {
+              "unid": "8ab0b3d6-3b99-4c0f-afc0-8b795c8c61a3",
+              "name": "chl_a",
+              "type": {
+                "type": "442dd068-b97b-44db-805f-8b691692d19c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Response vs surface chlorophyll-a (mg/m³)."
+            },
+            {
+              "unid": "4637c61d-8e25-49f8-999d-f00fb1c4ae2a",
+              "name": "depth_m",
+              "type": {
+                "type": "442dd068-b97b-44db-805f-8b691692d19c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Response vs sea-floor depth (m)."
+            },
+            {
+              "unid": "f61395d0-a6ab-4e6f-9477-5d1c77fc14a5",
+              "name": "distance_coast_m",
+              "type": {
+                "type": "442dd068-b97b-44db-805f-8b691692d19c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "Response vs distance to coast (m)."
             }
           ]
         }

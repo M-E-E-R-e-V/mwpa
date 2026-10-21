@@ -550,6 +550,53 @@ export class SightingRepository extends DBRepository<Sighting> {
     }
 
     /**
+     * Environmental values for ALL non-deleted sightings (any species) in the
+     * period / org scope — the "target-group background" for the response
+     * curves: it carries the environmental distribution of *where surveying
+     * happened*, so a target-species proportion against it corrects for
+     * sampling effort. Same org-scoping (via vehicle) as the profile query.
+     */
+    public async findEnvBackground(
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        organizationIds: number[] | undefined
+    ): Promise<Array<{
+        distance_coast: string;
+        depth_m: number | null;
+        sst_c_day: number | null;
+        chl_a_mg_m3_day: number | null;
+    }>> {
+        if (organizationIds !== undefined && organizationIds.length === 0) {
+            return [];
+        }
+
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('s')
+            .select('s.distance_coast', 'distance_coast')
+            .addSelect('e.depth_m', 'depth_m')
+            .addSelect('e.sst_c_day', 'sst_c_day')
+            .addSelect('e.chl_a_mg_m3_day', 'chl_a_mg_m3_day')
+            .leftJoin('sighting_extended', 'e', 'e.sighting_id = s.id')
+            .where('s.deleted = :del', {del: false})
+            .andWhere('s.species_id > 0');
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+        if (from !== '') {
+            qb.andWhere('s.date >= :from', {from});
+        }
+        if (to !== '') {
+            qb.andWhere('s.date <= :to', {to});
+        }
+        if (organizationIds !== undefined) {
+            qb.innerJoin('vehicle', 'v', 'v.id = s.vehicle_id')
+                .andWhere('v.organization_id IN (:...orgIds)', {orgIds: organizationIds});
+        }
+
+        return qb.getRawMany();
+    }
+
+    /**
      * All non-deleted sightings across species for the R-export, joined with
      * the env (sighting_extended), movement and fishing-effort tables and the
      * species name. One flat row per sighting — the external GLMM groups on

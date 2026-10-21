@@ -330,6 +330,45 @@ export const SchemaSpeciesProfileSpatial = Vts.object({
 export type SpeciesProfileSpatial = ExtractSchemaResultType<typeof SchemaSpeciesProfileSpatial>;
 
 /**
+ * Schema of SpeciesProfileResponseBin
+ * One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI.
+ */
+export const SchemaSpeciesProfileResponseBin = Vts.object({
+    bucket_min: Vts.number({description: 'Bin lower edge (inclusive).'}),
+    bucket_max: Vts.number({description: 'Bin upper edge (exclusive); equal to bucket_min for the open tail bin.'}),
+    n_target: Vts.number({description: 'Target-species sightings in this bin.'}),
+    n_total: Vts.number({description: 'All sightings (any species) in this bin — the background.'}),
+    proportion: Vts.number({description: 'n_target / n_total — the effort-corrected preference, 0..1.'}),
+    ci_lo: Vts.number({description: 'Wilson 95% CI lower bound.'}),
+    ci_hi: Vts.number({description: 'Wilson 95% CI upper bound.'}),
+}, {
+    description: 'One environment bin of a target-group response curve: the target species\' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI.',
+});
+
+/**
+ * Type of schema SpeciesProfileResponseBin
+ */
+export type SpeciesProfileResponseBin = ExtractSchemaResultType<typeof SchemaSpeciesProfileResponseBin>;
+
+/**
+ * Schema of SpeciesProfileEnvResponse
+ * Target-group-background environmental response curves (effort-corrected preference vs raw histograms).
+ */
+export const SchemaSpeciesProfileEnvResponse = Vts.object({
+    sst_c: Vts.array(SchemaSpeciesProfileResponseBin),
+    chl_a: Vts.array(SchemaSpeciesProfileResponseBin),
+    depth_m: Vts.array(SchemaSpeciesProfileResponseBin),
+    distance_coast_m: Vts.array(SchemaSpeciesProfileResponseBin),
+}, {
+    description: 'Target-group-background environmental response curves (effort-corrected preference vs raw histograms).',
+});
+
+/**
+ * Type of schema SpeciesProfileEnvResponse
+ */
+export type SpeciesProfileEnvResponse = ExtractSchemaResultType<typeof SchemaSpeciesProfileEnvResponse>;
+
+/**
  * Schema of SpeciesProfile
  * Aggregated profile of a species over a (filtered) timeframe
  */
@@ -360,6 +399,7 @@ export const SchemaSpeciesProfile = Vts.object({
     seismic: SchemaSpeciesProfileSeismic,
     icc: Vts.optional(Vts.array(SchemaSpeciesProfileIcc)),
     spatial: Vts.optional(SchemaSpeciesProfileSpatial),
+    response: Vts.optional(SchemaSpeciesProfileEnvResponse),
 }, {
     description: 'Aggregated profile of a species over a (filtered) timeframe',
 });

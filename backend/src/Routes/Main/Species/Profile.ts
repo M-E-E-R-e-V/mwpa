@@ -18,7 +18,18 @@ import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepos
 import {SightingSeismicRepository} from '../../../Db/MariaDb/Repositories/SightingSeismicRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {SpeciesRepository} from '../../../Db/MariaDb/Repositories/SpeciesRepository.js';
+import {ResponseCurves} from './ResponseCurves.js';
 import {SpatialPoint, SpatialStats} from './SpatialStats.js';
+
+/**
+ * Background row (any species) for the target-group response curves.
+ */
+export type EnvBackgroundRow = {
+    distance_coast: string;
+    depth_m: number | null;
+    sst_c_day: number | null;
+    chl_a_mg_m3_day: number | null;
+};
 
 /**
  * Row shape returned by SightingRepository.findForSpeciesProfile. Declared
@@ -185,6 +196,13 @@ export class Profile {
             organizationIds
         );
 
+        // Target-group background (env of ALL species) for the response curves.
+        const background = await SightingRepository.getInstance().findEnvBackground(
+            request.period_from,
+            request.period_to,
+            organizationIds
+        );
+
         const profile: SpeciesProfileData = Profile._aggregate(
             species.id,
             species.name,
@@ -194,7 +212,8 @@ export class Profile {
             reactionById,
             tourHours,
             cooccurring,
-            seismicRows
+            seismicRows,
+            background
         );
 
         return {statusCode: StatusCodes.OK, profile};
@@ -492,7 +511,8 @@ export class Profile {
         reactionById: Map<number, string>,
         tourHours: Map<string, number>,
         cooccurring: Array<{species_id: number; species_name: string; tour_count: number;}>,
-        seismicRows: Array<{sighting_id: number; distance_km: number; hours_offset: number; magnitude: number;}>
+        seismicRows: Array<{sighting_id: number; distance_km: number; hours_offset: number; magnitude: number;}>,
+        background: EnvBackgroundRow[]
     ): SpeciesProfileData {
         const monthly = new Map<string, number>();
         const hourly = new Array<number>(24).fill(0);
@@ -729,6 +749,34 @@ export class Profile {
             }
         }
 
+        // Target-group response curves — the species' share of all sightings
+        // per environment bin (background = where surveying happened).
+        const bgSst: number[] = [];
+        const bgChl: number[] = [];
+        const bgDepth: number[] = [];
+        const bgDist: number[] = [];
+        for (const b of background) {
+            if (b.sst_c_day !== null && Number.isFinite(b.sst_c_day)) {
+                bgSst.push(b.sst_c_day);
+            }
+            if (b.chl_a_mg_m3_day !== null && Number.isFinite(b.chl_a_mg_m3_day)) {
+                bgChl.push(b.chl_a_mg_m3_day);
+            }
+            if (b.depth_m !== null && Number.isFinite(b.depth_m)) {
+                bgDepth.push(Math.abs(b.depth_m));
+            }
+            const bd = parseFloat(b.distance_coast ?? '');
+            if (Number.isFinite(bd) && bd >= 0) {
+                bgDist.push(bd);
+            }
+        }
+        const response = background.length === 0 ? undefined : {
+            sst_c: ResponseCurves.build(sst, bgSst, Profile.SST_EDGES_C),
+            chl_a: ResponseCurves.build(chl, bgChl, Profile.CHL_EDGES_MG_M3),
+            depth_m: ResponseCurves.build(depth, bgDepth, Profile.DEPTH_EDGES_M),
+            distance_coast_m: ResponseCurves.build(distanceCoast, bgDist, Profile.DISTANCE_COAST_EDGES_M)
+        };
+
         return {
             species_id: speciesId,
             species_name: speciesName,
@@ -788,7 +836,8 @@ export class Profile {
                 hours_offset: Profile._bucketize(seismicOffsets, Profile.SEISMIC_OFFSET_EDGES_H)
             },
             icc: Profile._tourIcc(rows),
-            spatial: SpatialStats.compute(spatialPoints) ?? undefined
+            spatial: SpatialStats.compute(spatialPoints) ?? undefined,
+            response: response
         };
     }
 
