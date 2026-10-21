@@ -22,6 +22,7 @@ import {Tours} from './Main/Tours.js';
 import {User} from './Main/User.js';
 import {Vehicle} from './Main/Vehicle.js';
 import {VehicleDriver} from './Main/VehicleDriver.js';
+import {DarwinCore} from './Export/DarwinCore.js';
 import {OfficeReport} from './Export/OfficeReport.js';
 import {MapCache} from './Map/MapCache.js';
 import {Info as MobileInfo} from './Mobile/Info.js';
@@ -75,6 +76,7 @@ export class RouteLoader extends HttpRouteLoader {
             new Vehicle(),
             new VehicleDriver(),
             new OfficeReport(),
+            new DarwinCore(),
             new MobileInfo(),
             new MobileLogin(),
             new MobileQuickConnect(),
