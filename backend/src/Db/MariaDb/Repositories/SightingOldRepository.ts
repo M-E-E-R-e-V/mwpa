@@ -61,6 +61,39 @@ export class SightingOldRepository extends DBRepository<SightingOld> {
     }
 
     /**
+     * Non-deleted old sightings that carry a position, within an optional
+     * date range, ordered newest first and capped at `limit`. Feeds the map's
+     * historical-sightings layer: rows without a `location_begin` are useless
+     * there, so they are filtered out in SQL (not all old rows have one) and
+     * the cap isn't wasted on positionless history.
+     */
+    public async findPointsInRange(
+        periodFrom: string | undefined,
+        periodTo: string | undefined,
+        limit: number
+    ): Promise<SightingOld[]> {
+        const repository = await this._repository;
+        const qb = repository.createQueryBuilder('o')
+        .where('o.deleted = :deleted', {deleted: false})
+        .andWhere('o.location_begin IS NOT NULL')
+        .andWhere('o.location_begin <> \'\'')
+        .orderBy('o.date', 'DESC')
+        .limit(limit);
+
+        const from = (periodFrom ?? '').trim();
+        const to = (periodTo ?? '').trim();
+
+        if (from !== '') {
+            qb.andWhere('o.date >= :from', {from: from});
+        }
+        if (to !== '') {
+            qb.andWhere('o.date <= :to', {to: to});
+        }
+
+        return qb.getMany();
+    }
+
+    /**
      * Load many by id (for detail / batch lookups).
      */
     public async findManyByIds(ids: number[]): Promise<SightingOld[]> {

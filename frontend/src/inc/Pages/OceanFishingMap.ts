@@ -13,6 +13,7 @@ import {FishingEffortMetricLayer} from '../Map/Layers/FishingEffortMetricLayer';
 import {IdeeEsLayer} from '../Map/Layers/IdeeEsLayer';
 import {MetricLayer, MetricPoint} from '../Map/Layers/MetricLayer';
 import {OceanCurrentsLayer} from '../Map/Layers/OceanCurrentsLayer';
+import {OldSightingPointsLayer, OldSightingPoint} from '../Map/Layers/OldSightingPointsLayer';
 import {OsmBaseLayer} from '../Map/Layers/OsmBaseLayer';
 import {SeaSurfaceTemperatureMetricLayer} from '../Map/Layers/SeaSurfaceTemperatureMetricLayer';
 import {WaveHeightMetricLayer} from '../Map/Layers/WaveHeightMetricLayer';
@@ -62,6 +63,20 @@ export class OceanFishingMap extends BasePage {
     }[] = [];
 
     /**
+     * Historical (pre-app) sightings layer — opt-in via the LayerSwitcher,
+     * lazy-loaded on first show. Kept out of {@link _metricLayers} so old
+     * rows never feed the metric overlays or the effort-sensitive charts.
+     * @protected
+     */
+    protected _oldLayer: OldSightingPointsLayer | null = null;
+
+    /**
+     * Unsubscribe handle for the old-layer visibility listener.
+     * @protected
+     */
+    protected _oldLayerUnsub: (() => void) | null = null;
+
+    /**
      * @protected
      */
     protected _legend: ProvenanceLegend | null = null;
@@ -97,6 +112,10 @@ export class OceanFishingMap extends BasePage {
     protected _mapIsBig: boolean = true;
 
     public override async unloadContent(): Promise<void> {
+        if (this._oldLayerUnsub) {
+            this._oldLayerUnsub();
+            this._oldLayerUnsub = null;
+        }
         if (this._map) {
             this._map.disposePopover(true);
             this._map.unload();
@@ -104,6 +123,7 @@ export class OceanFishingMap extends BasePage {
         }
         jQuery(document).off('click.cmemsRegion');
         this._metricLayers = [];
+        this._oldLayer = null;
         this._legend = null;
         this._charts = null;
         this._selectedYear = '';
@@ -229,6 +249,19 @@ export class OceanFishingMap extends BasePage {
             this._map.addLayer(layer);
         }
 
+        /*
+         * Historical sightings — a standalone, muted-marker layer the user
+         * opts into. Lazy-loaded on first show (and on year change while
+         * shown) so the ~12 k historical points aren't fetched unless wanted.
+         */
+        this._oldLayer = new OldSightingPointsLayer();
+        this._map.addLayer(this._oldLayer);
+        this._oldLayerUnsub = this._oldLayer.onVisibleChange((visible) => {
+            if (visible) {
+                void this._reloadOld();
+            }
+        });
+
         // Recenter on org once the map is loaded.
         if (currentuser?.organization) {
             const center: Coordinate = fromLonLat([
@@ -321,6 +354,80 @@ export class OceanFishingMap extends BasePage {
         if (this._charts) {
             this._charts.setData(rows);
         }
+
+        // Keep the historical layer in sync with the year filter, but only
+        // when the user has it switched on (it's loaded lazily otherwise).
+        if (this._oldLayer?.isVisible()) {
+            await this._reloadOld();
+        }
+    }
+
+    /**
+     * Fetch the historical (pre-app) sightings for the current year filter
+     * and feed the old-sightings layer. Decoupled from {@link _reload}'s
+     * metric pipeline — old rows carry no ocean/fishing metrics and must not
+     * enter the metric overlays or the effort-sensitive charts.
+     * @protected
+     */
+    protected async _reloadOld(): Promise<void> {
+        if (!this._oldLayer) {
+            return;
+        }
+
+        const filter: {limit: number; offset: number; period_from?: string; period_to?: string;} = {
+            limit: 6000,
+            offset: 0
+        };
+
+        if (this._selectedYear !== '' && /^\d{4}$/.test(this._selectedYear)) {
+            filter.period_from = `${this._selectedYear}-01-01`;
+            filter.period_to = `${this._selectedYear}-12-31`;
+        }
+
+        const response = await SightingEnvironment.getOldList(filter);
+
+        if (!response) {
+            return;
+        }
+
+        const points: OldSightingPoint[] = response.list.map((r) => ({
+            id: r.id,
+            lon: r.lon,
+            lat: r.lat,
+            content: OceanFishingMap._buildOldTooltip(r)
+        }));
+
+        this._oldLayer.setPoints(points);
+        this._oldLayer.refresh();
+    }
+
+    /**
+     * Compact popover for a historical sighting: identity + whatever the
+     * EnrichmentService could compute for the row (astronomy / weather).
+     * No ocean/fishing block — old rows have none.
+     * @protected
+     */
+    protected static _buildOldTooltip(r: SightingEnvironmentEntry): string {
+        const fmt = (n: number | undefined, digits: number, suffix: string): string =>
+            typeof n === 'number' && Number.isFinite(n) ? `${n.toFixed(digits)} ${suffix}` : '—';
+
+        const rows = [
+            '<b>Historical sighting</b> <span style="color:#777;">(pre-app)</span>',
+            r.species_name ? `Species: ${r.species_name}` : null,
+            r.date ? `Date: ${r.date}` : null,
+            r.sun_elevation_deg === undefined && r.moon_phase === undefined ? null : '<i>— Sky &amp; Light —</i>',
+            r.sun_elevation_deg === undefined ? null
+                : `Sun elevation: ${fmt(r.sun_elevation_deg, 1, '°')}${typeof r.sun_azimuth_deg === 'number' ? ` @ ${Math.round(r.sun_azimuth_deg)}°` : ''}`,
+            r.day_length_h === undefined ? null : `Day length: ${fmt(r.day_length_h, 1, 'h')}`,
+            r.moon_phase === undefined ? null
+                : `Moon: ${fmt(r.moon_illumination_pct, 0, '%')} lit (phase ${fmt(r.moon_phase, 2, '')})`,
+            r.pressure_msl_hpa_day === undefined && r.cloud_cover_pct_day === undefined ? null : '<i>— Weather —</i>',
+            r.pressure_msl_hpa_day === undefined ? null : `Pressure: ${fmt(r.pressure_msl_hpa_day, 0, 'hPa')}`,
+            r.cloud_cover_pct_day === undefined ? null : `Cloud cover: ${fmt(r.cloud_cover_pct_day, 0, '%')}`,
+            r.precipitation_mm_day === undefined ? null : `Precipitation: ${fmt(r.precipitation_mm_day, 1, 'mm')}`
+        ];
+
+        return rows.filter((row): row is string => row !== null).join('<br>');
     }
 
     /**

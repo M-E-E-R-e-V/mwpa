@@ -30,6 +30,7 @@ import {Excel} from './Sightings/Excel.js';
 import {FishingVesselList} from './Sightings/FishingVesselList.js';
 import {GetImage} from './Sightings/GetImage.js';
 import {List} from './Sightings/List.js';
+import {OldPoints} from './Sightings/OldPoints.js';
 import {Save} from './Sightings/Save.js';
 import {Years} from './Sightings/Years.js';
 
@@ -73,6 +74,21 @@ export class Sightings extends DefaultRoute {
             },
             {
                 description: 'Paginated list of non-deleted sightings joined with ocean (chl-a, salinity, currents) + GFW fishing-effort enrichment columns. Position is denormalised to lon/lat for direct map use.',
+                bodySchema: SchemaSightingsFilter,
+                responseBodySchema: SchemaSightingEnvironmentListResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._post(
+            '/json/sightings/old-points',
+            checkMWPAUserIsLogin,
+            async(_req, _res, data): Promise<SightingEnvironmentListResponse> => {
+                return OldPoints.getList(data.body);
+            },
+            {
+                description: 'Historical hand-maintained sightings (sighting_old, pre-app era) as map points, reusing the environment wire shape (only id/lon/lat/date/species + any computed astronomy/weather enrichment). Shared history — NOT org-scoped. For the map\'s dedicated historical-sightings layer.',
                 bodySchema: SchemaSightingsFilter,
                 responseBodySchema: SchemaSightingEnvironmentListResponse,
                 sessionSchema: SchemaMWPASessionData,

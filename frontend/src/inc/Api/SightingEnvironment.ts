@@ -102,4 +102,27 @@ export class SightingEnvironment {
         return null;
     }
 
+    /**
+     * Historical hand-maintained sightings (sighting_old, pre-app era) as map
+     * points. Same wire shape as {@link getList} but only id/lon/lat/date/
+     * species + any computed astronomy/weather enrichment are populated; the
+     * ocean/fishing metric columns stay unset. Shared history — not org-scoped.
+     */
+    public static async getOldList(filter?: SightingsFilter): Promise<SightingEnvironmentListResponse | null> {
+        const data = filter ?? {};
+        const result = await NetFetch.postData('/json/sightings/old-points', data);
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return result as SightingEnvironmentListResponse;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return null;
+    }
+
 }
