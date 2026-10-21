@@ -5,6 +5,7 @@ import {
     SpeciesProfileCategoryShare,
     SpeciesProfileHeadingBin,
     SpeciesProfileHeatmapPoint,
+    SpeciesProfileIcc,
     SpeciesProfileMonthlyEffort,
     SpeciesProfileMovement,
     SpeciesProfileRequest,
@@ -259,6 +260,124 @@ export class Profile {
         }
         const frac = rank - lo;
         return sorted[lo] * (1 - frac) + sorted[hi] * frac;
+    }
+
+    /**
+     * One-way random-effects intraclass correlation ICC(1) for a metric whose
+     * values are grouped by tour. Decomposes the variance into between-tour and
+     * within-tour parts via a standard ANOVA:
+     *
+     *   MS_between = SS_between / (k - 1),  MS_within = SS_within / (N - k)
+     *   n0 = (N - Σn_g²/N) / (k - 1)            // mean group size (unbalanced)
+     *   σ²_between = (MS_between - MS_within) / n0,   σ²_within = MS_within
+     *   ICC = σ²_between / (σ²_between + σ²_within)
+     *
+     * ICC near 0 = sightings vary independently of tour; near 1 = the metric is
+     * essentially fixed per tour (strong pseudo-replication). Returns null when
+     * there are fewer than two tours or no within-tour degrees of freedom — the
+     * decomposition is undefined there. ICC is clamped to [0, 1] (a slightly
+     * negative σ²_between from sampling noise reads as 0).
+     */
+    private static _icc(byTour: Map<string, number[]>): {icc: number; nTours: number; nObs: number;} | null {
+        const groups = [...byTour.values()].filter((g) => g.length > 0);
+        const k = groups.length;
+        let n = 0;
+        for (const g of groups) {
+            n += g.length;
+        }
+
+        if (k < 2 || n <= k) {
+            return null;
+        }
+
+        let grandSum = 0;
+        for (const g of groups) {
+            for (const x of g) {
+                grandSum += x;
+            }
+        }
+        const grand = grandSum / n;
+
+        let ssBetween = 0;
+        let ssWithin = 0;
+        let sumNg2 = 0;
+        for (const g of groups) {
+            const ng = g.length;
+            const mean = g.reduce((a, b) => a + b, 0) / ng;
+            ssBetween += ng * ((mean - grand) ** 2);
+            for (const x of g) {
+                ssWithin += (x - mean) ** 2;
+            }
+            sumNg2 += ng * ng;
+        }
+
+        const msBetween = ssBetween / (k - 1);
+        const msWithin = ssWithin / (n - k);
+        const n0 = (n - (sumNg2 / n)) / (k - 1);
+
+        if (n0 <= 0) {
+            return null;
+        }
+
+        const varBetween = (msBetween - msWithin) / n0;
+        const denom = varBetween + msWithin;
+        let icc = denom > 0 ? varBetween / denom : 0;
+        icc = Math.max(0, Math.min(1, icc));
+
+        return {icc: Math.round(icc * 1000) / 1000, nTours: k, nObs: n};
+    }
+
+    /**
+     * Compute per-metric tour ICCs over the profile rows. Each metric groups
+     * its finite values by `tour_fid`, then runs {@link _icc}; metrics with too
+     * few tours are omitted.
+     */
+    private static _tourIcc(rows: SightingProfileRow[]): SpeciesProfileIcc[] {
+        const metrics: {key: string; label: string; get: (r: SightingProfileRow) => number | null;}[] = [
+            {key: 'group_size', label: 'Group size', get: (r): number => Number(r.species_count) || 0},
+            {key: 'distance_coast', label: 'Distance to coast', get: (r): number | null => {
+                const d = parseFloat(r.distance_coast ?? '');
+                return Number.isFinite(d) && d >= 0 ? d : null;
+            }},
+            {key: 'depth', label: 'Depth', get: (r): number | null =>
+                r.depth_m !== null && Number.isFinite(r.depth_m) ? Math.abs(r.depth_m) : null},
+            {key: 'sst_c', label: 'SST', get: (r): number | null =>
+                r.sst_c_day !== null && Number.isFinite(r.sst_c_day) ? r.sst_c_day : null},
+            {key: 'chl_a', label: 'Chlorophyll-a', get: (r): number | null =>
+                r.chl_a_mg_m3_day !== null && Number.isFinite(r.chl_a_mg_m3_day) ? r.chl_a_mg_m3_day : null},
+            {key: 'salinity', label: 'Salinity', get: (r): number | null =>
+                r.salinity_psu_day !== null && Number.isFinite(r.salinity_psu_day) ? r.salinity_psu_day : null},
+            {key: 'wave_height', label: 'Wave height', get: (r): number | null =>
+                r.wave_height_m_day !== null && Number.isFinite(r.wave_height_m_day) ? r.wave_height_m_day : null},
+            {key: 'beaufort', label: 'Beaufort', get: (r): number | null =>
+                Number.isFinite(r.beaufort_wind) && r.beaufort_wind >= 0 ? r.beaufort_wind : null}
+        ];
+
+        const out: SpeciesProfileIcc[] = [];
+
+        for (const m of metrics) {
+            const byTour = new Map<string, number[]>();
+            for (const r of rows) {
+                const fid = r.tour_fid;
+                if (!fid || fid.trim() === '') {
+                    continue;
+                }
+                const v = m.get(r);
+                if (v === null || !Number.isFinite(v)) {
+                    continue;
+                }
+                const arr = byTour.get(fid) ?? [];
+                arr.push(v);
+                byTour.set(fid, arr);
+            }
+
+            const res = Profile._icc(byTour);
+            if (res !== null) {
+                out.push({metric_key: m.key, label: m.label, icc: res.icc, n_tours: res.nTours, n_obs: res.nObs});
+            }
+        }
+
+        return out;
     }
 
     /**
@@ -662,7 +781,8 @@ export class Profile {
                 magnitude: Profile._bucketize(seismicMagnitudes, Profile.SEISMIC_MAG_EDGES),
                 distance_km: Profile._bucketize(seismicDistances, Profile.SEISMIC_DIST_EDGES_KM),
                 hours_offset: Profile._bucketize(seismicOffsets, Profile.SEISMIC_OFFSET_EDGES_H)
-            }
+            },
+            icc: Profile._tourIcc(rows)
         };
     }
 

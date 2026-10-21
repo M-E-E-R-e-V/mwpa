@@ -144,6 +144,8 @@ export {
     SpeciesProfilePressure,
     SchemaSpeciesProfileSeismic,
     SpeciesProfileSeismic,
+    SchemaSpeciesProfileIcc,
+    SpeciesProfileIcc,
     SchemaSpeciesProfile,
     SpeciesProfile,
     SchemaSpeciesProfileResponse,

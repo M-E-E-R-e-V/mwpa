@@ -267,6 +267,25 @@ export const SchemaSpeciesProfileSeismic = Vts.object({
 export type SpeciesProfileSeismic = ExtractSchemaResultType<typeof SchemaSpeciesProfileSeismic>;
 
 /**
+ * Schema of SpeciesProfileIcc
+ * Intraclass correlation (ICC) of one metric across tours — the share of its variance that is between-tour rather than within-tour. High ICC = strong clustering by tour, so sightings are far from independent for that metric.
+ */
+export const SchemaSpeciesProfileIcc = Vts.object({
+    metric_key: Vts.string({description: 'Stable metric id (e.g. \'group_size\', \'sst_c\', \'chl_a\').'}),
+    label: Vts.string({description: 'Human-readable metric label.'}),
+    icc: Vts.number({description: 'Intraclass correlation, 0..1. Fraction of the metric\'s variance that is between-tour. Higher = stronger tour clustering (less independence).'}),
+    n_tours: Vts.number({description: 'Number of tours (groups) that contributed at least one value to this metric.'}),
+    n_obs: Vts.number({description: 'Number of sightings (observations) with a value for this metric.'}),
+}, {
+    description: 'Intraclass correlation (ICC) of one metric across tours — the share of its variance that is between-tour rather than within-tour. High ICC = strong clustering by tour, so sightings are far from independent for that metric.',
+});
+
+/**
+ * Type of schema SpeciesProfileIcc
+ */
+export type SpeciesProfileIcc = ExtractSchemaResultType<typeof SchemaSpeciesProfileIcc>;
+
+/**
  * Schema of SpeciesProfile
  * Aggregated profile of a species over a (filtered) timeframe
  */
@@ -295,6 +314,7 @@ export const SchemaSpeciesProfile = Vts.object({
     pressure: SchemaSpeciesProfilePressure,
     cooccurrence: Vts.array(SchemaSpeciesProfileCategoryShare),
     seismic: SchemaSpeciesProfileSeismic,
+    icc: Vts.optional(Vts.array(SchemaSpeciesProfileIcc)),
 }, {
     description: 'Aggregated profile of a species over a (filtered) timeframe',
 });

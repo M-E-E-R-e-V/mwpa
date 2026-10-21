@@ -18,6 +18,7 @@ import {
     SpeciesProfileData,
     SpeciesProfileHeadingBin,
     SpeciesProfileHeatmapPoint,
+    SpeciesProfileIcc,
     SpeciesProfileMonthlyEffort,
     SpeciesProfileYearly
 } from '../../Api/Species';
@@ -84,6 +85,7 @@ export class SpeciesProfile extends BasePage {
      */
     protected _hosts: {
         kpiGrid?: JQuery<HTMLDivElement>;
+        iccHost?: JQuery<HTMLDivElement>;
         monthlyHost?: JQuery<HTMLDivElement>;
         hourlyHost?: JQuery<HTMLDivElement>;
         sizeHost?: JQuery<HTMLDivElement>;
@@ -178,6 +180,14 @@ export class SpeciesProfile extends BasePage {
                 pdfBtn.prop('disabled', false);
             }
         });
+
+        // Row 1b — tour clustering (ICC), pseudo-replication diagnostic ------------------------------------------------
+
+        const rowIcc = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const iccCard = new Card(new ContentCol(rowIcc, ContentColSize.col12));
+        iccCard.setTitle(new LangText('Tour clustering (ICC)'));
+        const iccHost = jQuery<HTMLDivElement>('<div class="species-profile-icc card-body"/>').appendTo(iccCard.getBodyElement());
+        this._hosts.iccHost = iccHost;
 
         // Row 2 — time distribution (monthly + hourly side-by-side) ---------------------------------------------------
 
@@ -402,6 +412,9 @@ export class SpeciesProfile extends BasePage {
 
         if (h.kpiGrid) {
             SpeciesProfile._renderKpi(h.kpiGrid, profile);
+        }
+        if (h.iccHost) {
+            SpeciesProfile._renderIcc(h.iccHost, profile);
         }
         if (h.monthlyHost) {
             SpeciesProfile._renderMonthly(h.monthlyHost[0] as HTMLElement, profile);
@@ -1052,6 +1065,42 @@ export class SpeciesProfile extends BasePage {
         set('total', `${profile.group_size_total}`);
         set('p50', `${profile.group_size_p50.toFixed(1)}`);
         set('p95', `${profile.group_size_p95.toFixed(1)}`);
+    }
+
+    /**
+     * Tour-clustering (ICC) card — one labelled bar per metric showing the
+     * share of its variance that is between-tour. A one-line explanation sits
+     * on top; an empty list means there were too few tours to decompose.
+     */
+    private static _renderIcc(host: JQuery<HTMLDivElement>, profile: SpeciesProfileData): void {
+        const lang = Lang.i();
+        host.empty();
+
+        jQuery('<div class="species-profile-print-desc text-muted small mb-2"/>')
+            .text(lang.l('Share of each metric’s variance that is between-tour rather than within-tour. High values mean sightings cluster by tour — treat them as non-independent (use tour as a random effect in any model).'))
+            .appendTo(host);
+
+        const items: SpeciesProfileIcc[] = profile.icc ?? [];
+        if (items.length === 0) {
+            jQuery('<div class="text-muted"/>')
+                .text(lang.l('Too few tours to estimate (need at least two tours per metric).'))
+                .appendTo(host);
+            return;
+        }
+
+        const colorFor = (v: number): string => v >= 0.3 ? '#dc3545' : (v >= 0.1 ? '#f0ad4e' : '#28a745');
+
+        const table = jQuery('<div style="display:flex;flex-direction:column;gap:4px;"/>').appendTo(host);
+        for (const it of items) {
+            const row = jQuery('<div style="display:flex;align-items:center;gap:8px;"/>').appendTo(table);
+            jQuery('<div style="flex:0 0 140px;" class="small"/>').text(lang.l(it.label)).appendTo(row);
+            const barWrap = jQuery('<div style="flex:1;background:#eee;border-radius:3px;height:14px;overflow:hidden;"/>').appendTo(row);
+            const pct = Math.round(Math.max(0, Math.min(1, it.icc)) * 100);
+            jQuery(`<div style="height:100%;width:${pct}%;background:${colorFor(it.icc)};"/>`).appendTo(barWrap);
+            jQuery('<div style="flex:0 0 160px;text-align:right;" class="small text-muted"/>')
+                .text(`${it.icc.toFixed(2)}  (${it.n_obs} obs / ${it.n_tours} tours)`)
+                .appendTo(row);
+        }
     }
 
     /**
