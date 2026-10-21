@@ -180,4 +180,21 @@ export class SightingExtendedRepository extends DBRepositoryUnid<SightingExtende
         .getMany();
     }
 
+    /**
+     * Up to `limit` non-deleted sightings whose `coord_uncert_last_update`
+     * is NULL or older than `cutoff`. Requires a position (for the GPS
+     * accuracy) and a species (the per-class default is keyed off it).
+     */
+    public async findStaleForCoordUncert(cutoff: Date, limit: number): Promise<Sighting[]> {
+        const repository = await this._repository;
+        return repository.manager.createQueryBuilder(Sighting, 's')
+        .leftJoin(SightingExtended, 'e', 'e.sighting_id = s.id')
+        .where('s.deleted = :deleted', {deleted: false})
+        .andWhere('s.location_begin <> \'\'')
+        .andWhere('s.species_id > 0')
+        .andWhere('(e.coord_uncert_last_update IS NULL OR e.coord_uncert_last_update < :cutoff)', {cutoff: cutoff})
+        .limit(limit)
+        .getMany();
+    }
+
 }

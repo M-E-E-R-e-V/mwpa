@@ -436,6 +436,40 @@ export class SightingExtended extends DBBaseEntityUnid {
     public ocean_last_update!: Date | null;
 
     /**
+     * Darwin-Core `coordinateUncertaintyInMeters`: the horizontal radius (m)
+     * of the circle around the recorded position that likely contains the
+     * true animal location. Required for an OBIS / GBIF archive. Computed
+     * as a per-species-class default plus the GPS accuracy of the fix —
+     * NOT measured — so it is a conservative lower bound documented via the
+     * samplingProtocol. NULL = not computed yet.
+     */
+    @Column({
+        type: 'int',
+        nullable: true
+    })
+    public coordinate_uncertainty_m!: number | null;
+
+    /**
+     * Status of the coordinate-uncertainty computation: '', 'ok',
+     * 'invalid_location', 'no_species'. Empty = never tried.
+     */
+    @Column({
+        type: 'varchar',
+        length: 32,
+        default: ''
+    })
+    public coord_uncert_status!: string;
+
+    /**
+     * When the coordinate-uncertainty value was last computed. NULL = never.
+     */
+    @Column({
+        type: 'datetime',
+        nullable: true
+    })
+    public coord_uncert_last_update!: Date | null;
+
+    /**
      * Per-column data provenance: maps a value column name (e.g.
      * 'depth_m', 'sst_c_day', 'wave_height_m_hour', 'chl_a_mg_m3_day')
      * to the provider id that produced it (e.g. 'emodnet',

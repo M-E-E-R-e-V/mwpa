@@ -15,6 +15,7 @@ import {LiveAisService} from '../Service/Ais/LiveAisService.js';
 import {CurrentFieldService} from '../Service/Currents/CurrentFieldService.js';
 import {DepthService} from '../Service/DepthService.js';
 import {EarthquakeService} from '../Service/EarthquakeService.js';
+import {CoordinateUncertaintyService} from '../Service/CoordinateUncertaintyService.js';
 import {EnrichmentService} from '../Service/EnrichmentService.js';
 import {ExternalTourService} from '../Service/ExternalTourService.js';
 import {FishingEffortService} from '../Service/FishingEffortService.js';
@@ -83,6 +84,7 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
         this._serviceManager.add(new CurrentFieldService());
         this._serviceManager.add(new FishingEffortService());
         this._serviceManager.add(new EnrichmentService());
+        this._serviceManager.add(new CoordinateUncertaintyService());
         this._serviceManager.add(new ExternalTourService());
         this._serviceManager.add(new LiveAisService());
         this._serviceManager.add(new AisPruneService());
