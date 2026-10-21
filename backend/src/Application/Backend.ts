@@ -13,6 +13,7 @@ import {RouteLoader} from '../Routes/RouteLoader.js';
 import {AisPruneService} from '../Service/Ais/AisPruneService.js';
 import {LiveAisService} from '../Service/Ais/LiveAisService.js';
 import {CurrentFieldService} from '../Service/Currents/CurrentFieldService.js';
+import {ClimateIndexService} from '../Service/ClimateIndexService.js';
 import {DepthService} from '../Service/DepthService.js';
 import {EarthquakeService} from '../Service/EarthquakeService.js';
 import {CoordinateUncertaintyService} from '../Service/CoordinateUncertaintyService.js';
@@ -89,6 +90,7 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
         this._serviceManager.add(new LiveAisService());
         this._serviceManager.add(new AisPruneService());
         this._serviceManager.add(new EarthquakeService());
+        this._serviceManager.add(new ClimateIndexService());
     }
 
 }

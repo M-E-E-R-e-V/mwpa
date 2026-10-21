@@ -2,6 +2,7 @@ import {DBLoader, DbSetupState} from '@stefanwerfling/figtree';
 import {EntitySchema, MixedList} from 'typeorm';
 import {AisVessel} from './Entities/AisVessel.js';
 import {BehaviouralStates} from './Entities/BehaviouralStates.js';
+import {ClimateIndex} from './Entities/ClimateIndex.js';
 import {Devices} from './Entities/Devices.js';
 import {Earthquake} from './Entities/Earthquake.js';
 import {LiveAisTrack} from './Entities/LiveAisTrack.js';
@@ -58,6 +59,7 @@ export class MWPADbLoader extends DBLoader {
             DbSetupState,
             AisVessel,
             BehaviouralStates,
+            ClimateIndex,
             Devices,
             Earthquake,
             EncounterCategories,

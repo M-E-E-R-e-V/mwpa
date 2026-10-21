@@ -3,6 +3,7 @@ import {DefaultRoute} from '@stefanwerfling/figtree';
 import {DefaultHandlerReturn, HandlerResultType} from 'figtree-schemas';
 import JSZip from 'jszip';
 import {SchemaMWPASessionData} from 'mwpa_schemas';
+import {ClimateIndexRepository} from '../../Db/MariaDb/Repositories/ClimateIndexRepository.js';
 import {SightingRepository} from '../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SightingTourRepository} from '../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {Users} from '../../Users/Users.js';
@@ -37,7 +38,7 @@ export class SightingsForR extends DefaultRoute {
         'distance_coast_m', 'depth_m', 'sst_c_day', 'chl_a_mg_m3_day', 'salinity_psu_day',
         'sla_cm_day', 'current_speed_m_s_day', 'wave_height_m_day', 'uv_index_day',
         'wind_speed_m_s_day', 'avg_speed_mps', 'max_speed_mps', 'total_distance_m',
-        'fishing_hours_day_25km', 'vehicle_id', 'vehicle_driver_id', 'organization_id'
+        'fishing_hours_day_25km', 'nao', 'amo', 'oni', 'vehicle_id', 'vehicle_driver_id', 'organization_id'
     ];
 
     /**
@@ -94,9 +95,17 @@ export class SightingsForR extends DefaultRoute {
         const sightingRows = await SightingRepository.getInstance().findAllForExport(undefined, undefined, organizationIds);
         const tourRows = await SightingTourRepository.getInstance().findAllForExport(undefined, undefined, organizationIds);
 
+        // Monthly climate indices, joined to each sighting via its (year, month).
+        const climateRows = await ClimateIndexRepository.getInstance().findAllRows();
+        const climateByYm = new Map<string, {nao: number | null; amo: number | null; oni: number | null;}>();
+        for (const c of climateRows) {
+            climateByYm.set(`${c.year}-${c.month}`, {nao: c.nao, amo: c.amo, oni: c.oni});
+        }
+
         const sightingCsv: string[] = [SightingsForR.SIGHTING_COLUMNS.join(',')];
         for (const r of sightingRows) {
             const lonLat = SightingsForR._parseLonLat(r.location_begin);
+            const climate = climateByYm.get(SightingsForR._ymKey(r.date)) ?? {nao: null, amo: null, oni: null};
             const values: (string | number | null)[] = [
                 r.id, r.unid, r.tour_fid, r.date, SightingsForR._hhmm(r.tour_start),
                 r.species_id, r.species_name ?? '',
@@ -105,7 +114,8 @@ export class SightingsForR extends DefaultRoute {
                 SightingsForR._numOrEmpty(r.distance_coast), r.depth_m, r.sst_c_day, r.chl_a_mg_m3_day,
                 r.salinity_psu_day, r.sla_cm_day, r.current_speed_m_s_day, r.wave_height_m_day,
                 r.uv_index_day, r.wind_speed_m_s_day, r.avg_speed_mps, r.max_speed_mps,
-                r.total_distance_m, r.fishing_hours_day_25km, r.vehicle_id, r.vehicle_driver_id, r.organization_id
+                r.total_distance_m, r.fishing_hours_day_25km, climate.nao, climate.amo, climate.oni,
+                r.vehicle_id, r.vehicle_driver_id, r.organization_id
             ];
             sightingCsv.push(values.map((v) => SightingsForR._cell(v)).join(','));
         }
@@ -181,6 +191,21 @@ export class SightingsForR extends DefaultRoute {
     }
 
     /**
+     * `${year}-${month}` key (month un-padded) for the climate-index join, or
+     * '' when the date isn't parseable. Matches ClimateIndexService._key.
+     * @private
+     */
+    private static _ymKey(date: string | null | undefined): string {
+        const s = (date ?? '').trim();
+        const year = parseInt(s.slice(0, 4), 10);
+        const month = parseInt(s.slice(5, 7), 10);
+        if (!Number.isInteger(year) || !(month >= 1 && month <= 12)) {
+            return '';
+        }
+        return `${year}-${month}`;
+    }
+
+    /**
      * Coerce the legacy distance_coast varchar to a finite number, or '' .
      * @private
      */
@@ -222,6 +247,8 @@ export class SightingsForR extends DefaultRoute {
             '  Empty cells are missing values (read.csv -> NA). Coordinates are WGS84',
             '  decimal degrees. Env covariates (*_day) come from the enrichment tables',
             '  and may be NA when a lookup had no data for that sighting.',
+            '  nao / amo / oni are the monthly NAO / AMO / ONI climate indices for the',
+            '  sighting\'s calendar month (same value for every sighting in that month).',
             ''
         ].join('\n');
     }
