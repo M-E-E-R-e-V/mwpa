@@ -370,6 +370,7 @@ export class OceanFishingMap extends BasePage {
             r.upwelling_index_day === undefined ? null
                 : `Upwelling index: ${fmt(r.upwelling_index_day, 1, 'm³/s per 100 m')}`,
             r.seabed_slope_deg === undefined ? null : `Seabed slope: ${fmt(r.seabed_slope_deg, 1, '°')}`,
+            r.shelf_distance_km === undefined ? null : `Shelf-break dist: ${fmt(r.shelf_distance_km, 1, 'km')}`,
             r.sst_front_grad_c_km_day === undefined ? null
                 : `SST front: ${fmt(r.sst_front_grad_c_km_day, 3, '°C/km')}`,
             '<i>— Fishing —</i>',

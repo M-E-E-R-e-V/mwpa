@@ -597,6 +597,17 @@
             "types": []
           },
           "description": "Overall enrichment row status ('ok', 'invalid_location', 'invalid_date', …). From sighting_enrichment."
+        },
+        {
+          "unid": "a42f7197-afd0-405a-ad92-0818f96571d4",
+          "name": "shelf_distance_km",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Estimated distance (km) to the 200 m shelf-break isobath, from the bathymetry stencil. From sighting_enrichment (derived)."
         }
       ]
     },
@@ -9022,6 +9033,574 @@
                 "types": []
               },
               "description": "SST horizontal gradient magnitude (°C per km) — thermal-front strength. From sighting_enrichment (derived)."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792566149169,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "974bd738-e096-4548-aee8-5927ee6b6985",
+          "name": "SightingEnvironmentEntry",
+          "description": "One sighting with its ocean + fishing-effort enrichment columns. Position is denormalized to lon/lat so the frontend doesn't have to re-parse location_begin.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 513,
+            "y": 177
+          },
+          "fields": [
+            {
+              "unid": "7fcfd582-0cd1-42a9-b473-792388ebe367",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e36ab29c-60d2-46d9-92ea-283d3a66bbd9",
+              "name": "lon",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Longitude (WGS84). Parsed from location_begin JSON server-side."
+            },
+            {
+              "unid": "f5296f03-24ef-452f-9ddf-e104180c6851",
+              "name": "lat",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Latitude (WGS84). Parsed from location_begin JSON server-side."
+            },
+            {
+              "unid": "bf793d5d-b5e5-4270-9556-24732abf6478",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting date as stored (YYYY-MM-DD or similar)."
+            },
+            {
+              "unid": "cebed2bf-c633-428d-8bd1-04f99cec89c5",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "0de62f71-4a98-4c48-ab55-31b089f6292d",
+              "name": "species_name",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e616daa9-7df3-44c2-b896-08da635e9d3e",
+              "name": "pointtype",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "8be9fe3b-03fc-4816-8a7c-e07d6ec09bce",
+              "name": "organization_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "8fc77094-3ad9-42ab-a92a-9017df006159",
+              "name": "chl_a_mg_m3_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Surface chlorophyll-a (mg/m³), day mean. NULL = lookup pending or no data."
+            },
+            {
+              "unid": "a57f20fa-cb15-44af-aaf7-42b9911bb9f6",
+              "name": "salinity_psu_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "4be26f7a-ae64-4b48-911b-cb927e287abe",
+              "name": "sla_cm_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "c17f1d71-9b09-43d0-9e32-8f69e00814d1",
+              "name": "current_speed_m_s_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "afa57eaa-ad57-403f-ab58-169bf447cdb9",
+              "name": "current_direction_deg_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "464cae6f-2d3c-41ff-bc9c-d8b5cc7e5b42",
+              "name": "current_region_mean_speed_m_s_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Day-mean current speed (m/s) averaged over the regional patch around the sighting, from CMEMS. NULL when no CMEMS patch was fetched."
+            },
+            {
+              "unid": "8ff72fa8-6543-4efe-a531-221fe5cd9173",
+              "name": "current_region_max_speed_m_s_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Day-mean of the cell-wise max current speed (m/s) inside the regional patch, from CMEMS."
+            },
+            {
+              "unid": "301f5dac-5c4f-4b38-9d3e-e48379b6e1c4",
+              "name": "current_curl_s_inv_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Vertical vorticity (curl = dv/dx - du/dy) in 1/s at the sighting position, derived from the regional CMEMS u/v patch. Positive = cyclonic in northern hemisphere; magnitude flags eddy activity."
+            },
+            {
+              "unid": "b4163571-70be-4034-8c81-a3c0a2704f86",
+              "name": "current_divergence_s_inv_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Horizontal divergence (du/dx + dv/dy) in 1/s at the sighting position, derived from the regional CMEMS u/v patch. Negative = convergence (front)."
+            },
+            {
+              "unid": "b2d47b6f-d1a6-4db7-9e7b-1f0032767820",
+              "name": "current_coastal_component_m_s_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Signed cross-shore component of the current (m/s): projection of the regional patch centre u/v onto the offshore normal of the nearest coast. Positive = seaward (offshore), negative = shoreward (onshore). NULL when no coast lies within the search radius or the centre current vector is missing."
+            },
+            {
+              "unid": "f139fc61-2d66-48ea-8bac-bf739c9f9b08",
+              "name": "sst_c_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "95f7fd15-0183-49d1-a31c-30b901480351",
+              "name": "depth_m",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "50b05a62-9127-460b-85e3-8232d1f1b8a3",
+              "name": "ocean_status",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "911e3467-e3f6-4cf9-b805-295620123172",
+              "name": "fishing_hours_day_25km",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "f891a327-60d1-45b5-affc-4780240ea76d",
+              "name": "fishing_hours_day_50km",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "f003f37c-fe2c-4fb0-8cb2-21e256a801d2",
+              "name": "vessel_count_day_25km",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "adca228a-8758-44df-aee3-0711a2b769e3",
+              "name": "top_gear_type",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "4845cb90-7fa0-43bb-a299-aba3ccd7f05f",
+              "name": "top_flag",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "92ddc628-b23d-49e8-aef2-2160858312f6",
+              "name": "fishing_status",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "2d76844f-c8d2-4764-8fbf-eb05ce8deff3",
+              "name": "provenance",
+              "type": {
+                "type": "5dc620a0-78c0-4c90-8bf9-48f59a2fd7bf",
+                "optional": true,
+                "array": true,
+                "types": []
+              },
+              "description": "Per-column provenance, serialized from the SightingExtended.provenance + SightingFishingEffort.provenance JSON maps."
+            },
+            {
+              "unid": "b71103f7-beed-4ad8-baf2-65e864a238ec",
+              "name": "air_temperature_c_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "2 m air temperature, day mean (°C). From WeatherService / Open-Meteo."
+            },
+            {
+              "unid": "61fc8a37-3399-44de-9081-e08484e39764",
+              "name": "uv_index_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "UV index, day peak (around solar noon)."
+            },
+            {
+              "unid": "1455d2c2-084f-4368-87ee-992d405e21dd",
+              "name": "wave_height_m_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Significant wave height, day mean (m)."
+            },
+            {
+              "unid": "c67aff3e-a18f-434e-9eaf-60bea8d258ce",
+              "name": "wave_period_s_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "47c9d36a-eb01-40d1-8d24-1527eb4e36bb",
+              "name": "wave_direction_deg_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e2114ed6-e1ce-4131-89b3-f45b59d87971",
+              "name": "wind_speed_m_s_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Wind speed at 10 m, day mean (m/s). From WeatherService / Open-Meteo."
+            },
+            {
+              "unid": "270eefa1-12c9-4619-9330-dea6b8b20de5",
+              "name": "wind_direction_deg_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Wind direction at 10 m, day circular mean (degrees, 0..359, direction the wind comes FROM)."
+            },
+            {
+              "unid": "53af3c48-fa61-42e3-8325-9a3f362d6d5a",
+              "name": "wind_gusts_m_s_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Wind gusts at 10 m, day peak (m/s) — the daily maximum of the hourly gusts."
+            },
+            {
+              "unid": "69f1e0f1-144b-4e7c-90d4-f882b6ac642d",
+              "name": "weather_status",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "6480278e-6976-4cd6-b58e-590dc7e4efe1",
+              "name": "moon_phase",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Moon phase at the sighting datetime: 0 = new, 0.5 = full (fraction of the synodic cycle). From sighting_enrichment (astro)."
+            },
+            {
+              "unid": "55afa5dd-28c5-4c41-bc67-41d50930728d",
+              "name": "moon_illumination_pct",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Illuminated fraction of the lunar disk (%), 0..100. From sighting_enrichment (astro)."
+            },
+            {
+              "unid": "079ea6a5-e4f7-44b9-9eff-cccd0bf936bb",
+              "name": "sun_elevation_deg",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Solar elevation (degrees above horizon) at the sighting datetime. Negative = below horizon. From sighting_enrichment (astro)."
+            },
+            {
+              "unid": "0ffc8168-ff4d-4d3a-a38b-0f315f001871",
+              "name": "sun_azimuth_deg",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Solar azimuth (degrees clockwise from true north) at the sighting datetime. From sighting_enrichment (astro)."
+            },
+            {
+              "unid": "434b787f-4e8e-4059-8637-e592621b3b8b",
+              "name": "day_length_h",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Day length (hours of sunlight) at the sighting location and date. From sighting_enrichment (astro)."
+            },
+            {
+              "unid": "ce3570a6-e70f-46f1-ace0-1a6031b75808",
+              "name": "pressure_msl_hpa_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Mean sea-level pressure, day mean (hPa). From sighting_enrichment (open_meteo)."
+            },
+            {
+              "unid": "a6374302-f644-41ce-ab65-ed5326b42539",
+              "name": "cloud_cover_pct_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Total cloud cover, day mean (%), 0..100. From sighting_enrichment (open_meteo)."
+            },
+            {
+              "unid": "34f2f5d7-2f30-4cc7-9485-ac6b58b5f55d",
+              "name": "visibility_m_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Horizontal visibility, day mean (metres). From sighting_enrichment (open_meteo)."
+            },
+            {
+              "unid": "18e56f03-5f69-4b9f-a96e-35f327ad8aca",
+              "name": "precipitation_mm_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Precipitation total over the sighting day (mm). From sighting_enrichment (open_meteo)."
+            },
+            {
+              "unid": "0afc4e27-472a-4d8d-b45b-b98a7f431883",
+              "name": "upwelling_index_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Bakun coastal upwelling index (m³/s per 100 m): positive = upwelling-favourable. From sighting_enrichment (ekman)."
+            },
+            {
+              "unid": "7cc0e400-f61e-4f40-aca6-466a5f503b5b",
+              "name": "seabed_slope_deg",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Seabed slope (degrees) at the sighting, from a bathymetry stencil. From sighting_enrichment (derived)."
+            },
+            {
+              "unid": "4c198e3a-1bd4-43dc-a906-ce7e98f4cb6f",
+              "name": "sst_front_grad_c_km_day",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "SST horizontal gradient magnitude (°C per km) — thermal-front strength. From sighting_enrichment (derived)."
+            },
+            {
+              "unid": "981357d7-bfd9-44d5-acae-42d4cf508498",
+              "name": "enrichment_status",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Overall enrichment row status ('ok', 'invalid_location', 'invalid_date', …). From sighting_enrichment."
             }
           ]
         }

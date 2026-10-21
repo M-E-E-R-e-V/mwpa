@@ -66,6 +66,7 @@ export type SightingEnvironmentEntry = {
     precipitation_mm_day?: number;
     upwelling_index_day?: number;
     seabed_slope_deg?: number;
+    shelf_distance_km?: number;
     sst_front_grad_c_km_day?: number;
     enrichment_status?: string;
 

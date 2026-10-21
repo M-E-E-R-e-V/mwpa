@@ -70,6 +70,7 @@ export const SchemaSightingEnvironmentEntry = Vts.object({
     precipitation_mm_day: Vts.optional(Vts.number({description: 'Precipitation total over the sighting day (mm). From sighting_enrichment (open_meteo).'})),
     upwelling_index_day: Vts.optional(Vts.number({description: 'Bakun coastal upwelling index (m³/s per 100 m): positive = upwelling-favourable. From sighting_enrichment (ekman).'})),
     seabed_slope_deg: Vts.optional(Vts.number({description: 'Seabed slope (degrees) at the sighting, from a bathymetry stencil. From sighting_enrichment (derived).'})),
+    shelf_distance_km: Vts.optional(Vts.number({description: 'Estimated distance (km) to the 200 m shelf-break isobath, from the bathymetry stencil. From sighting_enrichment (derived).'})),
     sst_front_grad_c_km_day: Vts.optional(Vts.number({description: 'SST horizontal gradient magnitude (°C per km) — thermal-front strength. From sighting_enrichment (derived).'})),
     enrichment_status: Vts.optional(Vts.string({description: 'Overall enrichment row status (\'ok\', \'invalid_location\', \'invalid_date\', …). From sighting_enrichment.'})),
 }, {

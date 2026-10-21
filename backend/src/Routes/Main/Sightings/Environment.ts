@@ -228,6 +228,7 @@ export class Environment {
                 precipitation_mm_day: Environment._num(enr?.precipitation_mm_day),
                 upwelling_index_day: Environment._num(enr?.upwelling_index_day),
                 seabed_slope_deg: Environment._num(enr?.seabed_slope_deg),
+                shelf_distance_km: Environment._num(enr?.shelf_distance_km),
                 sst_front_grad_c_km_day: Environment._num(enr?.sst_front_grad_c_km_day),
                 enrichment_status: Environment._str(enr?.enrichment_status),
 

@@ -18,18 +18,17 @@ type MarineResponse = {
  * Spatial-derivative enricher — quantities that need neighbouring samples,
  * not just the point value:
  *
- *   - seabed_slope_deg: seabed gradient from a 4-point bathymetry stencil
- *     (N/E/S/W around the sighting), via the same BathymetryProviderRegistry
- *     the DepthService uses.
+ *   - seabed_slope_deg + shelf_distance_km: both from one 4-point bathymetry
+ *     stencil (N/E/S/W), via the same BathymetryProviderRegistry the
+ *     DepthService uses — the shelf distance is a local-linear estimate to
+ *     the 200 m isobath, no extra calls.
  *   - sst_front_grad_c_km_day: SST horizontal gradient (thermal-front
  *     strength) from Open-Meteo SST at the centre + one eastward + one
  *     northward neighbour.
  *
- * Deliberately NOT computed here (columns stay null): the chlorophyll front
- * (its ERDDAP source is flaky/offline and a stencil there is 3 calls/point)
- * and the shelf-break distance (needs an outward isobath search — a separate
- * lower-cadence job). Those columns exist so they can be filled later without
- * a schema change.
+ * Deliberately NOT computed here (column stays null): the chlorophyll front —
+ * its ERDDAP source is flaky/offline and a stencil there is 3 calls/point. The
+ * column exists so it can be filled later without a schema change.
  *
  * This is the costliest enricher (several upstream calls per sighting), which
  * is why the service's per-tick budget is modest.
@@ -54,6 +53,27 @@ export class DerivedEnricher implements Enricher {
      */
     private static readonly M_PER_DEG_LAT = 111320;
 
+    /**
+     * Isobath (m) taken as the shelf break for the shelf-distance estimate.
+     * @private
+     */
+    private static readonly SHELF_ISOBATH_M = 200;
+
+    /**
+     * Minimum seabed gradient (m per m horizontal) for a meaningful
+     * shelf-distance estimate — below this the seabed is effectively flat
+     * and the local-linear projection to the isobath is unreliable (null).
+     * @private
+     */
+    private static readonly MIN_GRADIENT_M_PER_M = 1e-4;
+
+    /**
+     * Cap (km) on the shelf-distance estimate; beyond this the local-linear
+     * extrapolation is not trustworthy and the value is dropped (null).
+     * @private
+     */
+    private static readonly MAX_SHELF_KM = 500;
+
     private readonly _bathymetry: BathymetryProviderRegistry;
 
     private readonly _limiter = new RateLimiter(1200);
@@ -70,11 +90,16 @@ export class DerivedEnricher implements Enricher {
         const fields: EnricherResult['fields'] = {derived_status: 'no_data'};
         const provenance: Record<string, string> = {};
 
-        const slope = await this._seabedSlope(ctx);
+        const seabed = await this._seabedStencil(ctx);
 
-        if (slope !== null) {
-            fields.seabed_slope_deg = DerivedEnricher._round(slope, 2);
+        if (seabed.slopeDeg !== null) {
+            fields.seabed_slope_deg = DerivedEnricher._round(seabed.slopeDeg, 2);
             provenance.seabed_slope_deg = DerivedEnricher.NAME;
+        }
+
+        if (seabed.shelfDistanceKm !== null) {
+            fields.shelf_distance_km = DerivedEnricher._round(seabed.shelfDistanceKm, 2);
+            provenance.shelf_distance_km = DerivedEnricher.NAME;
         }
 
         const sstGrad = await this._sstFront(ctx);
@@ -92,11 +117,19 @@ export class DerivedEnricher implements Enricher {
     }
 
     /**
-     * Seabed slope (degrees) from a central-difference bathymetry stencil.
-     * Returns null if any of the four neighbours is land / unavailable.
+     * Seabed slope (degrees) and distance to the shelf-break isobath (km)
+     * from one central-difference bathymetry stencil (N/E/S/W).
+     *
+     * Both reuse the same four depth samples — no extra calls. The shelf
+     * distance is a local-linear estimate: with the seabed gradient magnitude
+     * |∇z| (m per m horizontal) and the centre depth, the horizontal distance
+     * to the 200 m isobath is |200 − depth| / |∇z|. It is dropped (null) on a
+     * near-flat seabed or beyond MAX_SHELF_KM, where the linear extrapolation
+     * stops being trustworthy. Returns nulls if any neighbour is land /
+     * unavailable.
      * @private
      */
-    private async _seabedSlope(ctx: EnrichmentContext): Promise<number | null> {
+    private async _seabedStencil(ctx: EnrichmentContext): Promise<{slopeDeg: number | null; shelfDistanceKm: number | null;}> {
         const offsets = DerivedEnricher._degOffsets(ctx.latitude);
 
         const [north, south, east, west] = await Promise.all([
@@ -107,7 +140,7 @@ export class DerivedEnricher implements Enricher {
         ]);
 
         if (north === null || south === null || east === null || west === null) {
-            return null;
+            return {slopeDeg: null, shelfDistanceKm: null};
         }
 
         // depth_m is positive-down; the step between opposite samples is 2·STEP.
@@ -115,8 +148,24 @@ export class DerivedEnricher implements Enricher {
         const dzdx = (east.depth_m - west.depth_m) / stepM;
         const dzdy = (north.depth_m - south.depth_m) / stepM;
         const gradient = Math.sqrt((dzdx * dzdx) + (dzdy * dzdy));
+        const slopeDeg = (Math.atan(gradient) * 180) / Math.PI;
 
-        return (Math.atan(gradient) * 180) / Math.PI;
+        // Centre depth: prefer the already-stored value, else the stencil mean.
+        const centreDepth = ctx.existing.depthM === null
+            ? (north.depth_m + south.depth_m + east.depth_m + west.depth_m) / 4
+            : ctx.existing.depthM;
+
+        let shelfDistanceKm: number | null = null;
+
+        if (gradient >= DerivedEnricher.MIN_GRADIENT_M_PER_M) {
+            const distanceKm = Math.abs(DerivedEnricher.SHELF_ISOBATH_M - centreDepth) / gradient / 1000;
+
+            if (distanceKm <= DerivedEnricher.MAX_SHELF_KM) {
+                shelfDistanceKm = distanceKm;
+            }
+        }
+
+        return {slopeDeg: slopeDeg, shelfDistanceKm: shelfDistanceKm};
     }
 
     /**
