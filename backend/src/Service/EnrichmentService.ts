@@ -1,5 +1,6 @@
 import {Logger, ServiceJobAbstract} from '@stefanwerfling/figtree';
 import {
+    EnrichmentCandidate,
     SightingEnrichmentPatch,
     SightingEnrichmentRepository
 } from '../Db/MariaDb/Repositories/SightingEnrichmentRepository.js';
@@ -39,6 +40,15 @@ export class EnrichmentService extends ServiceJobAbstract {
     private static readonly MAX_PER_RUN = 12;
 
     /**
+     * Of the {@link MAX_PER_RUN} slots per tick, how many are reserved for the
+     * historical `sighting_old` table. The live table takes the rest (8 of
+     * 12), so old data makes steady progress without starving fresh sightings;
+     * either side absorbs the other's unused budget (see findStale).
+     * @private
+     */
+    private static readonly OLD_RESERVE_PER_RUN = 4;
+
+    /**
      * Re-compute rows older than this. Astronomy is date-fixed and the
      * weather/derived layers are effectively stable once archived, so a
      * long refresh is fine; force sooner by clearing enrichment_last_update.
@@ -67,9 +77,10 @@ export class EnrichmentService extends ServiceJobAbstract {
     protected async _execute(): Promise<void> {
         const logger = Logger.getLogger();
         const cutoff = new Date(Date.now() - EnrichmentService.REFRESH_INTERVAL_MS);
-        const pending = await SightingEnrichmentRepository.getInstance().findStale(
+        const pending: EnrichmentCandidate[] = await SightingEnrichmentRepository.getInstance().findStale(
             cutoff,
-            EnrichmentService.MAX_PER_RUN
+            EnrichmentService.MAX_PER_RUN,
+            EnrichmentService.OLD_RESERVE_PER_RUN
         );
 
         if (pending.length === 0) {
@@ -95,8 +106,14 @@ export class EnrichmentService extends ServiceJobAbstract {
                 continue;
             }
 
-            // eslint-disable-next-line no-await-in-loop
-            const existing = await this._loadExisting(sighting.id);
+            // Old rows have no sighting_extended counterpart, and their
+            // numeric id lives in a separate id space that overlaps the live
+            // sighting ids — looking up by it would false-match a foreign
+            // live row's samples. Skip the reuse-sample load for them.
+            const existing: EnrichmentExisting = sighting.isOld
+                ? EnrichmentService._emptyExisting()
+                // eslint-disable-next-line no-await-in-loop
+                : await this._loadExisting(sighting.id);
 
             const ctx: EnrichmentContext = {
                 sightingUnid: sighting.unid,
@@ -122,6 +139,15 @@ export class EnrichmentService extends ServiceJobAbstract {
     }
 
     /**
+     * The "no reuse samples available" value — used for old rows (no
+     * sighting_extended counterpart) and when the lookup finds nothing.
+     * @private
+     */
+    private static _emptyExisting(): EnrichmentExisting {
+        return {sstCDay: null, windSpeedMsDay: null, windDirectionDegDay: null, depthM: null};
+    }
+
+    /**
      * Load the samples the enrichers reuse from sighting_extended. Decimal
      * columns come back from TypeORM as strings — coerce to number | null.
      * @private
@@ -130,7 +156,7 @@ export class EnrichmentService extends ServiceJobAbstract {
         const ext = await SightingExtendedRepository.getInstance().findOneBySighting(sightingId);
 
         if (ext === null) {
-            return {sstCDay: null, windSpeedMsDay: null, windDirectionDegDay: null, depthM: null};
+            return EnrichmentService._emptyExisting();
         }
 
         return {
@@ -187,7 +213,11 @@ export class EnrichmentService extends ServiceJobAbstract {
      * Read latitude/longitude from the JSON-encoded location_begin field.
      * @private
      */
-    private _parseLocation(raw: string): {latitude: number; longitude: number;} | null {
+    private _parseLocation(raw: string | null): {latitude: number; longitude: number;} | null {
+        if (raw === null || raw === '') {
+            return null;
+        }
+
         try {
             const data = JSON.parse(raw) as {latitude?: number; longitude?: number;};
             const lat = data.latitude;
