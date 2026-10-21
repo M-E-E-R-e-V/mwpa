@@ -18,6 +18,7 @@ import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepos
 import {SightingSeismicRepository} from '../../../Db/MariaDb/Repositories/SightingSeismicRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {SpeciesRepository} from '../../../Db/MariaDb/Repositories/SpeciesRepository.js';
+import {SpatialPoint, SpatialStats} from './SpatialStats.js';
 
 /**
  * Row shape returned by SightingRepository.findForSpeciesProfile. Declared
@@ -533,6 +534,8 @@ export class Profile {
         const headingRose = Profile._emptyHeadingRose();
 
         const heatmap: SpeciesProfileHeatmapPoint[] = [];
+        // All positioned sightings (uncapped) for the spatial KDE/Gi* analysis.
+        const spatialPoints: SpatialPoint[] = [];
 
         let dataMinDate = '';
         let dataMaxDate = '';
@@ -660,10 +663,12 @@ export class Profile {
                 }
             }
 
-            // Heatmap — cap to avoid huge payloads.
-            if (heatmap.length < Profile.HEATMAP_MAX_POINTS) {
-                const pos = Profile._parsePositionLonLat(r.location_begin);
-                if (pos) {
+            // Position feeds both the spatial analysis (uncapped) and the
+            // heatmap overlay (capped to keep the payload small).
+            const pos = Profile._parsePositionLonLat(r.location_begin);
+            if (pos) {
+                spatialPoints.push({lon: pos.lon, lat: pos.lat, weight: c});
+                if (heatmap.length < Profile.HEATMAP_MAX_POINTS) {
                     heatmap.push({lon: pos.lon, lat: pos.lat, count: c});
                 }
             }
@@ -782,7 +787,8 @@ export class Profile {
                 distance_km: Profile._bucketize(seismicDistances, Profile.SEISMIC_DIST_EDGES_KM),
                 hours_offset: Profile._bucketize(seismicOffsets, Profile.SEISMIC_OFFSET_EDGES_H)
             },
-            icc: Profile._tourIcc(rows)
+            icc: Profile._tourIcc(rows),
+            spatial: SpatialStats.compute(spatialPoints) ?? undefined
         };
     }
 

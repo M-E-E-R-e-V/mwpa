@@ -20,6 +20,7 @@ import {
     SpeciesProfileHeatmapPoint,
     SpeciesProfileIcc,
     SpeciesProfileMonthlyEffort,
+    SpeciesProfileSpatial,
     SpeciesProfileYearly
 } from '../../Api/Species';
 import {Lang} from '../../Lang';
@@ -27,6 +28,7 @@ import {BaseMap} from '../../Map/BaseMap';
 import {OsmBaseLayer} from '../../Map/Layers/OsmBaseLayer';
 import {SightingHeatmapLayer} from '../../Map/Layers/SightingHeatmapLayer';
 import {SightingPointsLayer} from '../../Map/Layers/SightingPointsLayer';
+import {SpatialGridLayer, SpatialGridMode} from '../../Map/Layers/SpatialGridLayer';
 import {SightingMapObjectType} from '../../Map/Styles/SightingStyles';
 import {BasePage} from '../BasePage';
 import {Species} from '../Species';
@@ -71,6 +73,17 @@ export class SpeciesProfile extends BasePage {
     protected _heatmap: BaseMap | null = null;
 
     /**
+     * Mini map for the KDE utilisation distribution + Getis-Ord Gi* hotspots,
+     * its grid layer, and the current render mode. Kept on the instance for
+     * disposal + mode toggling.
+     */
+    protected _spatial: BaseMap | null = null;
+
+    protected _spatialLayer: SpatialGridLayer | null = null;
+
+    protected _spatialMode: SpatialGridMode = 'ud';
+
+    /**
      * Latest fetched profile data. Kept on the instance so the PDF handler
      * can re-render every chart at the print-target container width
      * without a second API round-trip.
@@ -100,6 +113,7 @@ export class SpeciesProfile extends BasePage {
         pressureGrid?: JQuery<HTMLDivElement>;
         envExtraGrid?: JQuery<HTMLDivElement>;
         mapHost?: JQuery<HTMLDivElement>;
+        spatialHost?: JQuery<HTMLDivElement>;
         seismicBody?: JQuery<HTMLDivElement>;
     } = {};
 
@@ -112,6 +126,11 @@ export class SpeciesProfile extends BasePage {
         if (this._heatmap) {
             this._heatmap.unload();
             this._heatmap = null;
+        }
+        if (this._spatial) {
+            this._spatial.unload();
+            this._spatial = null;
+            this._spatialLayer = null;
         }
     }
 
@@ -345,6 +364,35 @@ export class SpeciesProfile extends BasePage {
         const mapHost = jQuery<HTMLDivElement>('<div class="species-profile-map" style="height: 360px;"/>').appendTo(mapCard.getBodyElement());
         this._hosts.mapHost = mapHost;
 
+        // Row 11b — KDE utilisation distribution + Getis-Ord Gi* hotspots ---------------------------------------------
+
+        const rowSpatial = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const spatialCard = new Card(new ContentCol(rowSpatial, ContentColSize.col12));
+        spatialCard.setTitle(new LangText('Hotspots & utilization distribution'));
+
+        const spatialBar = jQuery('<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap;"/>').appendTo(spatialCard.getBodyElement());
+        const spatialToggle = jQuery(
+            '<div class="btn-group btn-group-sm" role="group">'
+            + `<button type="button" class="btn btn-primary" data-sp-mode="ud">${lang.l('Utilization (50/95%)')}</button>`
+            + `<button type="button" class="btn btn-default" data-sp-mode="gi">${lang.l('Gi* hotspots')}</button>`
+            + '</div>'
+        ).appendTo(spatialBar);
+        jQuery('<div class="species-profile-print-desc text-muted small" style="flex:1;min-width:200px;"/>')
+            .text(lang.l('Red = 50% core / 95% home-range (UD) or significant Gi* hot spot (z≥1.96); blue = Gi* cold spot. Kernel density over all positioned sightings.'))
+            .appendTo(spatialBar);
+        const spatialHost = jQuery<HTMLDivElement>('<div class="species-profile-map" style="height: 360px;"/>').appendTo(spatialCard.getBodyElement());
+        this._hosts.spatialHost = spatialHost;
+
+        spatialToggle.find('[data-sp-mode]').on('click', (ev) => {
+            const mode = (jQuery(ev.currentTarget).attr('data-sp-mode') ?? 'ud') === 'gi' ? 'gi' : 'ud';
+            this._spatialMode = mode;
+            spatialToggle.find('[data-sp-mode]').removeClass('btn-primary').addClass('btn-default');
+            jQuery(ev.currentTarget).removeClass('btn-default').addClass('btn-primary');
+            if (this._spatialLayer) {
+                this._spatialLayer.setMode(mode);
+            }
+        });
+
         // Row 12 — seismic exposure -----------------------------------------------------------------------------------
 
         const rowSeismic = new ContentRow(this._wrapper.getContentWrapper().getContent());
@@ -514,6 +562,16 @@ export class SpeciesProfile extends BasePage {
                 // Cheap path on print-mode toggle: keep the existing map,
                 // just nudge OL to re-measure the container.
                 this._heatmap.updateSize();
+            }
+        }
+
+        if (h.spatialHost) {
+            if (opts.recreateHeatmap || !this._spatial) {
+                const built = this._renderSpatial(h.spatialHost[0] as HTMLElement, profile.spatial, this._spatial);
+                this._spatial = built.map;
+                this._spatialLayer = built.layer;
+            } else {
+                this._spatial.updateSize();
             }
         }
 
@@ -1045,6 +1103,47 @@ export class SpeciesProfile extends BasePage {
         }
 
         return map;
+    }
+
+    /**
+     * Mini-map for the KDE utilisation distribution + Getis-Ord Gi* hotspot
+     * grid. Disposes any previous instance, shows a hint when the server had
+     * too few positioned sightings to estimate, and returns the map + grid
+     * layer so the mode toggle can flip it without a rebuild.
+     */
+    protected _renderSpatial(
+        host: HTMLElement,
+        spatial: SpeciesProfileSpatial | undefined,
+        prev: BaseMap | null
+    ): {map: BaseMap | null; layer: SpatialGridLayer | null;} {
+        if (prev) {
+            prev.unload();
+        }
+        jQuery(host).empty();
+
+        if (!spatial || spatial.cells.length === 0) {
+            jQuery(host).css('height', 'auto').text(
+                Lang.i().l('Too few positioned sightings for a spatial estimate (need at least 10).')
+            );
+            return {map: null, layer: null};
+        }
+
+        const map = new BaseMap(jQuery(host));
+        map.setHeight(360);
+        map.load({initialCenterLonLat: [0, 0], initialZoom: 2});
+        map.addLayer(new OsmBaseLayer());
+
+        const grid = new SpatialGridLayer();
+        map.addLayer(grid);
+        grid.setCells(spatial.cells, spatial.cell_lon_deg, spatial.cell_lat_deg);
+        grid.setMode(this._spatialMode);
+        grid.refresh();
+
+        const centreLon = (spatial.min_lon + spatial.max_lon) / 2;
+        const centreLat = (spatial.min_lat + spatial.max_lat) / 2;
+        map.setView(fromLonLat([centreLon, centreLat]), 8);
+
+        return {map: map, layer: grid};
     }
 
     /**

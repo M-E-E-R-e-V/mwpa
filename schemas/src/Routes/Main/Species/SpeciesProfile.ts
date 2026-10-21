@@ -286,6 +286,50 @@ export const SchemaSpeciesProfileIcc = Vts.object({
 export type SpeciesProfileIcc = ExtractSchemaResultType<typeof SchemaSpeciesProfileIcc>;
 
 /**
+ * Schema of SpeciesProfileSpatialCell
+ * One grid cell of the spatial analysis — centre lon/lat plus kernel density, utilisation-distribution isopleth level (2 = 50% core, 1 = 95% home range, 0 = outside) and Getis-Ord Gi* z-score.
+ */
+export const SchemaSpeciesProfileSpatialCell = Vts.object({
+    lon: Vts.number({description: 'Cell-centre longitude (WGS84).'}),
+    lat: Vts.number({description: 'Cell-centre latitude (WGS84).'}),
+    density: Vts.number({description: 'Kernel probability density at the cell (surface integrates to 1).'}),
+    ud_level: Vts.number({description: 'Utilisation-distribution isopleth: 2 = 50% core, 1 = 95% home range, 0 = outside.'}),
+    gi_z: Vts.optional(Vts.number({description: 'Getis-Ord Gi* z-score (|z| > 1.96 ≈ significant hot/cold spot). Null when the counts have no variance.'})),
+}, {
+    description: 'One grid cell of the spatial analysis — centre lon/lat plus kernel density, utilisation-distribution isopleth level (2 = 50% core, 1 = 95% home range, 0 = outside) and Getis-Ord Gi* z-score.',
+});
+
+/**
+ * Type of schema SpeciesProfileSpatialCell
+ */
+export type SpeciesProfileSpatialCell = ExtractSchemaResultType<typeof SchemaSpeciesProfileSpatialCell>;
+
+/**
+ * Schema of SpeciesProfileSpatial
+ * Server-computed spatial analysis: a regular lon/lat grid over the sightings' bounding box carrying a kernel-density utilisation distribution (50%/95% isopleths) and Getis-Ord Gi* hotspot z-scores.
+ */
+export const SchemaSpeciesProfileSpatial = Vts.object({
+    n_points: Vts.number({description: 'Positioned sightings that fed the estimate.'}),
+    min_lon: Vts.number({description: 'Grid bounding box — min longitude.'}),
+    min_lat: Vts.number({description: 'Grid bounding box — min latitude.'}),
+    max_lon: Vts.number({description: 'Grid bounding box — max longitude.'}),
+    max_lat: Vts.number({description: 'Grid bounding box — max latitude.'}),
+    nx: Vts.number({description: 'Grid columns (longitude cells).'}),
+    ny: Vts.number({description: 'Grid rows (latitude cells).'}),
+    cell_lon_deg: Vts.number({description: 'Cell width in degrees longitude (for drawing the cell rectangle).'}),
+    cell_lat_deg: Vts.number({description: 'Cell height in degrees latitude.'}),
+    bandwidth_km: Vts.number({description: 'Gaussian KDE bandwidth (km, Silverman rule).'}),
+    cells: Vts.array(SchemaSpeciesProfileSpatialCell),
+}, {
+    description: 'Server-computed spatial analysis: a regular lon/lat grid over the sightings\' bounding box carrying a kernel-density utilisation distribution (50%/95% isopleths) and Getis-Ord Gi* hotspot z-scores.',
+});
+
+/**
+ * Type of schema SpeciesProfileSpatial
+ */
+export type SpeciesProfileSpatial = ExtractSchemaResultType<typeof SchemaSpeciesProfileSpatial>;
+
+/**
  * Schema of SpeciesProfile
  * Aggregated profile of a species over a (filtered) timeframe
  */
@@ -315,6 +359,7 @@ export const SchemaSpeciesProfile = Vts.object({
     cooccurrence: Vts.array(SchemaSpeciesProfileCategoryShare),
     seismic: SchemaSpeciesProfileSeismic,
     icc: Vts.optional(Vts.array(SchemaSpeciesProfileIcc)),
+    spatial: Vts.optional(SchemaSpeciesProfileSpatial),
 }, {
     description: 'Aggregated profile of a species over a (filtered) timeframe',
 });
