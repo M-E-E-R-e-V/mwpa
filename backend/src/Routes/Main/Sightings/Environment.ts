@@ -232,6 +232,10 @@ export class Environment {
                 shelf_distance_km: Environment._num(enr?.shelf_distance_km),
                 sst_front_grad_c_km_day: Environment._num(enr?.sst_front_grad_c_km_day),
                 chl_front_grad_mg_m3_km_day: Environment._num(enr?.chl_front_grad_mg_m3_km_day),
+                oxygen_mmol_m3_day: Environment._num(enr?.oxygen_mmol_m3_day),
+                ph_day: Environment._num(enr?.ph_day),
+                nitrate_mmol_m3_day: Environment._num(enr?.nitrate_mmol_m3_day),
+                mld_m_day: Environment._num(enr?.mld_m_day),
                 enrichment_status: Environment._str(enr?.enrichment_status),
 
                 provenance: Environment._mergeProvenance(

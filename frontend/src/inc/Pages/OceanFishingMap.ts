@@ -434,7 +434,13 @@ export class OceanFishingMap extends BasePage {
             r.sst_front_grad_c_km_day === undefined ? null
                 : `SST front: ${fmt(r.sst_front_grad_c_km_day, 3, '°C/km')}`,
             r.chl_front_grad_mg_m3_km_day === undefined ? null
-                : `Chl front: ${fmt(r.chl_front_grad_mg_m3_km_day, 4, 'mg/m³/km')}`
+                : `Chl front: ${fmt(r.chl_front_grad_mg_m3_km_day, 4, 'mg/m³/km')}`,
+            r.oxygen_mmol_m3_day === undefined && r.ph_day === undefined
+                && r.nitrate_mmol_m3_day === undefined && r.mld_m_day === undefined ? null : '<i>— Biogeochemistry —</i>',
+            r.oxygen_mmol_m3_day === undefined ? null : `Oxygen: ${fmt(r.oxygen_mmol_m3_day, 1, 'mmol/m³')}`,
+            r.ph_day === undefined ? null : `pH: ${fmt(r.ph_day, 2, '')}`,
+            r.nitrate_mmol_m3_day === undefined ? null : `Nitrate: ${fmt(r.nitrate_mmol_m3_day, 2, 'mmol/m³')}`,
+            r.mld_m_day === undefined ? null : `Mixed-layer depth: ${fmt(r.mld_m_day, 1, 'm')}`
         ];
 
         return rows.filter((row): row is string => row !== null).join('<br>');
@@ -493,6 +499,12 @@ export class OceanFishingMap extends BasePage {
                 : `SST front: ${fmt(r.sst_front_grad_c_km_day, 3, '°C/km')}`,
             r.chl_front_grad_mg_m3_km_day === undefined ? null
                 : `Chl front: ${fmt(r.chl_front_grad_mg_m3_km_day, 4, 'mg/m³/km')}`,
+            r.oxygen_mmol_m3_day === undefined && r.ph_day === undefined
+                && r.nitrate_mmol_m3_day === undefined && r.mld_m_day === undefined ? null : '<i>— Biogeochemistry —</i>',
+            r.oxygen_mmol_m3_day === undefined ? null : `Oxygen: ${fmt(r.oxygen_mmol_m3_day, 1, 'mmol/m³')}`,
+            r.ph_day === undefined ? null : `pH: ${fmt(r.ph_day, 2, '')}`,
+            r.nitrate_mmol_m3_day === undefined ? null : `Nitrate: ${fmt(r.nitrate_mmol_m3_day, 2, 'mmol/m³')}`,
+            r.mld_m_day === undefined ? null : `Mixed-layer depth: ${fmt(r.mld_m_day, 1, 'm')}`,
             '<i>— Fishing —</i>',
             `Fishing (25 km): ${fmt(r.fishing_hours_day_25km, 1, 'h/day')}`,
             `Vessels (25 km): ${typeof r.vessel_count_day_25km === 'number' ? r.vessel_count_day_25km : '—'}`,

@@ -70,6 +70,10 @@ export type SightingEnvironmentEntry = {
     shelf_distance_km?: number;
     sst_front_grad_c_km_day?: number;
     chl_front_grad_mg_m3_km_day?: number;
+    oxygen_mmol_m3_day?: number;
+    ph_day?: number;
+    nitrate_mmol_m3_day?: number;
+    mld_m_day?: number;
     enrichment_status?: string;
 
     provenance?: SightingEnvironmentProvenanceEntry[];

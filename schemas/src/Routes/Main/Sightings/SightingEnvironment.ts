@@ -74,6 +74,10 @@ export const SchemaSightingEnvironmentEntry = Vts.object({
     shelf_distance_km: Vts.optional(Vts.number({description: 'Estimated distance (km) to the 200 m shelf-break isobath, from the bathymetry stencil. From sighting_enrichment (derived).'})),
     sst_front_grad_c_km_day: Vts.optional(Vts.number({description: 'SST horizontal gradient magnitude (°C per km) — thermal-front strength. From sighting_enrichment (derived).'})),
     chl_front_grad_mg_m3_km_day: Vts.optional(Vts.number({description: 'Surface-chlorophyll horizontal gradient magnitude (mg/m³ per km) — productivity-front strength. From sighting_enrichment (derived).'})),
+    oxygen_mmol_m3_day: Vts.optional(Vts.number({description: 'Dissolved oxygen at the surface (mmol/m³), day value. From sighting_enrichment (CMEMS BGC).'})),
+    ph_day: Vts.optional(Vts.number({description: 'Sea-water pH at the surface, day value. From sighting_enrichment (CMEMS BGC).'})),
+    nitrate_mmol_m3_day: Vts.optional(Vts.number({description: 'Nitrate concentration at the surface (mmol/m³), day value. From sighting_enrichment (CMEMS BGC).'})),
+    mld_m_day: Vts.optional(Vts.number({description: 'Mixed-layer depth (m), day value. From sighting_enrichment (CMEMS PHY).'})),
     enrichment_status: Vts.optional(Vts.string({description: 'Overall enrichment row status (\'ok\', \'invalid_location\', \'invalid_date\', …). From sighting_enrichment.'})),
 }, {
     description: 'One sighting with its ocean + fishing-effort enrichment columns. Position is denormalized to lon/lat so the frontend doesn\'t have to re-parse location_begin.',

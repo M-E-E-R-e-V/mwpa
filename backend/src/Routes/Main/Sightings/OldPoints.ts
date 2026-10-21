@@ -134,6 +134,10 @@ export class OldPoints {
                 shelf_distance_km: OldPoints._num(enr?.shelf_distance_km),
                 sst_front_grad_c_km_day: OldPoints._num(enr?.sst_front_grad_c_km_day),
                 chl_front_grad_mg_m3_km_day: OldPoints._num(enr?.chl_front_grad_mg_m3_km_day),
+                oxygen_mmol_m3_day: OldPoints._num(enr?.oxygen_mmol_m3_day),
+                ph_day: OldPoints._num(enr?.ph_day),
+                nitrate_mmol_m3_day: OldPoints._num(enr?.nitrate_mmol_m3_day),
+                mld_m_day: OldPoints._num(enr?.mld_m_day),
                 enrichment_status: enr?.enrichment_status === '' ? undefined : enr?.enrichment_status
             });
         }
