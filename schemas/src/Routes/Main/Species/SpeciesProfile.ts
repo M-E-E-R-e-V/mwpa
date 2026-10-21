@@ -369,6 +369,68 @@ export const SchemaSpeciesProfileEnvResponse = Vts.object({
 export type SpeciesProfileEnvResponse = ExtractSchemaResultType<typeof SchemaSpeciesProfileEnvResponse>;
 
 /**
+ * Schema of SpeciesProfilePhenologyBin
+ * One month-of-year phenology bin (aggregated across all years): sightings, tour-hours and effort-corrected SPUE.
+ */
+export const SchemaSpeciesProfilePhenologyBin = Vts.object({
+    month: Vts.number({description: 'Calendar month, 1..12.'}),
+    sightings: Vts.number({description: 'Sightings in this month-of-year, summed over all years.'}),
+    tour_hours: Vts.number({description: 'Tour-hours of effort in this month-of-year, summed over all years.'}),
+    spue: Vts.number({description: 'Sightings per tour-hour (0 when no effort that month).'}),
+}, {
+    description: 'One month-of-year phenology bin (aggregated across all years): sightings, tour-hours and effort-corrected SPUE.',
+});
+
+/**
+ * Type of schema SpeciesProfilePhenologyBin
+ */
+export type SpeciesProfilePhenologyBin = ExtractSchemaResultType<typeof SchemaSpeciesProfilePhenologyBin>;
+
+/**
+ * Schema of SpeciesProfileTrendPoint
+ * One year of the SPUE trend: observed rate, fitted linear trend with 95% CI, and the year's mean climate indices.
+ */
+export const SchemaSpeciesProfileTrendPoint = Vts.object({
+    year: Vts.number({description: 'Calendar year.'}),
+    sightings: Vts.number({description: 'Sightings in the year.'}),
+    tour_hours: Vts.number({description: 'Tour-hours of effort in the year.'}),
+    spue: Vts.number({description: 'Observed sightings per tour-hour.'}),
+    fit: Vts.number({description: 'Fitted linear-trend SPUE at this year.'}),
+    ci_lo: Vts.number({description: 'Trend mean-response 95% CI lower bound.'}),
+    ci_hi: Vts.number({description: 'Trend mean-response 95% CI upper bound.'}),
+    nao: Vts.optional(Vts.number({description: 'Year-mean NAO index (if available).'})),
+    amo: Vts.optional(Vts.number({description: 'Year-mean AMO index (if available).'})),
+    oni: Vts.optional(Vts.number({description: 'Year-mean ONI (ENSO) index (if available).'})),
+}, {
+    description: 'One year of the SPUE trend: observed rate, fitted linear trend with 95% CI, and the year\'s mean climate indices.',
+});
+
+/**
+ * Type of schema SpeciesProfileTrendPoint
+ */
+export type SpeciesProfileTrendPoint = ExtractSchemaResultType<typeof SchemaSpeciesProfileTrendPoint>;
+
+/**
+ * Schema of SpeciesProfilePhenology
+ * Phenology (12-month seasonal cycle, effort-corrected) + per-year SPUE trend with a linear fit, 95% CI band and mean climate indices.
+ */
+export const SchemaSpeciesProfilePhenology = Vts.object({
+    bins: Vts.array(SchemaSpeciesProfilePhenologyBin),
+    trend: Vts.array(SchemaSpeciesProfileTrendPoint),
+    slope: Vts.number({description: 'Linear-trend slope (SPUE change per year).'}),
+    intercept: Vts.number({description: 'Linear-trend intercept.'}),
+    r2: Vts.number({description: 'Trend R².'}),
+    n: Vts.number({description: 'Years used in the trend fit.'}),
+}, {
+    description: 'Phenology (12-month seasonal cycle, effort-corrected) + per-year SPUE trend with a linear fit, 95% CI band and mean climate indices.',
+});
+
+/**
+ * Type of schema SpeciesProfilePhenology
+ */
+export type SpeciesProfilePhenology = ExtractSchemaResultType<typeof SchemaSpeciesProfilePhenology>;
+
+/**
  * Schema of SpeciesProfile
  * Aggregated profile of a species over a (filtered) timeframe
  */
@@ -400,6 +462,7 @@ export const SchemaSpeciesProfile = Vts.object({
     icc: Vts.optional(Vts.array(SchemaSpeciesProfileIcc)),
     spatial: Vts.optional(SchemaSpeciesProfileSpatial),
     response: Vts.optional(SchemaSpeciesProfileEnvResponse),
+    phenology: Vts.optional(SchemaSpeciesProfilePhenology),
 }, {
     description: 'Aggregated profile of a species over a (filtered) timeframe',
 });

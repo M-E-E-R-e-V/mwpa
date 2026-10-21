@@ -20,6 +20,9 @@ import {
     SpeciesProfileHeatmapPoint,
     SpeciesProfileIcc,
     SpeciesProfileMonthlyEffort,
+    SpeciesProfilePhenology,
+    SpeciesProfilePhenologyBin,
+    SpeciesProfileTrendPoint,
     SpeciesProfileResponseBin,
     SpeciesProfileSpatial,
     SpeciesProfileYearly
@@ -106,6 +109,8 @@ export class SpeciesProfile extends BasePage {
         ratiosHost?: JQuery<HTMLDivElement>;
         envGrid?: JQuery<HTMLDivElement>;
         respGrid?: JQuery<HTMLDivElement>;
+        phenHost?: JQuery<HTMLDivElement>;
+        trendHost?: JQuery<HTMLDivElement>;
         behaviourHost?: JQuery<HTMLDivElement>;
         reactionHost?: JQuery<HTMLDivElement>;
         movementBody?: JQuery<HTMLDivElement>;
@@ -224,6 +229,19 @@ export class SpeciesProfile extends BasePage {
         SpeciesProfile._attachInfo(hourlyCard, 'Sightings per hour-of-day', 'desc.hourly');
         const hourlyHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(hourlyCard.getBodyElement());
         this._hosts.hourlyHost = hourlyHost;
+
+        // Row 2b — seasonality (phenology polar) + yearly SPUE trend --------------------------------------------------
+
+        const rowPhen = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const phenCard = new Card(new ContentCol(rowPhen, ContentColSize.colMd6));
+        phenCard.setTitle(new LangText('Seasonality (effort-corrected)'));
+        const phenHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(phenCard.getBodyElement());
+        this._hosts.phenHost = phenHost;
+
+        const trendCard = new Card(new ContentCol(rowPhen, ContentColSize.colMd6));
+        trendCard.setTitle(new LangText('Yearly SPUE trend'));
+        const trendHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(trendCard.getBodyElement());
+        this._hosts.trendHost = trendHost;
 
         // Row 3 — group size + ratios ---------------------------------------------------------------------------------
 
@@ -489,6 +507,12 @@ export class SpeciesProfile extends BasePage {
         }
         if (h.hourlyHost) {
             SpeciesProfile._renderHourly(h.hourlyHost[0] as HTMLElement, profile);
+        }
+        if (h.phenHost) {
+            SpeciesProfile._renderPhenologyPolar(h.phenHost[0] as HTMLElement, profile.phenology ? profile.phenology.bins : []);
+        }
+        if (h.trendHost) {
+            SpeciesProfile._renderYearlyTrend(h.trendHost[0] as HTMLElement, profile.phenology);
         }
         if (h.sizeHost) {
             SpeciesProfile._renderBuckets(h.sizeHost[0] as HTMLElement, profile.group_size, '#2471A3');
@@ -1436,6 +1460,135 @@ export class SpeciesProfile extends BasePage {
             .append('title')
             .text((d: SpeciesProfileResponseBin, i: number) =>
                 `${labels[i]}: ${(d.proportion * 100).toFixed(1)}% (${d.n_target}/${d.n_total})`);
+    }
+
+    /**
+     * Phenology polar (rose) plot: one wedge per calendar month, radius ∝
+     * effort-corrected SPUE. Jan at the top, clockwise.
+     */
+    private static _renderPhenologyPolar(host: HTMLElement, bins: SpeciesProfilePhenologyBin[]): void {
+        d3.select(host).selectAll('*').remove();
+        if (bins.length === 0 || bins.every((b: SpeciesProfilePhenologyBin) => b.spue === 0)) {
+            jQuery(host).text(Lang.i().l('No effort data for a seasonal estimate'));
+            return;
+        }
+
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const size = Math.max(220, Math.min(300, (host.clientWidth || 280) - 16));
+        const radius = (size / 2) - 26;
+        const svg = d3.select(host).append('svg').attr('width', size).attr('height', size);
+        const g = svg.append('g').attr('transform', `translate(${size / 2},${size / 2})`);
+
+        const maxSpue = Math.max(...bins.map((b: SpeciesProfilePhenologyBin) => b.spue), 1e-9);
+        const rScale = d3.scaleLinear().domain([0, maxSpue]).range([0, radius]);
+        const tau = 2 * Math.PI;
+
+        for (const frac of [0.5, 1]) {
+            g.append('circle').attr('r', radius * frac).attr('fill', 'none').attr('stroke', '#e0e0e0').attr('stroke-width', 1);
+        }
+
+        const arc = d3.arc()
+            .innerRadius(0)
+            .outerRadius((d: SpeciesProfilePhenologyBin) => rScale(d.spue))
+            .startAngle((d: SpeciesProfilePhenologyBin) => ((d.month - 1) / 12) * tau)
+            .endAngle((d: SpeciesProfilePhenologyBin) => (d.month / 12) * tau);
+
+        g.selectAll('path.wedge')
+            .data(bins)
+            .enter()
+            .append('path')
+            .attr('d', (d: SpeciesProfilePhenologyBin) => arc(d))
+            .attr('fill', '#2471A3')
+            .attr('opacity', 0.72)
+            .attr('stroke', '#ffffff')
+            .attr('stroke-width', 0.75)
+            .append('title')
+            .text((d: SpeciesProfilePhenologyBin) => `${months[d.month - 1]}: SPUE ${d.spue} (${d.sightings} sightings)`);
+
+        g.selectAll('text.ml')
+            .data(months)
+            .enter()
+            .append('text')
+            .attr('x', (_d: string, i: number) => Math.sin(((i + 0.5) / 12) * tau) * (radius + 12))
+            .attr('y', (_d: string, i: number) => -Math.cos(((i + 0.5) / 12) * tau) * (radius + 12))
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'middle')
+            .style('font-size', '9px')
+            .style('fill', '#666')
+            .text((d: string) => d);
+    }
+
+    /**
+     * Yearly SPUE trend: observed points + OLS fit line + 95 % CI band, with a
+     * faint secondary NAO line (B4 coupling) when available.
+     */
+    private static _renderYearlyTrend(host: HTMLElement, phenology: SpeciesProfilePhenology | undefined): void {
+        d3.select(host).selectAll('*').remove();
+        const trend = phenology ? phenology.trend : [];
+        if (trend.length === 0) {
+            jQuery(host).text(Lang.i().l('No effort data for a trend'));
+            return;
+        }
+
+        const width = Math.max(260, (host.clientWidth || 360) - 16);
+        const height = 220;
+        const margin = {top: 24, right: 12, bottom: 32, left: 40};
+        const innerW = width - margin.left - margin.right;
+        const innerH = height - margin.top - margin.bottom;
+        const svg = d3.select(host).append('svg').attr('width', width).attr('height', height);
+        const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+        const years = trend.map((t: SpeciesProfileTrendPoint) => t.year);
+        const xMin = Math.min(...years);
+        const xMax = Math.max(...years);
+        const x = d3.scaleLinear().domain(xMin === xMax ? [xMin - 1, xMax + 1] : [xMin, xMax]).range([0, innerW]);
+        const yMax = Math.max(...trend.map((t: SpeciesProfileTrendPoint) => Math.max(t.ci_hi, t.spue)), 1e-6);
+        const y = d3.scaleLinear().domain([0, yMax]).nice().range([innerH, 0]);
+
+        g.append('g').attr('transform', `translate(0,${innerH})`).call(d3.axisBottom(x).ticks(Math.min(years.length, 8)).tickFormat((d: number) => `${Math.round(d)}`));
+        g.append('g').call(d3.axisLeft(y).ticks(4));
+
+        if (trend.length >= 2) {
+            const band = d3.area()
+                .x((d: SpeciesProfileTrendPoint) => x(d.year))
+                .y0((d: SpeciesProfileTrendPoint) => y(d.ci_lo))
+                .y1((d: SpeciesProfileTrendPoint) => y(d.ci_hi));
+            g.append('path').datum(trend).attr('fill', 'rgba(36,113,163,0.15)').attr('d', band);
+
+            const fitLine = d3.line()
+                .x((d: SpeciesProfileTrendPoint) => x(d.year))
+                .y((d: SpeciesProfileTrendPoint) => y(d.fit));
+            g.append('path').datum(trend).attr('fill', 'none').attr('stroke', '#2471A3').attr('stroke-width', 1.5).attr('d', fitLine);
+        }
+
+        g.selectAll('circle.obs')
+            .data(trend)
+            .enter()
+            .append('circle')
+            .attr('cx', (d: SpeciesProfileTrendPoint) => x(d.year))
+            .attr('cy', (d: SpeciesProfileTrendPoint) => y(d.spue))
+            .attr('r', 3)
+            .attr('fill', '#16a085')
+            .append('title')
+            .text((d: SpeciesProfileTrendPoint) => `${d.year}: SPUE ${d.spue} (${d.sightings} / ${d.tour_hours} h)`);
+
+        // Secondary NAO line (B4 coupling), own scale.
+        const naoPts = trend.filter((t: SpeciesProfileTrendPoint) => typeof t.nao === 'number');
+        if (naoPts.length >= 2) {
+            const naoVals = naoPts.map((t: SpeciesProfileTrendPoint) => t.nao as number);
+            const nMin = Math.min(...naoVals);
+            const nMax = Math.max(...naoVals);
+            const naoScale = d3.scaleLinear().domain(nMin === nMax ? [nMin - 1, nMax + 1] : [nMin, nMax]).range([innerH, 0]);
+            const naoLine = d3.line()
+                .x((d: SpeciesProfileTrendPoint) => x(d.year))
+                .y((d: SpeciesProfileTrendPoint) => naoScale(d.nao as number));
+            g.append('path').datum(naoPts).attr('fill', 'none').attr('stroke', '#999999').attr('stroke-width', 1).attr('stroke-dasharray', '3,2').attr('d', naoLine);
+        }
+
+        const subtitle = phenology && phenology.n >= 2
+            ? `${Lang.i().l('slope')} ${phenology.slope.toFixed(4)}/yr · R² ${phenology.r2.toFixed(2)} · n=${phenology.n}${naoPts.length >= 2 ? ' · NAO ---' : ''}`
+            : Lang.i().l('too few years for a fit');
+        svg.append('text').attr('x', margin.left).attr('y', 14).style('font-size', '10px').style('fill', '#666').text(subtitle);
     }
 
     /**

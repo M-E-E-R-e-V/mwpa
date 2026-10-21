@@ -17,7 +17,9 @@ import {EncounterCategoriesRepository} from '../../../Db/MariaDb/Repositories/En
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SightingSeismicRepository} from '../../../Db/MariaDb/Repositories/SightingSeismicRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
+import {ClimateIndexRepository} from '../../../Db/MariaDb/Repositories/ClimateIndexRepository.js';
 import {SpeciesRepository} from '../../../Db/MariaDb/Repositories/SpeciesRepository.js';
+import {ClimateRow, Phenology} from './Phenology.js';
 import {ResponseCurves} from './ResponseCurves.js';
 import {SpatialPoint, SpatialStats} from './SpatialStats.js';
 
@@ -203,6 +205,9 @@ export class Profile {
             organizationIds
         );
 
+        // Monthly climate indices for the phenology trend's B4 overlay.
+        const climateRows = await ClimateIndexRepository.getInstance().findAllRows();
+
         const profile: SpeciesProfileData = Profile._aggregate(
             species.id,
             species.name,
@@ -213,7 +218,8 @@ export class Profile {
             tourHours,
             cooccurring,
             seismicRows,
-            background
+            background,
+            climateRows
         );
 
         return {statusCode: StatusCodes.OK, profile};
@@ -512,7 +518,8 @@ export class Profile {
         tourHours: Map<string, number>,
         cooccurring: Array<{species_id: number; species_name: string; tour_count: number;}>,
         seismicRows: Array<{sighting_id: number; distance_km: number; hours_offset: number; magnitude: number;}>,
-        background: EnvBackgroundRow[]
+        background: EnvBackgroundRow[],
+        climate: ClimateRow[]
     ): SpeciesProfileData {
         const monthly = new Map<string, number>();
         const hourly = new Array<number>(24).fill(0);
@@ -837,7 +844,8 @@ export class Profile {
             },
             icc: Profile._tourIcc(rows),
             spatial: SpatialStats.compute(spatialPoints) ?? undefined,
-            response: response
+            response: response,
+            phenology: Phenology.build(monthlySightings, yearlyCounts, tourHours, climate)
         };
     }
 
