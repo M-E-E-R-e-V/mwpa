@@ -6,9 +6,10 @@ import {
     SchemaVehicleDeleteRequest,
     SchemaVehicleEntry,
     SchemaVehicleListResponse,
-    VehicleListResponse
+    VehicleListResponse,
+    RightVehicles,
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Delete} from './Vehicle/Delete.js';
 import {List} from './Vehicle/List.js';
@@ -27,19 +28,20 @@ export class Vehicle extends DefaultRoute {
 
         this._get(
             '/json/vehicle/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<VehicleListResponse> => {
                 return List.getList();
             },
             {
                 description: 'Return a list of vehicles.',
+                aclRight: RightVehicles.vehicles_read,
                 responseBodySchema: SchemaVehicleListResponse
             }
         );
 
         this._post(
             '/json/vehicle/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -50,6 +52,7 @@ export class Vehicle extends DefaultRoute {
             },
             {
                 description: 'Insert or update a vehicle (admin only).',
+                aclRight: RightVehicles.vehicles_write,
                 bodySchema: SchemaVehicleEntry,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
@@ -59,7 +62,7 @@ export class Vehicle extends DefaultRoute {
 
         this._post(
             '/json/vehicle/delete',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -70,6 +73,7 @@ export class Vehicle extends DefaultRoute {
             },
             {
                 description: 'Soft-delete a vehicle (admin only).',
+                aclRight: RightVehicles.vehicles_delete,
                 bodySchema: SchemaVehicleDeleteRequest,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,

@@ -1,9 +1,12 @@
 import {Router} from 'express';
 import {DefaultRoute} from '@stefanwerfling/figtree';
 import {DefaultHandlerReturn, HandlerResultType} from 'figtree-schemas';
-import {SchemaMWPASessionData} from 'mwpa_schemas';
+import {
+    SchemaMWPASessionData,
+    RightExport,
+} from 'mwpa_schemas';
 import {Users} from '../../Users/Users.js';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {DarwinCoreArchive} from './DarwinCore/BuildArchive.js';
 
@@ -26,7 +29,7 @@ export class DarwinCore extends DefaultRoute {
 
         this._get(
             '/json/export/dwca',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(req, res, data): Promise<DefaultHandlerReturn> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
@@ -47,6 +50,7 @@ export class DarwinCore extends DefaultRoute {
                 return {type: HandlerResultType.handled};
             },
             {
+                aclRight: RightExport.export_read,
                 description: 'Download a Darwin Core Archive (ZIP: occurrence core + meta.xml + eml.xml) '
                     + 'of the sightings for OBIS / GBIF. Non-admins are scoped to their organisations; '
                     + 'admins export the full dataset.',

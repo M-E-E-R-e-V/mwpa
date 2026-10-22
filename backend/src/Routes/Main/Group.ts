@@ -1,8 +1,13 @@
 import {Router} from 'express';
 import {DefaultRoute} from '@stefanwerfling/figtree';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {DefaultReturn, SchemaDefaultReturn} from 'figtree-schemas';
-import {GroupListResponse, SchemaGroupEntry, SchemaGroupListResponse} from 'mwpa_schemas';
+import {
+    GroupListResponse,
+    SchemaGroupEntry,
+    SchemaGroupListResponse,
+    RightGroups,
+} from 'mwpa_schemas';
 import {List} from './Group/List.js';
 import {Save} from './Group/Save.js';
 
@@ -18,12 +23,13 @@ export class Group extends DefaultRoute {
     public getExpressRouter(): Router {
         this._get(
             '/json/group/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<GroupListResponse> => {
                 return List.getList();
             },
             {
                 description: '.',
+                aclRight: RightGroups.groups_read,
                 responseBodySchema: SchemaGroupListResponse
             }
         );
@@ -31,12 +37,13 @@ export class Group extends DefaultRoute {
         // TODO only for admins
         this._post(
             '/json/group/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 return Save.saveGroup(data.body);
             },
             {
                 description: '.',
+                aclRight: RightGroups.groups_write,
                 bodySchema: SchemaGroupEntry,
                 responseBodySchema: SchemaDefaultReturn
             }

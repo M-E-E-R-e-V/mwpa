@@ -1,7 +1,11 @@
 import {Router} from 'express';
 import {DefaultRoute} from '@stefanwerfling/figtree';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
-import {SchemaSpeciesGroupListResponse, SpeciesGroupListResponse} from 'mwpa_schemas';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
+import {
+    SchemaSpeciesGroupListResponse,
+    SpeciesGroupListResponse,
+    RightSpecies,
+} from 'mwpa_schemas';
 import {List} from './SpeciesGroup/List.js';
 
 /**
@@ -17,12 +21,13 @@ export class SpeciesGroup extends DefaultRoute {
 
         this._get(
             '/json/speciesgroup/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<SpeciesGroupListResponse> => {
                 return List.getList();
             },
             {
                 description: 'Return a list of species groups.',
+                aclRight: RightSpecies.species_read,
                 responseBodySchema: SchemaSpeciesGroupListResponse
             }
         );

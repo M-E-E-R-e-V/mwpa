@@ -6,12 +6,13 @@ import {
     MWPASessionUserData,
     QuickConnectGenerateResponse,
     SchemaMWPASessionData,
-    SchemaQuickConnectGenerateResponse
+    SchemaQuickConnectGenerateResponse,
+    RightQuickConnect,
 } from 'mwpa_schemas';
 import {UserQuickConnectToken} from '../../Db/MariaDb/Entities/UserQuickConnectToken.js';
 import {UserQuickConnectTokenRepository} from '../../Db/MariaDb/Repositories/UserQuickConnectTokenRepository.js';
 import {UserRepository} from '../../Db/MariaDb/Repositories/UserRepository.js';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 
 /**
@@ -34,7 +35,7 @@ export class QuickConnect extends DefaultRoute {
 
         this._post(
             '/json/quickconnect/generate',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(req, _res, data): Promise<QuickConnectGenerateResponse> => {
                 const sessionUser = data.session?.user as MWPASessionUserData | undefined;
 
@@ -86,6 +87,7 @@ export class QuickConnect extends DefaultRoute {
                 };
             },
             {
+                aclRight: RightQuickConnect.quick_connect_use,
                 description: 'Issue a single-use Quick Connect OTP for the logged-in user.',
                 responseBodySchema: SchemaQuickConnectGenerateResponse,
                 sessionSchema: SchemaMWPASessionData,

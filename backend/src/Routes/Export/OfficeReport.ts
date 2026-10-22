@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {DefaultRoute} from '@stefanwerfling/figtree';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {DefaultHandlerReturn, HandlerResultType, StatusCodes} from 'figtree-schemas';
 import {In} from 'typeorm';
 import {
@@ -8,7 +8,8 @@ import {
     SchemaExternalReceiverListResponse,
     SchemaMWPASessionData,
     SchemaVehicleListResponse,
-    VehicleListResponse
+    VehicleListResponse,
+    RightExport,
 } from 'mwpa_schemas';
 import {ExternalReceiverRepository} from '../../Db/MariaDb/Repositories/ExternalReceiverRepository.js';
 import {SightingRepository} from '../../Db/MariaDb/Repositories/SightingRepository.js';
@@ -67,7 +68,7 @@ export class OfficeReport extends DefaultRoute {
 
         this._get(
             '/json/officereport/receivers',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<ExternalReceiverListResponse> => {
                 const rows = await ExternalReceiverRepository.getInstance().findAllOrdered();
                 return {
@@ -76,6 +77,7 @@ export class OfficeReport extends DefaultRoute {
                 };
             },
             {
+                aclRight: RightExport.export_read,
                 description: 'List of external receivers (id+name) — fills the AROC-report receiver picker.',
                 responseBodySchema: SchemaExternalReceiverListResponse,
                 sessionSchema: SchemaMWPASessionData,
@@ -85,7 +87,7 @@ export class OfficeReport extends DefaultRoute {
 
         this._get(
             '/json/officereport/used_vehicles',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(req): Promise<VehicleListResponse> => {
                 const yearRaw = req.query.year;
                 const year = typeof yearRaw === 'string' ? parseInt(yearRaw, 10) : NaN;
@@ -133,6 +135,7 @@ export class OfficeReport extends DefaultRoute {
                 };
             },
             {
+                aclRight: RightExport.export_read,
                 description: 'List of vehicles that have at least one non-deleted sighting in the given'
                     + ' year/semester/organization. Optional ?year=<YYYY>, ?semester=1|2,'
                     + ' ?organization_id=<id>. Empty filters return every vehicle with any sighting.',
@@ -144,7 +147,7 @@ export class OfficeReport extends DefaultRoute {
 
         this._get(
             '/json/officereport/create_export',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(req, res, data): Promise<DefaultHandlerReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     res.status(parseInt(StatusCodes.FORBIDDEN, 10)).send('Forbidden');
@@ -204,6 +207,7 @@ export class OfficeReport extends DefaultRoute {
                 return {type: HandlerResultType.handled};
             },
             {
+                aclRight: RightExport.export_read,
                 description: 'Generate the AROC office-report XLSX. Admin only.'
                     + ' Optional ?external_receiver_id=<id> (default 1),'
                     + ' optional ?year=<YYYY>, optional ?vehicle_id=<id> (1 file per boat),'

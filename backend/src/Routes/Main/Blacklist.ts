@@ -7,10 +7,11 @@ import {
     SchemaBlacklistListResponse,
     SchemaBlacklistUnblockRequest,
     SchemaBlacklistUnblockResponse,
-    SchemaMWPASessionData
+    SchemaMWPASessionData,
+    RightBlacklist,
 } from 'mwpa_schemas';
 import {RateLimitRegistry} from '../../Application/RateLimitRegistry.js';
-import {checkMWPAAdminIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 
 /**
@@ -27,7 +28,7 @@ export class Blacklist extends DefaultRoute {
     public getExpressRouter(): Router {
         this._post(
             '/json/blacklist/list',
-            checkMWPAAdminIsLogin,
+            checkMWPAUserIsLoginACL,
             // eslint-disable-next-line @typescript-eslint/require-await
             async(): Promise<BlacklistListResponse> => {
                 return {
@@ -37,6 +38,7 @@ export class Blacklist extends DefaultRoute {
             },
             {
                 description: 'List IPs currently blocked by the rate limiter.',
+                aclRight: RightBlacklist.blacklist_read,
                 responseBodySchema: SchemaBlacklistListResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit
@@ -45,7 +47,7 @@ export class Blacklist extends DefaultRoute {
 
         this._post(
             '/json/blacklist/unblock',
-            checkMWPAAdminIsLogin,
+            checkMWPAUserIsLoginACL,
             // eslint-disable-next-line @typescript-eslint/require-await
             async(_req, _res, data): Promise<BlacklistUnblockResponse> => {
                 const ip = data.body?.ip ?? '';
@@ -57,6 +59,7 @@ export class Blacklist extends DefaultRoute {
             },
             {
                 description: 'Unblock (reset the rate limiter for) an IP.',
+                aclRight: RightBlacklist.blacklist_write,
                 bodySchema: SchemaBlacklistUnblockRequest,
                 responseBodySchema: SchemaBlacklistUnblockResponse,
                 sessionSchema: SchemaMWPASessionData,

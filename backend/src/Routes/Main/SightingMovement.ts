@@ -11,12 +11,14 @@ import {
     SchemaSightingMovementListResponse,
     SightingMovementEntry,
     SightingMovementListResponse,
-    SightingMovementTrackEntry
+    SightingMovementTrackEntry,
+    RightAnalytics,
+    RightSettings,
 } from 'mwpa_schemas';
 import {SightingMovementRepository} from '../../Db/MariaDb/Repositories/SightingMovementRepository.js';
 import {SightingMovementTrackRepository} from '../../Db/MariaDb/Repositories/SightingMovementTrackRepository.js';
 import {SightingMovementService} from '../../Service/Movement/SightingMovementService.js';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 
 /**
@@ -35,7 +37,7 @@ export class SightingMovement extends DefaultRoute {
 
         this._post(
             '/json/sighting/movement/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SightingMovementListResponse> => {
                 const body = data.body;
                 const ids = (body?.sighting_ids ?? []).filter(
@@ -110,6 +112,7 @@ export class SightingMovement extends DefaultRoute {
                 return {statusCode: StatusCodes.OK, list};
             },
             {
+                aclRight: RightAnalytics.analytics_read,
                 description: 'Bulk-fetch movement data (header + segments) for a set of sighting ids. Missing / uncomputed ids are omitted; empty list returns empty response.',
                 bodySchema: SchemaSightingMovementListRequest,
                 responseBodySchema: SchemaSightingMovementListResponse,
@@ -120,7 +123,7 @@ export class SightingMovement extends DefaultRoute {
 
         this._get(
             '/json/sighting/movement/rebuild_all',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -153,6 +156,7 @@ export class SightingMovement extends DefaultRoute {
                 };
             },
             {
+                aclRight: RightSettings.settings_write,
                 description: 'Rebuild SightingMovement + SightingMovementTrack for every non-deleted sighting (admin only). State-changing despite GET because the admin triggers it from the browser; idempotent, so safe to call repeatedly. Synchronous — large datasets may take a while; check the backend log for progress.',
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
@@ -162,7 +166,7 @@ export class SightingMovement extends DefaultRoute {
 
         this._get(
             '/json/sighting/movement/config',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<MovementConfigResponse> => {
                 if (!data.session?.user?.isAdmin) {
                     return {statusCode: StatusCodes.FORBIDDEN};
@@ -172,6 +176,7 @@ export class SightingMovement extends DefaultRoute {
                 return {statusCode: StatusCodes.OK, config};
             },
             {
+                aclRight: RightAnalytics.analytics_read,
                 description: 'Read the persisted MovementConfig (admin only). Returns the effective values — defaults filled in for any missing key in the settings row.',
                 responseBodySchema: SchemaMovementConfigResponse,
                 sessionSchema: SchemaMWPASessionData,
@@ -181,7 +186,7 @@ export class SightingMovement extends DefaultRoute {
 
         this._post(
             '/json/sighting/movement/config',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<MovementConfigResponse> => {
                 if (!data.session?.user?.isAdmin) {
                     return {statusCode: StatusCodes.FORBIDDEN};
@@ -205,6 +210,7 @@ export class SightingMovement extends DefaultRoute {
                 return {statusCode: StatusCodes.OK, config};
             },
             {
+                aclRight: RightSettings.settings_write,
                 description: 'Persist MovementConfig (admin only). Validates lead/trail/outlier are non-negative numbers and default_local_tz is an IANA zone; returns the saved values on success.',
                 bodySchema: SchemaMovementConfigEntry,
                 responseBodySchema: SchemaMovementConfigResponse,

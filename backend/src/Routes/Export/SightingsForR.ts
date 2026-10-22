@@ -2,12 +2,15 @@ import {Router} from 'express';
 import {DefaultRoute} from '@stefanwerfling/figtree';
 import {DefaultHandlerReturn, HandlerResultType} from 'figtree-schemas';
 import JSZip from 'jszip';
-import {SchemaMWPASessionData} from 'mwpa_schemas';
+import {
+    SchemaMWPASessionData,
+    RightExport,
+} from 'mwpa_schemas';
 import {ClimateIndexRepository} from '../../Db/MariaDb/Repositories/ClimateIndexRepository.js';
 import {SightingRepository} from '../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SightingTourRepository} from '../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {Users} from '../../Users/Users.js';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 
 /**
@@ -58,7 +61,7 @@ export class SightingsForR extends DefaultRoute {
 
         this._get(
             '/json/export/sightings-for-r',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, res, data): Promise<DefaultHandlerReturn> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
@@ -76,6 +79,7 @@ export class SightingsForR extends DefaultRoute {
                 return {type: HandlerResultType.handled};
             },
             {
+                aclRight: RightExport.export_read,
                 description: 'Download a ZIP (sightings.csv + tours.csv + README) for external mixed-effects '
                     + 'analysis in R — tour_fid is the cluster unit for a random effect. Non-admins are scoped '
                     + 'to their organisations; admins export the full dataset.',

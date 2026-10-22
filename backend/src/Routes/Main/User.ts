@@ -10,9 +10,11 @@ import {
     SchemaUserSavePasswordRequest,
     SchemaUserSavePinRequest,
     UserInfoResponse,
-    UserListResponse
+    UserListResponse,
+    RightUser,
+    RightUsers,
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Info} from './User/Info.js';
 import {List} from './User/List.js';
@@ -41,6 +43,7 @@ export class User extends DefaultRoute {
             },
             {
                 description: 'Return profile data for the current session user (or islogin:false).',
+                aclRight: RightUser.user_read,
                 responseBodySchema: SchemaUserInfoResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,
@@ -49,7 +52,7 @@ export class User extends DefaultRoute {
 
         this._post(
             '/json/user/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<UserListResponse> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -60,6 +63,7 @@ export class User extends DefaultRoute {
             },
             {
                 description: 'Return all users (admin only).',
+                aclRight: RightUsers.users_read,
                 bodySchema: SchemaUserListFilter,
                 responseBodySchema: SchemaUserListResponse,
                 sessionSchema: SchemaMWPASessionData,
@@ -69,7 +73,7 @@ export class User extends DefaultRoute {
 
         this._post(
             '/json/user/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -80,6 +84,7 @@ export class User extends DefaultRoute {
             },
             {
                 description: 'Insert or update a user (admin only).',
+                aclRight: RightUsers.users_write,
                 bodySchema: SchemaUserData,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
@@ -89,13 +94,14 @@ export class User extends DefaultRoute {
 
         this._post(
             '/json/user/savepassword',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 const userId = data.session?.user?.userid ?? 0;
                 return SavePassword.savePassword(userId, data.body);
             },
             {
                 description: 'Update the password of the current session user.',
+                aclRight: RightUser.user_write,
                 bodySchema: SchemaUserSavePasswordRequest,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
@@ -105,13 +111,14 @@ export class User extends DefaultRoute {
 
         this._post(
             '/json/user/savepin',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 const userId = data.session?.user?.userid ?? 0;
                 return SavePin.savePin(userId, data.body);
             },
             {
                 description: 'Update the mobile pin of the current session user.',
+                aclRight: RightUser.user_write,
                 bodySchema: SchemaUserSavePinRequest,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,

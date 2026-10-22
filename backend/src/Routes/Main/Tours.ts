@@ -19,7 +19,7 @@ import {
     ToursTrackingResponse,
     ToursTrackingTransferResponse
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin, checkMWPAUserIsLoginACL} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Delete} from './Tours/Delete.js';
 import {List} from './Tours/List.js';
@@ -40,13 +40,14 @@ export class Tours extends DefaultRoute {
 
         this._post(
             '/json/tours/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<ToursListResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
                 return List.getList(userId, isAdmin, data.body);
             },
             {
+                aclRight: RightTours.tours_read,
                 description: 'Paginated tour list (org-scoped for non-admins) with device + creater lookups and per-tour sighting/tracking counts. Filterable by period_from/to, vehicle_id, vehicle_driver_id, organization_id, free-text search.',
                 bodySchema: SchemaToursFilter,
                 responseBodySchema: SchemaToursListResponse,
@@ -57,11 +58,12 @@ export class Tours extends DefaultRoute {
 
         this._post(
             '/json/tours/tracking/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<ToursTrackingResponse> => {
                 return Tracking.getTracking(data.body);
             },
             {
+                aclRight: RightTours.tours_read,
                 description: 'Tracking points + sightings + image filenames for a tour.',
                 bodySchema: SchemaToursTrackingRequest,
                 responseBodySchema: SchemaToursTrackingResponse
@@ -70,11 +72,12 @@ export class Tours extends DefaultRoute {
 
         this._post(
             '/json/tours/tracking/neighbors',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<ToursTrackingNeighborsResponse> => {
                 return Neighbors.getNeighbors(data.body);
             },
             {
+                aclRight: RightTours.tours_read,
                 description: 'Previous/next tour for the same vehicle — used to populate the tracking-edit "transfer to" picker.',
                 bodySchema: SchemaToursTrackingNeighborsRequest,
                 responseBodySchema: SchemaToursTrackingNeighborsResponse,

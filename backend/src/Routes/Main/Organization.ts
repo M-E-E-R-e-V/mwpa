@@ -14,9 +14,10 @@ import {
     SchemaOrganizationTrackingAreaEntry,
     SchemaOrganizationTrackingAreaRequest,
     SchemaOrganizationTrackingAreaResponse,
-    SchemaOrganizationUserListResponse
+    SchemaOrganizationUserListResponse,
+    RightOrganizations,
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Get} from './Organization/Get.js';
 import {List} from './Organization/List.js';
@@ -39,7 +40,7 @@ export class Organization extends DefaultRoute {
 
         this._get(
             '/json/organization/userlist',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<OrganizationUserListResponse> => {
                 const sessionUser = data.session?.user;
                 const userId = sessionUser?.userid ?? 0;
@@ -48,6 +49,7 @@ export class Organization extends DefaultRoute {
             },
             {
                 description: 'Return organizations available to the session user.',
+                aclRight: RightOrganizations.organizations_read,
                 responseBodySchema: SchemaOrganizationUserListResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,
@@ -58,12 +60,13 @@ export class Organization extends DefaultRoute {
 
         this._get(
             '/json/organization/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<OrganizationListResponse> => {
                 return List.getList();
             },
             {
                 description: 'Return all organizations.',
+                aclRight: RightOrganizations.organizations_read,
                 responseBodySchema: SchemaOrganizationListResponse
             }
         );
@@ -72,12 +75,13 @@ export class Organization extends DefaultRoute {
 
         this._post(
             '/json/organization/get',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<OrganizationResponse> => {
                 return Get.getOrganization(data.body);
             },
             {
                 description: 'Return one organization by id.',
+                aclRight: RightOrganizations.organizations_read,
                 bodySchema: SchemaOrganizationGetRequest,
                 responseBodySchema: SchemaOrganizationResponse
             }
@@ -87,7 +91,7 @@ export class Organization extends DefaultRoute {
 
         this._post(
             '/json/organization/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -98,6 +102,7 @@ export class Organization extends DefaultRoute {
             },
             {
                 description: 'Insert or update an organization (admin only).',
+                aclRight: RightOrganizations.organizations_write,
                 bodySchema: SchemaOrganizationFullEntry,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
@@ -109,7 +114,7 @@ export class Organization extends DefaultRoute {
 
         this._post(
             '/json/organization/trackingarea/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<OrganizationTrackingAreaResponse> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -120,6 +125,7 @@ export class Organization extends DefaultRoute {
             },
             {
                 description: 'Look up a tracking area by id or by organization id + area type (admin only).',
+                aclRight: RightOrganizations.organizations_read,
                 bodySchema: SchemaOrganizationTrackingAreaRequest,
                 responseBodySchema: SchemaOrganizationTrackingAreaResponse,
                 sessionSchema: SchemaMWPASessionData,
@@ -131,7 +137,7 @@ export class Organization extends DefaultRoute {
 
         this._post(
             '/json/organization/trackingarea/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -142,6 +148,7 @@ export class Organization extends DefaultRoute {
             },
             {
                 description: 'Insert or update a tracking area (admin only).',
+                aclRight: RightOrganizations.organizations_write,
                 bodySchema: SchemaOrganizationTrackingAreaEntry,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,

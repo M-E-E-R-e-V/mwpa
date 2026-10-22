@@ -6,9 +6,10 @@ import {
     SchemaEncounterCategorieDeleteRequest,
     SchemaEncounterCategorieEntry,
     SchemaEncounterCategoriesResponse,
-    SchemaMWPASessionData
+    SchemaMWPASessionData,
+    RightCatalog,
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Delete} from './EncounterCategories/Delete.js';
 import {List} from './EncounterCategories/List.js';
@@ -26,10 +27,11 @@ export class EncounterCategories extends DefaultRoute {
     public getExpressRouter(): Router {
         this._get(
             '/json/encountercategories/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async() => List.getList(),
             {
                 description: 'List of encounter categories (including soft-deleted).',
+                aclRight: RightCatalog.catalog_read,
                 responseBodySchema: SchemaEncounterCategoriesResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit
@@ -38,7 +40,7 @@ export class EncounterCategories extends DefaultRoute {
 
         this._post(
             '/json/encountercategories/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {statusCode: StatusCodes.FORBIDDEN};
@@ -47,6 +49,7 @@ export class EncounterCategories extends DefaultRoute {
             },
             {
                 description: 'Create or update one encounter category (admin only). id=0 inserts.',
+                aclRight: RightCatalog.catalog_write,
                 bodySchema: SchemaEncounterCategorieEntry,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
@@ -56,7 +59,7 @@ export class EncounterCategories extends DefaultRoute {
 
         this._post(
             '/json/encountercategories/delete',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {statusCode: StatusCodes.FORBIDDEN};
@@ -65,6 +68,7 @@ export class EncounterCategories extends DefaultRoute {
             },
             {
                 description: 'Soft-delete one encounter category (admin only).',
+                aclRight: RightCatalog.catalog_write,
                 bodySchema: SchemaEncounterCategorieDeleteRequest,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,

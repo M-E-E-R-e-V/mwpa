@@ -13,10 +13,12 @@ import {
     SchemaSpeciesRegressionRequest,
     SpeciesListResponse,
     SpeciesProfileResponse,
-    SpeciesRegressionMatrixResponse
+    SpeciesRegressionMatrixResponse,
+    RightAnalytics,
+    RightSpecies,
 } from 'mwpa_schemas';
 import {Users} from '../../Users/Users.js';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Delete} from './Species/Delete.js';
 import {List} from './Species/List.js';
@@ -38,19 +40,20 @@ export class Species extends DefaultRoute {
 
         this._get(
             '/json/species/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<SpeciesListResponse> => {
                 return List.getList();
             },
             {
                 description: 'Return a list of species joined with their species group.',
+                aclRight: RightSpecies.species_read,
                 responseBodySchema: SchemaSpeciesListResponse
             }
         );
 
         this._post(
             '/json/species/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -61,6 +64,7 @@ export class Species extends DefaultRoute {
             },
             {
                 description: 'Insert or update a species (admin only).',
+                aclRight: RightSpecies.species_write,
                 bodySchema: SchemaSpeciesEntry,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
@@ -70,7 +74,7 @@ export class Species extends DefaultRoute {
 
         this._post(
             '/json/species/merge',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -81,6 +85,7 @@ export class Species extends DefaultRoute {
             },
             {
                 description: 'Merge two species: reassign sightings of source to destination, then delete source (admin only).',
+                aclRight: RightSpecies.species_write,
                 bodySchema: SchemaSpeciesMergeRequest,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
@@ -90,7 +95,7 @@ export class Species extends DefaultRoute {
 
         this._post(
             '/json/species/regression-matrix',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SpeciesRegressionMatrixResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
@@ -99,6 +104,7 @@ export class Species extends DefaultRoute {
             },
             {
                 description: 'Cross-species regression matrix (Year×SPUE, SST×group-size, Chl-a×group-size, effort saturation) — per-species + pooled OLS fits to surface Simpson-paradox effects.',
+                aclRight: RightAnalytics.analytics_read,
                 bodySchema: SchemaSpeciesRegressionRequest,
                 responseBodySchema: SchemaSpeciesRegressionMatrixResponse,
                 sessionSchema: SchemaMWPASessionData,
@@ -108,7 +114,7 @@ export class Species extends DefaultRoute {
 
         this._post(
             '/json/species/profile',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SpeciesProfileResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
@@ -117,6 +123,7 @@ export class Species extends DefaultRoute {
             },
             {
                 description: 'Aggregated per-species profile (counts, group-size hist, env distributions). Org-scoped for non-admins via vehicle.organization_id.',
+                aclRight: RightAnalytics.analytics_read,
                 bodySchema: SchemaSpeciesProfileRequest,
                 responseBodySchema: SchemaSpeciesProfileResponse,
                 sessionSchema: SchemaMWPASessionData,
@@ -126,7 +133,7 @@ export class Species extends DefaultRoute {
 
         this._post(
             '/json/species/delete',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -137,6 +144,7 @@ export class Species extends DefaultRoute {
             },
             {
                 description: 'Delete a species. Refuses if still referenced by sightings (admin only).',
+                aclRight: RightSpecies.species_delete,
                 bodySchema: SchemaSpeciesDeleteRequest,
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,

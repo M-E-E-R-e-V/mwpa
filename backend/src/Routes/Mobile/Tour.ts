@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import {DefaultRoute} from '@stefanwerfling/figtree';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
-import {OpenTourResponse, SchemaMWPASessionData, SchemaOpenTourResponse} from 'mwpa_schemas';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
+import {OpenTourResponse, RightApi, SchemaMWPASessionData, SchemaOpenTourResponse} from 'mwpa_schemas';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {OpenTour} from './Tour/OpenTour.js';
 
@@ -21,12 +21,13 @@ export class Tour extends DefaultRoute {
 
         this._get(
             '/mobile/tour/opentour',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<OpenTourResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
                 return OpenTour.getOpenTour(userId);
             },
             {
+                aclRight: RightApi.mobile,
                 description: 'Return the currently-open tour for the session user (status=1).',
                 responseBodySchema: SchemaOpenTourResponse,
                 sessionSchema: SchemaMWPASessionData,

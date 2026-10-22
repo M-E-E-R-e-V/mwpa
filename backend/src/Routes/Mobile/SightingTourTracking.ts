@@ -2,6 +2,8 @@ import {Router} from 'express';
 import {DefaultRoute} from '@stefanwerfling/figtree';
 import {
     DefaultMobileV1Return,
+    RightSightings,
+    RightTours,
     SchemaDefaultMobileV1Return,
     SchemaMWPASessionData,
     SchemaSightingTourTrackingCheckRequest,
@@ -9,7 +11,7 @@ import {
     SchemaSightingTourTrackingRequest,
     SightingTourTrackingCheckResponse
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Check} from './SightingTourTracking/Check.js';
 import {Save} from './SightingTourTracking/Save.js';
@@ -28,7 +30,7 @@ export class SightingTourTracking extends DefaultRoute {
 
         this._post(
             '/mobile/sighting/tourtracking/check',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SightingTourTrackingCheckResponse> => {
                 const sessionUser = data.session?.user;
                 if (!sessionUser?.isMobileLogin || !sessionUser.deviceIdentity) {
@@ -39,6 +41,7 @@ export class SightingTourTracking extends DefaultRoute {
                 return Check.check(sessionUser.deviceIdentity, data.body);
             },
             {
+                aclRight: RightSightings.sightings_mobile_read,
                 description: 'Check whether the server has all tracking points for a tour.',
                 bodySchema: SchemaSightingTourTrackingCheckRequest,
                 responseBodySchema: SchemaSightingTourTrackingCheckResponse,
@@ -49,7 +52,7 @@ export class SightingTourTracking extends DefaultRoute {
 
         this._post(
             '/mobile/sighting/tourtracking/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultMobileV1Return> => {
                 const sessionUser = data.session?.user;
                 if (!sessionUser?.isMobileLogin || !sessionUser.deviceIdentity) {
@@ -60,6 +63,7 @@ export class SightingTourTracking extends DefaultRoute {
                 return Save.save(sessionUser.deviceIdentity, data.body);
             },
             {
+                aclRight: RightTours.tours_tracking_edit,
                 description: 'Persist a batch of tracking points (grouped per tour, dedupe by unid).',
                 bodySchema: SchemaSightingTourTrackingRequest,
                 responseBodySchema: SchemaDefaultMobileV1Return,

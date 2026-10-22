@@ -3,6 +3,7 @@ import {DefaultRoute} from '@stefanwerfling/figtree';
 import multer from 'multer';
 import {
     DefaultMobileV1Return,
+    RightSightings,
     SchemaDefaultMobileV1Return,
     SchemaMWPASessionData,
     SchemaSightingImageExistRequest,
@@ -12,7 +13,7 @@ import {
     SightingImageExistResponse,
     SightingSaveResponse
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {ImageExist} from './Sightings/ImageExist.js';
 import {ImageSave} from './Sightings/ImageSave.js';
@@ -34,7 +35,7 @@ export class Sightings extends DefaultRoute {
 
         this._post(
             '/mobile/sighting/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SightingSaveResponse> => {
                 const sessionUser = data.session?.user;
                 if (!sessionUser?.isMobileLogin || !sessionUser.deviceIdentity) {
@@ -50,6 +51,7 @@ export class Sightings extends DefaultRoute {
                 );
             },
             {
+                aclRight: RightSightings.sightings_mobile_write,
                 description: 'Mobile sighting upsert (creates parent tour, dedupes via hash + unid).',
                 bodySchema: SchemaTypeSighting,
                 responseBodySchema: SchemaSightingSaveResponse,
@@ -60,7 +62,7 @@ export class Sightings extends DefaultRoute {
 
         this._post(
             '/mobile/sighting/image/exist',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SightingImageExistResponse> => {
                 const sessionUser = data.session?.user;
                 if (!sessionUser?.isMobileLogin || !sessionUser.deviceIdentity) {
@@ -71,6 +73,7 @@ export class Sightings extends DefaultRoute {
                 return ImageExist.check(sessionUser.deviceIdentity, data.body);
             },
             {
+                aclRight: RightSightings.sightings_mobile_read,
                 description: 'Check whether a sighting image already exists on the server.',
                 bodySchema: SchemaSightingImageExistRequest,
                 responseBodySchema: SchemaSightingImageExistResponse,
@@ -81,7 +84,7 @@ export class Sightings extends DefaultRoute {
 
         this._post(
             '/mobile/sighting/image/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(req, _res, data): Promise<DefaultMobileV1Return> => {
                 const sessionUser = data.session?.user;
                 if (!sessionUser?.isMobileLogin || !sessionUser.deviceIdentity) {
@@ -102,6 +105,7 @@ export class Sightings extends DefaultRoute {
                 });
             },
             {
+                aclRight: RightSightings.sightings_mobile_write,
                 description: 'Upload a sighting image (multipart form-data with field "file" plus body fields unid/filename/size).',
                 responseBodySchema: SchemaDefaultMobileV1Return,
                 sessionSchema: SchemaMWPASessionData,

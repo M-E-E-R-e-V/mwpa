@@ -5,7 +5,7 @@ import {In} from 'typeorm';
 import {
     DevicesEntry,
     DevicesListResponse,
-    RightUsers,
+    RightDevices,
     SchemaDevicesListResponse,
     SchemaMWPASessionData
 } from 'mwpa_schemas';
@@ -109,7 +109,7 @@ export class Devices extends DefaultRoute {
             },
             {
                 description: 'List all mobile devices with bound user, organization and activity counts.',
-                aclRight: RightUsers.users_read,
+                aclRight: RightDevices.devices_read,
                 responseBodySchema: SchemaDevicesListResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit

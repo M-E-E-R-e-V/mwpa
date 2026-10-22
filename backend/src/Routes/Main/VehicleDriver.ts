@@ -1,7 +1,11 @@
 import {Router} from 'express';
 import {DefaultRoute} from '@stefanwerfling/figtree';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
-import {SchemaVehicleDriverListResponse, VehicleDriverListResponse} from 'mwpa_schemas';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
+import {
+    SchemaVehicleDriverListResponse,
+    VehicleDriverListResponse,
+    RightVehicles,
+} from 'mwpa_schemas';
 import {List} from './VehicleDriver/List.js';
 
 /**
@@ -17,12 +21,13 @@ export class VehicleDriver extends DefaultRoute {
 
         this._get(
             '/json/vehicledriver/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<VehicleDriverListResponse> => {
                 return List.getList();
             },
             {
                 description: 'Return a list of vehicle drivers joined with their linked user.',
+                aclRight: RightVehicles.vehicles_read,
                 responseBodySchema: SchemaVehicleDriverListResponse
             }
         );

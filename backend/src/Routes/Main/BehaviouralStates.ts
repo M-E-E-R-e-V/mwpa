@@ -1,7 +1,10 @@
 import {Router} from 'express';
 import {DefaultRoute} from '@stefanwerfling/figtree';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
-import {SchemaBehaviouralStatesResponse} from 'mwpa_schemas';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
+import {
+    SchemaBehaviouralStatesResponse,
+    RightCatalog,
+} from 'mwpa_schemas';
 import {List} from './BehaviouralStates/List.js';
 
 /**
@@ -17,12 +20,13 @@ export class BehaviouralStates extends DefaultRoute {
 
         this._get(
             '/json/behaviouralstates/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async() => {
                 return List.getList();
             },
             {
                 description: '.',
+                aclRight: RightCatalog.catalog_read,
                 responseBodySchema: SchemaBehaviouralStatesResponse
             }
         );

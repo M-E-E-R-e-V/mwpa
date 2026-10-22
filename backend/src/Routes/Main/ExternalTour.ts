@@ -10,9 +10,10 @@ import {
     SchemaExternalTourSourceDeleteRequest,
     SchemaExternalTourSourceEntry,
     SchemaExternalTourSourceListResponse,
-    SchemaMWPASessionData
+    SchemaMWPASessionData,
+    RightExternalTours,
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {SourceDelete} from './ExternalTour/SourceDelete.js';
 import {SourceList} from './ExternalTour/SourceList.js';
@@ -30,7 +31,7 @@ export class ExternalTour extends DefaultRoute {
 
         this._post(
             '/json/external-tour-source/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<ExternalTourSourceListResponse> => {
                 if (!data.session?.user?.isAdmin) {
                     return {statusCode: StatusCodes.FORBIDDEN, list: []};
@@ -38,6 +39,7 @@ export class ExternalTour extends DefaultRoute {
                 return SourceList.list();
             },
             {
+                aclRight: RightExternalTours.external_tours_read,
                 description: 'List external tour-source configs (admin only).',
                 responseBodySchema: SchemaExternalTourSourceListResponse,
                 sessionSchema: SchemaMWPASessionData,
@@ -47,7 +49,7 @@ export class ExternalTour extends DefaultRoute {
 
         this._post(
             '/json/external-tour-source/save',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {statusCode: StatusCodes.FORBIDDEN};
@@ -55,6 +57,7 @@ export class ExternalTour extends DefaultRoute {
                 return SourceSave.save(data.body as ExternalTourSourceEntry);
             },
             {
+                aclRight: RightExternalTours.external_tours_write,
                 description: 'Create or update an external tour-source config (admin only). id=0 inserts.',
                 bodySchema: SchemaExternalTourSourceEntry,
                 responseBodySchema: SchemaDefaultReturn,
@@ -65,7 +68,7 @@ export class ExternalTour extends DefaultRoute {
 
         this._post(
             '/json/external-tour-source/delete',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {statusCode: StatusCodes.FORBIDDEN};
@@ -73,6 +76,7 @@ export class ExternalTour extends DefaultRoute {
                 return SourceDelete.delete(data.body!);
             },
             {
+                aclRight: RightExternalTours.external_tours_write,
                 description: 'Delete one external tour-source config (admin only).',
                 bodySchema: SchemaExternalTourSourceDeleteRequest,
                 responseBodySchema: SchemaDefaultReturn,
@@ -83,13 +87,14 @@ export class ExternalTour extends DefaultRoute {
 
         this._post(
             '/json/external-tour/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<ExternalTourListResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
                 return TourList.list(userId, isAdmin, data.body ?? {});
             },
             {
+                aclRight: RightExternalTours.external_tours_read,
                 description: 'Planned tour slots pulled from external booking providers, scoped to the caller\'s organisations for non-admins. Default window: now → now+60 days.',
                 bodySchema: SchemaExternalTourListRequest,
                 responseBodySchema: SchemaExternalTourListResponse,

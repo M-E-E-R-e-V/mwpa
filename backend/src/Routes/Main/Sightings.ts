@@ -19,9 +19,10 @@ import {
     SightingEnvironmentListResponse,
     SightingFishingVesselListResponse,
     SightingYearsResponse,
-    SightingsListResponse
+    SightingsListResponse,
+    RightExport,
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin, checkMWPAUserIsLoginACL} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {CurrentRegion} from './Sightings/CurrentRegion.js';
 import {Delete} from './Sightings/Delete.js';
@@ -49,13 +50,14 @@ export class Sightings extends DefaultRoute {
 
         this._post(
             '/json/sightings/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SightingsListResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
                 return List.getList(userId, isAdmin, data.body);
             },
             {
+                aclRight: RightSightings.sightings_read,
                 description: 'Paginated list of non-deleted sightings (org-scoped for non-admins).',
                 bodySchema: SchemaSightingsFilter,
                 responseBodySchema: SchemaSightingsListResponse,
@@ -66,13 +68,14 @@ export class Sightings extends DefaultRoute {
 
         this._post(
             '/json/sightings/environment/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SightingEnvironmentListResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
                 return Environment.getList(userId, isAdmin, data.body);
             },
             {
+                aclRight: RightSightings.sightings_read,
                 description: 'Paginated list of non-deleted sightings joined with ocean (chl-a, salinity, currents) + GFW fishing-effort enrichment columns. Position is denormalised to lon/lat for direct map use.',
                 bodySchema: SchemaSightingsFilter,
                 responseBodySchema: SchemaSightingEnvironmentListResponse,
@@ -83,11 +86,12 @@ export class Sightings extends DefaultRoute {
 
         this._post(
             '/json/sightings/old-points',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SightingEnvironmentListResponse> => {
                 return OldPoints.getList(data.body);
             },
             {
+                aclRight: RightSightings.sightings_read,
                 description: 'Historical hand-maintained sightings (sighting_old, pre-app era) as map points, reusing the environment wire shape (only id/lon/lat/date/species + any computed astronomy/weather enrichment). Shared history — NOT org-scoped. For the map\'s dedicated historical-sightings layer.',
                 bodySchema: SchemaSightingsFilter,
                 responseBodySchema: SchemaSightingEnvironmentListResponse,
@@ -98,11 +102,12 @@ export class Sightings extends DefaultRoute {
 
         this._post(
             '/json/sightings/currents/region',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SightingCurrentRegionResponse> => {
                 return CurrentRegion.getRegion(data.body!);
             },
             {
+                aclRight: RightSightings.sightings_read,
                 description: 'Regional CMEMS surface-currents u/v patch around a single sighting.'
                     + ' Payload is JSON-encoded inside `entry.grid_json` because vts does not model 2D arrays;'
                     + ' the frontend JSON-parses it. Returns `entry: undefined` when no patch has been fetched yet.',
@@ -115,11 +120,12 @@ export class Sightings extends DefaultRoute {
 
         this._post(
             '/json/sightings/fishing-vessels/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<SightingFishingVesselListResponse> => {
                 return FishingVesselList.getList(data.body!);
             },
             {
+                aclRight: RightSightings.sightings_read,
                 description: 'Per-vessel GFW fishing-effort breakdown for a set of sighting ids.'
                     + ' Returns rows in `sighting_fishing_vessel` ordered by hours DESC.',
                 bodySchema: SchemaSightingFishingVesselListRequest,
@@ -147,7 +153,7 @@ export class Sightings extends DefaultRoute {
 
         this._post(
             '/json/sightings/delete',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     return {
@@ -157,6 +163,7 @@ export class Sightings extends DefaultRoute {
                 return Delete.deleteSighting(data.body);
             },
             {
+                aclRight: RightSightings.sightings_write,
                 description: 'Soft-delete a sighting (admin only).',
                 bodySchema: SchemaSightingDeleteRequest,
                 responseBodySchema: SchemaDefaultReturn,
@@ -167,12 +174,13 @@ export class Sightings extends DefaultRoute {
 
         this._get(
             '/json/sightings/getimage/:id/:filename',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, res, data): Promise<DefaultHandlerReturn> => {
                 await GetImage.serveImage(data.params!, res);
                 return {type: HandlerResultType.handled};
             },
             {
+                aclRight: RightSightings.sightings_read,
                 description: 'Serve a sighting image file.',
                 pathSchema: SchemaSightingImageGetRequest
             }
@@ -180,11 +188,12 @@ export class Sightings extends DefaultRoute {
 
         this._get(
             '/json/sightings/years',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<SightingYearsResponse> => {
                 return Years.getYears();
             },
             {
+                aclRight: RightSightings.sightings_read,
                 description: 'Distinct calendar years (DESC) found in non-deleted sightings.'
                     + ' Feeds the Excel-Report year picker in the SightingExport widget.',
                 responseBodySchema: SchemaSightingYearsResponse,
@@ -195,7 +204,7 @@ export class Sightings extends DefaultRoute {
 
         this._get(
             '/json/sightings/list/excel',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(req, res, data): Promise<DefaultHandlerReturn> => {
                 if (!data.session?.user?.isAdmin) {
                     res.status(parseInt(StatusCodes.FORBIDDEN, 10)).send('Forbidden');
@@ -214,6 +223,7 @@ export class Sightings extends DefaultRoute {
                 return {type: HandlerResultType.handled};
             },
             {
+                aclRight: RightExport.export_read,
                 description: 'Download non-deleted sightings as XLSX (admin only).'
                     + ' Query: ?columns=<csv of column keys> picks columns,'
                     + ' ?coord_format=decimal|dms|dm|all picks position-column format.'

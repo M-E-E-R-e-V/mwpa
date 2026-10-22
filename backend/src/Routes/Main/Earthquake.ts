@@ -10,9 +10,10 @@ import {
     SchemaEarthquakeImpactResponse,
     SchemaEarthquakeListResponse,
     SchemaEarthquakeRecorrelateResponse,
-    SchemaMWPASessionData
+    SchemaMWPASessionData,
+    RightEarthquake,
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Impact} from './Earthquake/Impact.js';
 import {List} from './Earthquake/List.js';
@@ -33,11 +34,12 @@ export class Earthquake extends DefaultRoute {
 
         this._post(
             '/json/earthquake/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<EarthquakeListResponse> => {
                 return List.getList(data.body);
             },
             {
+                aclRight: RightEarthquake.earthquake_read,
                 description: 'Paginated list of imported earthquakes — period + min-magnitude filter.',
                 bodySchema: SchemaEarthquakeFilter,
                 responseBodySchema: SchemaEarthquakeListResponse,
@@ -48,7 +50,7 @@ export class Earthquake extends DefaultRoute {
 
         this._get(
             '/json/earthquake/recorrelate',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<EarthquakeRecorrelateResponse> => {
                 if (!data.session?.user?.isAdmin) {
                     return {statusCode: StatusCodes.FORBIDDEN, msg: 'Admin only'};
@@ -56,6 +58,7 @@ export class Earthquake extends DefaultRoute {
                 return Recorrelate.run();
             },
             {
+                aclRight: RightEarthquake.earthquake_read,
                 description: 'Walks every earthquake in the local table and re-writes the sighting_seismic correlation — use after a wide backfill or radius change (admin only). State-changing despite GET because the admin triggers it from the browser; idempotent.',
                 responseBodySchema: SchemaEarthquakeRecorrelateResponse,
                 sessionSchema: SchemaMWPASessionData,
@@ -65,7 +68,7 @@ export class Earthquake extends DefaultRoute {
 
         this._post(
             '/json/earthquake/impact',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<EarthquakeImpactResponse> => {
                 if (!data.session?.user?.isAdmin) {
                     return {statusCode: StatusCodes.FORBIDDEN, msg: 'Admin only'};
@@ -73,6 +76,7 @@ export class Earthquake extends DefaultRoute {
                 return Impact.run(data.body);
             },
             {
+                aclRight: RightEarthquake.earthquake_read,
                 description: 'Affected sightings for an earthquake (by id) or a UTC day, within ±window_days. Returns enriched sighting rows, movement tracks per sighting, and 4 aggregate buckets for the Auswertung card (admin only).',
                 bodySchema: SchemaEarthquakeImpactRequest,
                 responseBodySchema: SchemaEarthquakeImpactResponse,

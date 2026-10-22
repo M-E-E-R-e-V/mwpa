@@ -7,6 +7,7 @@ import {
     MobileUserInfoResponse,
     MobileVehicleDriverListResponse,
     MobileVehicleListResponse,
+    RightApi,
     SchemaMWPASessionData,
     SchemaMobileBehaviouralStatesResponse,
     SchemaMobileEncounterCategoriesResponse,
@@ -15,7 +16,7 @@ import {
     SchemaMobileVehicleDriverListResponse,
     SchemaMobileVehicleListResponse
 } from 'mwpa_schemas';
-import {checkMWPAUserIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {List as BehaviouralStatesList} from '../Main/BehaviouralStates/List.js';
 import {List as EncounterCategoriesList} from '../Main/EncounterCategories/List.js';
@@ -40,9 +41,10 @@ export class Reuse extends DefaultRoute {
 
         this._get(
             '/mobile/behaviouralstates/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<MobileBehaviouralStatesResponse> => toV1(await BehaviouralStatesList.getList()),
             {
+                aclRight: RightApi.mobile,
                 description: 'Mobile alias for /json/behaviouralstates/list.',
                 responseBodySchema: SchemaMobileBehaviouralStatesResponse
             }
@@ -50,9 +52,10 @@ export class Reuse extends DefaultRoute {
 
         this._get(
             '/mobile/encountercategories/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<MobileEncounterCategoriesResponse> => toV1(await EncounterCategoriesList.getList()),
             {
+                aclRight: RightApi.mobile,
                 description: 'Mobile alias for /json/encountercategories/list.',
                 responseBodySchema: SchemaMobileEncounterCategoriesResponse
             }
@@ -60,9 +63,10 @@ export class Reuse extends DefaultRoute {
 
         this._get(
             '/mobile/species/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<MobileSpeciesListResponse> => toV1(await SpeciesList.getList()),
             {
+                aclRight: RightApi.mobile,
                 description: 'Mobile alias for /json/species/list.',
                 responseBodySchema: SchemaMobileSpeciesListResponse
             }
@@ -70,9 +74,10 @@ export class Reuse extends DefaultRoute {
 
         this._get(
             '/mobile/vehicle/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<MobileVehicleListResponse> => toV1(await VehicleList.getList()),
             {
+                aclRight: RightApi.mobile,
                 description: 'Mobile alias for /json/vehicle/list.',
                 responseBodySchema: SchemaMobileVehicleListResponse
             }
@@ -80,9 +85,10 @@ export class Reuse extends DefaultRoute {
 
         this._get(
             '/mobile/vehicledriver/list',
-            checkMWPAUserIsLogin,
+            checkMWPAUserIsLoginACL,
             async(): Promise<MobileVehicleDriverListResponse> => toV1(await VehicleDriverList.getList()),
             {
+                aclRight: RightApi.mobile,
                 description: 'Mobile alias for /json/vehicledriver/list.',
                 responseBodySchema: SchemaMobileVehicleDriverListResponse
             }

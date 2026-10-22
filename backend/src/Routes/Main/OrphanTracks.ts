@@ -16,9 +16,10 @@ import {
     SchemaOrphanTracksMatchRequest,
     SchemaOrphanTracksMatchResponse,
     SchemaOrphanTracksPointsRequest,
-    SchemaOrphanTracksPointsResponse
+    SchemaOrphanTracksPointsResponse,
+    RightTours,
 } from 'mwpa_schemas';
-import {checkMWPAAdminIsLogin} from '../AuthCheck.js';
+import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {Assign} from './OrphanTracks/Assign.js';
 import {Delete} from './OrphanTracks/Delete.js';
@@ -39,13 +40,14 @@ export class OrphanTracks extends DefaultRoute {
 
         this._post(
             '/json/orphantracks/list',
-            checkMWPAAdminIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<OrphanTracksListResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
                 return List.getList(userId, isAdmin, data.body);
             },
             {
+                aclRight: RightTours.tours_write,
                 description: 'List distinct (tour_fid, device_id) pending-track buckets that have no matching SightingTour. Admin-only.',
                 bodySchema: SchemaOrphanTracksFilter,
                 responseBodySchema: SchemaOrphanTracksListResponse,
@@ -56,13 +58,14 @@ export class OrphanTracks extends DefaultRoute {
 
         this._post(
             '/json/orphantracks/match',
-            checkMWPAAdminIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<OrphanTracksMatchResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
                 return Match.getMatches(userId, isAdmin, data.body);
             },
             {
+                aclRight: RightTours.tours_write,
                 description: 'Find candidate SightingTour rows matching the four pickers (vehicle, driver, date, tour_start). Admin-only.',
                 bodySchema: SchemaOrphanTracksMatchRequest,
                 responseBodySchema: SchemaOrphanTracksMatchResponse,
@@ -73,13 +76,14 @@ export class OrphanTracks extends DefaultRoute {
 
         this._post(
             '/json/orphantracks/assign',
-            checkMWPAAdminIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<OrphanTracksAssignResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
                 const isAdmin = data.session?.user?.isAdmin ?? false;
                 return Assign.assign(userId, isAdmin, data.body);
             },
             {
+                aclRight: RightTours.tours_write,
                 description: 'Promote the pending-track bucket for (tour_fid, device_id) into the chosen target tour. Admin-only.',
                 bodySchema: SchemaOrphanTracksAssignRequest,
                 responseBodySchema: SchemaOrphanTracksAssignResponse,
@@ -90,11 +94,12 @@ export class OrphanTracks extends DefaultRoute {
 
         this._post(
             '/json/orphantracks/points',
-            checkMWPAAdminIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<OrphanTracksPointsResponse> => {
                 return Points.getPoints(data.body);
             },
             {
+                aclRight: RightTours.tours_write,
                 description: 'Decoded lat/lon/ts points for one orphan bucket — drives the map preview in the AssignModal. Admin-only.',
                 bodySchema: SchemaOrphanTracksPointsRequest,
                 responseBodySchema: SchemaOrphanTracksPointsResponse,
@@ -105,11 +110,12 @@ export class OrphanTracks extends DefaultRoute {
 
         this._post(
             '/json/orphantracks/delete',
-            checkMWPAAdminIsLogin,
+            checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<OrphanTracksDeleteResponse> => {
                 return Delete.drop(data.body);
             },
             {
+                aclRight: RightTours.tours_write,
                 description: 'Drop the pending-track bucket for (tour_fid, device_id) without promoting — used when the admin judges the orphan as junk. Admin-only.',
                 bodySchema: SchemaOrphanTracksDeleteRequest,
                 responseBodySchema: SchemaOrphanTracksDeleteResponse,
