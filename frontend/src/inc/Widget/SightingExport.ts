@@ -4,6 +4,7 @@ import {OfficeReport as OfficeReportApi, UsedVehiclesFilter} from '../Api/Office
 import {Organization as OrganizationApi} from '../Api/Organization';
 import {Sightings as SightingsApi} from '../Api/Sightings';
 import {Lang} from '../Lang';
+import {Session} from '../Session';
 
 const escapeHtml = (s: string): string => s
 .replace(/&/gu, '&amp;')
@@ -194,33 +195,53 @@ export class SightingExport extends Component<HTMLDivElement> {
         const excelReportTabId = `sighting-export-tab-report-${stamp}`;
         const dataPageTabId = `sighting-export-tab-datapage-${stamp}`;
 
+        /*
+         * Server exports are rights-gated per tab: the Excel Export (XLSX) and
+         * Excel Report (AROC) tabs are only built when the session holds the
+         * matching right. The Data Page tab is a client-side print and always
+         * available. The backend still enforces every export route (403), so a
+         * hidden tab is a UX nicety, not the security boundary.
+         */
+        const canXlsx = Session.hasRight('export_xlsx');
+        const canAroc = Session.hasRight('export_aroc');
+
         const nav = jQuery('<ul class="nav nav-tabs" role="tablist"/>').appendTo(root);
-        nav.append(
-            `<li class="nav-item"><a class="nav-link active" data-toggle="tab" `
-            + `href="#${excelExportTabId}">${escapeHtml(lang.l('Excel Export'))}</a></li>`
-        );
-        nav.append(
-            `<li class="nav-item"><a class="nav-link" data-toggle="tab" `
-            + `href="#${excelReportTabId}">${escapeHtml(lang.l('Excel Report'))}</a></li>`
-        );
-        nav.append(
-            `<li class="nav-item"><a class="nav-link" data-toggle="tab" `
-            + `href="#${dataPageTabId}">${escapeHtml(lang.l('Data Page'))}</a></li>`
-        );
-
         const tabContent = jQuery('<div class="tab-content"/>').appendTo(root);
-        this._excelExportBody = jQuery(
-            `<div class="tab-pane fade active show sighting-export-pane" id="${excelExportTabId}"/>`
-        ).appendTo(tabContent);
-        this._excelReportBody = jQuery(
-            `<div class="tab-pane fade sighting-export-pane" id="${excelReportTabId}"/>`
-        ).appendTo(tabContent);
-        this._dataPageBody = jQuery(
-            `<div class="tab-pane fade sighting-export-pane" id="${dataPageTabId}"/>`
+
+        /*
+         * Detached placeholders keep the typed fields a JQuery even for a tab
+         * that isn't rendered; the matching _build* method is only called when
+         * the tab is actually shown.
+         */
+        this._excelExportBody = jQuery('<div/>');
+        this._excelReportBody = jQuery('<div/>');
+        this._dataPageBody = jQuery('<div/>');
+
+        // first rendered tab gets the active state
+        let firstShown = true;
+        const navLink = (active: boolean, tabId: string, label: string): string =>
+            `<li class="nav-item"><a class="nav-link${active ? ' active' : ''}" data-toggle="tab" `
+            + `href="#${tabId}">${escapeHtml(label)}</a></li>`;
+        const pane = (active: boolean, tabId: string): JQuery => jQuery(
+            `<div class="tab-pane fade${active ? ' active show' : ''} sighting-export-pane" id="${tabId}"/>`
         ).appendTo(tabContent);
 
-        this._buildExcelExportTab();
-        this._buildExcelReportTab();
+        if (canXlsx) {
+            nav.append(navLink(firstShown, excelExportTabId, lang.l('Excel Export')));
+            this._excelExportBody = pane(firstShown, excelExportTabId);
+            this._buildExcelExportTab();
+            firstShown = false;
+        }
+
+        if (canAroc) {
+            nav.append(navLink(firstShown, excelReportTabId, lang.l('Excel Report')));
+            this._excelReportBody = pane(firstShown, excelReportTabId);
+            this._buildExcelReportTab();
+            firstShown = false;
+        }
+
+        nav.append(navLink(firstShown, dataPageTabId, lang.l('Data Page')));
+        this._dataPageBody = pane(firstShown, dataPageTabId);
         this._buildDataPageTab();
     }
 

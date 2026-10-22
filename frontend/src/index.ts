@@ -9,6 +9,7 @@ import {
 import {Login} from './inc/Api/Login';
 import {User as UserAPI} from './inc/Api/User';
 import {Lang} from './inc/Lang';
+import {Session} from './inc/Session';
 import {Admin as AdminPage} from './inc/Pages/Admin';
 import {BasePage} from './inc/Pages/BasePage';
 import {Devices as DevicesPage} from './inc/Pages/Devices';
@@ -113,9 +114,7 @@ const PAGE_RIGHTS: Record<string, string> = {
 
         const currentuser = await UserAPI.getUserInfo();
 
-        const rightsSet = new Set<string>(currentuser?.user?.rights ?? []);
-        const isAdmin = currentuser?.user?.isAdmin ?? false;
-        const hasRight = (right?: string): boolean => right === undefined || isAdmin || rightsSet.has(right);
+        Session.setUser(currentuser?.user);
 
         /*
          * Page-level guard. Hiding the menu entry is not enough — a user could
@@ -124,7 +123,7 @@ const PAGE_RIGHTS: Record<string, string> = {
          * accessible Profil page instead of rendering an empty/403 screen.
          * Pages not in PAGE_RIGHTS (Profil, the admin hub) need no right.
          */
-        if (!hasRight(PAGE_RIGHTS[page.getName()])) {
+        if (!Session.hasRight(PAGE_RIGHTS[page.getName()])) {
             await loadPage(new Profil());
             return;
         }
@@ -393,7 +392,7 @@ const PAGE_RIGHTS: Record<string, string> = {
          * right is in their effective (parent-expanded) set from
          * /json/user/info. Entries not in PAGE_RIGHTS are always shown.
          */
-        for (const item of sidemenuList.filter((entry) => hasRight(PAGE_RIGHTS[entry.name]))) {
+        for (const item of sidemenuList.filter((entry) => Session.hasRight(PAGE_RIGHTS[entry.name]))) {
             const menuItem = new SidebarMenuItem(menu);
 
             menuItem.setName(item.name);
@@ -403,7 +402,7 @@ const PAGE_RIGHTS: Record<string, string> = {
 
             let isSubActiv = false;
 
-            const visibleItems = item.items?.filter((sitem) => hasRight(PAGE_RIGHTS[sitem.name])) ?? [];
+            const visibleItems = item.items?.filter((sitem) => Session.hasRight(PAGE_RIGHTS[sitem.name])) ?? [];
 
             if (visibleItems.length > 0) {
                 const menuTree = new SidebarMenuTree(menuItem);
