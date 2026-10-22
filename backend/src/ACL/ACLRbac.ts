@@ -223,6 +223,35 @@ export class ACLRbac extends TACLRbac<Role, MwpaRights> {
     }
 
     /**
+     * Grant access when the request's right is covered by the session's
+     * explicit right list (UI-assigned, resolved from users_role_rights into
+     * `session.user.rights`), OR by the static role→ASSOCIATIONS fallback.
+     *
+     * figtree's base `ACLRbac.checkAccess` ignores the userRightList and asks
+     * rbac-simple, which only knows the two seeded roles (root/user) via
+     * ASSOCIATIONS — so without this override a group mapped to a *custom* role
+     * would be denied every gated route, and per-role rights edited in the
+     * admin dialog would never take effect. Honoring the list here makes the
+     * dialog authoritative while keeping the root/user defaults working.
+     *
+     * Additive by design: it can only ever grant (never revoke) relative to the
+     * ASSOCIATIONS fallback, so no logged-in user loses access they have today.
+     * The list is parent-expanded the same way the frontend expands it, so the
+     * client-side menu/page gating and the server-side check agree.
+     * @param {string} role — session role name
+     * @param {string} right — the route's required right
+     * @param {string[]} [userRightList] — session.user.rights
+     * @return {Promise<boolean>}
+     */
+    public override async checkAccess(role: string, right: string, userRightList?: string[]): Promise<boolean> {
+        if (userRightList !== undefined && ACLRbac.expandRights(userRightList).includes(right)) {
+            return true;
+        }
+
+        return super.checkAccess(role, right, userRightList);
+    }
+
+    /**
      * Constructor
      */
     public constructor() {
