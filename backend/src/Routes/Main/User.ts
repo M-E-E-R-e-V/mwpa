@@ -39,11 +39,12 @@ export class User extends DefaultRoute {
             false,
             async(_req, _res, data): Promise<UserInfoResponse> => {
                 const userId = data.session?.user?.userid ?? 0;
-                return Info.getInfo(userId);
+                return Info.getInfo(userId, data.session?.user?.rights ?? []);
             },
             {
-                description: 'Return profile data for the current session user (or islogin:false).',
-                aclRight: RightUser.user_read,
+                description: 'Return profile data for the current session user (or islogin:false).'
+                    + ' Public (returns islogin:false for anonymous) — not gated; attaches the'
+                    + ' effective right set to user.rights so the web UI can gate its menu.',
                 responseBodySchema: SchemaUserInfoResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,

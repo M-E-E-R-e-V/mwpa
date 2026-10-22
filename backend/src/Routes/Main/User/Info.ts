@@ -1,5 +1,6 @@
 import {StatusCodes} from 'figtree-schemas';
 import {UserInfo, UserInfoResponse} from 'mwpa_schemas';
+import {ACLRbac} from '../../../ACL/ACLRbac.js';
 import {GroupRepository} from '../../../Db/MariaDb/Repositories/GroupRepository.js';
 import {OrganizationRepository} from '../../../Db/MariaDb/Repositories/OrganizationRepository.js';
 import {UserRepository} from '../../../Db/MariaDb/Repositories/UserRepository.js';
@@ -13,9 +14,12 @@ export class Info {
      * Return profile data for the current session user (with main group + organization).
      * Falls back to islogin: false when the session has no userid.
      * @param {number} userId
+     * @param {string[]} [rights] — session rights; when given, the effective
+     *        (parent-expanded) set is attached to `user.rights` for the web UI.
+     *        Omit for mobile so the Mobile-V1 wire shape stays unchanged.
      * @return {UserInfoResponse}
      */
-    public static async getInfo(userId: number): Promise<UserInfoResponse> {
+    public static async getInfo(userId: number, rights?: string[]): Promise<UserInfoResponse> {
         const notLoggedIn: UserInfoResponse = {
             statusCode: StatusCodes.OK,
             data: {
@@ -40,7 +44,8 @@ export class Info {
                 username: user.username,
                 fullname: user.full_name,
                 email: user.email,
-                isAdmin: user.isAdmin
+                isAdmin: user.isAdmin,
+                ...rights === undefined ? {} : {rights: ACLRbac.expandRights(rights)}
             }
         };
 

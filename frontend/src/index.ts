@@ -44,6 +44,7 @@ type SideMenuEntrySub = {
     icon: string;
     name: string;
     onClick: (value: any) => void;
+    right?: string;
 };
 
 /**
@@ -55,6 +56,7 @@ type SideMenuEntry = {
     name: string;
     onClick: (value: any) => void;
     items?: SideMenuEntrySub[];
+    right?: string;
 };
 
 /**
@@ -165,6 +167,7 @@ type SideMenuEntry = {
                 title: 'Tours',
                 icon: 'fa-solid fa-flag',
                 name: 'tours',
+                right: 'tours_read',
                 onClick: (): void => {
                     loadPage(new ToursPage());
                 },
@@ -173,6 +176,7 @@ type SideMenuEntry = {
                         title: 'Tours External',
                         icon: 'fa-solid fa-calendar-alt',
                         name: 'tours-external',
+                        right: 'external_tours_read',
                         onClick: (): void => {
                             loadPage(new ToursExternal());
                         }
@@ -183,6 +187,7 @@ type SideMenuEntry = {
                 title: 'Sighting',
                 icon: 'fa-solid fa-binoculars',
                 name: 'sighting',
+                right: 'sightings_read',
                 onClick: (): void => {
                     loadPage(new SightingPage());
                 }
@@ -191,6 +196,7 @@ type SideMenuEntry = {
                 title: 'Species comparison',
                 icon: 'fa-solid fa-chart-line',
                 name: 'cross-species-analytics',
+                right: 'analytics_read',
                 onClick: (): void => {
                     loadPage(new CrossSpeciesAnalyticsPage());
                 }
@@ -199,6 +205,7 @@ type SideMenuEntry = {
                 title: 'Ocean & Fishing',
                 icon: 'fa-solid fa-water',
                 name: 'ocean_fishing_map',
+                right: 'sightings_read',
                 onClick: (): void => {
                     loadPage(new OceanFishingMapPage());
                 }
@@ -207,6 +214,7 @@ type SideMenuEntry = {
                 title: 'Live AIS Map',
                 icon: 'fa-solid fa-ship',
                 name: 'ais-live-map',
+                right: 'ais_read',
                 onClick: (): void => {
                     loadPage(new AisLiveMap());
                 }
@@ -221,6 +229,7 @@ type SideMenuEntry = {
                         title: 'Orphan Tracks',
                         icon: 'fa-solid fa-unlink',
                         name: 'orphan-tracks',
+                        right: 'tours_write',
                         onClick: (): void => {
                             loadPage(new OrphanTracksPage());
                         }
@@ -232,6 +241,7 @@ type SideMenuEntry = {
                     title: 'Earthquakes',
                     icon: 'fa-solid fa-bolt',
                     name: 'earthquakes',
+                    right: 'earthquake_read',
                     onClick: (): void => {
                         loadPage(new EarthquakePage());
                     }
@@ -249,6 +259,7 @@ type SideMenuEntry = {
                             title: 'Users',
                             icon: 'fa-solid fa-users',
                             name: 'admin-users',
+                            right: 'users_read',
                             onClick: (): void => {
                                 loadPage(new UsersPage());
                             }
@@ -257,6 +268,7 @@ type SideMenuEntry = {
                             title: 'User Groups',
                             icon: 'fa-solid fa-tags',
                             name: 'admin-user-groups',
+                            right: 'groups_read',
                             onClick: (): void => {
                                 loadPage(new GroupPage());
                             }
@@ -265,6 +277,7 @@ type SideMenuEntry = {
                             title: 'Roles',
                             icon: 'fa-solid fa-user-shield',
                             name: 'admin-roles',
+                            right: 'users_roles_read',
                             onClick: (): void => {
                                 loadPage(new RolesPage());
                             }
@@ -273,6 +286,7 @@ type SideMenuEntry = {
                             title: 'Organization',
                             icon: 'fa-solid fa-globe',
                             name: 'admin-organization',
+                            right: 'organizations_read',
                             onClick: (): void => {
                                 loadPage(new Organization());
                             }
@@ -281,6 +295,7 @@ type SideMenuEntry = {
                             title: 'Species',
                             icon: 'fa-solid fa-paw',
                             name: 'admin-species',
+                            right: 'species_read',
                             onClick: (): void => {
                                 loadPage(new SpeciesPage());
                             }
@@ -289,6 +304,7 @@ type SideMenuEntry = {
                             title: 'Vehicle',
                             icon: 'fa-solid fa-ship',
                             name: 'admin-vehicle',
+                            right: 'vehicles_read',
                             onClick: (): void => {
                                 loadPage(new Vehicle());
                             }
@@ -297,6 +313,7 @@ type SideMenuEntry = {
                             title: 'Encounters',
                             icon: 'fa-solid fa-satellite-dish',
                             name: 'admin-encounters',
+                            right: 'catalog_read',
                             onClick: (): void => {
                                 loadPage(new EncounterCategories());
                             }
@@ -305,6 +322,7 @@ type SideMenuEntry = {
                             title: 'Devices',
                             icon: 'fa-solid fa-server',
                             name: 'admin-devices',
+                            right: 'devices_read',
                             onClick: (): void => {
                                 loadPage(new DevicesPage());
                             }
@@ -313,6 +331,7 @@ type SideMenuEntry = {
                             title: 'External Tour Sources',
                             icon: 'fa-solid fa-calendar-alt',
                             name: 'admin-external-tour-source',
+                            right: 'external_tours_read',
                             onClick: (): void => {
                                 loadPage(new ExternalTourSource());
                             }
@@ -321,6 +340,7 @@ type SideMenuEntry = {
                             title: 'Services',
                             icon: 'fa-solid fa-cog',
                             name: 'admin-services',
+                            right: 'service',
                             onClick: (): void => {
                                 loadPage(new Services());
                             }
@@ -329,6 +349,7 @@ type SideMenuEntry = {
                             title: 'Blacklist',
                             icon: 'fa-solid fa-ban',
                             name: 'admin-blacklist',
+                            right: 'blacklist_read',
                             onClick: (): void => {
                                 loadPage(new BlacklistPage());
                             }
@@ -340,7 +361,18 @@ type SideMenuEntry = {
 
         const menu = page.getWrapper().getMainSidebar().getSidebar().getMenu();
 
-        for (const item of sidemenuList) {
+        /*
+         * Rights-based menu visibility. Admins resolve to the `root` role (all
+         * rights) on the backend, so they see everything; other users only see
+         * entries whose `right` is in their effective (parent-expanded) set as
+         * returned by /json/user/info. Entries without a `right` are always
+         * shown. This mirrors the per-route aclRight gating on the backend.
+         */
+        const rightsSet = new Set<string>(currentuser?.user?.rights ?? []);
+        const isAdmin = currentuser?.user?.isAdmin ?? false;
+        const hasRight = (right?: string): boolean => right === undefined || isAdmin || rightsSet.has(right);
+
+        for (const item of sidemenuList.filter((entry) => hasRight(entry.right))) {
             const menuItem = new SidebarMenuItem(menu);
 
             menuItem.setName(item.name);
@@ -350,10 +382,12 @@ type SideMenuEntry = {
 
             let isSubActiv = false;
 
-            if (item.items) {
+            const visibleItems = item.items?.filter((sitem) => hasRight(sitem.right)) ?? [];
+
+            if (visibleItems.length > 0) {
                 const menuTree = new SidebarMenuTree(menuItem);
 
-                for (const sitem of item.items) {
+                for (const sitem of visibleItems) {
                     const pmenuItem = new SidebarMenuItem(menuTree, true);
                     pmenuItem.setTitle(new LangText(sitem.title));
                     pmenuItem.setName(sitem.name);

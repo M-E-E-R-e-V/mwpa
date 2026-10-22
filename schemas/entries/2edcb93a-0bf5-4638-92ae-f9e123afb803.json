@@ -66,6 +66,17 @@
             "types": []
           },
           "description": ""
+        },
+        {
+          "unid": "27564c8f-95a0-45b2-b41d-719e0f6bea00",
+          "name": "rights",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": "Effective (parent-expanded) right keys the session user holds; web-only, omitted for mobile."
         }
       ]
     },
@@ -561,5 +572,82 @@
         "y": 21
       }
     }
-  ]
+  ],
+  "history": {
+    "1ade1539-7fec-46fc-9057-e60d648089ff": [
+      {
+        "ts": 1792660314460,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "1ade1539-7fec-46fc-9057-e60d648089ff",
+          "name": "UserInfoData",
+          "description": "",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 959,
+            "y": 30
+          },
+          "fields": [
+            {
+              "unid": "57c2e76d-587f-49c9-aa48-a3c9d1a3d7c8",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "1d6262f1-cd5f-4605-b78f-54ce6ab1cb31",
+              "name": "username",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "0681e007-0183-4e7f-96a6-2feb1fe570e0",
+              "name": "fullname",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "cad2474f-f53d-42ed-900b-0e5e8a6d49b0",
+              "name": "email",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "993f9516-02f9-4a04-a444-015bfc87c1e0",
+              "name": "isAdmin",
+              "type": {
+                "type": "boolean",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

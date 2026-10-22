@@ -198,6 +198,31 @@ export class ACLRbac extends TACLRbac<Role, MwpaRights> {
     };
 
     /**
+     * Expand a granted right-key list into the effective leaf set, mirroring
+     * rbac-simple's "a parent right implicitly grants its children" rule. For
+     * every granted area key, all of its child action keys are added. Lets the
+     * frontend decide menu/page visibility with a plain `includes()` check that
+     * matches what `checkAccess` would allow on the backend.
+     * @param {string[]} keys — granted right keys (from session.user.rights)
+     * @return {string[]} granted keys plus every implied child key
+     */
+    public static expandRights(keys: string[]): string[] {
+        const result = new Set<string>(keys);
+        const rights = ACLRbac.RIGHTS as Record<string, Record<string, unknown>>;
+
+        for (const key of keys) {
+            const children = rights[key];
+            if (children) {
+                for (const child of Object.keys(children)) {
+                    result.add(child);
+                }
+            }
+        }
+
+        return [...result];
+    }
+
+    /**
      * Constructor
      */
     public constructor() {

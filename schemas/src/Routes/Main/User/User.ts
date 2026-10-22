@@ -10,6 +10,7 @@ export const SchemaUserInfoData = Vts.object({
     fullname: Vts.string(),
     email: Vts.string(),
     isAdmin: Vts.boolean(),
+    rights: Vts.optional(Vts.array(Vts.string({description: 'Effective (parent-expanded) right keys the session user holds; web-only, omitted for mobile.'}))),
 }, {
     description: '',
 });
