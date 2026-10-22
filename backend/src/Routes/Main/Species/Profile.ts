@@ -491,6 +491,38 @@ export class Profile {
     }
 
     /**
+     * Behaviour co-occurrence for a chord diagram: the top behaviours by solo
+     * frequency (nodes) and how often each pair was recorded in the SAME
+     * sighting (undirected links, indices into `labels`). This is co-occurrence,
+     * not a transition sequence — the behaviours column is an unordered set per
+     * sighting, so no ethogram ordering is implied.
+     */
+    private static _buildBehaviourCooc(
+        solo: Map<string, number>,
+        cooc: Map<string, Map<string, number>>
+    ): {labels: string[]; links: {source: number; target: number; value: number;}[];} {
+        const labels = [...solo.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([label]) => label);
+        const index = new Map<string, number>();
+        labels.forEach((label, i) => index.set(label, i));
+
+        const links: {source: number; target: number; value: number;}[] = [];
+        for (const [a, inner] of cooc) {
+            const ai = index.get(a);
+            if (ai === undefined) {
+                continue;
+            }
+            for (const [b, value] of inner) {
+                const bi = index.get(b);
+                if (bi !== undefined) {
+                    links.push({source: ai, target: bi, value: value});
+                }
+            }
+        }
+
+        return {labels: labels, links: links};
+    }
+
+    /**
      * Parse the legacy `other_vehicle` text column into an integer count
      * of "other boats present". The legacy UI stored either a free-text
      * description or a leading digit/CSV; we take the first integer we
@@ -552,6 +584,7 @@ export class Profile {
         const yearlyCounts = new Map<string, number>();
 
         const behaviourCounts = new Map<string, number>();
+        const behCooc = new Map<string, Map<string, number>>();
         const reactionCounts = new Map<string, number>();
 
         const avgSpeed: number[] = [];
@@ -660,8 +693,19 @@ export class Profile {
             }
 
             // Behaviour mix — multi-value column (JSON map of stringified ids).
-            for (const label of Profile._parseBehaviourLabels(r.behaviours, behById)) {
+            // Dedupe within a sighting (a behaviour listed twice is one obs),
+            // feed the solo counts, then accumulate which pairs co-occur.
+            const behLabels = [...new Set(Profile._parseBehaviourLabels(r.behaviours, behById))]
+                .sort((p, q) => (p < q ? -1 : 1));
+            for (const label of behLabels) {
                 behaviourCounts.set(label, (behaviourCounts.get(label) ?? 0) + 1);
+            }
+            for (let bi = 0; bi < behLabels.length; bi++) {
+                for (let bj = bi + 1; bj < behLabels.length; bj++) {
+                    const inner = behCooc.get(behLabels[bi]) ?? new Map<string, number>();
+                    inner.set(behLabels[bj], (inner.get(behLabels[bj]) ?? 0) + 1);
+                    behCooc.set(behLabels[bi], inner);
+                }
             }
 
             // Reaction — single foreign key into EncounterCategories.
@@ -845,7 +889,8 @@ export class Profile {
             icc: Profile._tourIcc(rows),
             spatial: SpatialStats.compute(spatialPoints) ?? undefined,
             response: response,
-            phenology: Phenology.build(monthlySightings, yearlyCounts, tourHours, climate)
+            phenology: Phenology.build(monthlySightings, yearlyCounts, tourHours, climate),
+            behaviour_cooccurrence: Profile._buildBehaviourCooc(behaviourCounts, behCooc)
         };
     }
 

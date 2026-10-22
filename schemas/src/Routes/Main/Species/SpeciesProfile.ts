@@ -431,6 +431,39 @@ export const SchemaSpeciesProfilePhenology = Vts.object({
 export type SpeciesProfilePhenology = ExtractSchemaResultType<typeof SchemaSpeciesProfilePhenology>;
 
 /**
+ * Schema of SpeciesProfileBehaviourLink
+ * One undirected behaviour co-occurrence link: source/target are indices into the labels array, value = sightings where both behaviours were recorded together.
+ */
+export const SchemaSpeciesProfileBehaviourLink = Vts.object({
+    source: Vts.number({description: 'Index into labels of the first behaviour.'}),
+    target: Vts.number({description: 'Index into labels of the second behaviour.'}),
+    value: Vts.number({description: 'Sightings where both behaviours co-occurred.'}),
+}, {
+    description: 'One undirected behaviour co-occurrence link: source/target are indices into the labels array, value = sightings where both behaviours were recorded together.',
+});
+
+/**
+ * Type of schema SpeciesProfileBehaviourLink
+ */
+export type SpeciesProfileBehaviourLink = ExtractSchemaResultType<typeof SchemaSpeciesProfileBehaviourLink>;
+
+/**
+ * Schema of SpeciesProfileBehaviourCooccurrence
+ * Behaviour co-occurrence network for a chord diagram: top behaviours (labels) + undirected links counting sightings where each pair was recorded together.
+ */
+export const SchemaSpeciesProfileBehaviourCooccurrence = Vts.object({
+    labels: Vts.array(Vts.string()),
+    links: Vts.array(SchemaSpeciesProfileBehaviourLink),
+}, {
+    description: 'Behaviour co-occurrence network for a chord diagram: top behaviours (labels) + undirected links counting sightings where each pair was recorded together.',
+});
+
+/**
+ * Type of schema SpeciesProfileBehaviourCooccurrence
+ */
+export type SpeciesProfileBehaviourCooccurrence = ExtractSchemaResultType<typeof SchemaSpeciesProfileBehaviourCooccurrence>;
+
+/**
  * Schema of SpeciesProfile
  * Aggregated profile of a species over a (filtered) timeframe
  */
@@ -463,6 +496,7 @@ export const SchemaSpeciesProfile = Vts.object({
     spatial: Vts.optional(SchemaSpeciesProfileSpatial),
     response: Vts.optional(SchemaSpeciesProfileEnvResponse),
     phenology: Vts.optional(SchemaSpeciesProfilePhenology),
+    behaviour_cooccurrence: Vts.optional(SchemaSpeciesProfileBehaviourCooccurrence),
 }, {
     description: 'Aggregated profile of a species over a (filtered) timeframe',
 });

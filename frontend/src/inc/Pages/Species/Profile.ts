@@ -19,6 +19,7 @@ import {
     SpeciesProfileHeadingBin,
     SpeciesProfileHeatmapPoint,
     SpeciesProfileIcc,
+    SpeciesProfileBehaviourCooccurrence,
     SpeciesProfileMonthlyEffort,
     SpeciesProfilePhenology,
     SpeciesProfilePhenologyBin,
@@ -111,6 +112,7 @@ export class SpeciesProfile extends BasePage {
         respGrid?: JQuery<HTMLDivElement>;
         phenHost?: JQuery<HTMLDivElement>;
         trendHost?: JQuery<HTMLDivElement>;
+        chordHost?: JQuery<HTMLDivElement>;
         behaviourHost?: JQuery<HTMLDivElement>;
         reactionHost?: JQuery<HTMLDivElement>;
         movementBody?: JQuery<HTMLDivElement>;
@@ -307,6 +309,17 @@ export class SpeciesProfile extends BasePage {
         SpeciesProfile._attachInfo(reactionCard, 'Reaction to boat', 'desc.reaction');
         const reactionHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(reactionCard.getBodyElement());
         this._hosts.reactionHost = reactionHost;
+
+        // Row 5b — behaviour co-occurrence chord ----------------------------------------------------------------------
+
+        const rowChord = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const chordCard = new Card(new ContentCol(rowChord, ContentColSize.col12));
+        chordCard.setTitle(new LangText('Behaviour co-occurrence'));
+        jQuery('<div class="species-profile-print-desc text-muted small p-2"/>')
+            .text(lang.l('Which behaviours were recorded together in the same sighting (ribbon width = shared sightings). Co-occurrence, not a behavioural sequence.'))
+            .appendTo(chordCard.getBodyElement());
+        const chordHost = jQuery<HTMLDivElement>('<div class="species-profile-chart" style="text-align:center;"/>').appendTo(chordCard.getBodyElement());
+        this._hosts.chordHost = chordHost;
 
         // Row 6 — movement signature ----------------------------------------------------------------------------------
 
@@ -557,6 +570,9 @@ export class SpeciesProfile extends BasePage {
         }
         if (h.reactionHost) {
             SpeciesProfile._renderDonut(h.reactionHost[0] as HTMLElement, profile.reaction_mix);
+        }
+        if (h.chordHost) {
+            SpeciesProfile._renderBehaviourChord(h.chordHost[0] as HTMLElement, profile.behaviour_cooccurrence);
         }
 
         if (h.movementBody) {
@@ -1589,6 +1605,73 @@ export class SpeciesProfile extends BasePage {
             ? `${Lang.i().l('slope')} ${phenology.slope.toFixed(4)}/yr · R² ${phenology.r2.toFixed(2)} · n=${phenology.n}${naoPts.length >= 2 ? ' · NAO ---' : ''}`
             : Lang.i().l('too few years for a fit');
         svg.append('text').attr('x', margin.left).attr('y', 14).style('font-size', '10px').style('fill', '#666').text(subtitle);
+    }
+
+    /**
+     * Behaviour co-occurrence chord: nodes = top behaviours, ribbon width =
+     * sightings where the two were recorded together. Rebuilds the symmetric
+     * matrix from the labels + undirected links.
+     */
+    private static _renderBehaviourChord(host: HTMLElement, cooc: SpeciesProfileBehaviourCooccurrence | undefined): void {
+        d3.select(host).selectAll('*').remove();
+        const labels = cooc ? cooc.labels : [];
+        const links = cooc ? cooc.links : [];
+        if (labels.length < 2 || links.length === 0) {
+            jQuery(host).text(Lang.i().l('No co-occurring behaviours'));
+            return;
+        }
+
+        const n = labels.length;
+        const matrix: number[][] = Array.from({length: n}, () => new Array(n).fill(0));
+        for (const l of links) {
+            if (l.source >= 0 && l.source < n && l.target >= 0 && l.target < n && l.source !== l.target) {
+                matrix[l.source][l.target] += l.value;
+                matrix[l.target][l.source] += l.value;
+            }
+        }
+
+        const palette = ['#2471A3', '#28a745', '#e67e22', '#8e44ad', '#16a085', '#c0392b', '#f1c40f', '#7f8c8d'];
+        const colorFor = (i: number): string => palette[i % palette.length];
+
+        const size = Math.max(320, Math.min(460, host.clientWidth || 420));
+        const outer = (size / 2) - 90;
+        const inner = outer - 12;
+        const svg = d3.select(host).append('svg').attr('width', size).attr('height', size);
+        const g = svg.append('g').attr('transform', `translate(${size / 2},${size / 2})`);
+
+        const chords = d3.chord().padAngle(0.05).sortSubgroups(d3.descending)(matrix);
+        const arc = d3.arc().innerRadius(inner).outerRadius(outer);
+        const ribbon = d3.ribbon().radius(inner);
+
+        const group = g.append('g').selectAll('g').data(chords.groups).enter().append('g');
+        group.append('path')
+            .attr('d', arc)
+            .attr('fill', (d: {index: number;}) => colorFor(d.index))
+            .attr('stroke', '#ffffff');
+        group.append('text')
+            .each((d: {angle: number; startAngle: number; endAngle: number;}) => {
+                d.angle = (d.startAngle + d.endAngle) / 2;
+            })
+            .attr('dy', '0.35em')
+            .attr('transform', (d: {angle: number;}) =>
+                `rotate(${((d.angle * 180) / Math.PI) - 90}) translate(${outer + 6})${d.angle > Math.PI ? ' rotate(180)' : ''}`)
+            .attr('text-anchor', (d: {angle: number;}) => (d.angle > Math.PI ? 'end' : 'start'))
+            .style('font-size', '10px')
+            .style('fill', '#444')
+            .text((d: {index: number;}) => labels[d.index]);
+
+        g.append('g')
+            .attr('fill-opacity', 0.62)
+            .selectAll('path')
+            .data(chords)
+            .enter()
+            .append('path')
+            .attr('d', ribbon)
+            .attr('fill', (d: {target: {index: number;};}) => colorFor(d.target.index))
+            .attr('stroke', '#ffffff')
+            .append('title')
+            .text((d: {source: {index: number;}; target: {index: number;};}) =>
+                `${labels[d.source.index]} ↔ ${labels[d.target.index]}: ${matrix[d.source.index][d.target.index]}`);
     }
 
     /**
