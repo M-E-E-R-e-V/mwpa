@@ -8,13 +8,13 @@ import {SchemaDefaultReturn} from 'figtree-schemas';
 export const SchemaBlacklistEntry = Vts.object({
     ip: Vts.string(),
     count: Vts.number(),
-    first_blocked: Vts.number(),
-    last_blocked: Vts.number(),
-    last_path: Vts.string(),
+    first_blocked: Vts.number({description: 'Epoch ms of the first block.'}),
+    last_blocked: Vts.number({description: 'Epoch ms of the most recent block.'}),
+    last_path: Vts.string({description: 'The last path the IP was refused on.'}),
     user_agent: Vts.string(),
-    browser: Vts.string(),
-    os: Vts.string(),
-    hostname: Vts.string(),
+    browser: Vts.string({description: 'Parsed browser label from the User-Agent.'}),
+    os: Vts.string({description: 'Parsed OS label from the User-Agent.'}),
+    hostname: Vts.string({description: 'Best-effort reverse-DNS (PTR) hostname of the IP.'}),
 }, {
     description: 'One IP currently blocked by the rate limiter.',
 });

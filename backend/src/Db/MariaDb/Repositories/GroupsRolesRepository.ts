@@ -39,6 +39,15 @@ export class GroupsRolesRepository extends DBRepositoryBase<GroupsRoles> {
      * Replace the role set of a group: delete all existing assignments for this
      * group, then insert the new ones.
      */
+    /**
+     * Remove a role from every group it is assigned to (used when a role is
+     * deleted).
+     */
+    public async deleteByRole(roleId: number): Promise<void> {
+        const repository = await this._repository;
+        await repository.delete({usersRoleId: roleId});
+    }
+
     public async replaceForGroup(groupId: number, roleIds: number[]): Promise<void> {
         const repository = await this._repository;
         await repository.delete({groupId: groupId});

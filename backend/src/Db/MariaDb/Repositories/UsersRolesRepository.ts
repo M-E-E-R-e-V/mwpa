@@ -33,4 +33,23 @@ export class UsersRolesRepository extends DBRepository<UsersRoles> {
         return repository.find({where: {id: In(ids)}});
     }
 
+    /**
+     * Create a new role with the given name (admin-defined). Returns the saved
+     * entity (with its generated id).
+     */
+    public async create(name: string): Promise<UsersRoles> {
+        const repository = await this._repository;
+        const entry = repository.create({name: name});
+        return repository.save(entry);
+    }
+
+    /**
+     * Delete a role by id. The caller is responsible for clearing the role's
+     * rights + group links first (foreign-key hygiene).
+     */
+    public async deleteById(id: number): Promise<void> {
+        const repository = await this._repository;
+        await repository.delete(id);
+    }
+
 }

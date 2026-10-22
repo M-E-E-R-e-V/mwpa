@@ -66,6 +66,11 @@ export class Acl {
         return result !== null;
     }
 
+    public static async deleteRole(id: number): Promise<boolean> {
+        const result = handleStatus(await NetFetch.postData('/json/users_roles/delete', {id, name: ''}) as DefaultReturn);
+        return result !== null;
+    }
+
     public static async getRights(): Promise<RightEntry[]> {
         const result = handleStatus(await NetFetch.postData('/json/users_rights/list', {}) as RightListResponse);
         return result?.list ?? [];

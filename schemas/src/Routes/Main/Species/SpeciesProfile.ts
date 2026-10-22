@@ -306,7 +306,7 @@ export type SpeciesProfileSpatialCell = ExtractSchemaResultType<typeof SchemaSpe
 
 /**
  * Schema of SpeciesProfileSpatial
- * Server-computed spatial analysis: a regular lon/lat grid over the sightings' bounding box carrying a kernel-density utilisation distribution (50%/95% isopleths) and Getis-Ord Gi* hotspot z-scores.
+ * Server-computed spatial analysis: a regular lon/lat grid over the sightings' bounding box carrying a kernel-density utilisation distribution (50%/95% isopleths) and Getis-Ord Gi* hotspot z-scores. Only meaningful cells (inside the 95% UD or near-significant Gi*) are returned. Absent when there are too few positioned sightings.
  */
 export const SchemaSpeciesProfileSpatial = Vts.object({
     n_points: Vts.number({description: 'Positioned sightings that fed the estimate.'}),
@@ -318,10 +318,10 @@ export const SchemaSpeciesProfileSpatial = Vts.object({
     ny: Vts.number({description: 'Grid rows (latitude cells).'}),
     cell_lon_deg: Vts.number({description: 'Cell width in degrees longitude (for drawing the cell rectangle).'}),
     cell_lat_deg: Vts.number({description: 'Cell height in degrees latitude.'}),
-    bandwidth_km: Vts.number({description: 'Gaussian KDE bandwidth (km, Silverman rule).'}),
     cells: Vts.array(SchemaSpeciesProfileSpatialCell),
+    bandwidth_km: Vts.number({description: 'Gaussian KDE bandwidth (km, Silverman rule).'}),
 }, {
-    description: 'Server-computed spatial analysis: a regular lon/lat grid over the sightings\' bounding box carrying a kernel-density utilisation distribution (50%/95% isopleths) and Getis-Ord Gi* hotspot z-scores.',
+    description: 'Server-computed spatial analysis: a regular lon/lat grid over the sightings\' bounding box carrying a kernel-density utilisation distribution (50%/95% isopleths) and Getis-Ord Gi* hotspot z-scores. Only meaningful cells (inside the 95% UD or near-significant Gi*) are returned. Absent when there are too few positioned sightings.',
 });
 
 /**
@@ -331,7 +331,7 @@ export type SpeciesProfileSpatial = ExtractSchemaResultType<typeof SchemaSpecies
 
 /**
  * Schema of SpeciesProfileResponseBin
- * One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI.
+ * One environment bin of a target-group response curve: the target species' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI. An effort-corrected preference (background = where surveying happened).
  */
 export const SchemaSpeciesProfileResponseBin = Vts.object({
     bucket_min: Vts.number({description: 'Bin lower edge (inclusive).'}),
@@ -342,7 +342,7 @@ export const SchemaSpeciesProfileResponseBin = Vts.object({
     ci_lo: Vts.number({description: 'Wilson 95% CI lower bound.'}),
     ci_hi: Vts.number({description: 'Wilson 95% CI upper bound.'}),
 }, {
-    description: 'One environment bin of a target-group response curve: the target species\' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI.',
+    description: 'One environment bin of a target-group response curve: the target species\' proportion of all sightings whose environment falls in [bucket_min, bucket_max), with a Wilson 95% CI. An effort-corrected preference (background = where surveying happened).',
 });
 
 /**
@@ -352,7 +352,7 @@ export type SpeciesProfileResponseBin = ExtractSchemaResultType<typeof SchemaSpe
 
 /**
  * Schema of SpeciesProfileEnvResponse
- * Target-group-background environmental response curves (effort-corrected preference vs raw histograms).
+ * Target-group-background environmental response curves (effort-corrected preference vs raw histograms). Per covariate: the target species' proportion of all sightings per environment bin, with Wilson 95% CIs.
  */
 export const SchemaSpeciesProfileEnvResponse = Vts.object({
     sst_c: Vts.array(SchemaSpeciesProfileResponseBin),
@@ -360,7 +360,7 @@ export const SchemaSpeciesProfileEnvResponse = Vts.object({
     depth_m: Vts.array(SchemaSpeciesProfileResponseBin),
     distance_coast_m: Vts.array(SchemaSpeciesProfileResponseBin),
 }, {
-    description: 'Target-group-background environmental response curves (effort-corrected preference vs raw histograms).',
+    description: 'Target-group-background environmental response curves (effort-corrected preference vs raw histograms). Per covariate: the target species\' proportion of all sightings per environment bin, with Wilson 95% CIs.',
 });
 
 /**
@@ -388,7 +388,7 @@ export type SpeciesProfilePhenologyBin = ExtractSchemaResultType<typeof SchemaSp
 
 /**
  * Schema of SpeciesProfileTrendPoint
- * One year of the SPUE trend: observed rate, fitted linear trend with 95% CI, and the year's mean climate indices.
+ * One year of the SPUE trend: observed effort-corrected rate, the fitted linear trend with 95% CI, and the year's mean climate indices (optional B4 overlay).
  */
 export const SchemaSpeciesProfileTrendPoint = Vts.object({
     year: Vts.number({description: 'Calendar year.'}),
@@ -402,7 +402,7 @@ export const SchemaSpeciesProfileTrendPoint = Vts.object({
     amo: Vts.optional(Vts.number({description: 'Year-mean AMO index (if available).'})),
     oni: Vts.optional(Vts.number({description: 'Year-mean ONI (ENSO) index (if available).'})),
 }, {
-    description: 'One year of the SPUE trend: observed rate, fitted linear trend with 95% CI, and the year\'s mean climate indices.',
+    description: 'One year of the SPUE trend: observed effort-corrected rate, the fitted linear trend with 95% CI, and the year\'s mean climate indices (optional B4 overlay).',
 });
 
 /**
@@ -449,13 +449,13 @@ export type SpeciesProfileBehaviourLink = ExtractSchemaResultType<typeof SchemaS
 
 /**
  * Schema of SpeciesProfileBehaviourCooccurrence
- * Behaviour co-occurrence network for a chord diagram: top behaviours (labels) + undirected links counting sightings where each pair was recorded together.
+ * Behaviour co-occurrence network for a chord diagram: top behaviours (labels) + undirected links counting sightings where each pair was recorded together. Co-occurrence, not a transition sequence.
  */
 export const SchemaSpeciesProfileBehaviourCooccurrence = Vts.object({
-    labels: Vts.array(Vts.string()),
+    labels: Vts.array(Vts.string({description: 'Behaviour node labels (top by solo frequency).'})),
     links: Vts.array(SchemaSpeciesProfileBehaviourLink),
 }, {
-    description: 'Behaviour co-occurrence network for a chord diagram: top behaviours (labels) + undirected links counting sightings where each pair was recorded together.',
+    description: 'Behaviour co-occurrence network for a chord diagram: top behaviours (labels) + undirected links counting sightings where each pair was recorded together. Co-occurrence, not a transition sequence.',
 });
 
 /**
@@ -473,7 +473,6 @@ export const SchemaSpeciesProfile = Vts.object({
     period_from: Vts.string({description: 'Actual date range used (resolved from request or auto-extended to data range)'}),
     period_to: Vts.string(),
     n_sightings: Vts.number(),
-    n_unique_tours: Vts.number({description: 'Number of distinct tours (tour_fid) the sightings came from. The cluster unit for pseudo-replication: sightings on one tour share boat/crew/weather and are not independent, so n_sightings alone overstates the effective sample size.'}),
     group_size_total: Vts.number({description: 'Sum of species_count across all sightings'}),
     group_size_p50: Vts.number({description: 'Median species_count per sighting'}),
     group_size_p95: Vts.number(),
@@ -492,6 +491,7 @@ export const SchemaSpeciesProfile = Vts.object({
     pressure: SchemaSpeciesProfilePressure,
     cooccurrence: Vts.array(SchemaSpeciesProfileCategoryShare),
     seismic: SchemaSpeciesProfileSeismic,
+    n_unique_tours: Vts.number({description: 'Number of distinct tours (tour_fid) the sightings came from. The cluster unit for pseudo-replication: sightings on one tour share boat/crew/weather and are not independent, so n_sightings alone overstates the effective sample size.'}),
     icc: Vts.optional(Vts.array(SchemaSpeciesProfileIcc)),
     spatial: Vts.optional(SchemaSpeciesProfileSpatial),
     response: Vts.optional(SchemaSpeciesProfileEnvResponse),

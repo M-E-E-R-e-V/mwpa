@@ -9,6 +9,20 @@ export {
     RightSightings,
     RightApi,
     RightTours,
+    RightSpecies,
+    RightVehicles,
+    RightOrganizations,
+    RightGroups,
+    RightDevices,
+    RightBlacklist,
+    RightAis,
+    RightEarthquake,
+    RightExternalTours,
+    RightExport,
+    RightAnalytics,
+    RightCatalog,
+    RightMap,
+    RightQuickConnect,
 } from './ACL/MwpaACLRbac.js';
 export {
     SchemaBackendConfigOptions,
@@ -304,16 +318,6 @@ export {
     SightingCurrentRegionResponse,
 } from './Routes/Main/Sightings/SightingEnvironment.js';
 export {
-    SchemaBlacklistEntry,
-    BlacklistEntry,
-    SchemaBlacklistListResponse,
-    BlacklistListResponse,
-    SchemaBlacklistUnblockRequest,
-    BlacklistUnblockRequest,
-    SchemaBlacklistUnblockResponse,
-    BlacklistUnblockResponse,
-} from './Routes/Main/Blacklist.js';
-export {
     SchemaSightingFishingVesselEntry,
     SightingFishingVesselEntry,
     SchemaSightingFishingVesselListRequest,
@@ -445,6 +449,16 @@ export {
     SchemaQuickConnectGenerateResponse,
     QuickConnectGenerateResponse,
 } from './Routes/Main/QuickConnect/QuickConnect.js';
+export {
+    SchemaBlacklistEntry,
+    BlacklistEntry,
+    SchemaBlacklistListResponse,
+    BlacklistListResponse,
+    SchemaBlacklistUnblockRequest,
+    BlacklistUnblockRequest,
+    SchemaBlacklistUnblockResponse,
+    BlacklistUnblockResponse,
+} from './Routes/Main/Blacklist.js';
 export {
     SchemaMapCacheRequest,
     MapCacheRequest,

@@ -30,6 +30,48 @@
           },
           {
             "type": "583a107b-7922-4e10-abc8-7c1477d42e58"
+          },
+          {
+            "type": "62654491-c19e-468b-a622-221e44630be8"
+          },
+          {
+            "type": "6cdec695-280a-4201-ba79-919e2b835ad2"
+          },
+          {
+            "type": "21eb764e-0ae3-4df8-b4d5-0756094091fc"
+          },
+          {
+            "type": "d4942558-11b8-4345-8310-57fc20e5dec9"
+          },
+          {
+            "type": "001eedd9-969d-4526-8383-9721c61ac7a2"
+          },
+          {
+            "type": "4af4a924-1547-45bb-8fa8-a7aa571d1a13"
+          },
+          {
+            "type": "9bac911d-b98a-42f4-b0f7-1a5de575ec13"
+          },
+          {
+            "type": "4f499479-3216-43d7-8e99-c22d1d16b0b0"
+          },
+          {
+            "type": "1210fe9c-92f2-45be-bce8-7acdfe0dab48"
+          },
+          {
+            "type": "5ab44b14-0714-490e-9e19-8da7972ff8fe"
+          },
+          {
+            "type": "2f36364a-0a40-49ce-8aa7-f5769f927999"
+          },
+          {
+            "type": "ec0c97cb-7f64-48d4-bbd7-fd143107c0ef"
+          },
+          {
+            "type": "e31c6527-467f-4aa6-a27d-c9cca36343fd"
+          },
+          {
+            "type": "f8ab4ce7-7b34-4d41-9017-563565216c23"
           }
         ]
       },
@@ -279,7 +321,1268 @@
           "value": "tours_tracking_edit"
         }
       ]
+    },
+    {
+      "unid": "62654491-c19e-468b-a622-221e44630be8",
+      "name": "RightSpecies",
+      "description": "",
+      "pos": {
+        "x": 800,
+        "y": 50
+      },
+      "values": [
+        {
+          "unid": "beffb5bb-e7e4-43ac-ae98-b56eca1d8a6f",
+          "name": "species",
+          "value": "species"
+        },
+        {
+          "unid": "892ee0b5-838d-44ad-aef9-d4ec9e9475c4",
+          "name": "species_read",
+          "value": "species_read"
+        },
+        {
+          "unid": "ca8fb8e9-6e5d-4fad-98b7-da19f4cf469b",
+          "name": "species_write",
+          "value": "species_write"
+        },
+        {
+          "unid": "7ce70693-51de-411e-9473-20683e015bae",
+          "name": "species_delete",
+          "value": "species_delete"
+        }
+      ]
+    },
+    {
+      "unid": "6cdec695-280a-4201-ba79-919e2b835ad2",
+      "name": "RightVehicles",
+      "description": "",
+      "pos": {
+        "x": 800,
+        "y": 220
+      },
+      "values": [
+        {
+          "unid": "d24dcb37-2948-4289-9398-699ce676f2d3",
+          "name": "vehicles",
+          "value": "vehicles"
+        },
+        {
+          "unid": "9dcb7e7b-9863-49d7-b1c4-3909cba1987d",
+          "name": "vehicles_read",
+          "value": "vehicles_read"
+        },
+        {
+          "unid": "e6286cb5-f04a-4f5d-89f9-05fc9baf4588",
+          "name": "vehicles_write",
+          "value": "vehicles_write"
+        },
+        {
+          "unid": "4cb209c4-e3b2-4da5-91cd-cc039dba5b70",
+          "name": "vehicles_delete",
+          "value": "vehicles_delete"
+        }
+      ]
+    },
+    {
+      "unid": "21eb764e-0ae3-4df8-b4d5-0756094091fc",
+      "name": "RightOrganizations",
+      "description": "",
+      "pos": {
+        "x": 800,
+        "y": 390
+      },
+      "values": [
+        {
+          "unid": "94ef7771-a798-482f-8aca-95558de57486",
+          "name": "organizations",
+          "value": "organizations"
+        },
+        {
+          "unid": "a98a202c-d3fe-44dd-82a0-48a700170d41",
+          "name": "organizations_read",
+          "value": "organizations_read"
+        },
+        {
+          "unid": "4daf3840-d3af-457d-afce-ea32a0967f9c",
+          "name": "organizations_write",
+          "value": "organizations_write"
+        },
+        {
+          "unid": "9678368d-253a-4175-8a32-b9111692707f",
+          "name": "organizations_delete",
+          "value": "organizations_delete"
+        }
+      ]
+    },
+    {
+      "unid": "d4942558-11b8-4345-8310-57fc20e5dec9",
+      "name": "RightGroups",
+      "description": "",
+      "pos": {
+        "x": 800,
+        "y": 560
+      },
+      "values": [
+        {
+          "unid": "51746674-918a-4115-ae34-8f8bd282455b",
+          "name": "groups",
+          "value": "groups"
+        },
+        {
+          "unid": "37748b9f-a2d2-4c32-a6f3-19f2d8c13799",
+          "name": "groups_read",
+          "value": "groups_read"
+        },
+        {
+          "unid": "2a6b4b68-8462-4082-a65f-8c59f94e0b77",
+          "name": "groups_write",
+          "value": "groups_write"
+        },
+        {
+          "unid": "10fdeb11-36c5-42de-9d07-3214a0fe41bc",
+          "name": "groups_delete",
+          "value": "groups_delete"
+        }
+      ]
+    },
+    {
+      "unid": "001eedd9-969d-4526-8383-9721c61ac7a2",
+      "name": "RightDevices",
+      "description": "",
+      "pos": {
+        "x": 1150,
+        "y": 50
+      },
+      "values": [
+        {
+          "unid": "5961ae2a-3d4c-4067-8edb-c0b75f90fb39",
+          "name": "devices",
+          "value": "devices"
+        },
+        {
+          "unid": "1d9b1311-3038-404b-91ab-82e1a50b61da",
+          "name": "devices_read",
+          "value": "devices_read"
+        },
+        {
+          "unid": "60794595-3f5d-4f66-89bc-2f3d5acd6f84",
+          "name": "devices_write",
+          "value": "devices_write"
+        },
+        {
+          "unid": "e6c03417-5c91-4b4c-bda6-391b5a180388",
+          "name": "devices_delete",
+          "value": "devices_delete"
+        }
+      ]
+    },
+    {
+      "unid": "4af4a924-1547-45bb-8fa8-a7aa571d1a13",
+      "name": "RightBlacklist",
+      "description": "",
+      "pos": {
+        "x": 1150,
+        "y": 220
+      },
+      "values": [
+        {
+          "unid": "e62f90ad-a83d-49b8-8929-4e3d52fbc823",
+          "name": "blacklist",
+          "value": "blacklist"
+        },
+        {
+          "unid": "490731e0-c2f2-4140-9e13-5ed05ee0de00",
+          "name": "blacklist_read",
+          "value": "blacklist_read"
+        },
+        {
+          "unid": "41a21abe-5f00-49e1-9ce0-ab46d2f73b6d",
+          "name": "blacklist_write",
+          "value": "blacklist_write"
+        }
+      ]
+    },
+    {
+      "unid": "9bac911d-b98a-42f4-b0f7-1a5de575ec13",
+      "name": "RightAis",
+      "description": "",
+      "pos": {
+        "x": 1150,
+        "y": 390
+      },
+      "values": [
+        {
+          "unid": "eebb1a75-cc6e-4f0c-abbe-d5d7f230a51c",
+          "name": "ais",
+          "value": "ais"
+        },
+        {
+          "unid": "3b293ad4-730c-4707-90b6-e7a4df696cc6",
+          "name": "ais_read",
+          "value": "ais_read"
+        }
+      ]
+    },
+    {
+      "unid": "4f499479-3216-43d7-8e99-c22d1d16b0b0",
+      "name": "RightEarthquake",
+      "description": "",
+      "pos": {
+        "x": 1150,
+        "y": 560
+      },
+      "values": [
+        {
+          "unid": "f13fd246-252d-4cb1-8623-9c9c9d103d79",
+          "name": "earthquake",
+          "value": "earthquake"
+        },
+        {
+          "unid": "16efbee8-3499-4c9a-b038-fdec96ba9d4b",
+          "name": "earthquake_read",
+          "value": "earthquake_read"
+        }
+      ]
+    },
+    {
+      "unid": "1210fe9c-92f2-45be-bce8-7acdfe0dab48",
+      "name": "RightExternalTours",
+      "description": "",
+      "pos": {
+        "x": 1500,
+        "y": 50
+      },
+      "values": [
+        {
+          "unid": "3ce4b6ec-3def-4504-b941-4717ce30606d",
+          "name": "external_tours",
+          "value": "external_tours"
+        },
+        {
+          "unid": "07fa4fdc-0fd5-4297-aedb-64d02d41cc4b",
+          "name": "external_tours_read",
+          "value": "external_tours_read"
+        },
+        {
+          "unid": "f8c61ddb-3fe9-4352-8228-b47acb7dff2e",
+          "name": "external_tours_write",
+          "value": "external_tours_write"
+        }
+      ]
+    },
+    {
+      "unid": "5ab44b14-0714-490e-9e19-8da7972ff8fe",
+      "name": "RightExport",
+      "description": "",
+      "pos": {
+        "x": 1500,
+        "y": 220
+      },
+      "values": [
+        {
+          "unid": "22dac2df-e2f8-407a-9f1a-def6651a7b0d",
+          "name": "export",
+          "value": "export"
+        },
+        {
+          "unid": "fef4eb5d-7577-4cb6-8ee0-b7634571faf8",
+          "name": "export_read",
+          "value": "export_read"
+        }
+      ]
+    },
+    {
+      "unid": "2f36364a-0a40-49ce-8aa7-f5769f927999",
+      "name": "RightAnalytics",
+      "description": "",
+      "pos": {
+        "x": 1500,
+        "y": 390
+      },
+      "values": [
+        {
+          "unid": "5c067bc4-c73d-48fa-b11a-ac7ca190fc32",
+          "name": "analytics",
+          "value": "analytics"
+        },
+        {
+          "unid": "d15ed429-30d7-4b88-864a-08ee72593730",
+          "name": "analytics_read",
+          "value": "analytics_read"
+        }
+      ]
+    },
+    {
+      "unid": "ec0c97cb-7f64-48d4-bbd7-fd143107c0ef",
+      "name": "RightCatalog",
+      "description": "",
+      "pos": {
+        "x": 1500,
+        "y": 560
+      },
+      "values": [
+        {
+          "unid": "d5f9a106-4ba9-4e2e-99b9-010e66155fc2",
+          "name": "catalog",
+          "value": "catalog"
+        },
+        {
+          "unid": "3a5f680f-9f4c-42de-923a-6926ade7165a",
+          "name": "catalog_read",
+          "value": "catalog_read"
+        },
+        {
+          "unid": "99306f02-203b-4abd-a5aa-d610df7411e4",
+          "name": "catalog_write",
+          "value": "catalog_write"
+        }
+      ]
+    },
+    {
+      "unid": "e31c6527-467f-4aa6-a27d-c9cca36343fd",
+      "name": "RightMap",
+      "description": "",
+      "pos": {
+        "x": 1850,
+        "y": 50
+      },
+      "values": [
+        {
+          "unid": "a2b922ea-7d80-47c9-8465-ec2faed57e2e",
+          "name": "map",
+          "value": "map"
+        },
+        {
+          "unid": "cd7c6f38-e663-4de9-a73a-f03ee8a378f4",
+          "name": "map_read",
+          "value": "map_read"
+        }
+      ]
+    },
+    {
+      "unid": "f8ab4ce7-7b34-4d41-9017-563565216c23",
+      "name": "RightQuickConnect",
+      "description": "",
+      "pos": {
+        "x": 1850,
+        "y": 220
+      },
+      "values": [
+        {
+          "unid": "c5a2d6a5-0f26-45d8-a432-597c2ebf9d08",
+          "name": "quick_connect",
+          "value": "quick_connect"
+        },
+        {
+          "unid": "a0722a6f-5e85-46d9-81a5-c93b2a76a0e1",
+          "name": "quick_connect_use",
+          "value": "quick_connect_use"
+        }
+      ]
     }
   ],
-  "links": []
+  "links": [],
+  "history": {
+    "62654491-c19e-468b-a622-221e44630be8": [
+      {
+        "ts": 1792657291740,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "62654491-c19e-468b-a622-221e44630be8",
+          "name": "RightSpecies",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 50
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657296800,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "62654491-c19e-468b-a622-221e44630be8",
+          "name": "RightSpecies",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 50
+          },
+          "values": [
+            {
+              "unid": "beffb5bb-e7e4-43ac-ae98-b56eca1d8a6f",
+              "name": "species",
+              "value": "species"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657301590,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "62654491-c19e-468b-a622-221e44630be8",
+          "name": "RightSpecies",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 50
+          },
+          "values": [
+            {
+              "unid": "beffb5bb-e7e4-43ac-ae98-b56eca1d8a6f",
+              "name": "species",
+              "value": "species"
+            },
+            {
+              "unid": "892ee0b5-838d-44ad-aef9-d4ec9e9475c4",
+              "name": "species_read",
+              "value": "species_read"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657306298,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "62654491-c19e-468b-a622-221e44630be8",
+          "name": "RightSpecies",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 50
+          },
+          "values": [
+            {
+              "unid": "beffb5bb-e7e4-43ac-ae98-b56eca1d8a6f",
+              "name": "species",
+              "value": "species"
+            },
+            {
+              "unid": "892ee0b5-838d-44ad-aef9-d4ec9e9475c4",
+              "name": "species_read",
+              "value": "species_read"
+            },
+            {
+              "unid": "ca8fb8e9-6e5d-4fad-98b7-da19f4cf469b",
+              "name": "species_write",
+              "value": "species_write"
+            }
+          ]
+        }
+      }
+    ],
+    "6cdec695-280a-4201-ba79-919e2b835ad2": [
+      {
+        "ts": 1792657310639,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "6cdec695-280a-4201-ba79-919e2b835ad2",
+          "name": "RightVehicles",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 220
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657315272,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "6cdec695-280a-4201-ba79-919e2b835ad2",
+          "name": "RightVehicles",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "d24dcb37-2948-4289-9398-699ce676f2d3",
+              "name": "vehicles",
+              "value": "vehicles"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657319643,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "6cdec695-280a-4201-ba79-919e2b835ad2",
+          "name": "RightVehicles",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "d24dcb37-2948-4289-9398-699ce676f2d3",
+              "name": "vehicles",
+              "value": "vehicles"
+            },
+            {
+              "unid": "9dcb7e7b-9863-49d7-b1c4-3909cba1987d",
+              "name": "vehicles_read",
+              "value": "vehicles_read"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657324249,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "6cdec695-280a-4201-ba79-919e2b835ad2",
+          "name": "RightVehicles",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "d24dcb37-2948-4289-9398-699ce676f2d3",
+              "name": "vehicles",
+              "value": "vehicles"
+            },
+            {
+              "unid": "9dcb7e7b-9863-49d7-b1c4-3909cba1987d",
+              "name": "vehicles_read",
+              "value": "vehicles_read"
+            },
+            {
+              "unid": "e6286cb5-f04a-4f5d-89f9-05fc9baf4588",
+              "name": "vehicles_write",
+              "value": "vehicles_write"
+            }
+          ]
+        }
+      }
+    ],
+    "21eb764e-0ae3-4df8-b4d5-0756094091fc": [
+      {
+        "ts": 1792657328918,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "21eb764e-0ae3-4df8-b4d5-0756094091fc",
+          "name": "RightOrganizations",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 390
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657333443,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "21eb764e-0ae3-4df8-b4d5-0756094091fc",
+          "name": "RightOrganizations",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 390
+          },
+          "values": [
+            {
+              "unid": "94ef7771-a798-482f-8aca-95558de57486",
+              "name": "organizations",
+              "value": "organizations"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657337677,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "21eb764e-0ae3-4df8-b4d5-0756094091fc",
+          "name": "RightOrganizations",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 390
+          },
+          "values": [
+            {
+              "unid": "94ef7771-a798-482f-8aca-95558de57486",
+              "name": "organizations",
+              "value": "organizations"
+            },
+            {
+              "unid": "a98a202c-d3fe-44dd-82a0-48a700170d41",
+              "name": "organizations_read",
+              "value": "organizations_read"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657342250,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "21eb764e-0ae3-4df8-b4d5-0756094091fc",
+          "name": "RightOrganizations",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 390
+          },
+          "values": [
+            {
+              "unid": "94ef7771-a798-482f-8aca-95558de57486",
+              "name": "organizations",
+              "value": "organizations"
+            },
+            {
+              "unid": "a98a202c-d3fe-44dd-82a0-48a700170d41",
+              "name": "organizations_read",
+              "value": "organizations_read"
+            },
+            {
+              "unid": "4daf3840-d3af-457d-afce-ea32a0967f9c",
+              "name": "organizations_write",
+              "value": "organizations_write"
+            }
+          ]
+        }
+      }
+    ],
+    "d4942558-11b8-4345-8310-57fc20e5dec9": [
+      {
+        "ts": 1792657346831,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "d4942558-11b8-4345-8310-57fc20e5dec9",
+          "name": "RightGroups",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 560
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657351063,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "d4942558-11b8-4345-8310-57fc20e5dec9",
+          "name": "RightGroups",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 560
+          },
+          "values": [
+            {
+              "unid": "51746674-918a-4115-ae34-8f8bd282455b",
+              "name": "groups",
+              "value": "groups"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657355597,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "d4942558-11b8-4345-8310-57fc20e5dec9",
+          "name": "RightGroups",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 560
+          },
+          "values": [
+            {
+              "unid": "51746674-918a-4115-ae34-8f8bd282455b",
+              "name": "groups",
+              "value": "groups"
+            },
+            {
+              "unid": "37748b9f-a2d2-4c32-a6f3-19f2d8c13799",
+              "name": "groups_read",
+              "value": "groups_read"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657360441,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "d4942558-11b8-4345-8310-57fc20e5dec9",
+          "name": "RightGroups",
+          "description": "",
+          "pos": {
+            "x": 800,
+            "y": 560
+          },
+          "values": [
+            {
+              "unid": "51746674-918a-4115-ae34-8f8bd282455b",
+              "name": "groups",
+              "value": "groups"
+            },
+            {
+              "unid": "37748b9f-a2d2-4c32-a6f3-19f2d8c13799",
+              "name": "groups_read",
+              "value": "groups_read"
+            },
+            {
+              "unid": "2a6b4b68-8462-4082-a65f-8c59f94e0b77",
+              "name": "groups_write",
+              "value": "groups_write"
+            }
+          ]
+        }
+      }
+    ],
+    "001eedd9-969d-4526-8383-9721c61ac7a2": [
+      {
+        "ts": 1792657364739,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "001eedd9-969d-4526-8383-9721c61ac7a2",
+          "name": "RightDevices",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 50
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657374596,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "001eedd9-969d-4526-8383-9721c61ac7a2",
+          "name": "RightDevices",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 50
+          },
+          "values": [
+            {
+              "unid": "5961ae2a-3d4c-4067-8edb-c0b75f90fb39",
+              "name": "devices",
+              "value": "devices"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657379100,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "001eedd9-969d-4526-8383-9721c61ac7a2",
+          "name": "RightDevices",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 50
+          },
+          "values": [
+            {
+              "unid": "5961ae2a-3d4c-4067-8edb-c0b75f90fb39",
+              "name": "devices",
+              "value": "devices"
+            },
+            {
+              "unid": "1d9b1311-3038-404b-91ab-82e1a50b61da",
+              "name": "devices_read",
+              "value": "devices_read"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657385463,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "001eedd9-969d-4526-8383-9721c61ac7a2",
+          "name": "RightDevices",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 50
+          },
+          "values": [
+            {
+              "unid": "5961ae2a-3d4c-4067-8edb-c0b75f90fb39",
+              "name": "devices",
+              "value": "devices"
+            },
+            {
+              "unid": "1d9b1311-3038-404b-91ab-82e1a50b61da",
+              "name": "devices_read",
+              "value": "devices_read"
+            },
+            {
+              "unid": "60794595-3f5d-4f66-89bc-2f3d5acd6f84",
+              "name": "devices_write",
+              "value": "devices_write"
+            }
+          ]
+        }
+      }
+    ],
+    "4af4a924-1547-45bb-8fa8-a7aa571d1a13": [
+      {
+        "ts": 1792657389627,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "4af4a924-1547-45bb-8fa8-a7aa571d1a13",
+          "name": "RightBlacklist",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 220
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657394073,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "4af4a924-1547-45bb-8fa8-a7aa571d1a13",
+          "name": "RightBlacklist",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "e62f90ad-a83d-49b8-8929-4e3d52fbc823",
+              "name": "blacklist",
+              "value": "blacklist"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657398539,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "4af4a924-1547-45bb-8fa8-a7aa571d1a13",
+          "name": "RightBlacklist",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "e62f90ad-a83d-49b8-8929-4e3d52fbc823",
+              "name": "blacklist",
+              "value": "blacklist"
+            },
+            {
+              "unid": "490731e0-c2f2-4140-9e13-5ed05ee0de00",
+              "name": "blacklist_read",
+              "value": "blacklist_read"
+            }
+          ]
+        }
+      }
+    ],
+    "9bac911d-b98a-42f4-b0f7-1a5de575ec13": [
+      {
+        "ts": 1792657403069,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "9bac911d-b98a-42f4-b0f7-1a5de575ec13",
+          "name": "RightAis",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 390
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657407504,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "9bac911d-b98a-42f4-b0f7-1a5de575ec13",
+          "name": "RightAis",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 390
+          },
+          "values": [
+            {
+              "unid": "eebb1a75-cc6e-4f0c-abbe-d5d7f230a51c",
+              "name": "ais",
+              "value": "ais"
+            }
+          ]
+        }
+      }
+    ],
+    "4f499479-3216-43d7-8e99-c22d1d16b0b0": [
+      {
+        "ts": 1792657419995,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "4f499479-3216-43d7-8e99-c22d1d16b0b0",
+          "name": "RightEarthquake",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 560
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657424281,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "4f499479-3216-43d7-8e99-c22d1d16b0b0",
+          "name": "RightEarthquake",
+          "description": "",
+          "pos": {
+            "x": 1150,
+            "y": 560
+          },
+          "values": [
+            {
+              "unid": "f13fd246-252d-4cb1-8623-9c9c9d103d79",
+              "name": "earthquake",
+              "value": "earthquake"
+            }
+          ]
+        }
+      }
+    ],
+    "1210fe9c-92f2-45be-bce8-7acdfe0dab48": [
+      {
+        "ts": 1792657428665,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "1210fe9c-92f2-45be-bce8-7acdfe0dab48",
+          "name": "RightExternalTours",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 50
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657432919,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "1210fe9c-92f2-45be-bce8-7acdfe0dab48",
+          "name": "RightExternalTours",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 50
+          },
+          "values": [
+            {
+              "unid": "3ce4b6ec-3def-4504-b941-4717ce30606d",
+              "name": "external_tours",
+              "value": "external_tours"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657437035,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "1210fe9c-92f2-45be-bce8-7acdfe0dab48",
+          "name": "RightExternalTours",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 50
+          },
+          "values": [
+            {
+              "unid": "3ce4b6ec-3def-4504-b941-4717ce30606d",
+              "name": "external_tours",
+              "value": "external_tours"
+            },
+            {
+              "unid": "07fa4fdc-0fd5-4297-aedb-64d02d41cc4b",
+              "name": "external_tours_read",
+              "value": "external_tours_read"
+            }
+          ]
+        }
+      }
+    ],
+    "5ab44b14-0714-490e-9e19-8da7972ff8fe": [
+      {
+        "ts": 1792657441079,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "5ab44b14-0714-490e-9e19-8da7972ff8fe",
+          "name": "RightExport",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 220
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657446048,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "5ab44b14-0714-490e-9e19-8da7972ff8fe",
+          "name": "RightExport",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "22dac2df-e2f8-407a-9f1a-def6651a7b0d",
+              "name": "export",
+              "value": "export"
+            }
+          ]
+        }
+      }
+    ],
+    "2f36364a-0a40-49ce-8aa7-f5769f927999": [
+      {
+        "ts": 1792657450062,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "2f36364a-0a40-49ce-8aa7-f5769f927999",
+          "name": "RightAnalytics",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 390
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657454059,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "2f36364a-0a40-49ce-8aa7-f5769f927999",
+          "name": "RightAnalytics",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 390
+          },
+          "values": [
+            {
+              "unid": "5c067bc4-c73d-48fa-b11a-ac7ca190fc32",
+              "name": "analytics",
+              "value": "analytics"
+            }
+          ]
+        }
+      }
+    ],
+    "ec0c97cb-7f64-48d4-bbd7-fd143107c0ef": [
+      {
+        "ts": 1792657458369,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "ec0c97cb-7f64-48d4-bbd7-fd143107c0ef",
+          "name": "RightCatalog",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 560
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657462672,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "ec0c97cb-7f64-48d4-bbd7-fd143107c0ef",
+          "name": "RightCatalog",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 560
+          },
+          "values": [
+            {
+              "unid": "d5f9a106-4ba9-4e2e-99b9-010e66155fc2",
+              "name": "catalog",
+              "value": "catalog"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792657467285,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "ec0c97cb-7f64-48d4-bbd7-fd143107c0ef",
+          "name": "RightCatalog",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 560
+          },
+          "values": [
+            {
+              "unid": "d5f9a106-4ba9-4e2e-99b9-010e66155fc2",
+              "name": "catalog",
+              "value": "catalog"
+            },
+            {
+              "unid": "3a5f680f-9f4c-42de-923a-6926ade7165a",
+              "name": "catalog_read",
+              "value": "catalog_read"
+            }
+          ]
+        }
+      }
+    ],
+    "e31c6527-467f-4aa6-a27d-c9cca36343fd": [
+      {
+        "ts": 1792657471372,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "e31c6527-467f-4aa6-a27d-c9cca36343fd",
+          "name": "RightMap",
+          "description": "",
+          "pos": {
+            "x": 1850,
+            "y": 50
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657476771,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "e31c6527-467f-4aa6-a27d-c9cca36343fd",
+          "name": "RightMap",
+          "description": "",
+          "pos": {
+            "x": 1850,
+            "y": 50
+          },
+          "values": [
+            {
+              "unid": "a2b922ea-7d80-47c9-8465-ec2faed57e2e",
+              "name": "map",
+              "value": "map"
+            }
+          ]
+        }
+      }
+    ],
+    "f8ab4ce7-7b34-4d41-9017-563565216c23": [
+      {
+        "ts": 1792657480747,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "f8ab4ce7-7b34-4d41-9017-563565216c23",
+          "name": "RightQuickConnect",
+          "description": "",
+          "pos": {
+            "x": 1850,
+            "y": 220
+          },
+          "values": []
+        }
+      },
+      {
+        "ts": 1792657485394,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "f8ab4ce7-7b34-4d41-9017-563565216c23",
+          "name": "RightQuickConnect",
+          "description": "",
+          "pos": {
+            "x": 1850,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "c5a2d6a5-0f26-45d8-a432-597c2ebf9d08",
+              "name": "quick_connect",
+              "value": "quick_connect"
+            }
+          ]
+        }
+      }
+    ],
+    "e67f0343-4b11-4918-9ddc-3652b7d202bf": [
+      {
+        "ts": 1792657518685,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "e67f0343-4b11-4918-9ddc-3652b7d202bf",
+          "name": "MwpaRights",
+          "extend": {
+            "type": "or",
+            "options": {
+              "not_export": false,
+              "ignore_additional_items": false
+            },
+            "or_values": [
+              {
+                "type": "a479578c-5ad0-4a2e-b67f-a8d8eb469a26"
+              },
+              {
+                "type": "08512fff-df08-45fc-962d-7a6847feac3d"
+              },
+              {
+                "type": "7956a0b1-76a7-4d7d-a7a9-accafb558bab"
+              },
+              {
+                "type": "df743aca-d0d5-4e56-94f7-f6851246cff4"
+              },
+              {
+                "type": "b2ae8a1c-9013-4205-b6af-0dd53036be47"
+              },
+              {
+                "type": "04c1475e-660f-42ed-a474-a1d476f75fc6"
+              },
+              {
+                "type": "583a107b-7922-4e10-abc8-7c1477d42e58"
+              }
+            ]
+          },
+          "pos": {
+            "x": 41,
+            "y": 227
+          },
+          "fields": [],
+          "description": ""
+        }
+      }
+    ]
+  }
 }

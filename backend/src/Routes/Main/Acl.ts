@@ -11,6 +11,7 @@ import {
     RoleRightsListResponse,
     RoleRightsRequest,
     RoleRightsSaveRequest,
+    Role,
     SchemaGroupsRolesListResponse,
     SchemaGroupsRolesSaveRequest,
     SchemaMWPASessionData,
@@ -61,7 +62,7 @@ export class Acl extends DefaultRoute {
             }
         );
 
-        // role rename -----------------------------------------------------------------------------
+        // role create (id=0) / rename (id>0) -----------------------------------------------------
         this._post(
             '/json/users_roles/save',
             checkMWPAUserIsLoginACL,
@@ -74,16 +75,68 @@ export class Acl extends DefaultRoute {
                 if (trimmed === '') {
                     return {statusCode: StatusCodes.INTERNAL_ERROR, msg: 'Role name cannot be empty.'};
                 }
+
+                const rolesRepo = UsersRolesRepository.getInstance();
+                const existingByName = await rolesRepo.findByName(trimmed);
+
+                // Create a new role when id is 0.
+                if (body.id === 0) {
+                    if (existingByName) {
+                        return {statusCode: StatusCodes.INTERNAL_ERROR, msg: 'A role with that name already exists.'};
+                    }
+                    await rolesRepo.create(trimmed);
+                    return {statusCode: StatusCodes.OK};
+                }
+
+                // Rename an existing one.
+                const role = await rolesRepo.findOne(body.id);
+                if (!role) {
+                    return {statusCode: StatusCodes.INTERNAL_ERROR, msg: 'Role not found.'};
+                }
+                if (role.name === Role.root || role.name === Role.user) {
+                    return {statusCode: StatusCodes.INTERNAL_ERROR, msg: 'System roles cannot be renamed.'};
+                }
+                if (existingByName && existingByName.id !== role.id) {
+                    return {statusCode: StatusCodes.INTERNAL_ERROR, msg: 'A role with that name already exists.'};
+                }
+                role.name = trimmed;
+                await rolesRepo.save(role);
+                return {statusCode: StatusCodes.OK};
+            },
+            {
+                description: 'Create (id=0) or rename a role. System roles (root, user) cannot be renamed.',
+                aclRight: RightUsers.users_roles_write,
+                bodySchema: SchemaUsersRoleSaveRequest,
+                responseBodySchema: SchemaDefaultReturn,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit
+            }
+        );
+
+        // role delete -----------------------------------------------------------------------------
+        this._post(
+            '/json/users_roles/delete',
+            checkMWPAUserIsLoginACL,
+            async(_req, _res, data): Promise<DefaultReturn> => {
+                const body = data.body as UsersRoleSaveRequest;
+                if (Vts.isUndefined(body)) {
+                    return {statusCode: StatusCodes.INTERNAL_ERROR, msg: 'Request incomplete'};
+                }
                 const role = await UsersRolesRepository.getInstance().findOne(body.id);
                 if (!role) {
                     return {statusCode: StatusCodes.INTERNAL_ERROR, msg: 'Role not found.'};
                 }
-                role.name = trimmed;
-                await UsersRolesRepository.getInstance().save(role);
+                if (role.name === Role.root || role.name === Role.user) {
+                    return {statusCode: StatusCodes.INTERNAL_ERROR, msg: 'System roles cannot be deleted.'};
+                }
+                // Clear the role's rights + its group assignments, then the role.
+                await UsersRoleRightsRepository.getInstance().replaceForRole(role.id, []);
+                await GroupsRolesRepository.getInstance().deleteByRole(role.id);
+                await UsersRolesRepository.getInstance().deleteById(role.id);
                 return {statusCode: StatusCodes.OK};
             },
             {
-                description: 'Rename a role.',
+                description: 'Delete a role (and its rights + group links). System roles (root, user) cannot be deleted. Reuses the role-save request shape (only id is read).',
                 aclRight: RightUsers.users_roles_write,
                 bodySchema: SchemaUsersRoleSaveRequest,
                 responseBodySchema: SchemaDefaultReturn,
