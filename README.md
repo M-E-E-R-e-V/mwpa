@@ -173,7 +173,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 
 ### For administrators
 
-- Users, groups &amp; roles (RBAC via `rbac-simple`)
+- Users, groups &amp; roles (RBAC via `rbac-simple`) — create/rename/delete custom roles and assign a tree of per-area rights (`*_read`/`*_write`/`*_delete` across sightings, tours, species, vehicles, users, organisations, exports, admin tools, …) through a checkbox dialog. Every authenticated REST route is gated by its required right (403 on miss); the web sidebar and a page-level navigation guard hide/deny what the user can't access. The built-in `root` (full access) and `user` (read + mobile-capture defaults) roles are seeded on boot and can't be renamed or deleted
 - Vehicles, drivers, organisations, species &amp; species groups
 - Encounter categories, behavioural states, external receivers (AROC)
 - **Orphan tracks** admin page — buckets of pending GPS points whose parent tour never landed (typical when crew/boat is corrected after the fact). Includes a map preview of the actual points so the admin can decide *assign-vs-delete* before re-pointing them at a different `SightingTour`.
