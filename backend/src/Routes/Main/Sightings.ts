@@ -223,7 +223,7 @@ export class Sightings extends DefaultRoute {
                 return {type: HandlerResultType.handled};
             },
             {
-                aclRight: RightExport.export_read,
+                aclRight: RightExport.export_xlsx,
                 description: 'Download non-deleted sightings as XLSX (admin only).'
                     + ' Query: ?columns=<csv of column keys> picks columns,'
                     + ' ?coord_format=decimal|dms|dm|all picks position-column format.'

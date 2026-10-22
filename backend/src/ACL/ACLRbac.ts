@@ -141,7 +141,10 @@ export class ACLRbac extends TACLRbac<Role, MwpaRights> {
             [RightAnalytics.analytics_read]: {}
         },
         [RightExport.export]: {
-            [RightExport.export_read]: {}
+            [RightExport.export_xlsx]: {},
+            [RightExport.export_aroc]: {},
+            [RightExport.export_dwca]: {},
+            [RightExport.export_r]: {}
         },
         [RightQuickConnect.quick_connect]: {
             [RightQuickConnect.quick_connect_use]: {}
@@ -191,7 +194,7 @@ export class ACLRbac extends TACLRbac<Role, MwpaRights> {
             RightExternalTours.external_tours_read,
             RightAis.ais_read,
             RightEarthquake.earthquake_read,
-            RightExport.export_read,
+            RightExport.export,
             RightUser.user,
             RightQuickConnect.quick_connect_use
         ]

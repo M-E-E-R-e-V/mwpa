@@ -168,6 +168,10 @@ export enum RightExternalTours {
 export enum RightExport {
     'export' = 'export',
     'export_read' = 'export_read',
+    'export_xlsx' = 'export_xlsx',
+    'export_aroc' = 'export_aroc',
+    'export_dwca' = 'export_dwca',
+    'export_r' = 'export_r',
 }
 
 /**

@@ -48,6 +48,22 @@ describe('ACLRbac.checkAccess', () => {
         assert.equal(await acl.checkAccess('user', 'vehicles_read', ['vehicles_read']), true);
     });
 
+    it('per-export rights: user has all four via the export parent', async() => {
+        const granted = await Promise.all(
+            ['export_xlsx', 'export_aroc', 'export_dwca', 'export_r'].map((right) => acl.checkAccess('user', right))
+        );
+        assert.deepEqual(granted, [true, true, true, true]);
+    });
+
+    it('per-export rights: a custom role can be granted exactly one export', async() => {
+        const rights = ['export_aroc'];
+        assert.equal(await acl.checkAccess('office', 'export_aroc', rights), true);
+        assert.equal(await acl.checkAccess('office', 'export_xlsx', rights), false);
+        assert.equal(await acl.checkAccess('office', 'export_dwca', rights), false);
+        // the whole 'export' parent grants every child
+        assert.equal(await acl.checkAccess('office', 'export_dwca', ['export']), true);
+    });
+
     it('expandRights adds the children of any granted area key', () => {
         const out = ACLRbac.expandRights(['sightings', 'ais_read']);
         assert.ok(out.includes('sightings_read'));

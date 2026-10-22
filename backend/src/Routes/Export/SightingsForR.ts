@@ -79,7 +79,7 @@ export class SightingsForR extends DefaultRoute {
                 return {type: HandlerResultType.handled};
             },
             {
-                aclRight: RightExport.export_read,
+                aclRight: RightExport.export_r,
                 description: 'Download a ZIP (sightings.csv + tours.csv + README) for external mixed-effects '
                     + 'analysis in R — tour_fid is the cluster unit for a random effect. Non-admins are scoped '
                     + 'to their organisations; admins export the full dataset.',

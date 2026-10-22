@@ -589,6 +589,26 @@
           "unid": "fef4eb5d-7577-4cb6-8ee0-b7634571faf8",
           "name": "export_read",
           "value": "export_read"
+        },
+        {
+          "unid": "2d322a00-34a4-4e8b-a882-6dbe933723fa",
+          "name": "export_xlsx",
+          "value": "export_xlsx"
+        },
+        {
+          "unid": "9564b8d3-c8b3-4120-b7b5-0583db803be3",
+          "name": "export_aroc",
+          "value": "export_aroc"
+        },
+        {
+          "unid": "9b8afb83-0de8-4a1f-b5dd-74e43befc96b",
+          "name": "export_dwca",
+          "value": "export_dwca"
+        },
+        {
+          "unid": "f493fdc5-c7af-4adb-ba88-1c08c1e6107f",
+          "name": "export_r",
+          "value": "export_r"
         }
       ]
     },
@@ -1364,6 +1384,136 @@
               "unid": "22dac2df-e2f8-407a-9f1a-def6651a7b0d",
               "name": "export",
               "value": "export"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792678490465,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "5ab44b14-0714-490e-9e19-8da7972ff8fe",
+          "name": "RightExport",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "22dac2df-e2f8-407a-9f1a-def6651a7b0d",
+              "name": "export",
+              "value": "export"
+            },
+            {
+              "unid": "fef4eb5d-7577-4cb6-8ee0-b7634571faf8",
+              "name": "export_read",
+              "value": "export_read"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792678502484,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "5ab44b14-0714-490e-9e19-8da7972ff8fe",
+          "name": "RightExport",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "22dac2df-e2f8-407a-9f1a-def6651a7b0d",
+              "name": "export",
+              "value": "export"
+            },
+            {
+              "unid": "fef4eb5d-7577-4cb6-8ee0-b7634571faf8",
+              "name": "export_read",
+              "value": "export_read"
+            },
+            {
+              "unid": "2d322a00-34a4-4e8b-a882-6dbe933723fa",
+              "name": "export_xlsx",
+              "value": "export_xlsx"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792678515189,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "5ab44b14-0714-490e-9e19-8da7972ff8fe",
+          "name": "RightExport",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "22dac2df-e2f8-407a-9f1a-def6651a7b0d",
+              "name": "export",
+              "value": "export"
+            },
+            {
+              "unid": "fef4eb5d-7577-4cb6-8ee0-b7634571faf8",
+              "name": "export_read",
+              "value": "export_read"
+            },
+            {
+              "unid": "2d322a00-34a4-4e8b-a882-6dbe933723fa",
+              "name": "export_xlsx",
+              "value": "export_xlsx"
+            },
+            {
+              "unid": "9564b8d3-c8b3-4120-b7b5-0583db803be3",
+              "name": "export_aroc",
+              "value": "export_aroc"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792678529315,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "5ab44b14-0714-490e-9e19-8da7972ff8fe",
+          "name": "RightExport",
+          "description": "",
+          "pos": {
+            "x": 1500,
+            "y": 220
+          },
+          "values": [
+            {
+              "unid": "22dac2df-e2f8-407a-9f1a-def6651a7b0d",
+              "name": "export",
+              "value": "export"
+            },
+            {
+              "unid": "fef4eb5d-7577-4cb6-8ee0-b7634571faf8",
+              "name": "export_read",
+              "value": "export_read"
+            },
+            {
+              "unid": "2d322a00-34a4-4e8b-a882-6dbe933723fa",
+              "name": "export_xlsx",
+              "value": "export_xlsx"
+            },
+            {
+              "unid": "9564b8d3-c8b3-4120-b7b5-0583db803be3",
+              "name": "export_aroc",
+              "value": "export_aroc"
+            },
+            {
+              "unid": "9b8afb83-0de8-4a1f-b5dd-74e43befc96b",
+              "name": "export_dwca",
+              "value": "export_dwca"
             }
           ]
         }

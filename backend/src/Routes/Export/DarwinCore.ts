@@ -50,7 +50,7 @@ export class DarwinCore extends DefaultRoute {
                 return {type: HandlerResultType.handled};
             },
             {
-                aclRight: RightExport.export_read,
+                aclRight: RightExport.export_dwca,
                 description: 'Download a Darwin Core Archive (ZIP: occurrence core + meta.xml + eml.xml) '
                     + 'of the sightings for OBIS / GBIF. Non-admins are scoped to their organisations; '
                     + 'admins export the full dataset.',

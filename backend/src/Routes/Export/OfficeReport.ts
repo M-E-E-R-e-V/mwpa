@@ -77,7 +77,7 @@ export class OfficeReport extends DefaultRoute {
                 };
             },
             {
-                aclRight: RightExport.export_read,
+                aclRight: RightExport.export_aroc,
                 description: 'List of external receivers (id+name) — fills the AROC-report receiver picker.',
                 responseBodySchema: SchemaExternalReceiverListResponse,
                 sessionSchema: SchemaMWPASessionData,
@@ -135,7 +135,7 @@ export class OfficeReport extends DefaultRoute {
                 };
             },
             {
-                aclRight: RightExport.export_read,
+                aclRight: RightExport.export_aroc,
                 description: 'List of vehicles that have at least one non-deleted sighting in the given'
                     + ' year/semester/organization. Optional ?year=<YYYY>, ?semester=1|2,'
                     + ' ?organization_id=<id>. Empty filters return every vehicle with any sighting.',
@@ -207,7 +207,7 @@ export class OfficeReport extends DefaultRoute {
                 return {type: HandlerResultType.handled};
             },
             {
-                aclRight: RightExport.export_read,
+                aclRight: RightExport.export_aroc,
                 description: 'Generate the AROC office-report XLSX. Admin only.'
                     + ' Optional ?external_receiver_id=<id> (default 1),'
                     + ' optional ?year=<YYYY>, optional ?vehicle_id=<id> (1 file per boat),'
