@@ -1,7 +1,8 @@
 # ---------------------------------------------------------------------------
-# Builder — full bullseye (native deps like bcrypt compile/prebuild here).
+# Builder — full bookworm (native deps like bcrypt compile/prebuild here).
+# Node 24 = current LTS (Node 18 is EOL since 2025-04, no security patches).
 # ---------------------------------------------------------------------------
-FROM node:18-bullseye AS builder
+FROM node:24-bookworm AS builder
 
 WORKDIR /build
 
@@ -34,11 +35,11 @@ RUN npm install --omit=dev --include=peer --force --no-audit --no-fund \
     && cp -r schemas node_modules/mwpa_schemas
 
 # ---------------------------------------------------------------------------
-# Runtime — slim bullseye. Only the resolved node_modules + the backend dist
+# Runtime — slim bookworm. Only the resolved node_modules + the backend dist
 # + the pre-built frontend static assets. Same Debian/glibc as the builder,
 # so bcrypt's compiled binary from the builder runs as-is.
 # ---------------------------------------------------------------------------
-FROM node:18-bullseye-slim AS runtime
+FROM node:24-bookworm-slim AS runtime
 
 WORKDIR /opt/app
 
