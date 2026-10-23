@@ -5,6 +5,7 @@ import {Vts} from 'vts';
 import {SightingImageExistRequest, SightingImageExistResponse} from 'mwpa_schemas';
 import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
+import {UtilSafePath} from '../../../Utils/UtilSafePath.js';
 import {UtilUploadPath} from '../../../Utils/UtilUploadPath.js';
 import {MobileV1StatusCode} from '../MobileV1.js';
 
@@ -57,9 +58,11 @@ export class ImageExist {
             };
         }
 
+        const safeName = UtilSafePath.safeSegment(request.filename);
+
         return {
             statusCode: MobileV1StatusCode.OK,
-            isExist: fs.existsSync(Path.join(sightingDir, request.filename))
+            isExist: safeName !== null && fs.existsSync(Path.join(sightingDir, safeName))
         };
     }
 

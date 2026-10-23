@@ -3,6 +3,7 @@ import {ToursTrackingDeleteRequest, ToursTrackingDeleteResponse} from 'mwpa_sche
 import {Vts} from 'vts';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {SightingTourTrackingRepository} from '../../../Db/MariaDb/Repositories/SightingTourTrackingRepository.js';
+import {Users} from '../../../Users/Users.js';
 
 /**
  * Delete tracking points whose JSON-encoded GPS timestamp falls inside [from, to].
@@ -12,7 +13,11 @@ import {SightingTourTrackingRepository} from '../../../Db/MariaDb/Repositories/S
  */
 export class Delete {
 
-    public static async deleteTrackingRange(request?: ToursTrackingDeleteRequest): Promise<ToursTrackingDeleteResponse> {
+    public static async deleteTrackingRange(
+        userId: number,
+        isAdmin: boolean,
+        request?: ToursTrackingDeleteRequest
+    ): Promise<ToursTrackingDeleteResponse> {
         if (Vts.isUndefined(request)) {
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
@@ -25,6 +30,13 @@ export class Delete {
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
                 msg: 'Tour not found by ID!'
+            };
+        }
+
+        if (!await Users.canAccessOrganization(userId, isAdmin, tour.organization_id)) {
+            return {
+                statusCode: StatusCodes.FORBIDDEN,
+                msg: 'No access to this tour!'
             };
         }
 

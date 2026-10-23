@@ -182,7 +182,7 @@ export class Login extends DefaultRoute {
 
         // logout ------------------------------------------------------------------------------------------------------
 
-        this._get(
+        this._post(
             '/json/logout',
             checkMWPAUserIsLogin,
             async(

@@ -3,6 +3,7 @@ import {ToursTrackingTransferRequest, ToursTrackingTransferResponse} from 'mwpa_
 import {Vts} from 'vts';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {SightingTourTrackingRepository} from '../../../Db/MariaDb/Repositories/SightingTourTrackingRepository.js';
+import {Users} from '../../../Users/Users.js';
 
 /**
  * Move tracking rows whose GPS timestamp falls in [from, to] from the source
@@ -10,7 +11,11 @@ import {SightingTourTrackingRepository} from '../../../Db/MariaDb/Repositories/S
  */
 export class Transfer {
 
-    public static async transferTrackingRange(request?: ToursTrackingTransferRequest): Promise<ToursTrackingTransferResponse> {
+    public static async transferTrackingRange(
+        userId: number,
+        isAdmin: boolean,
+        request?: ToursTrackingTransferRequest
+    ): Promise<ToursTrackingTransferResponse> {
         if (Vts.isUndefined(request)) {
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
@@ -40,6 +45,14 @@ export class Transfer {
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
                 msg: 'Target tour not found by ID!'
+            };
+        }
+
+        if (!await Users.canAccessOrganization(userId, isAdmin, tourFrom.organization_id) ||
+            !await Users.canAccessOrganization(userId, isAdmin, tourTo.organization_id)) {
+            return {
+                statusCode: StatusCodes.FORBIDDEN,
+                msg: 'No access to this tour!'
             };
         }
 

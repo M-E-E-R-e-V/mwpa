@@ -58,7 +58,7 @@ export class Login {
      * logout
      */
     public static async logout(): Promise<boolean> {
-        const response = await NetFetch.getData('/json/logout');
+        const response = await NetFetch.postData('/json/logout', {});
 
         if (response.status) {
             return true;

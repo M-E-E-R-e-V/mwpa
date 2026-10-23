@@ -4,6 +4,7 @@ import {Logger} from '@stefanwerfling/figtree';
 import {DefaultMobileV1Return} from 'mwpa_schemas';
 import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
+import {UtilSafePath} from '../../../Utils/UtilSafePath.js';
 import {UtilUploadPath} from '../../../Utils/UtilUploadPath.js';
 import {MobileV1StatusCode} from '../MobileV1.js';
 
@@ -11,7 +12,7 @@ import {MobileV1StatusCode} from '../MobileV1.js';
  * Multipart fields for /mobile/sighting/image/save (parsed by multer or similar).
  */
 export type ImageSaveInput = {
-    file?: {buffer: Buffer};
+    file?: {buffer: Buffer;};
     unid?: string;
     filename?: string;
     size?: string;
@@ -65,7 +66,17 @@ export class ImageSave {
             };
         }
 
-        const filePath = Path.join(sightingDir, input.filename);
+        const safeName = UtilSafePath.safeSegment(input.filename);
+
+        if (safeName === null) {
+            Logger.getLogger().warn(`Mobile/Sightings::saveImage: rejected unsafe filename: ${input.filename}`);
+            return {
+                statusCode: MobileV1StatusCode.INTERNAL_ERROR,
+                msg: 'Invalid filename!'
+            };
+        }
+
+        const filePath = Path.join(sightingDir, safeName);
         fs.writeFileSync(filePath, input.file.buffer);
         Logger.getLogger().info(`Mobile/Sightings::saveImage: file write to: ${filePath}`);
 

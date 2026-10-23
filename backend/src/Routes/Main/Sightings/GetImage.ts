@@ -3,6 +3,7 @@ import {FileHelper, HttpFileStream, Logger} from '@stefanwerfling/figtree';
 import Path from 'path';
 import {SightingImageGetRequest} from 'mwpa_schemas';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
+import {UtilSafePath} from '../../../Utils/UtilSafePath.js';
 import {UtilUploadPath} from '../../../Utils/UtilUploadPath.js';
 
 /**
@@ -33,7 +34,15 @@ export class GetImage {
             return;
         }
 
-        const filePath = Path.join(sightingDir, request.filename);
+        const safeName = UtilSafePath.safeSegment(request.filename);
+
+        if (safeName === null) {
+            Logger.getLogger().warn(`Main/Sightings::getImage: rejected unsafe filename: ${request.filename}`);
+            response.status(404).send('File not found');
+            return;
+        }
+
+        const filePath = Path.join(sightingDir, safeName);
 
         if (!await FileHelper.fileExist(filePath)) {
             response.status(404).send('File not found');

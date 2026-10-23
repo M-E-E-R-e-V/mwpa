@@ -8,6 +8,7 @@ import {Vts} from 'vts';
 import {SightingTour} from '../../../Db/MariaDb/Entities/SightingTour.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {SightingTourTrackingRepository} from '../../../Db/MariaDb/Repositories/SightingTourTrackingRepository.js';
+import {Users} from '../../../Users/Users.js';
 
 /**
  * Resolve previous/next tour for the same vehicle — used by the
@@ -16,7 +17,11 @@ import {SightingTourTrackingRepository} from '../../../Db/MariaDb/Repositories/S
  */
 export class Neighbors {
 
-    public static async getNeighbors(request?: ToursTrackingNeighborsRequest): Promise<ToursTrackingNeighborsResponse> {
+    public static async getNeighbors(
+        userId: number,
+        isAdmin: boolean,
+        request?: ToursTrackingNeighborsRequest
+    ): Promise<ToursTrackingNeighborsResponse> {
         if (Vts.isUndefined(request)) {
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
@@ -29,6 +34,13 @@ export class Neighbors {
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
                 msg: 'Tour not found by ID!'
+            };
+        }
+
+        if (!await Users.canAccessOrganization(userId, isAdmin, tour.organization_id)) {
+            return {
+                statusCode: StatusCodes.FORBIDDEN,
+                msg: 'No access to this tour!'
             };
         }
 

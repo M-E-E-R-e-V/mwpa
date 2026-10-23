@@ -13,6 +13,7 @@ import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingT
 import {SightingTourTrackingRepository} from '../../../Db/MariaDb/Repositories/SightingTourTrackingRepository.js';
 import {UtilTurtleList} from '../../../Utils/UtilTurtleList.js';
 import {UtilUploadPath} from '../../../Utils/UtilUploadPath.js';
+import {Users} from '../../../Users/Users.js';
 import {List as SpeciesList} from '../Species/List.js';
 
 /**
@@ -25,7 +26,11 @@ export class Tracking {
      * @param {ToursTrackingRequest} request
      * @return {ToursTrackingResponse}
      */
-    public static async getTracking(request?: ToursTrackingRequest): Promise<ToursTrackingResponse> {
+    public static async getTracking(
+        userId: number,
+        isAdmin: boolean,
+        request?: ToursTrackingRequest
+    ): Promise<ToursTrackingResponse> {
         if (Vts.isUndefined(request)) {
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
@@ -39,6 +44,13 @@ export class Tracking {
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
                 msg: 'Tour not found by ID!'
+            };
+        }
+
+        if (!await Users.canAccessOrganization(userId, isAdmin, tour.organization_id)) {
+            return {
+                statusCode: StatusCodes.FORBIDDEN,
+                msg: 'No access to this tour!'
             };
         }
 

@@ -60,13 +60,17 @@ export class Tours extends DefaultRoute {
             '/json/tours/tracking/list',
             checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<ToursTrackingResponse> => {
-                return Tracking.getTracking(data.body);
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                return Tracking.getTracking(userId, isAdmin, data.body);
             },
             {
                 aclRight: RightTours.tours_read,
                 description: 'Tracking points + sightings + image filenames for a tour.',
                 bodySchema: SchemaToursTrackingRequest,
-                responseBodySchema: SchemaToursTrackingResponse
+                responseBodySchema: SchemaToursTrackingResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit
             }
         );
 
@@ -74,7 +78,9 @@ export class Tours extends DefaultRoute {
             '/json/tours/tracking/neighbors',
             checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<ToursTrackingNeighborsResponse> => {
-                return Neighbors.getNeighbors(data.body);
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                return Neighbors.getNeighbors(userId, isAdmin, data.body);
             },
             {
                 aclRight: RightTours.tours_read,
@@ -90,7 +96,9 @@ export class Tours extends DefaultRoute {
             '/json/tours/tracking/delete',
             checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<ToursTrackingDeleteResponse> => {
-                return Delete.deleteTrackingRange(data.body);
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                return Delete.deleteTrackingRange(userId, isAdmin, data.body);
             },
             {
                 description: 'Delete tracking points within a time range from a tour. ACL: tours_tracking_edit.',
@@ -106,7 +114,9 @@ export class Tours extends DefaultRoute {
             '/json/tours/tracking/transfer',
             checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<ToursTrackingTransferResponse> => {
-                return Transfer.transferTrackingRange(data.body);
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                return Transfer.transferTrackingRange(userId, isAdmin, data.body);
             },
             {
                 description: 'Transfer tracking points within a time range from one tour to another. ACL: tours_tracking_edit.',

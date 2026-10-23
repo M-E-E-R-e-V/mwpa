@@ -21,7 +21,24 @@ export class Tile {
      * @param {MapCacheRequest} request
      * @param {Response} response
      */
+    private static TILE_COORD: RegExp = /^\d{1,4}$/u;
+
+    private static TILE_FORMAT: RegExp = /^[a-zA-Z0-9]{1,5}$/u;
+
     public static async loadTile(request: MapCacheRequest, response: Response): Promise<void> {
+        // This route is unauthenticated, and z/x/y/fileformat flow into a
+        // Path.join under the datadir — validate them strictly so a request
+        // like `..%2f..%2fetc` can't traverse out of the tile cache (arbitrary
+        // file read via fs.readFile, or write/mkdir on a cache miss). `server`
+        // is already allow-listed against MAP_SERVER below.
+        if (!Tile.TILE_COORD.test(request.z) ||
+            !Tile.TILE_COORD.test(request.x) ||
+            !Tile.TILE_COORD.test(request.y) ||
+            !Tile.TILE_FORMAT.test(request.fileformat)) {
+            response.status(400).send('Bad tile request');
+            return;
+        }
+
         let useServer = 'openstreetmap';
 
         if (Tile.MAP_SERVER.has(request.server)) {

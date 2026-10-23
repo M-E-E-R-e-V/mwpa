@@ -91,6 +91,25 @@ export class Users {
     }
 
     /**
+     * Authorisation check for a by-id resource access: admins may touch any
+     * organisation, everyone else only the organisations they belong to. Used
+     * to close cross-organisation IDOR on endpoints that load a record by a
+     * client-supplied id (e.g. tour tracking edit/transfer/read).
+     * @param {number} userId
+     * @param {boolean} isAdmin
+     * @param {number} organizationId
+     * @return {boolean}
+     */
+    public static async canAccessOrganization(userId: number, isAdmin: boolean, organizationId: number): Promise<boolean> {
+        if (isAdmin) {
+            return true;
+        }
+
+        const organizationIds = await Users.getOrganizationIds(userId);
+        return organizationIds.includes(organizationId);
+    }
+
+    /**
      * Return all organization entities the user belongs to.
      * @param {number} userId
      * @return {OrganizationDB[]}
