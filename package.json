@@ -1,6 +1,6 @@
 {
   "name": "mwpa",
-  "version": "1.0.42",
+  "version": "1.0.43",
   "description": "Mammals watchig process analyse",
   "scripts": {
     "npm-check-updates": "cd ./schemas/ && npm-check-updates && cd ../backend/ && npm-check-updates && cd ../frontend/ && npm-check-updates",
@@ -33,7 +33,7 @@
     "eslint": "^9.19.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "@stefanwerfling/figtree": "git+https://github.com/stefanwerfling/figtree.git#8836536e83051037fd2189742cf4859ee990bb3c",
+    "@stefanwerfling/figtree": "git+https://github.com/stefanwerfling/figtree.git#afc3efd91f757c5b39900aaa98d431668049de63",
     "npm-check-updates": "^18.0.1",
     "typescript": "^5.8.3",
     "vtseditor": "github:stefanwerfling/vtseditor"

@@ -24,13 +24,26 @@ import {UserAgentInfo} from '../UserAgentInfo.js';
  */
 export class MWPAHttpServer extends HttpServer {
 
+    /**
+     * Also rate-limit the mobile API. figtree only throttles `/json/` by
+     * default, which left `/mobile/login` + `/mobile/quickconnect` unthrottled
+     * — the mobile PIN login path is then brute-forceable. Adding `/mobile/`
+     * here applies the same limiter (unauthenticated requests only, see
+     * `_limiterSkip`), so credential guessing is capped per IP.
+     * @return {string[]}
+     * @protected
+     */
+    protected override _limiterPaths(): string[] {
+        return ['/json/', '/mobile/'];
+    }
+
     protected override _getCspDirectives(): Record<string, string[]> {
         const base = super._getCspDirectives();
         return {
             ...base,
             workerSrc: ['\'self\'', 'blob:'],
             frameSrc: [
-                ...(base.frameSrc ?? ['\'self\'']),
+                ...base.frameSrc ?? ['\'self\''],
                 'https://www.onezoom.org',
                 'https://onezoom.org'
             ]
