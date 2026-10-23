@@ -39,7 +39,7 @@ export class SavePin {
             };
         }
 
-        user.pin = await bcrypt.hash(request.pin, 10);
+        user.pin = await bcrypt.hash(request.pin, 12);
         await UserRepository.getInstance().save(user);
 
         return {

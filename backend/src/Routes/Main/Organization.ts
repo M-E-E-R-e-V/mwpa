@@ -77,13 +77,17 @@ export class Organization extends DefaultRoute {
             '/json/organization/get',
             checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<OrganizationResponse> => {
-                return Get.getOrganization(data.body);
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                return Get.getOrganization(userId, isAdmin, data.body);
             },
             {
-                description: 'Return one organization by id.',
+                description: 'Return one organization by id (scoped to the caller\'s organisations for non-admins).',
                 aclRight: RightOrganizations.organizations_read,
                 bodySchema: SchemaOrganizationGetRequest,
-                responseBodySchema: SchemaOrganizationResponse
+                responseBodySchema: SchemaOrganizationResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit
             }
         );
 

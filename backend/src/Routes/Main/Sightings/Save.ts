@@ -3,9 +3,11 @@ import {Vts} from 'vts';
 import {SightingSaveRequest} from 'mwpa_schemas';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
+import {VehicleRepository} from '../../../Db/MariaDb/Repositories/VehicleRepository.js';
 import {Sighting} from '../../../Db/MariaDb/Entities/Sighting.js';
 import {SightingTour} from '../../../Db/MariaDb/Entities/SightingTour.js';
 import {SightingMovementService} from '../../../Service/Movement/SightingMovementService.js';
+import {Users} from '../../../Users/Users.js';
 
 /**
  * Normalise an HH:mm-ish time so string comparison works for ranges that span
@@ -73,7 +75,11 @@ export class Save {
      * @param {SightingSaveRequest} request
      * @return {DefaultReturn}
      */
-    public static async save(request?: SightingSaveRequest): Promise<DefaultReturn> {
+    public static async save(
+        userId: number,
+        isAdmin: boolean,
+        request?: SightingSaveRequest
+    ): Promise<DefaultReturn> {
         if (Vts.isUndefined(request)) {
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
@@ -102,6 +108,26 @@ export class Save {
                 statusCode: StatusCodes.INTERNAL_ERROR,
                 msg: 'Sighting not found!'
             };
+        }
+
+        // Org scoping: a non-admin may only edit a sighting of their own
+        // organisation, and may not re-assign it to a boat of another org.
+        // The org is derived from the boat (sighting.organization_id is only
+        // reliably set by the mobile save path — see project memory).
+        if (!isAdmin) {
+            const vehicleRepo = VehicleRepository.getInstance();
+            const currentVehicle = await vehicleRepo.findOne(sighting.vehicle_id);
+            const targetVehicle = await vehicleRepo.findOne(request.vehicle_id);
+            const currentOrg = currentVehicle?.organization_id ?? 0;
+            const targetOrg = targetVehicle?.organization_id ?? 0;
+
+            if (!await Users.canAccessOrganization(userId, isAdmin, currentOrg) ||
+                !await Users.canAccessOrganization(userId, isAdmin, targetOrg)) {
+                return {
+                    statusCode: StatusCodes.FORBIDDEN,
+                    msg: 'No access to this sighting!'
+                };
+            }
         }
 
         const sightingTime = normaliseTime(request.duration_from ?? '') || normaliseTime(request.tour_start ?? '');

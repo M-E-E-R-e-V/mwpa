@@ -2,6 +2,7 @@ import {StatusCodes} from 'figtree-schemas';
 import {Vts} from 'vts';
 import {OrganizationGetRequest, OrganizationResponse} from 'mwpa_schemas';
 import {OrganizationRepository} from '../../../Db/MariaDb/Repositories/OrganizationRepository.js';
+import {Users} from '../../../Users/Users.js';
 
 /**
  * Get
@@ -13,11 +14,22 @@ export class Get {
      * @param {OrganizationGetRequest} request
      * @return {OrganizationResponse}
      */
-    public static async getOrganization(request?: OrganizationGetRequest): Promise<OrganizationResponse> {
+    public static async getOrganization(
+        userId: number,
+        isAdmin: boolean,
+        request?: OrganizationGetRequest
+    ): Promise<OrganizationResponse> {
         if (Vts.isUndefined(request)) {
             return {
                 statusCode: StatusCodes.INTERNAL_ERROR,
                 msg: 'Request incomplete'
+            };
+        }
+
+        if (!await Users.canAccessOrganization(userId, isAdmin, request.id)) {
+            return {
+                statusCode: StatusCodes.FORBIDDEN,
+                msg: 'No access to this organization!'
             };
         }
 

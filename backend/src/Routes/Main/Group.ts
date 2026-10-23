@@ -1,13 +1,15 @@
 import {Router} from 'express';
 import {DefaultRoute} from '@stefanwerfling/figtree';
 import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
-import {DefaultReturn, SchemaDefaultReturn} from 'figtree-schemas';
+import {DefaultReturn, SchemaDefaultReturn, StatusCodes} from 'figtree-schemas';
 import {
     GroupListResponse,
     SchemaGroupEntry,
     SchemaGroupListResponse,
+    SchemaMWPASessionData,
     RightGroups,
 } from 'mwpa_schemas';
+import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {List} from './Group/List.js';
 import {Save} from './Group/Save.js';
 
@@ -34,18 +36,24 @@ export class Group extends DefaultRoute {
             }
         );
 
-        // TODO only for admins
         this._post(
             '/json/group/save',
             checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
+                if (!data.session?.user?.isAdmin) {
+                    return {
+                        statusCode: StatusCodes.FORBIDDEN
+                    };
+                }
                 return Save.saveGroup(data.body);
             },
             {
-                description: '.',
+                description: 'Insert or update a user group (admin only). Writes organization_id + role verbatim.',
                 aclRight: RightGroups.groups_write,
                 bodySchema: SchemaGroupEntry,
-                responseBodySchema: SchemaDefaultReturn
+                responseBodySchema: SchemaDefaultReturn,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit
             }
         );
 

@@ -39,7 +39,7 @@ export class SavePassword {
             };
         }
 
-        user.password = await bcrypt.hash(request.password, 10);
+        user.password = await bcrypt.hash(request.password, 12);
         await UserRepository.getInstance().save(user);
 
         return {

@@ -139,7 +139,9 @@ export class Sightings extends DefaultRoute {
             '/json/sightings/save',
             checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
-                return Save.save(data.body);
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                return Save.save(userId, isAdmin, data.body);
             },
             {
                 description: 'Update an existing sighting. Gated by RightSightings.sightings_write.',
