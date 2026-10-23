@@ -7,6 +7,7 @@ import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesReposit
 import {GroupRepository} from '../../../Db/MariaDb/Repositories/GroupRepository.js';
 import {UserGroupsRepository} from '../../../Db/MariaDb/Repositories/UserGroupsRepository.js';
 import {UserRepository} from '../../../Db/MariaDb/Repositories/UserRepository.js';
+import {LoginLockoutRegistry} from '../../../Application/LoginLockoutRegistry.js';
 import {resolveSessionRolesAndRights} from '../../SessionRights.js';
 
 /**
@@ -42,7 +43,11 @@ export class MobileLogin {
      * @param {MobileLoginSession} session
      * @return {LoginResponse}
      */
-    public static async login(body: MobileLoginRequest | undefined, session: MobileLoginSession): Promise<LoginResponse> {
+    public static async login(
+        body: MobileLoginRequest | undefined,
+        session: MobileLoginSession,
+        userAgent: string = ''
+    ): Promise<LoginResponse> {
         if (Vts.isUndefined(body)) {
             return {
                 success: false,
@@ -56,6 +61,17 @@ export class MobileLogin {
 
         if (body.password === '') {
             return {success: false, error: 'Password is empty!'};
+        }
+
+        // Per-(account, device) lockout on top of the per-IP rate limit — stops
+        // a short PIN being brute-forced from one device even within the IP
+        // budget. Checked before any credential comparison.
+        const lockout = LoginLockoutRegistry.getInstance();
+
+        if (lockout.isLocked(body.email, body.deviceIdentity)) {
+            const minutes = Math.ceil(lockout.lockRemainingMs(body.email, body.deviceIdentity) / 60000);
+            Logger.getLogger().warn(`Mobile login blocked (locked) for email: ${body.email}`);
+            return {success: false, error: `Too many failed attempts. Try again in ${minutes} min.`};
         }
 
         // start with logged-out session
@@ -91,9 +107,13 @@ export class MobileLogin {
         }
 
         if (!passwordOk && !pinOk) {
+            lockout.recordFailure(body.email, body.deviceIdentity, userAgent);
             Logger.getLogger().info(`Mobile login failed: wrong password by email: ${body.email}`);
             return {success: false, error: 'Wrong password!'};
         }
+
+        // Successful credential check — clear any accrued failures/lock.
+        lockout.reset(body.email, body.deviceIdentity);
 
         // gather group + organization ids
         const groups: number[] = [];

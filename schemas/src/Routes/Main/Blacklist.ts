@@ -68,3 +68,72 @@ export const SchemaBlacklistUnblockResponse = SchemaDefaultReturn.extend({
  * Type of schema BlacklistUnblockResponse
  */
 export type BlacklistUnblockResponse = ExtractSchemaResultType<typeof SchemaBlacklistUnblockResponse>;
+
+/**
+ * Schema of LoginLockoutEntry
+ * One (account, device) pair currently locked out after too many failed mobile logins.
+ */
+export const SchemaLoginLockoutEntry = Vts.object({
+    key: Vts.string({description: 'Opaque handle the admin UI sends back to unlock.'}),
+    email: Vts.string(),
+    device: Vts.string({description: 'Device identity the attempts came from.'}),
+    count: Vts.number({description: 'Consecutive failed attempts.'}),
+    first_attempt: Vts.number({description: 'Epoch ms of the first failed attempt in the window.'}),
+    last_attempt: Vts.number({description: 'Epoch ms of the most recent failed attempt.'}),
+    locked_until: Vts.number({description: 'Epoch ms until which the pair is locked (0 = counting but not locked).'}),
+    user_agent: Vts.string(),
+    browser: Vts.string(),
+    os: Vts.string(),
+}, {
+    description: 'One (account, device) pair currently locked out after too many failed mobile logins.',
+});
+
+/**
+ * Type of schema LoginLockoutEntry
+ */
+export type LoginLockoutEntry = ExtractSchemaResultType<typeof SchemaLoginLockoutEntry>;
+
+/**
+ * Schema of LoginLockoutListResponse
+ * Response of /json/login_lockout/list — accounts/devices currently locked out.
+ */
+export const SchemaLoginLockoutListResponse = SchemaDefaultReturn.extend({
+    list: Vts.optional(Vts.array(SchemaLoginLockoutEntry)),
+}, {
+    description: 'Response of /json/login_lockout/list — accounts/devices currently locked out.',
+});
+
+/**
+ * Type of schema LoginLockoutListResponse
+ */
+export type LoginLockoutListResponse = ExtractSchemaResultType<typeof SchemaLoginLockoutListResponse>;
+
+/**
+ * Schema of LoginLockoutUnblockRequest
+ * Lift a login lockout by its key.
+ */
+export const SchemaLoginLockoutUnblockRequest = Vts.object({
+    key: Vts.string(),
+}, {
+    description: 'Lift a login lockout by its key.',
+});
+
+/**
+ * Type of schema LoginLockoutUnblockRequest
+ */
+export type LoginLockoutUnblockRequest = ExtractSchemaResultType<typeof SchemaLoginLockoutUnblockRequest>;
+
+/**
+ * Schema of LoginLockoutUnblockResponse
+ * Response of /json/login_lockout/unblock.
+ */
+export const SchemaLoginLockoutUnblockResponse = SchemaDefaultReturn.extend({
+    success: Vts.boolean(),
+}, {
+    description: 'Response of /json/login_lockout/unblock.',
+});
+
+/**
+ * Type of schema LoginLockoutUnblockResponse
+ */
+export type LoginLockoutUnblockResponse = ExtractSchemaResultType<typeof SchemaLoginLockoutUnblockResponse>;

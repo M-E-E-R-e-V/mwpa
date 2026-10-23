@@ -17,7 +17,7 @@ import {
     Tr
 } from 'bambooo';
 import moment from 'moment';
-import {Blacklist as BlacklistAPI, BlacklistEntry} from '../Api/Blacklist';
+import {Blacklist as BlacklistAPI, BlacklistEntry, LoginLockoutEntry} from '../Api/Blacklist';
 import {Lang} from '../Lang';
 import {BasePage} from './BasePage';
 
@@ -164,6 +164,102 @@ export class Blacklist extends BasePage {
         };
 
         this._onLoadTable();
+
+        /*
+         * Login lockouts (Sperrliste) — (account, device) pairs locked out after
+         * too many failed mobile logins. Backed by the in-memory
+         * LoginLockoutRegistry; entries expire when the lock elapses.
+         */
+
+        const row2 = new ContentRow(this._wrapper.getContentWrapper().getContent());
+        const lockCard = new Card(new ContentCol(row2, ContentColSize.col12));
+        lockCard.setTitle(new LangText('Login lockouts'));
+
+        const lockTableWrapper = new TableWrapper<LoginLockoutEntry>(lockCard.getElement(), {head_fixed: true});
+        const lockTable = lockTableWrapper.getTable();
+        const lockHead = new Tr(lockTable.getThead());
+
+        for (const label of ['Email', 'Device', 'Count', 'First attempt', 'Last attempt', 'Locked until', 'Browser', 'OS', 'Action']) {
+            // eslint-disable-next-line no-new
+            new Th(lockHead, new LangText(label));
+        }
+
+        const loadLockoutTable = async(): Promise<void> => {
+            lockTableWrapper.setDataSource(
+                async(page) => {
+                    if (page !== 0) {
+                        return [];
+                    }
+
+                    let list: LoginLockoutEntry[] = [];
+
+                    try {
+                        list = await BlacklistAPI.getLockoutList();
+                    } catch (message) {
+                        this._toast.fire({icon: 'error', title: message});
+                    }
+
+                    lockCard.setTitle(`${lang.l('Login lockouts') ?? 'Login lockouts'} (${list.length})`);
+
+                    return list;
+                },
+                (_table: Table, entry: LoginLockoutEntry): void => {
+                    const trbody = new Tr(lockTable.getTbody());
+                    const device = entry.device.length > 14 ? `${entry.device.slice(0, 14)}…` : entry.device;
+
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, entry.email);
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, device);
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, `${entry.count}`);
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, Blacklist._fmtTs(entry.first_attempt));
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, Blacklist._fmtTs(entry.last_attempt));
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, Blacklist._fmtTs(entry.locked_until));
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, entry.browser);
+                    // eslint-disable-next-line no-new
+                    new Td(trbody, entry.os);
+
+                    const actionTd = new Td(trbody, '');
+                    const btnMenu = new ButtonMenu(actionTd, IconFa.bars, true, ButtonType.borderless);
+
+                    btnMenu.addMenuItem('Unlock', (): void => {
+                        DialogConfirm.confirm(
+                            'dcUnlockLogin',
+                            ModalDialogType.large,
+                            'Unlock login',
+                            `Unlock ${entry.email} on this device? They can log in again immediately.`,
+                            async(_, dialog) => {
+                                try {
+                                    if (await BlacklistAPI.unblockLockout(entry.key)) {
+                                        this._toast.fire({icon: 'success', title: 'Login unlocked.'});
+                                    } else {
+                                        this._toast.fire({icon: 'info', title: 'Lockout was no longer active.'});
+                                    }
+                                } catch (message) {
+                                    this._toast.fire({icon: 'error', title: message});
+                                }
+
+                                dialog.hide();
+                                await loadLockoutTable();
+                            },
+                            undefined,
+                            'Unlock',
+                            ButtonClass.danger
+                        );
+                    }, IconFa.trash);
+
+                    Lang.i().lAll();
+                },
+                false
+            );
+        };
+
+        await loadLockoutTable();
     }
 
 }

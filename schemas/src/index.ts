@@ -458,6 +458,14 @@ export {
     BlacklistUnblockRequest,
     SchemaBlacklistUnblockResponse,
     BlacklistUnblockResponse,
+    SchemaLoginLockoutEntry,
+    LoginLockoutEntry,
+    SchemaLoginLockoutListResponse,
+    LoginLockoutListResponse,
+    SchemaLoginLockoutUnblockRequest,
+    LoginLockoutUnblockRequest,
+    SchemaLoginLockoutUnblockResponse,
+    LoginLockoutUnblockResponse,
 } from './Routes/Main/Blacklist.js';
 export {
     SchemaMapCacheRequest,

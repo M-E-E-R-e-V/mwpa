@@ -187,8 +187,942 @@
           "description": ""
         }
       ]
+    },
+    {
+      "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+      "name": "LoginLockoutEntry",
+      "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1500,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "f5354419-92ad-4180-9b2b-3b5ad996e073",
+          "name": "key",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Opaque handle the admin UI sends back to unlock."
+        },
+        {
+          "unid": "b60b823d-cdf1-4232-bb0c-dd6fdd68e624",
+          "name": "email",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "15685ef1-4462-4ccc-ab57-6f494850638f",
+          "name": "device",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Device identity the attempts came from."
+        },
+        {
+          "unid": "aba76caa-b25f-41df-8c7a-5ead27ced220",
+          "name": "count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Consecutive failed attempts."
+        },
+        {
+          "unid": "6711eea9-7f0e-4dc4-b386-df12a02c6d0d",
+          "name": "first_attempt",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Epoch ms of the first failed attempt in the window."
+        },
+        {
+          "unid": "ac888e06-7145-4fb4-bd56-58d2344bf457",
+          "name": "last_attempt",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Epoch ms of the most recent failed attempt."
+        },
+        {
+          "unid": "07abdcf1-3201-454f-98a1-4b84b661393a",
+          "name": "locked_until",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Epoch ms until which the pair is locked (0 = counting but not locked)."
+        },
+        {
+          "unid": "4ea9fdc9-aa03-4d65-902a-7b75fb165e3d",
+          "name": "user_agent",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "de11b312-4077-4791-b4ff-744602c89b36",
+          "name": "browser",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f71bfcfc-0677-4807-a12b-db252f8474bd",
+          "name": "os",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "138772aa-80cc-47e6-8202-e47b460ed982",
+      "name": "LoginLockoutListResponse",
+      "description": "Response of /json/login_lockout/list — accounts/devices currently locked out.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 1900,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "d93cd336-358d-4e39-8740-c214b70da213",
+          "name": "list",
+          "type": {
+            "type": "90f02366-6800-429e-8a6f-c8621f3db231",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "1b7e4a4f-6d08-439e-9711-5706c7a8151a",
+      "name": "LoginLockoutUnblockRequest",
+      "description": "Lift a login lockout by its key.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1900,
+        "y": 620
+      },
+      "fields": [
+        {
+          "unid": "b0e4edd2-3c55-42ea-9079-150c110c94f9",
+          "name": "key",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "03faaff7-7feb-4606-86ff-89dddbfb4a7d",
+      "name": "LoginLockoutUnblockResponse",
+      "description": "Response of /json/login_lockout/unblock.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 1900,
+        "y": 760
+      },
+      "fields": [
+        {
+          "unid": "6df43f7e-64fa-4f1b-ab5d-1cf3e9314c23",
+          "name": "success",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
     }
   ],
   "enums": [],
-  "links": []
+  "links": [],
+  "history": {
+    "90f02366-6800-429e-8a6f-c8621f3db231": [
+      {
+        "ts": 1792797909924,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+          "name": "LoginLockoutEntry",
+          "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1500,
+            "y": 400
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1792797912214,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+          "name": "LoginLockoutEntry",
+          "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1500,
+            "y": 400
+          },
+          "fields": [
+            {
+              "unid": "f5354419-92ad-4180-9b2b-3b5ad996e073",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Opaque handle the admin UI sends back to unlock."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792797914431,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+          "name": "LoginLockoutEntry",
+          "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1500,
+            "y": 400
+          },
+          "fields": [
+            {
+              "unid": "f5354419-92ad-4180-9b2b-3b5ad996e073",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Opaque handle the admin UI sends back to unlock."
+            },
+            {
+              "unid": "b60b823d-cdf1-4232-bb0c-dd6fdd68e624",
+              "name": "email",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792797916683,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+          "name": "LoginLockoutEntry",
+          "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1500,
+            "y": 400
+          },
+          "fields": [
+            {
+              "unid": "f5354419-92ad-4180-9b2b-3b5ad996e073",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Opaque handle the admin UI sends back to unlock."
+            },
+            {
+              "unid": "b60b823d-cdf1-4232-bb0c-dd6fdd68e624",
+              "name": "email",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "15685ef1-4462-4ccc-ab57-6f494850638f",
+              "name": "device",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Device identity the attempts came from."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792797919341,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+          "name": "LoginLockoutEntry",
+          "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1500,
+            "y": 400
+          },
+          "fields": [
+            {
+              "unid": "f5354419-92ad-4180-9b2b-3b5ad996e073",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Opaque handle the admin UI sends back to unlock."
+            },
+            {
+              "unid": "b60b823d-cdf1-4232-bb0c-dd6fdd68e624",
+              "name": "email",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "15685ef1-4462-4ccc-ab57-6f494850638f",
+              "name": "device",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Device identity the attempts came from."
+            },
+            {
+              "unid": "aba76caa-b25f-41df-8c7a-5ead27ced220",
+              "name": "count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Consecutive failed attempts."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792797921573,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+          "name": "LoginLockoutEntry",
+          "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1500,
+            "y": 400
+          },
+          "fields": [
+            {
+              "unid": "f5354419-92ad-4180-9b2b-3b5ad996e073",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Opaque handle the admin UI sends back to unlock."
+            },
+            {
+              "unid": "b60b823d-cdf1-4232-bb0c-dd6fdd68e624",
+              "name": "email",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "15685ef1-4462-4ccc-ab57-6f494850638f",
+              "name": "device",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Device identity the attempts came from."
+            },
+            {
+              "unid": "aba76caa-b25f-41df-8c7a-5ead27ced220",
+              "name": "count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Consecutive failed attempts."
+            },
+            {
+              "unid": "6711eea9-7f0e-4dc4-b386-df12a02c6d0d",
+              "name": "first_attempt",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms of the first failed attempt in the window."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792797923731,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+          "name": "LoginLockoutEntry",
+          "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1500,
+            "y": 400
+          },
+          "fields": [
+            {
+              "unid": "f5354419-92ad-4180-9b2b-3b5ad996e073",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Opaque handle the admin UI sends back to unlock."
+            },
+            {
+              "unid": "b60b823d-cdf1-4232-bb0c-dd6fdd68e624",
+              "name": "email",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "15685ef1-4462-4ccc-ab57-6f494850638f",
+              "name": "device",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Device identity the attempts came from."
+            },
+            {
+              "unid": "aba76caa-b25f-41df-8c7a-5ead27ced220",
+              "name": "count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Consecutive failed attempts."
+            },
+            {
+              "unid": "6711eea9-7f0e-4dc4-b386-df12a02c6d0d",
+              "name": "first_attempt",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms of the first failed attempt in the window."
+            },
+            {
+              "unid": "ac888e06-7145-4fb4-bd56-58d2344bf457",
+              "name": "last_attempt",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms of the most recent failed attempt."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792797925909,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+          "name": "LoginLockoutEntry",
+          "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1500,
+            "y": 400
+          },
+          "fields": [
+            {
+              "unid": "f5354419-92ad-4180-9b2b-3b5ad996e073",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Opaque handle the admin UI sends back to unlock."
+            },
+            {
+              "unid": "b60b823d-cdf1-4232-bb0c-dd6fdd68e624",
+              "name": "email",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "15685ef1-4462-4ccc-ab57-6f494850638f",
+              "name": "device",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Device identity the attempts came from."
+            },
+            {
+              "unid": "aba76caa-b25f-41df-8c7a-5ead27ced220",
+              "name": "count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Consecutive failed attempts."
+            },
+            {
+              "unid": "6711eea9-7f0e-4dc4-b386-df12a02c6d0d",
+              "name": "first_attempt",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms of the first failed attempt in the window."
+            },
+            {
+              "unid": "ac888e06-7145-4fb4-bd56-58d2344bf457",
+              "name": "last_attempt",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms of the most recent failed attempt."
+            },
+            {
+              "unid": "07abdcf1-3201-454f-98a1-4b84b661393a",
+              "name": "locked_until",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms until which the pair is locked (0 = counting but not locked)."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792797928002,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+          "name": "LoginLockoutEntry",
+          "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1500,
+            "y": 400
+          },
+          "fields": [
+            {
+              "unid": "f5354419-92ad-4180-9b2b-3b5ad996e073",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Opaque handle the admin UI sends back to unlock."
+            },
+            {
+              "unid": "b60b823d-cdf1-4232-bb0c-dd6fdd68e624",
+              "name": "email",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "15685ef1-4462-4ccc-ab57-6f494850638f",
+              "name": "device",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Device identity the attempts came from."
+            },
+            {
+              "unid": "aba76caa-b25f-41df-8c7a-5ead27ced220",
+              "name": "count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Consecutive failed attempts."
+            },
+            {
+              "unid": "6711eea9-7f0e-4dc4-b386-df12a02c6d0d",
+              "name": "first_attempt",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms of the first failed attempt in the window."
+            },
+            {
+              "unid": "ac888e06-7145-4fb4-bd56-58d2344bf457",
+              "name": "last_attempt",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms of the most recent failed attempt."
+            },
+            {
+              "unid": "07abdcf1-3201-454f-98a1-4b84b661393a",
+              "name": "locked_until",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms until which the pair is locked (0 = counting but not locked)."
+            },
+            {
+              "unid": "4ea9fdc9-aa03-4d65-902a-7b75fb165e3d",
+              "name": "user_agent",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1792797930234,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "90f02366-6800-429e-8a6f-c8621f3db231",
+          "name": "LoginLockoutEntry",
+          "description": "One (account, device) pair currently locked out after too many failed mobile logins.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1500,
+            "y": 400
+          },
+          "fields": [
+            {
+              "unid": "f5354419-92ad-4180-9b2b-3b5ad996e073",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Opaque handle the admin UI sends back to unlock."
+            },
+            {
+              "unid": "b60b823d-cdf1-4232-bb0c-dd6fdd68e624",
+              "name": "email",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "15685ef1-4462-4ccc-ab57-6f494850638f",
+              "name": "device",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Device identity the attempts came from."
+            },
+            {
+              "unid": "aba76caa-b25f-41df-8c7a-5ead27ced220",
+              "name": "count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Consecutive failed attempts."
+            },
+            {
+              "unid": "6711eea9-7f0e-4dc4-b386-df12a02c6d0d",
+              "name": "first_attempt",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms of the first failed attempt in the window."
+            },
+            {
+              "unid": "ac888e06-7145-4fb4-bd56-58d2344bf457",
+              "name": "last_attempt",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms of the most recent failed attempt."
+            },
+            {
+              "unid": "07abdcf1-3201-454f-98a1-4b84b661393a",
+              "name": "locked_until",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Epoch ms until which the pair is locked (0 = counting but not locked)."
+            },
+            {
+              "unid": "4ea9fdc9-aa03-4d65-902a-7b75fb165e3d",
+              "name": "user_agent",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "de11b312-4077-4791-b4ff-744602c89b36",
+              "name": "browser",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      }
+    ],
+    "138772aa-80cc-47e6-8202-e47b460ed982": [
+      {
+        "ts": 1792797961665,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "138772aa-80cc-47e6-8202-e47b460ed982",
+          "name": "LoginLockoutListResponse",
+          "description": "Response of /json/login_lockout/list — accounts/devices currently locked out.",
+          "extend": {
+            "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 400
+          },
+          "fields": []
+        }
+      }
+    ],
+    "1b7e4a4f-6d08-439e-9711-5706c7a8151a": [
+      {
+        "ts": 1792797964774,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "1b7e4a4f-6d08-439e-9711-5706c7a8151a",
+          "name": "LoginLockoutUnblockRequest",
+          "description": "Lift a login lockout by its key.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 620
+          },
+          "fields": []
+        }
+      }
+    ],
+    "03faaff7-7feb-4606-86ff-89dddbfb4a7d": [
+      {
+        "ts": 1792797966848,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "03faaff7-7feb-4606-86ff-89dddbfb4a7d",
+          "name": "LoginLockoutUnblockResponse",
+          "description": "Response of /json/login_lockout/unblock.",
+          "extend": {
+            "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+          },
+          "pos": {
+            "x": 1900,
+            "y": 760
+          },
+          "fields": []
+        }
+      }
+    ]
+  }
 }

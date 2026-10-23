@@ -38,11 +38,12 @@ export class Login extends DefaultRoute {
         this._post(
             '/mobile/login',
             false,
-            async(_req, _res, data): Promise<LoginResponse> => {
+            async(req, _res, data): Promise<LoginResponse> => {
                 if (!data.session) {
                     return {success: false, error: 'None session found!'};
                 }
-                return MobileLogin.login(data.body, data.session);
+                const userAgent = typeof req.headers['user-agent'] === 'string' ? req.headers['user-agent'] : '';
+                return MobileLogin.login(data.body, data.session, userAgent);
             },
             {
                 description: 'Login a mobile client (password or PIN on a known device).',
