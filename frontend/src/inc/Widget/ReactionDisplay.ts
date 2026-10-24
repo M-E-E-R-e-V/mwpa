@@ -1,14 +1,14 @@
 /* global JQuery */
-import {Badge2, BadgeType2, Component, ComponentType, DialogInfo2, ModalDialogType2} from 'bambooo';
+import {Badge2, BadgeType2, ComponentType, DialogInfo2, ModalDialogType2, Widget2} from 'bambooo';
 import {EncounterCategorieEntry} from '../Api/EncounterCategories';
 import {SightingsEntry} from '../Api/Sightings';
 
-export class ReactionDisplay extends Component<HTMLSpanElement> {
+export class ReactionDisplay extends Widget2 {
 
     protected _badge;
 
     public constructor(element: ComponentType, sighting: SightingsEntry, mencates: Map<number, EncounterCategorieEntry>) {
-        super();
+        super({element: jQuery<HTMLSpanElement>('<span/>')});
 
         let reactionName = 'not set';
 
@@ -21,7 +21,7 @@ export class ReactionDisplay extends Component<HTMLSpanElement> {
         }
 
         this._badge = new Badge2({text: `${reactionName}`, type: BadgeType2.secondary});
-        this._badge.appendTo(this._getAnyElement(element));
+        this._badge.appendTo(ReactionDisplay._asParent(element));
 
         this._element = this._badge.getElement() as JQuery<HTMLSpanElement>;
 
@@ -53,6 +53,23 @@ export class ReactionDisplay extends Component<HTMLSpanElement> {
                 }
             );
         });
+    }
+
+    /**
+     * Resolve a parent (bambooo component, jQuery or selector) to a jQuery
+     * handle the badge can be appended to.
+     * @param {ComponentType} element
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _asParent(element: ComponentType): JQuery {
+        const maybe = element as {getElement?: () => JQuery;} | null | undefined;
+
+        if (maybe && typeof maybe.getElement === 'function') {
+            return maybe.getElement();
+        }
+
+        return jQuery(element as JQuery.Selector);
     }
 
 }

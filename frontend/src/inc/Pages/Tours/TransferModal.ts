@@ -2,7 +2,6 @@
 import {
     ButtonClass2,
     ButtonDefault2,
-    Component,
     ComponentType,
     FormGroup2,
     FormRow2,
@@ -43,7 +42,7 @@ export class TransferModal extends ModalDialog2 {
         super({
             id: 'tourstrackingtransfermodal',
             modalType: ModalDialogType2.large,
-            target: (elementObject as Component<HTMLElement>).getElement()
+            target: TransferModal._asTarget(elementObject)
         });
 
         this.setTitle(new LangTextV2({text: 'Transfer tracking points'}));
@@ -190,6 +189,23 @@ export class TransferModal extends ModalDialog2 {
         } else {
             el.attr('disabled', 'disabled');
         }
+    }
+
+    /**
+     * Resolve the constructor argument (bambooo component, jQuery or selector)
+     * to a jQuery handle the modal can be mounted into.
+     * @param {ComponentType} element
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _asTarget(element: ComponentType): JQuery {
+        const maybe = element as {getElement?: () => JQuery;} | null | undefined;
+
+        if (maybe && typeof maybe.getElement === 'function') {
+            return maybe.getElement();
+        }
+
+        return jQuery(element as JQuery.Selector);
     }
 
 }

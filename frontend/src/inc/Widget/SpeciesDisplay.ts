@@ -1,5 +1,5 @@
 /* global JQuery */
-import {Badge2, BadgeType2, Component, UtilColor} from 'bambooo';
+import {Badge2, BadgeType2, ComponentType, UtilColor, Widget2} from 'bambooo';
 import {SightingsEntry} from '../Api/Sightings';
 import {SpeciesEntry} from '../Api/Species';
 import {UtilSpeciesContextMenu} from '../Utils/UtilSpeciesContextMenu';
@@ -12,7 +12,7 @@ import {UtilSpeciesContextMenu} from '../Utils/UtilSpeciesContextMenu';
  */
 export type SpeciesDisplayProfileFn = (speciesId: number) => void;
 
-export class SpeciesDisplay extends Component<HTMLSpanElement> {
+export class SpeciesDisplay extends Widget2 {
 
     protected _badge;
 
@@ -33,12 +33,12 @@ export class SpeciesDisplay extends Component<HTMLSpanElement> {
     ];
 
     public constructor(
-        element: Element|any,
+        element: ComponentType,
         sighting: SightingsEntry,
         speciesList: Map<number, SpeciesEntry>,
         onProfile?: SpeciesDisplayProfileFn
     ) {
-        super();
+        super({element: jQuery<HTMLSpanElement>('<span/>')});
 
         let specieName = '';
         let specieColor = '#ffffff';
@@ -64,7 +64,7 @@ export class SpeciesDisplay extends Component<HTMLSpanElement> {
         }
 
         this._badge = new Badge2({type: BadgeType2.info, color: specieColor});
-        this._badge.appendTo(this._getAnyElement(element));
+        this._badge.appendTo(SpeciesDisplay._asParent(element));
         this._badge.getElement().html(`<b style="color: ${UtilColor.getContrastYIQ(specieColor)}">${specieName}</b>`);
 
         this._element = this._badge.getElement() as JQuery<HTMLSpanElement>;
@@ -82,6 +82,23 @@ export class SpeciesDisplay extends Component<HTMLSpanElement> {
                 onProfile
             });
         }
+    }
+
+    /**
+     * Resolve a parent (bambooo component, jQuery or selector) to a jQuery
+     * handle the badge can be appended to.
+     * @param {ComponentType} element
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _asParent(element: ComponentType): JQuery {
+        const maybe = element as {getElement?: () => JQuery;} | null | undefined;
+
+        if (maybe && typeof maybe.getElement === 'function') {
+            return maybe.getElement();
+        }
+
+        return jQuery(element as JQuery.Selector);
     }
 
 }

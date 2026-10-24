@@ -1,4 +1,4 @@
-import {DialogInfo, ModalDialogType} from 'bambooo';
+import {DialogInfo2, ModalDialogType2} from 'bambooo';
 
 /**
  * UtilOttLink
@@ -26,12 +26,12 @@ export class UtilOttLink {
             infoStr += `<a href="https://tree.opentreeoflife.org/taxonomy/browse?id=${ottid}" target="_blank">Opentreeoflife.org</a><br>`;
             infoStr += `<iframe style="width: 100%; height: 400px; border: 0" src="https://www.onezoom.org/life.html/@=${ottid}""></iframe>`;
 
-            DialogInfo.info(
+            DialogInfo2.info(
                 'sightspeciesinfo',
-                ModalDialogType.xlarge,
+                ModalDialogType2.xlarge,
                 `More Information over "${titleName}"`,
                 infoStr,
-                (_, modal: DialogInfo) => {
+                (_, modal: DialogInfo2) => {
                     modal.hide();
                 }
             );
