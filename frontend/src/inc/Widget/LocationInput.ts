@@ -1,4 +1,4 @@
-import {InputBottemBorderOnly2, Tooltip} from 'bambooo';
+import {InputBottemBorderOnly2, Tooltip2} from 'bambooo';
 import moment from 'moment';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';
 import {UtilLocation} from '../Utils/UtilLocation';
@@ -60,12 +60,12 @@ export class LocationInput extends InputBottemBorderOnly2 {
                 tooltipstr += `Accuracy: ${this._gcValue.accuracy.toFixed(1)} m<br>`;
             }
 
-            this._element.attr('data-toggle', 'tooltip');
-            this._element.attr('data-html', 'true');
-            this._element.attr('data-original-title', tooltipstr);
+            this._element.attr('data-bs-toggle', 'tooltip');
+            this._element.attr('data-bs-html', 'true');
+            this._element.attr('data-bs-title', tooltipstr);
 
             // init tooltips
-            Tooltip.init();
+            Tooltip2.init();
         } else {
             super.setValue('-');
             this._element.attr('title', '');

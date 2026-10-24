@@ -1,5 +1,5 @@
 /* global JQuery */
-import {Component, ComponentType, Tooltip} from 'bambooo';
+import {ComponentType, Tooltip2, Widget2} from 'bambooo';
 import moment from 'moment';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';
 import {UtilLocation} from '../Utils/UtilLocation';
@@ -19,7 +19,7 @@ const escapeHtml = (s: string): string => s
  * setReadOnly), but the value can only be edited via the picker that the
  * parent wires through `setOnRequestPicker`.
  */
-export class LocationPickerInput extends Component<HTMLDivElement> {
+export class LocationPickerInput extends Widget2 {
 
     protected _gcValue: GeolocationCoordinates | null = null;
 
@@ -32,11 +32,12 @@ export class LocationPickerInput extends Component<HTMLDivElement> {
     protected _readOnly: boolean = false;
 
     public constructor(parent: ComponentType, name?: string) {
-        super();
+        super({
+            element: jQuery<HTMLDivElement>('<div class="input-group input-group-sm location-picker-input"/>')
+        });
 
-        const tparent = this._getAnyElement(parent);
-        const root = jQuery<HTMLDivElement>('<div class="input-group input-group-sm location-picker-input"/>').appendTo(tparent);
-        this._element = root;
+        this._element.appendTo(LocationPickerInput._asParent(parent));
+        const root = this._element;
 
         this._input = jQuery<HTMLInputElement>('<input type="text" class="form-control form-control-sm" readonly/>').appendTo(root);
         if (name !== undefined) {
@@ -103,7 +104,7 @@ export class LocationPickerInput extends Component<HTMLDivElement> {
     protected _render(): void {
         if (!this._gcValue || this._gcValue.latitude === undefined || this._gcValue.longitude === undefined) {
             this._input.val('-');
-            this._input.removeAttr('data-toggle data-html data-original-title title');
+            this._input.removeAttr('data-bs-toggle data-bs-html data-bs-title title');
             return;
         }
 
@@ -129,10 +130,27 @@ export class LocationPickerInput extends Component<HTMLDivElement> {
             tooltipstr += `Accuracy: ${this._gcValue.accuracy.toFixed(1)} m<br>`;
         }
 
-        this._input.attr('data-toggle', 'tooltip');
-        this._input.attr('data-html', 'true');
-        this._input.attr('data-original-title', tooltipstr);
-        Tooltip.init();
+        this._input.attr('data-bs-toggle', 'tooltip');
+        this._input.attr('data-bs-html', 'true');
+        this._input.attr('data-bs-title', tooltipstr);
+        Tooltip2.init();
+    }
+
+    /**
+     * Resolve a parent element (bambooo component, jQuery or selector) to a
+     * jQuery handle the input can be appended to.
+     * @param {ComponentType} element
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _asParent(element: ComponentType): JQuery {
+        const maybe = element as {getElement?: () => JQuery;} | null | undefined;
+
+        if (maybe && typeof maybe.getElement === 'function') {
+            return maybe.getElement();
+        }
+
+        return jQuery(element as JQuery.Selector);
     }
 
 }

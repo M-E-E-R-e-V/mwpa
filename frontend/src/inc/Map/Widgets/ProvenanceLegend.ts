@@ -1,5 +1,5 @@
 /* global JQuery */
-import {Component} from 'bambooo';
+import {Widget2} from 'bambooo';
 import {MetricLayer, MetricRenderMode} from '../Layers/MetricLayer';
 
 const escapeHtml = (s: string): string => s
@@ -35,7 +35,7 @@ export type ProvenanceEntry = {
  * Re-renders fully on every update — the legend is small, diffing isn't
  * worth the code.
  */
-export class ProvenanceLegend extends Component<HTMLDivElement> {
+export class ProvenanceLegend extends Widget2 {
 
     /**
      * @protected
@@ -56,8 +56,11 @@ export class ProvenanceLegend extends Component<HTMLDivElement> {
     protected _unsubscribers: (() => void)[] = [];
 
     public constructor(parent: JQuery) {
-        const root = jQuery<HTMLDivElement>('<div class="map-provenance-legend"/>').appendTo(parent);
-        super(root);
+        super({
+            element: jQuery<HTMLDivElement>('<div class="map-provenance-legend"/>')
+        });
+
+        this._element.appendTo(parent);
     }
 
     public setStaticEntries(entries: ProvenanceEntry[]): void {

@@ -1,5 +1,5 @@
 /* global JQuery */
-import {ComponentType, LangText, ModalDialog, ModalDialogType} from 'bambooo';
+import {ComponentType, LangTextV2, ModalDialog2, ModalDialogType2} from 'bambooo';
 import moment from 'moment';
 import {fromLonLat, toLonLat} from 'ol/proj';
 import {Lang} from '../Lang';
@@ -63,7 +63,7 @@ const dmToDd = (direction: string, degree: number, minute: number): number => {
  * optional polyline route (e.g. the surrounding tour's GPS track) is shown on
  * the map for orientation.
  */
-export class LocationPickerModal extends ModalDialog {
+export class LocationPickerModal extends ModalDialog2 {
 
     protected _map: SightingMap | null = null;
 
@@ -159,13 +159,17 @@ export class LocationPickerModal extends ModalDialog {
     protected _suspendSync: boolean = false;
 
     public constructor(elementObject: ComponentType) {
-        super(elementObject, `locationpickermodal-${Date.now()}`, ModalDialogType.xlarge);
+        super({
+            modalType: ModalDialogType2.xlarge,
+            target: elementObject as JQuery,
+            id: `locationpickermodal-${Date.now()}`
+        });
 
         const lang = Lang.i();
 
-        this.setTitle(new LangText('Pick position'));
+        this.setTitle(new LangTextV2({text: 'Pick position'}));
 
-        const bodyCard = jQuery('<div class="card-body location-picker-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body location-picker-body"/>').appendTo(this.getBody());
         const row = jQuery('<div class="row"/>').appendTo(bodyCard);
         const colLeft = jQuery('<div class="col-md-5 location-picker-form"/>').appendTo(row);
         const colRight = jQuery('<div class="col-md-7 location-picker-mapcol"/>').appendTo(row);
@@ -220,8 +224,8 @@ export class LocationPickerModal extends ModalDialog {
         this._noTrackInfo = jQuery<HTMLDivElement>(`<div class="small text-muted mt-2" style="display:none;">${escapeHtml(lang.l('No tracking points'))}</div>`).appendTo(colRight);
 
         // Footer buttons.
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Use this position'));
+        this.addButtonClose('Close');
+        this.addButtonSave('Use this position');
 
         this._wireInputs();
         this._wireFreePick();

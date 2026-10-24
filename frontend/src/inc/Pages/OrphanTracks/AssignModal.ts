@@ -1,13 +1,13 @@
+/* global JQuery */
 import {
-    ComponentType,
-    FormGroup,
-    FormRow,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
-    ModalDialog,
-    ModalDialogType,
-    SelectBottemBorderOnly2
+    FormGroup2,
+    FormRow2,
+    Input2,
+    InputType2,
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2,
+    Select2
 } from 'bambooo';
 import {boundingExtent} from 'ol/extent';
 import {fromLonLat} from 'ol/proj';
@@ -50,15 +50,15 @@ export type DeleteRequestFn = (tourFid: string, deviceId: number) => Promise<voi
  * {@link setCandidates}. The user picks a candidate via radio button.
  * Save is enabled only when a candidate is selected.
  */
-export class AssignModal extends ModalDialog {
+export class AssignModal extends ModalDialog2 {
 
     protected _tourFid: string = '';
     protected _deviceId: number = 0;
 
-    protected _selectVehicle: SelectBottemBorderOnly2;
-    protected _selectDriver: SelectBottemBorderOnly2;
-    protected _inputDate: InputBottemBorderOnly2;
-    protected _inputStart: InputBottemBorderOnly2;
+    protected _selectVehicle: Select2;
+    protected _selectDriver: Select2;
+    protected _inputDate: Input2;
+    protected _inputStart: Input2;
 
     protected _matchBody: JQuery<HTMLDivElement>;
     protected _hintInfo: JQuery<HTMLDivElement>;
@@ -82,25 +82,34 @@ export class AssignModal extends ModalDialog {
     protected _btnDelete: JQuery<HTMLButtonElement>;
     protected _mapStatsInfo: JQuery<HTMLDivElement>;
 
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'orphantracksassignmodal', ModalDialogType.xlarge);
+    public constructor() {
+        super({modalType: ModalDialogType2.xlarge});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
         // Pickers row
-        const pickerRow = new FormRow(bodyCard);
+        const pickerRow = new FormRow2();
+        pickerRow.appendTo(bodyCard);
 
-        const groupVehicle = new FormGroup(pickerRow.createCol(3), new LangText('Vehicle'));
-        this._selectVehicle = new SelectBottemBorderOnly2(groupVehicle);
+        const groupVehicle = new FormGroup2({label: new LangTextV2({text: 'Vehicle'})});
+        groupVehicle.appendTo(pickerRow.createCol(3));
+        this._selectVehicle = new Select2({});
+        this._selectVehicle.appendTo(groupVehicle);
 
-        const groupDriver = new FormGroup(pickerRow.createCol(3), new LangText('Driver'));
-        this._selectDriver = new SelectBottemBorderOnly2(groupDriver);
+        const groupDriver = new FormGroup2({label: new LangTextV2({text: 'Driver'})});
+        groupDriver.appendTo(pickerRow.createCol(3));
+        this._selectDriver = new Select2({});
+        this._selectDriver.appendTo(groupDriver);
 
-        const groupDate = new FormGroup(pickerRow.createCol(3), new LangText('Date'));
-        this._inputDate = new InputBottemBorderOnly2(groupDate, 'orphandate', InputType.date);
+        const groupDate = new FormGroup2({label: new LangTextV2({text: 'Date'})});
+        groupDate.appendTo(pickerRow.createCol(3));
+        this._inputDate = new Input2({type: InputType2.date});
+        this._inputDate.appendTo(groupDate);
 
-        const groupStart = new FormGroup(pickerRow.createCol(3), new LangText('Tour start'));
-        this._inputStart = new InputBottemBorderOnly2(groupStart, 'orphanstart', InputType.time);
+        const groupStart = new FormGroup2({label: new LangTextV2({text: 'Tour start'})});
+        groupStart.appendTo(pickerRow.createCol(3));
+        this._inputStart = new Input2({type: InputType2.time});
+        this._inputStart.appendTo(groupStart);
 
         // Hint above the table
         this._hintInfo = jQuery<HTMLDivElement>('<div class="text-muted small pt-2 pb-1"/>').appendTo(bodyCard);
@@ -164,8 +173,8 @@ export class AssignModal extends ModalDialog {
         this._inputDate.getElement().on('change', fire);
         this._inputStart.getElement().on('change', fire);
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Assign tracks'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Assign tracks', true);
         this._updateSaveEnabled();
     }
 

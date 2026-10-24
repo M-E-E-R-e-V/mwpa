@@ -1,14 +1,19 @@
-import {Tooltip, Component, ComponentType} from 'bambooo';
+/* global JQuery */
+import {ComponentType, Tooltip2, Widget2} from 'bambooo';
 import moment from 'moment';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';
 import {UtilLocation} from '../Utils/UtilLocation';
 
 export type LocationDisplayButtonClickFn = () => void;
 
-export class LocationDisplay extends Component<HTMLDListElement> {
+export class LocationDisplay extends Widget2 {
 
     public constructor(element: ComponentType, value: string|GeolocationCoordinates, onClick?: LocationDisplayButtonClickFn) {
-        super();
+        super({
+            element: jQuery<HTMLDListElement>('<dl class="row"></dl>')
+        });
+
+        this._element.appendTo(LocationDisplay._asParent(element));
 
         let gcValue: GeolocationCoordinates|null = null;
 
@@ -41,10 +46,6 @@ export class LocationDisplay extends Component<HTMLDListElement> {
             }
         }
 
-        const telement = this._getAnyElement(element);
-
-        this._element = jQuery<HTMLDListElement>('<dl class="row"></dl>').appendTo(telement);
-
         const iconDt = jQuery('<dt class="col-sm-1"><i class="fas fa-map-marker-alt mr-1"></i></dt>');
         iconDt.appendTo(this._element);
 
@@ -74,19 +75,19 @@ export class LocationDisplay extends Component<HTMLDListElement> {
                 tooltipstr += `Accuracy: ${gcValue.accuracy.toFixed(1)} m<br>`;
             }
 
-            this._element.attr('data-toggle', 'tooltip');
-            this._element.attr('data-html', 'true');
-            this._element.attr('data-original-title', tooltipstr);
+            this._element.attr('data-bs-toggle', 'tooltip');
+            this._element.attr('data-bs-html', 'true');
+            this._element.attr('data-bs-title', tooltipstr);
 
             // init tooltips
-            Tooltip.init();
+            Tooltip2.init();
         } else {
             this._element.attr('title', '');
         }
 
         if (onClick) {
             this._element.on('click', (event: any): void => {
-                jQuery('[data-toggle="tooltip"]').tooltip('hide');
+                jQuery('[data-bs-toggle="tooltip"]').tooltip('hide');
                 onClick();
                 event.preventDefault();
             });
@@ -95,6 +96,23 @@ export class LocationDisplay extends Component<HTMLDListElement> {
                 cursor: 'pointer'
             });
         }
+    }
+
+    /**
+     * Resolve a parent element (bambooo component, jQuery or selector) to a
+     * jQuery handle the display can be appended to.
+     * @param {ComponentType} element
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _asParent(element: ComponentType): JQuery {
+        const maybe = element as {getElement?: () => JQuery;} | null | undefined;
+
+        if (maybe && typeof maybe.getElement === 'function') {
+            return maybe.getElement();
+        }
+
+        return jQuery(element as JQuery.Selector);
     }
 
 }

@@ -1,5 +1,5 @@
 /* global JQuery */
-import {Component} from 'bambooo';
+import {Widget2} from 'bambooo';
 import * as d3raw from 'd3';
 import {SightingEnvironmentEntry} from '../../Api/SightingEnvironment';
 
@@ -65,7 +65,7 @@ type ChartHandle = {
  * Plain d3 (no dc.js); a few thousand rows is well within "redraw on
  * every setData" territory.
  */
-export class MetricCharts extends Component<HTMLDivElement> {
+export class MetricCharts extends Widget2 {
 
     /**
      * @protected
@@ -90,8 +90,12 @@ export class MetricCharts extends Component<HTMLDivElement> {
     };
 
     public constructor(parent: JQuery) {
-        const root = jQuery<HTMLDivElement>('<div class="metric-charts"/>').appendTo(parent);
-        super(root);
+        super({
+            element: jQuery<HTMLDivElement>('<div class="metric-charts"/>')
+        });
+
+        const root = this._element;
+        root.appendTo(parent);
 
         this._statusEl = jQuery('<div class="metric-charts-status" style="padding:6px 8px;color:#555;"/>').appendTo(root);
 

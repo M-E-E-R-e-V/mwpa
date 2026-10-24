@@ -1,4 +1,4 @@
-import {Card, ContentCol, ContentColSize, ContentRow, LangText, SelectBottemBorderOnly2} from 'bambooo';
+import {Card2, ContentCol2, ContentColSize2, ContentRow2, LangTextV2, Select2} from 'bambooo';
 import {Coordinate} from 'ol/coordinate';
 import {fromLonLat} from 'ol/proj';
 import {Organization as OrganizationAPI} from '../Api/Organization';
@@ -130,9 +130,10 @@ export class OceanFishingMap extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Ocean & Fishing'));
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
+        card.setTitle(new LangTextV2({text: 'Ocean & Fishing'}));
 
         /*
          * Filter bar on top of the card body: year picker + map-size toggle.
@@ -141,7 +142,8 @@ export class OceanFishingMap extends BasePage {
         const filterBar = jQuery('<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;"/>').appendTo(card.getBodyElement());
         jQuery('<label style="margin:0;font-weight:600;font-size:0.9rem;">Year</label>').appendTo(filterBar);
         const yearWrap = jQuery('<div style="min-width:200px;"/>').appendTo(filterBar);
-        const yearSelect = new SelectBottemBorderOnly2(yearWrap);
+        const yearSelect = new Select2({});
+        yearSelect.appendTo(yearWrap);
         yearSelect.setValues([{key: '', value: '— All sightings —'}]);
         yearSelect.setSelectedValue('');
         yearSelect.setChangeFn((value: string) => {

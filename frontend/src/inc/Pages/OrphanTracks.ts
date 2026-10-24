@@ -1,19 +1,19 @@
 import {
-    Badge,
-    BadgeType,
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
+    Badge2,
+    BadgeType2,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
     IconFa,
-    LangText,
-    TableWrapper,
-    Td,
-    Th,
-    Tooltip,
-    Tr
+    LangTextV2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tooltip2,
+    Tr2
 } from 'bambooo';
 import moment from 'moment';
 import {OrphanTrackEntry, OrphanTracks as OrphanTracksAPI} from '../Api/OrphanTracks';
@@ -46,7 +46,7 @@ export class OrphanTracks extends BasePage {
 
     public constructor() {
         super();
-        this._modal = new AssignModal(this._wrapper.getContentWrapper().getContent().getElement());
+        this._modal = new AssignModal();
     }
 
     /**
@@ -144,59 +144,53 @@ export class OrphanTracks extends BasePage {
         });
 
         // List card -----------------------------------------------------------------------------
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Orphan Tracks'));
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
+        card.setTitle(new LangTextV2({text: 'Orphan Tracks'}));
 
-        const tableWrapper = new TableWrapper<OrphanTrackEntry>(card.getElement(), {head_fixed: true});
+        const tableWrapper = new TableWrapper2<OrphanTrackEntry>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(card.getBodyElement());
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Tour-Fid'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Device'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Vehicle / Driver'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Date / Start'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Points'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('First / Last seen'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, '');
+        new Th2({value: new LangTextV2({text: 'Tour-Fid'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Device'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Vehicle / Driver'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Date / Start'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Points'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'First / Last seen'})}).appendTo(trhead);
+        new Th2({value: ''}).appendTo(trhead);
 
-        const renderRow = (_t: import('bambooo').Table, entry: OrphanTrackEntry): void => {
-            const trbody = new Tr(table.getTbody());
+        const renderRow = (_t: Table2, entry: OrphanTrackEntry): void => {
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `<code>${escapeHtml(entry.tour_fid)}</code>`);
+            new Td2({value: `<code>${escapeHtml(entry.tour_fid)}</code>`}).appendTo(trbody);
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `#${entry.device_id}`);
+            new Td2({value: `#${entry.device_id}`}).appendTo(trbody);
 
             const vName = this._vehicles.get(entry.vehicle_id)?.name ?? `#${entry.vehicle_id}`;
             const dName = this._drivers.get(entry.vehicle_driver_id)?.user.name ?? `#${entry.vehicle_driver_id}`;
-            // eslint-disable-next-line no-new
-            new Td(trbody, `${escapeHtml(vName)}<br>${escapeHtml(dName)}`);
+            new Td2({value: `${escapeHtml(vName)}<br>${escapeHtml(dName)}`}).appendTo(trbody);
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `${escapeHtml(entry.date)}<br><b>${escapeHtml(entry.tour_start)}</b>`);
+            new Td2({value: `${escapeHtml(entry.date)}<br><b>${escapeHtml(entry.tour_start)}</b>`}).appendTo(trbody);
 
-            const tdCount = new Td(trbody, '');
-            // eslint-disable-next-line no-new
-            new Badge(tdCount, `${entry.count}`, BadgeType.info);
+            const tdCount = new Td2({value: ''});
+            tdCount.appendTo(trbody);
+            new Badge2({text: `${entry.count}`, type: BadgeType2.info}).appendTo(tdCount);
 
             const minDt = moment(entry.min_create_datetime * 1000).format('YYYY.MM.DD HH:mm');
             const maxDt = moment(entry.max_create_datetime * 1000).format('YYYY.MM.DD HH:mm');
-            // eslint-disable-next-line no-new
-            new Td(trbody, `${minDt}<br>${maxDt}`);
+            new Td2({value: `${minDt}<br>${maxDt}`}).appendTo(trbody);
 
-            const tdAction = new Td(trbody, '');
-            const abtnMenu = new ButtonMenu(tdAction, IconFa.bars, true, ButtonType.borderless);
+            const tdAction = new Td2({value: ''});
+            tdAction.appendTo(trbody);
+            const abtnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+            abtnMenu.appendTo(tdAction);
             abtnMenu.addMenuItem('Assign to tour', () => {
-                this._modal.setTitle(new LangText('Assign orphan tracks'));
+                this._modal.setTitle(new LangTextV2({text: 'Assign orphan tracks'}));
                 this._modal.setSource(
                     entry.tour_fid,
                     entry.device_id,
@@ -243,7 +237,7 @@ export class OrphanTracks extends BasePage {
                 } finally {
                     card.hideLoading();
                     Lang.i().lAll();
-                    Tooltip.init();
+                    Tooltip2.init();
                 }
             },
             renderRow

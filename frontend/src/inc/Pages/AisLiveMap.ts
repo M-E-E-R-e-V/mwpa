@@ -1,4 +1,4 @@
-import {Card, ContentCol, ContentColSize, ContentRow, LangText} from 'bambooo';
+import {Card2, ContentCol2, ContentColSize2, ContentRow2, LangTextV2} from 'bambooo';
 import moment from 'moment';
 import Feature from 'ol/Feature';
 import {default as OlMap} from 'ol/Map';
@@ -63,6 +63,9 @@ const escapeHtml = (s: string): string => s
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
+/** Tiny helper so we don't need to import Lang for a single use. */
+const Lang_i = (): undefined => undefined;
+
 /**
  * Live AIS map — full-screen OL map showing every vessel currently
  * in the live_ais_track buffer (1 h freshness window).
@@ -118,11 +121,12 @@ export class AisLiveMap extends BasePage {
         const lang = Lang_i();  // simple helper for the title only
         void lang;
 
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Live AIS Map'));
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
+        card.setTitle(new LangTextV2({text: 'Live AIS Map'}));
 
-        const mapDiv = jQuery<HTMLDivElement>('<div class="ais-live-map"/>').appendTo(card.getElement());
+        const mapDiv = jQuery<HTMLDivElement>('<div class="ais-live-map"/>').appendTo(card.getBodyElement());
 
         // Fit to viewport minus header + AdminLTE chrome. 220 px is
         // the empirical sum of navbar + sidebar headers + card padding
@@ -441,9 +445,4 @@ export class AisLiveMap extends BasePage {
         }
     }
 
-}
-
-/** Tiny helper so we don't need to import Lang for a single use. */
-function Lang_i(): undefined {
-    return undefined;
 }
