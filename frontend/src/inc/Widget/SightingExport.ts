@@ -1,5 +1,5 @@
 /* global JQuery */
-import {Component, UtilDownload} from 'bambooo';
+import {Component2, NavTab2, UtilDownload} from 'bambooo';
 import {OfficeReport as OfficeReportApi, UsedVehiclesFilter} from '../Api/OfficeReport';
 import {Organization as OrganizationApi} from '../Api/Organization';
 import {Sightings as SightingsApi} from '../Api/Sightings';
@@ -149,7 +149,7 @@ export type SightingExportPdfHandler = () => void | Promise<void>;
  *   - **Data Page**    — single printable data sheet (Map + Analytics +
  *     Year comparison) — uses the browser's "Save as PDF" via window.print()
  */
-export class SightingExport extends Component<HTMLDivElement> {
+export class SightingExport extends Component2 {
 
     protected _excelExportBody: JQuery;
 
@@ -179,7 +179,7 @@ export class SightingExport extends Component<HTMLDivElement> {
         pdfHandler?: SightingExportPdfHandler
     ) {
         const root = jQuery<HTMLDivElement>('<div class="sighting-export"/>').appendTo(parent);
-        super(root);
+        super({element: root});
 
         if (filterProvider) {
             this._filterProvider = filterProvider;
@@ -205,43 +205,30 @@ export class SightingExport extends Component<HTMLDivElement> {
         const canXlsx = Session.hasRight('export_xlsx');
         const canAroc = Session.hasRight('export_aroc');
 
-        const nav = jQuery('<ul class="nav nav-tabs" role="tablist"/>').appendTo(root);
-        const tabContent = jQuery('<div class="tab-content"/>').appendTo(root);
+        const navTab = new NavTab2({});
+        navTab.appendTo(root);
 
         /*
          * Detached placeholders keep the typed fields a JQuery even for a tab
          * that isn't rendered; the matching _build* method is only called when
-         * the tab is actually shown.
+         * the tab is actually shown. NavTab2 activates the first tab it is
+         * handed, so whichever gated tab is added first keeps the active state.
          */
         this._excelExportBody = jQuery('<div/>');
         this._excelReportBody = jQuery('<div/>');
         this._dataPageBody = jQuery('<div/>');
 
-        // first rendered tab gets the active state
-        let firstShown = true;
-        const navLink = (active: boolean, tabId: string, label: string): string =>
-            `<li class="nav-item"><a class="nav-link${active ? ' active' : ''}" data-toggle="tab" `
-            + `href="#${tabId}">${escapeHtml(label)}</a></li>`;
-        const pane = (active: boolean, tabId: string): JQuery => jQuery(
-            `<div class="tab-pane fade${active ? ' active show' : ''} sighting-export-pane" id="${tabId}"/>`
-        ).appendTo(tabContent);
-
         if (canXlsx) {
-            nav.append(navLink(firstShown, excelExportTabId, lang.l('Excel Export')));
-            this._excelExportBody = pane(firstShown, excelExportTabId);
+            this._excelExportBody = navTab.addTab(lang.l('Excel Export'), excelExportTabId).body;
             this._buildExcelExportTab();
-            firstShown = false;
         }
 
         if (canAroc) {
-            nav.append(navLink(firstShown, excelReportTabId, lang.l('Excel Report')));
-            this._excelReportBody = pane(firstShown, excelReportTabId);
+            this._excelReportBody = navTab.addTab(lang.l('Excel Report'), excelReportTabId).body;
             this._buildExcelReportTab();
-            firstShown = false;
         }
 
-        nav.append(navLink(firstShown, dataPageTabId, lang.l('Data Page')));
-        this._dataPageBody = pane(firstShown, dataPageTabId);
+        this._dataPageBody = navTab.addTab(lang.l('Data Page'), dataPageTabId).body;
         this._buildDataPageTab();
     }
 
@@ -385,8 +372,10 @@ export class SightingExport extends Component<HTMLDivElement> {
 
             params.set('coord_format', coordFormat);
 
-            // Forward the page's active filter so the export matches what's listed.
-            // Empty strings / 0 are dropped — same shape the list endpoint expects.
+            /*
+             * Forward the page's active filter so the export matches what's listed.
+             * Empty strings / 0 are dropped — same shape the list endpoint expects.
+             */
             if (this._filterProvider) {
                 const f = this._filterProvider();
                 if (f.period_from !== '') {
@@ -476,10 +465,12 @@ export class SightingExport extends Component<HTMLDivElement> {
             + '</select>'
         ).appendTo(organizationGroup);
 
-        // Boat picker — required for the new AROC template (1 file per boat).
-        // No "All boats" option here on purpose: AROC explicitly wants a
-        // single boat per file (B7 "Nombre del barco" is mandatory), and the
-        // backend rejects the request without `vehicle_id`.
+        /*
+         * Boat picker — required for the new AROC template (1 file per boat).
+         * No "All boats" option here on purpose: AROC explicitly wants a
+         * single boat per file (B7 "Nombre del barco" is mandatory), and the
+         * backend rejects the request without `vehicle_id`.
+         */
         const vehicleGroup = jQuery('<div class="form-group"/>').appendTo(body);
         jQuery(
             `<label class="form-label">${escapeHtml(lang.l('Boat'))}*</label>`
@@ -524,8 +515,10 @@ export class SightingExport extends Component<HTMLDivElement> {
             }
 
             yearSelect.prop('disabled', false);
-            // Trigger refresh so the boat list reflects the auto-picked year
-            // (jQuery `.val()` doesn't fire change on its own).
+            /*
+             * Trigger refresh so the boat list reflects the auto-picked year
+             * (jQuery `.val()` doesn't fire change on its own).
+             */
             yearSelect.trigger('change');
         }).catch(() => {
             yearSelect.empty();
@@ -637,8 +630,10 @@ export class SightingExport extends Component<HTMLDivElement> {
 
         refreshVehicles();
 
-        // Download is gated on BOTH a boat being picked (AROC requirement) AND
-        // a receiver being available. Recompute whenever either side changes.
+        /*
+         * Download is gated on BOTH a boat being picked (AROC requirement) AND
+         * a receiver being available. Recompute whenever either side changes.
+         */
         let receiversReady = false;
         const updateDownloadEnabled = (): void => {
             const vehicleVal = parseInt(String(vehicleSelect.val() ?? ''), 10);
@@ -680,10 +675,12 @@ export class SightingExport extends Component<HTMLDivElement> {
             updateDownloadEnabled();
         });
 
-        // Going through fetch+blob (instead of UtilDownload.download)
-        // because Chrome's Safe-Browsing heuristics on self-signed certs
-        // sometimes silently swallow programmatic anchor downloads of
-        // office files. fetch+blob bypasses that and surfaces real errors.
+        /*
+         * Going through fetch+blob (instead of UtilDownload.download)
+         * because Chrome's Safe-Browsing heuristics on self-signed certs
+         * sometimes silently swallow programmatic anchor downloads of
+         * office files. fetch+blob bypasses that and surfaces real errors.
+         */
         downloadBtn.on('click', async() => {
             const params = new URLSearchParams();
             const yearVal = String(yearSelect.val() ?? '').trim();
@@ -736,12 +733,14 @@ export class SightingExport extends Component<HTMLDivElement> {
                 const blob = await resp.blob();
                 objectUrl = URL.createObjectURL(blob);
 
-                // Pull the suggested filename from the server's
-                // Content-Disposition (AROC - YEAR - HALF - BOAT.xlsx). Fall
-                // back to a generic name only if the header is missing or
-                // doesn't parse.
+                /*
+                 * Pull the suggested filename from the server's
+                 * Content-Disposition (AROC - YEAR - HALF - BOAT.xlsx). Fall
+                 * back to a generic name only if the header is missing or
+                 * doesn't parse.
+                 */
                 const cd = resp.headers.get('Content-Disposition') ?? '';
-                const cdMatch = cd.match(/filename="([^"]+)"/);
+                const cdMatch = cd.match(/filename="([^"]+)"/u);
                 const downloadName = cdMatch ? cdMatch[1] : 'AROC.xlsx';
 
                 const link = document.createElement('a');

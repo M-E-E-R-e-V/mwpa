@@ -1,9 +1,10 @@
+/* global JQuery */
 import {
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    LangText,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    LangTextV2,
     SidebarMenuItem,
     SidebarMenuItemBadge,
     SidebarMenuTree
@@ -161,9 +162,10 @@ export class SpeciesProfile extends BasePage {
 
         // KPI bar ----------------------------------------------------------------------------------------------------
 
-        const rowKpi = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const kpiCard = new Card(new ContentCol(rowKpi, ContentColSize.col12));
-        kpiCard.setTitle(new LangText(`${titleKey}${titleSuffix}`));
+        const rowKpi = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const kpiCard = new Card2({});
+        kpiCard.appendTo(new ContentCol2(rowKpi, ContentColSize2.col12).getElement());
+        kpiCard.setTitle(new LangTextV2({text: `${titleKey}${titleSuffix}`}));
         kpiCard.getMainElement().addClass('print-include');
 
         const kpiBody = jQuery('<div class="card-body"/>').appendTo(kpiCard.getBodyElement());
@@ -211,60 +213,68 @@ export class SpeciesProfile extends BasePage {
 
         // Row 1b — tour clustering (ICC), pseudo-replication diagnostic ------------------------------------------------
 
-        const rowIcc = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const iccCard = new Card(new ContentCol(rowIcc, ContentColSize.col12));
-        iccCard.setTitle(new LangText('Tour clustering (ICC)'));
+        const rowIcc = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const iccCard = new Card2({});
+        iccCard.appendTo(new ContentCol2(rowIcc, ContentColSize2.col12).getElement());
+        iccCard.setTitle(new LangTextV2({text: 'Tour clustering (ICC)'}));
         const iccHost = jQuery<HTMLDivElement>('<div class="species-profile-icc card-body"/>').appendTo(iccCard.getBodyElement());
         this._hosts.iccHost = iccHost;
 
         // Row 2 — time distribution (monthly + hourly side-by-side) ---------------------------------------------------
 
-        const rowTime = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const monthlyCard = new Card(new ContentCol(rowTime, ContentColSize.colMd6));
-        monthlyCard.setTitle(new LangText('Sightings per month'));
+        const rowTime = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const monthlyCard = new Card2({});
+        monthlyCard.appendTo(new ContentCol2(rowTime, ContentColSize2.colMd6).getElement());
+        monthlyCard.setTitle(new LangTextV2({text: 'Sightings per month'}));
         SpeciesProfile._attachInfo(monthlyCard, 'Sightings per month', 'desc.monthly');
         const monthlyHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(monthlyCard.getBodyElement());
         this._hosts.monthlyHost = monthlyHost;
 
-        const hourlyCard = new Card(new ContentCol(rowTime, ContentColSize.colMd6));
-        hourlyCard.setTitle(new LangText('Sightings per hour-of-day'));
+        const hourlyCard = new Card2({});
+        hourlyCard.appendTo(new ContentCol2(rowTime, ContentColSize2.colMd6).getElement());
+        hourlyCard.setTitle(new LangTextV2({text: 'Sightings per hour-of-day'}));
         SpeciesProfile._attachInfo(hourlyCard, 'Sightings per hour-of-day', 'desc.hourly');
         const hourlyHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(hourlyCard.getBodyElement());
         this._hosts.hourlyHost = hourlyHost;
 
         // Row 2b — seasonality (phenology polar) + yearly SPUE trend --------------------------------------------------
 
-        const rowPhen = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const phenCard = new Card(new ContentCol(rowPhen, ContentColSize.colMd6));
-        phenCard.setTitle(new LangText('Seasonality (effort-corrected)'));
+        const rowPhen = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const phenCard = new Card2({});
+        phenCard.appendTo(new ContentCol2(rowPhen, ContentColSize2.colMd6).getElement());
+        phenCard.setTitle(new LangTextV2({text: 'Seasonality (effort-corrected)'}));
         const phenHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(phenCard.getBodyElement());
         this._hosts.phenHost = phenHost;
 
-        const trendCard = new Card(new ContentCol(rowPhen, ContentColSize.colMd6));
-        trendCard.setTitle(new LangText('Yearly SPUE trend'));
+        const trendCard = new Card2({});
+        trendCard.appendTo(new ContentCol2(rowPhen, ContentColSize2.colMd6).getElement());
+        trendCard.setTitle(new LangTextV2({text: 'Yearly SPUE trend'}));
         const trendHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(trendCard.getBodyElement());
         this._hosts.trendHost = trendHost;
 
         // Row 3 — group size + ratios ---------------------------------------------------------------------------------
 
-        const rowGroup = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const sizeCard = new Card(new ContentCol(rowGroup, ContentColSize.colMd6));
-        sizeCard.setTitle(new LangText('Group size distribution'));
+        const rowGroup = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const sizeCard = new Card2({});
+        sizeCard.appendTo(new ContentCol2(rowGroup, ContentColSize2.colMd6).getElement());
+        sizeCard.setTitle(new LangTextV2({text: 'Group size distribution'}));
         SpeciesProfile._attachInfo(sizeCard, 'Group size distribution', 'desc.group_size');
         const sizeHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(sizeCard.getBodyElement());
         this._hosts.sizeHost = sizeHost;
 
-        const ratiosCard = new Card(new ContentCol(rowGroup, ContentColSize.colMd6));
-        ratiosCard.setTitle(new LangText('Composition (sightings reporting …)'));
+        const ratiosCard = new Card2({});
+        ratiosCard.appendTo(new ContentCol2(rowGroup, ContentColSize2.colMd6).getElement());
+        ratiosCard.setTitle(new LangTextV2({text: 'Composition (sightings reporting …)'}));
         SpeciesProfile._attachInfo(ratiosCard, 'Composition (sightings reporting …)', 'desc.group_ratios');
         const ratiosHost = jQuery<HTMLDivElement>('<div class="species-profile-ratios card-body"/>').appendTo(ratiosCard.getBodyElement());
         this._hosts.ratiosHost = ratiosHost;
 
         // Row 4 — environment grid (4 mini-histograms) ----------------------------------------------------------------
 
-        const rowEnv = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const envCard = new Card(new ContentCol(rowEnv, ContentColSize.col12));
-        envCard.setTitle(new LangText('Environment preference'));
+        const rowEnv = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const envCard = new Card2({});
+        envCard.appendTo(new ContentCol2(rowEnv, ContentColSize2.col12).getElement());
+        envCard.setTitle(new LangTextV2({text: 'Environment preference'}));
         SpeciesProfile._attachInfo(envCard, 'Environment preference', 'desc.env');
 
         const envGrid = jQuery<HTMLDivElement>(
@@ -279,9 +289,10 @@ export class SpeciesProfile extends BasePage {
 
         // Row 4b — environmental response curves (target-group, effort-corrected) -------------------------------------
 
-        const rowResp = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const respCard = new Card(new ContentCol(rowResp, ContentColSize.col12));
-        respCard.setTitle(new LangText('Environmental response (effort-corrected)'));
+        const rowResp = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const respCard = new Card2({});
+        respCard.appendTo(new ContentCol2(rowResp, ContentColSize2.col12).getElement());
+        respCard.setTitle(new LangTextV2({text: 'Environmental response (effort-corrected)'}));
         jQuery('<div class="species-profile-print-desc text-muted small p-2"/>')
             .text(lang.l('Target species’ share of ALL sightings per environment bin (background = where surveying happened), with a Wilson 95% band. Unlike the raw histograms above, this is not inflated by how much was surveyed at each value.'))
             .appendTo(respCard.getBodyElement());
@@ -297,24 +308,27 @@ export class SpeciesProfile extends BasePage {
 
         // Row 5 — behaviour + reaction donuts -------------------------------------------------------------------------
 
-        const rowBeh = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const behaviourCard = new Card(new ContentCol(rowBeh, ContentColSize.colMd6));
-        behaviourCard.setTitle(new LangText('Behaviour mix'));
+        const rowBeh = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const behaviourCard = new Card2({});
+        behaviourCard.appendTo(new ContentCol2(rowBeh, ContentColSize2.colMd6).getElement());
+        behaviourCard.setTitle(new LangTextV2({text: 'Behaviour mix'}));
         SpeciesProfile._attachInfo(behaviourCard, 'Behaviour mix', 'desc.behaviour');
         const behaviourHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(behaviourCard.getBodyElement());
         this._hosts.behaviourHost = behaviourHost;
 
-        const reactionCard = new Card(new ContentCol(rowBeh, ContentColSize.colMd6));
-        reactionCard.setTitle(new LangText('Reaction to boat'));
+        const reactionCard = new Card2({});
+        reactionCard.appendTo(new ContentCol2(rowBeh, ContentColSize2.colMd6).getElement());
+        reactionCard.setTitle(new LangTextV2({text: 'Reaction to boat'}));
         SpeciesProfile._attachInfo(reactionCard, 'Reaction to boat', 'desc.reaction');
         const reactionHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(reactionCard.getBodyElement());
         this._hosts.reactionHost = reactionHost;
 
         // Row 5b — behaviour co-occurrence chord ----------------------------------------------------------------------
 
-        const rowChord = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const chordCard = new Card(new ContentCol(rowChord, ContentColSize.col12));
-        chordCard.setTitle(new LangText('Behaviour co-occurrence'));
+        const rowChord = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const chordCard = new Card2({});
+        chordCard.appendTo(new ContentCol2(rowChord, ContentColSize2.col12).getElement());
+        chordCard.setTitle(new LangTextV2({text: 'Behaviour co-occurrence'}));
         jQuery('<div class="species-profile-print-desc text-muted small p-2"/>')
             .text(lang.l('Which behaviours were recorded together in the same sighting (ribbon width = shared sightings). Co-occurrence, not a behavioural sequence.'))
             .appendTo(chordCard.getBodyElement());
@@ -323,9 +337,10 @@ export class SpeciesProfile extends BasePage {
 
         // Row 6 — movement signature ----------------------------------------------------------------------------------
 
-        const rowMove = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const movementCard = new Card(new ContentCol(rowMove, ContentColSize.col12));
-        movementCard.setTitle(new LangText('Movement signature (derived from SightingMovement)'));
+        const rowMove = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const movementCard = new Card2({});
+        movementCard.appendTo(new ContentCol2(rowMove, ContentColSize2.col12).getElement());
+        movementCard.setTitle(new LangTextV2({text: 'Movement signature (derived from SightingMovement)'}));
         SpeciesProfile._attachInfo(movementCard, 'Movement signature (derived from SightingMovement)', 'desc.movement');
 
         const movementBody = jQuery<HTMLDivElement>(
@@ -343,34 +358,38 @@ export class SpeciesProfile extends BasePage {
 
         // Row 7 — SPUE (Sightings Per Unit Effort) --------------------------------------------------------------------
 
-        const rowSpue = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const spueCard = new Card(new ContentCol(rowSpue, ContentColSize.col12));
-        spueCard.setTitle(new LangText('Sightings per tour-hour (SPUE)'));
+        const rowSpue = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const spueCard = new Card2({});
+        spueCard.appendTo(new ContentCol2(rowSpue, ContentColSize2.col12).getElement());
+        spueCard.setTitle(new LangTextV2({text: 'Sightings per tour-hour (SPUE)'}));
         SpeciesProfile._attachInfo(spueCard, 'Sightings per tour-hour (SPUE)', 'desc.spue');
         const spueHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(spueCard.getBodyElement());
         this._hosts.spueHost = spueHost;
 
         // Row 8 — yearly trend ----------------------------------------------------------------------------------------
 
-        const rowYearly = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const yearlyCard = new Card(new ContentCol(rowYearly, ContentColSize.colMd6));
-        yearlyCard.setTitle(new LangText('Sightings per year'));
+        const rowYearly = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const yearlyCard = new Card2({});
+        yearlyCard.appendTo(new ContentCol2(rowYearly, ContentColSize2.colMd6).getElement());
+        yearlyCard.setTitle(new LangTextV2({text: 'Sightings per year'}));
         SpeciesProfile._attachInfo(yearlyCard, 'Sightings per year', 'desc.yearly');
         const yearlyHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(yearlyCard.getBodyElement());
         this._hosts.yearlyHost = yearlyHost;
 
         // Co-occurrence card next to yearly
-        const cooccCard = new Card(new ContentCol(rowYearly, ContentColSize.colMd6));
-        cooccCard.setTitle(new LangText('Co-occurring species (same tour)'));
+        const cooccCard = new Card2({});
+        cooccCard.appendTo(new ContentCol2(rowYearly, ContentColSize2.colMd6).getElement());
+        cooccCard.setTitle(new LangTextV2({text: 'Co-occurring species (same tour)'}));
         SpeciesProfile._attachInfo(cooccCard, 'Co-occurring species (same tour)', 'desc.cooccurrence');
         const cooccHost = jQuery<HTMLDivElement>('<div class="species-profile-chart"/>').appendTo(cooccCard.getBodyElement());
         this._hosts.cooccHost = cooccHost;
 
         // Row 9 — pressure indicators --------------------------------------------------------------------------------
 
-        const rowPress = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const pressureCard = new Card(new ContentCol(rowPress, ContentColSize.col12));
-        pressureCard.setTitle(new LangText('Pressure indicators'));
+        const rowPress = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const pressureCard = new Card2({});
+        pressureCard.appendTo(new ContentCol2(rowPress, ContentColSize2.col12).getElement());
+        pressureCard.setTitle(new LangTextV2({text: 'Pressure indicators'}));
         SpeciesProfile._attachInfo(pressureCard, 'Pressure indicators', 'desc.pressure');
 
         const pressureGrid = jQuery<HTMLDivElement>(
@@ -384,9 +403,10 @@ export class SpeciesProfile extends BasePage {
 
         // Row 10 — extra env distributions ---------------------------------------------------------------------------
 
-        const rowEnvExtra = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const envExtraCard = new Card(new ContentCol(rowEnvExtra, ContentColSize.col12));
-        envExtraCard.setTitle(new LangText('Extended environment (oceanographic)'));
+        const rowEnvExtra = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const envExtraCard = new Card2({});
+        envExtraCard.appendTo(new ContentCol2(rowEnvExtra, ContentColSize2.col12).getElement());
+        envExtraCard.setTitle(new LangTextV2({text: 'Extended environment (oceanographic)'}));
         SpeciesProfile._attachInfo(envExtraCard, 'Extended environment (oceanographic)', 'desc.env_extra');
 
         const envExtraGrid = jQuery<HTMLDivElement>(
@@ -408,18 +428,20 @@ export class SpeciesProfile extends BasePage {
 
         // Row 11 — spatial heatmap ------------------------------------------------------------------------------------
 
-        const rowMap = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const mapCard = new Card(new ContentCol(rowMap, ContentColSize.col12));
-        mapCard.setTitle(new LangText('Spatial distribution'));
+        const rowMap = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const mapCard = new Card2({});
+        mapCard.appendTo(new ContentCol2(rowMap, ContentColSize2.col12).getElement());
+        mapCard.setTitle(new LangTextV2({text: 'Spatial distribution'}));
         SpeciesProfile._attachInfo(mapCard, 'Spatial distribution', 'desc.heatmap');
         const mapHost = jQuery<HTMLDivElement>('<div class="species-profile-map" style="height: 360px;"/>').appendTo(mapCard.getBodyElement());
         this._hosts.mapHost = mapHost;
 
         // Row 11b — KDE utilisation distribution + Getis-Ord Gi* hotspots ---------------------------------------------
 
-        const rowSpatial = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const spatialCard = new Card(new ContentCol(rowSpatial, ContentColSize.col12));
-        spatialCard.setTitle(new LangText('Hotspots & utilization distribution'));
+        const rowSpatial = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const spatialCard = new Card2({});
+        spatialCard.appendTo(new ContentCol2(rowSpatial, ContentColSize2.col12).getElement());
+        spatialCard.setTitle(new LangTextV2({text: 'Hotspots & utilization distribution'}));
 
         const spatialBar = jQuery('<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap;"/>').appendTo(spatialCard.getBodyElement());
         const spatialToggle = jQuery(
@@ -446,9 +468,10 @@ export class SpeciesProfile extends BasePage {
 
         // Row 12 — seismic exposure -----------------------------------------------------------------------------------
 
-        const rowSeismic = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const seismicCard = new Card(new ContentCol(rowSeismic, ContentColSize.col12));
-        seismicCard.setTitle(new LangText('Seismic exposure'));
+        const rowSeismic = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const seismicCard = new Card2({});
+        seismicCard.appendTo(new ContentCol2(rowSeismic, ContentColSize2.col12).getElement());
+        seismicCard.setTitle(new LangTextV2({text: 'Seismic exposure'}));
         SpeciesProfile._attachInfo(seismicCard, 'Seismic exposure', 'desc.seismic');
 
         const seismicBody = jQuery<HTMLDivElement>(
@@ -471,11 +494,11 @@ export class SpeciesProfile extends BasePage {
             try {
                 const profile = await SpeciesAPI.getProfile(this._speciesId);
                 if (!profile) {
-                    kpiCard.setTitle(new LangText(`${titleKey}${titleSuffix} — ${lang.l('No data')}`));
+                    kpiCard.setTitle(new LangTextV2({text: `${titleKey}${titleSuffix} — ${lang.l('No data')}`}));
                     return;
                 }
 
-                kpiCard.setTitle(new LangText(`${lang.l(titleKey)} — ${profile.species_name} (#${profile.species_id})`));
+                kpiCard.setTitle(new LangTextV2({text: `${lang.l(titleKey)} — ${profile.species_name} (#${profile.species_id})`}));
 
                 if (this._badge) {
                     this._badge.setContent(`${profile.n_sightings}`);
@@ -923,7 +946,7 @@ export class SpeciesProfile extends BasePage {
      * `mwpa-print-mode-profile` so the PDF reader can interpret the chart
      * without opening the (i) popover.
      */
-    private static _attachInfo(card: Card, titleKey: string, descKey: string): void {
+    private static _attachInfo(card: Card2, titleKey: string, descKey: string): void {
         const lang = Lang.i();
         const tools = card.getToolsElement();
         const escape = (s: string): string => s.replace(/[&<>"']/g, (ch) =>

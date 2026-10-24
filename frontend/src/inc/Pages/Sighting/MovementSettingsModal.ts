@@ -1,12 +1,11 @@
 import {
-    ComponentType,
-    FormGroup,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
-    ModalDialog,
-    ModalDialogType,
-    Switch
+    FormGroup2,
+    Input2,
+    InputType2,
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2,
+    Switch2
 } from 'bambooo';
 import {MovementConfigEntry} from '../../Api/SightingMovement';
 
@@ -24,59 +23,64 @@ import {MovementConfigEntry} from '../../Api/SightingMovement';
  * `SightingMovement.saveConfig()`. The modal only edits an in-memory
  * snapshot; the page closes it on a successful save.
  */
-export class MovementSettingsModal extends ModalDialog {
+export class MovementSettingsModal extends ModalDialog2 {
 
-    protected _inputLeadMinutes: InputBottemBorderOnly2;
+    protected _inputLeadMinutes: Input2;
 
-    protected _inputTrailMinutes: InputBottemBorderOnly2;
+    protected _inputTrailMinutes: Input2;
 
-    protected _switchPreferDuration: Switch;
+    protected _switchPreferDuration: Switch2;
 
-    protected _inputOutlierKmh: InputBottemBorderOnly2;
+    protected _inputOutlierKmh: Input2;
 
-    protected _inputLocalTz: InputBottemBorderOnly2;
+    protected _inputLocalTz: Input2;
 
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'movementsettingsmodaldialog', ModalDialogType.large);
+    public constructor() {
+        super({id: 'movementsettingsmodaldialog', modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupLead = new FormGroup(
-            bodyCard,
-            new LangText('Lead buffer (minutes before sighting start)')
-        );
-        this._inputLeadMinutes = new InputBottemBorderOnly2(groupLead, undefined, InputType.number);
+        const groupLead = new FormGroup2({
+            label: new LangTextV2({text: 'Lead buffer (minutes before sighting start)'})
+        });
+        groupLead.appendTo(bodyCard);
+        this._inputLeadMinutes = new Input2({type: InputType2.number});
+        this._inputLeadMinutes.appendTo(groupLead);
         this._inputLeadMinutes.setPlaceholder('5');
 
-        const groupTrail = new FormGroup(
-            bodyCard,
-            new LangText('Trail buffer (minutes after sighting end)')
-        );
-        this._inputTrailMinutes = new InputBottemBorderOnly2(groupTrail, undefined, InputType.number);
+        const groupTrail = new FormGroup2({
+            label: new LangTextV2({text: 'Trail buffer (minutes after sighting end)'})
+        });
+        groupTrail.appendTo(bodyCard);
+        this._inputTrailMinutes = new Input2({type: InputType2.number});
+        this._inputTrailMinutes.appendTo(groupTrail);
         this._inputTrailMinutes.setPlaceholder('5');
 
-        const groupPrefer = new FormGroup(
-            bodyCard,
-            new LangText('Apply lead/trail around recorded duration (off = strict)')
-        );
-        this._switchPreferDuration = new Switch(groupPrefer, 'movementpreferduration');
+        const groupPrefer = new FormGroup2({
+            label: new LangTextV2({text: 'Apply lead/trail around recorded duration (off = strict)'})
+        });
+        groupPrefer.appendTo(bodyCard);
+        this._switchPreferDuration = new Switch2({});
+        this._switchPreferDuration.appendTo(groupPrefer);
 
-        const groupOutlier = new FormGroup(
-            bodyCard,
-            new LangText('Outlier speed threshold (km/h, segments above are bad)')
-        );
-        this._inputOutlierKmh = new InputBottemBorderOnly2(groupOutlier, undefined, InputType.number);
+        const groupOutlier = new FormGroup2({
+            label: new LangTextV2({text: 'Outlier speed threshold (km/h, segments above are bad)'})
+        });
+        groupOutlier.appendTo(bodyCard);
+        this._inputOutlierKmh = new Input2({type: InputType2.number});
+        this._inputOutlierKmh.appendTo(groupOutlier);
         this._inputOutlierKmh.setPlaceholder('50');
 
-        const groupTz = new FormGroup(
-            bodyCard,
-            new LangText('Local timezone for legacy HH:MM (IANA, e.g. Atlantic/Canary)')
-        );
-        this._inputLocalTz = new InputBottemBorderOnly2(groupTz);
+        const groupTz = new FormGroup2({
+            label: new LangTextV2({text: 'Local timezone for legacy HH:MM (IANA, e.g. Atlantic/Canary)'})
+        });
+        groupTz.appendTo(bodyCard);
+        this._inputLocalTz = new Input2({type: InputType2.text});
+        this._inputLocalTz.appendTo(groupTz);
         this._inputLocalTz.setPlaceholder('Atlantic/Canary');
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save changes'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save changes', true);
     }
 
     /**

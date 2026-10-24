@@ -1,13 +1,13 @@
 import {
-    ButtonClass,
-    ButtonDefault,
-    Card,
+    ButtonClass2,
+    ButtonDefault2,
+    Card2,
     ComponentType,
-    FormGroup,
-    FormRow,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
+    FormGroup2,
+    FormRow2,
+    Input2,
+    InputType2,
+    LangTextV2,
     SelectBottemBorderOnly2
 } from 'bambooo';
 import {OrganizationEntry} from '../../Api/Organization';
@@ -41,24 +41,25 @@ const ALL_OPTION = {key: '', value: '— all —'};
  * active filter state, exposes it via {@link getValues}, and notifies the page on
  * Apply / Reset via {@link setOnApply}.
  */
-export class SightingFilter extends Card {
+export class SightingFilter extends Card2 {
 
     protected _dateRange: DateRangeButton;
     protected _selectSpecies: SelectBottemBorderOnly2;
     protected _selectOrganization: SelectBottemBorderOnly2;
     protected _selectVehicle: SelectBottemBorderOnly2;
     protected _selectDriver: SelectBottemBorderOnly2;
-    protected _inputSearch: InputBottemBorderOnly2;
+    protected _inputSearch: Input2;
     protected _onApply: SightingFilterApplyFn|null = null;
 
-    public constructor(elementObject: ComponentType) {
-        super(elementObject);
+    public constructor() {
+        super({});
 
         this.getMainElement().addClass('sighting-filter');
-        this.setTitle(new LangText('Filter'));
+        this.setTitle(new LangTextV2({text: 'Filter'}));
         this.hide();
 
-        const btnClose = new ButtonDefault(this.getToolsElement(), undefined, 'fa fa-times');
+        const btnClose = new ButtonDefault2({icon: 'fa fa-times'});
+        btnClose.appendTo(this.getToolsElement());
         btnClose.setOnClickFn(() => {
             this.hide();
         });
@@ -66,25 +67,33 @@ export class SightingFilter extends Card {
         const body = jQuery('<div class="card-body"/>').appendTo(this.getBodyElement());
 
         // Single compact row: period + 4 selects + search (col-2 each, ~equal width).
-        const row = new FormRow(body);
+        const row = new FormRow2({});
+        row.appendTo(body);
 
-        const groupPeriod = new FormGroup(row.createCol(2), new LangText('Period'));
-        this._dateRange = new DateRangeButton(groupPeriod);
+        const groupPeriod = new FormGroup2({label: new LangTextV2({text: 'Period'})});
+        groupPeriod.appendTo(row.createCol(2));
+        this._dateRange = new DateRangeButton(groupPeriod.getElement());
 
-        const groupSpecies = new FormGroup(row.createCol(2), new LangText('Species'));
-        this._selectSpecies = SightingFilter._buildSelect(groupSpecies);
+        const groupSpecies = new FormGroup2({label: new LangTextV2({text: 'Species'})});
+        groupSpecies.appendTo(row.createCol(2));
+        this._selectSpecies = SightingFilter._buildSelect(groupSpecies.getElement());
 
-        const groupOrganization = new FormGroup(row.createCol(2), new LangText('Organization'));
-        this._selectOrganization = SightingFilter._buildSelect(groupOrganization);
+        const groupOrganization = new FormGroup2({label: new LangTextV2({text: 'Organization'})});
+        groupOrganization.appendTo(row.createCol(2));
+        this._selectOrganization = SightingFilter._buildSelect(groupOrganization.getElement());
 
-        const groupVehicle = new FormGroup(row.createCol(2), new LangText('Vehicle'));
-        this._selectVehicle = SightingFilter._buildSelect(groupVehicle);
+        const groupVehicle = new FormGroup2({label: new LangTextV2({text: 'Vehicle'})});
+        groupVehicle.appendTo(row.createCol(2));
+        this._selectVehicle = SightingFilter._buildSelect(groupVehicle.getElement());
 
-        const groupDriver = new FormGroup(row.createCol(2), new LangText('Driver'));
-        this._selectDriver = SightingFilter._buildSelect(groupDriver);
+        const groupDriver = new FormGroup2({label: new LangTextV2({text: 'Driver'})});
+        groupDriver.appendTo(row.createCol(2));
+        this._selectDriver = SightingFilter._buildSelect(groupDriver.getElement());
 
-        const groupSearch = new FormGroup(row.createCol(2), new LangText('Search'));
-        this._inputSearch = new InputBottemBorderOnly2(groupSearch, undefined, InputType.text);
+        const groupSearch = new FormGroup2({label: new LangTextV2({text: 'Search'})});
+        groupSearch.appendTo(row.createCol(2));
+        this._inputSearch = new Input2({type: InputType2.text});
+        this._inputSearch.appendTo(groupSearch);
         this._inputSearch.setPlaceholder('note / recognizable …');
 
         /* "Show old data" toggle — mixes the hand-maintained historical sightings (sighting_old) into the list. */
@@ -95,7 +104,8 @@ export class SightingFilter extends Card {
         // Buttons row, right-aligned, no separate footer to keep the card flat.
         const actions = jQuery('<div class="text-right pt-1"/>').appendTo(body);
 
-        const btnReset = new ButtonDefault(actions, 'Reset', 'fa fa-undo');
+        const btnReset = new ButtonDefault2({title: 'Reset', icon: 'fa fa-undo'});
+        btnReset.appendTo(actions);
         btnReset.setOnClickFn(() => {
             this.resetValues();
 
@@ -106,7 +116,8 @@ export class SightingFilter extends Card {
 
         actions.append(' ');
 
-        const btnApply = new ButtonDefault(actions, 'Apply', 'fa fa-check', ButtonClass.primary);
+        const btnApply = new ButtonDefault2({title: 'Apply', icon: 'fa fa-check', btnClass: ButtonClass2.primary});
+        btnApply.appendTo(actions);
         btnApply.setOnClickFn(() => {
             if (this._onApply) {
                 this._onApply(this.getValues());
@@ -128,7 +139,7 @@ export class SightingFilter extends Card {
      * Replace all options of a select with [ALL_OPTION, ...entries] and restore "all"
      * as the selected value. Clears existing options first because setValues appends.
      */
-    private static _populateSelect(select: SelectBottemBorderOnly2, entries: ReadonlyArray<{key: string; value: string}>): void {
+    private static _populateSelect(select: SelectBottemBorderOnly2, entries: readonly {key: string; value: string;}[]): void {
         select.clearValues();
         select.setValues([ALL_OPTION, ...entries]);
         select.setSelectedValue('');

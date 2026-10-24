@@ -1,5 +1,5 @@
 /* global JQuery */
-import {Component} from 'bambooo';
+import {ComponentType, Widget2} from 'bambooo';
 import * as d3 from 'd3';
 import {SightingsEntry} from '../Api/Sightings';
 import {Lang} from '../Lang';
@@ -42,7 +42,7 @@ const monthTickLabels: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Ju
  *      53×7 day cells per year, monthly outline paths, colour intensity scaled
  *      to the daily sighting count.
  */
-export class SightingYearCompare extends Component<HTMLDivElement> {
+export class SightingYearCompare extends Widget2 {
 
     protected _statusEl: JQuery;
 
@@ -54,9 +54,13 @@ export class SightingYearCompare extends Component<HTMLDivElement> {
 
     protected _calendarEl: JQuery;
 
-    public constructor(parent: JQuery) {
-        const root = jQuery<HTMLDivElement>('<div class="sighting-yearcompare"/>').appendTo(parent);
-        super(root);
+    public constructor(parent: ComponentType) {
+        super({
+            element: jQuery('<div class="sighting-yearcompare"/>')
+        });
+
+        const root = this._element;
+        root.appendTo(SightingYearCompare._asParent(parent));
 
         const lang = Lang.i();
 
@@ -393,6 +397,23 @@ export class SightingYearCompare extends Component<HTMLDivElement> {
         legendG.append('text').attr('x', 0).attr('y', 22).attr('font-size', 10).text('0');
         legendG.append('text').attr('x', legendW).attr('y', 22).attr('text-anchor', 'end').attr('font-size', 10)
         .text(`${maxDaily}`);
+    }
+
+    /**
+     * Resolve a parent (bambooo component, jQuery or selector) to a jQuery
+     * handle the widget root can be appended to.
+     * @param {ComponentType} element
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _asParent(element: ComponentType): JQuery {
+        const maybe = element as {getElement?: () => JQuery;} | null | undefined;
+
+        if (maybe && typeof maybe.getElement === 'function') {
+            return maybe.getElement();
+        }
+
+        return jQuery(element as JQuery.Selector);
     }
 
 }

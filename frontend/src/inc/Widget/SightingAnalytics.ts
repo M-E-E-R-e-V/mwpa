@@ -1,5 +1,5 @@
 /* global JQuery */
-import {Component} from 'bambooo';
+import {ComponentType, Widget2} from 'bambooo';
 import * as d3 from 'd3';
 import {SightingsEntry} from '../Api/Sightings';
 import {SpeciesEntry} from '../Api/Species';
@@ -40,7 +40,7 @@ export type SightingAnalyticsLookups = {
  * dataset size (a few thousand sightings) and avoids the diff-rendering
  * complexity that comes with d3 enter/update/exit chains.
  */
-export class SightingAnalytics extends Component<HTMLDivElement> {
+export class SightingAnalytics extends Widget2 {
 
     protected _lookups: SightingAnalyticsLookups = {species: new Map()};
 
@@ -54,9 +54,13 @@ export class SightingAnalytics extends Component<HTMLDivElement> {
 
     protected _histEl: JQuery;
 
-    public constructor(parent: JQuery) {
-        const root = jQuery<HTMLDivElement>('<div class="sighting-analytics"/>').appendTo(parent);
-        super(root);
+    public constructor(parent: ComponentType) {
+        super({
+            element: jQuery('<div class="sighting-analytics"/>')
+        });
+
+        const root = this._element;
+        root.appendTo(SightingAnalytics._asParent(parent));
 
         this._statusEl = jQuery('<div class="sighting-analytics-status"/>').appendTo(root);
 
@@ -367,6 +371,23 @@ export class SightingAnalytics extends Component<HTMLDivElement> {
         .attr('x', innerW / 2).attr('y', innerH + 30)
         .attr('text-anchor', 'middle').attr('font-size', 10)
         .text(`Group size${bucketSize === 1 ? '' : ` (bucket ${bucketSize})`}`);
+    }
+
+    /**
+     * Resolve a parent (bambooo component, jQuery or selector) to a jQuery
+     * handle the widget root can be appended to.
+     * @param {ComponentType} element
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _asParent(element: ComponentType): JQuery {
+        const maybe = element as {getElement?: () => JQuery;} | null | undefined;
+
+        if (maybe && typeof maybe.getElement === 'function') {
+            return maybe.getElement();
+        }
+
+        return jQuery(element as JQuery.Selector);
     }
 
 }

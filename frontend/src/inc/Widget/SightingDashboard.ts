@@ -1,5 +1,5 @@
 /* global JQuery */
-import {Component} from 'bambooo';
+import {ComponentType, Widget2} from 'bambooo';
 import crossfilter from 'crossfilter2';
 import * as d3 from 'd3';
 import * as dc from 'dc';
@@ -58,7 +58,7 @@ export type SightingDashboardOnFiltered = (filtered: SightingsEntry[]) => void;
  * any chart fires `onFiltered` with the surviving entries so the map can be
  * redrawn against the same subset.
  */
-export class SightingDashboard extends Component<HTMLDivElement> {
+export class SightingDashboard extends Widget2 {
 
     protected _lookups: SightingDashboardLookups = {
         species: new Map(),
@@ -88,9 +88,13 @@ export class SightingDashboard extends Component<HTMLDivElement> {
 
     protected _beaufortChartEl: JQuery;
 
-    public constructor(parent: JQuery) {
-        const root = jQuery<HTMLDivElement>('<div class="sighting-dashboard mb-2"/>').appendTo(parent);
-        super(root);
+    public constructor(parent: ComponentType) {
+        super({
+            element: jQuery('<div class="sighting-dashboard mb-2"/>')
+        });
+
+        const root = this._element;
+        root.appendTo(SightingDashboard._asParent(parent));
 
         const header = jQuery('<div class="sighting-dashboard-header"/>').appendTo(root);
         this._statusEl = jQuery('<span class="sighting-dashboard-status"/>').appendTo(header);
@@ -321,6 +325,23 @@ export class SightingDashboard extends Component<HTMLDivElement> {
     protected _approxWidth(el: JQuery, fallback: number): number {
         const w = el.width() ?? 0;
         return w > 0 ? w : fallback;
+    }
+
+    /**
+     * Resolve a parent (bambooo component, jQuery or selector) to a jQuery
+     * handle the widget root can be appended to.
+     * @param {ComponentType} element
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _asParent(element: ComponentType): JQuery {
+        const maybe = element as {getElement?: () => JQuery;} | null | undefined;
+
+        if (maybe && typeof maybe.getElement === 'function') {
+            return maybe.getElement();
+        }
+
+        return jQuery(element as JQuery.Selector);
     }
 
 }

@@ -1,9 +1,10 @@
+/* global JQuery */
 import {
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    LangText
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    LangTextV2
 } from 'bambooo';
 import * as d3raw from 'd3';
 import {
@@ -77,9 +78,10 @@ export class CrossSpeciesAnalytics extends BasePage {
 
         // Header card — short explainer ------------------------------------------------------------------------------
 
-        const rowHead = new ContentRow(contentWrapper);
-        const headCard = new Card(new ContentCol(rowHead, ContentColSize.col12));
-        headCard.setTitle(new LangText(title));
+        const rowHead = new ContentRow2(contentWrapper.getElement());
+        const headCard = new Card2({});
+        headCard.appendTo(new ContentCol2(rowHead, ContentColSize2.col12).getElement());
+        headCard.setTitle(new LangTextV2({text: title}));
         headCard.getMainElement().addClass('print-include');
         const headBody = jQuery('<div class="card-body small text-muted"/>').appendTo(headCard.getBodyElement());
         headBody.text(lang.l('desc.regression.page'));
@@ -124,9 +126,10 @@ export class CrossSpeciesAnalytics extends BasePage {
         ];
 
         for (const spec of cardSpecs) {
-            const row = new ContentRow(contentWrapper);
-            const card = new Card(new ContentCol(row, ContentColSize.col12));
-            card.setTitle(new LangText(spec.titleKey));
+            const row = new ContentRow2(contentWrapper.getElement());
+            const card = new Card2({});
+            card.appendTo(new ContentCol2(row, ContentColSize2.col12).getElement());
+            card.setTitle(new LangTextV2({text: spec.titleKey}));
             card.getMainElement().addClass('print-include');
             CrossSpeciesAnalytics._attachInfo(card, spec.titleKey, spec.descKey);
 
@@ -409,7 +412,7 @@ export class CrossSpeciesAnalytics extends BasePage {
      * Same pattern as Species/Profile._attachInfo — Bootstrap-4 popover
      * behind a small (i) icon next to the card title.
      */
-    private static _attachInfo(card: Card, titleKey: string, descKey: string): void {
+    private static _attachInfo(card: Card2, titleKey: string, descKey: string): void {
         const lang = Lang.i();
         const tools = card.getToolsElement();
         const escape = (s: string): string => s.replace(/[&<>"']/g, (ch) =>

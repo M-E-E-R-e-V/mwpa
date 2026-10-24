@@ -8,27 +8,28 @@ import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
 import {LocationPickerInput} from '../../Widget/LocationPickerInput';
 import {LocationPickerModal} from '../../Widget/LocationPickerModal';
 import {
-    ComponentType,
-    FormGroup,
-    FormRow,
-    InputBottemBorderOnly2, InputType, LangText,
-    ModalDialog,
-    ModalDialogType,
+    FormGroup2,
+    FormRow2,
+    Input2,
+    InputType2,
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2,
     SelectBottemBorderOnly2,
-    Switch,
-    Textarea
+    Switch2,
+    Textarea2
 } from 'bambooo';
 
 /**
  * SightingEditModal
  */
-export class SightingEditModal extends ModalDialog {
+export class SightingEditModal extends ModalDialog2 {
 
     /**
      * id of entry
      * @protected
      */
-    protected _id: number|null = null;
+    protected _sightingId: number|null = null;
 
     /**
      * vehicle select
@@ -52,31 +53,31 @@ export class SightingEditModal extends ModalDialog {
      * input date sight
      * @protected
      */
-    protected _inputDateSight: InputBottemBorderOnly2;
+    protected _inputDateSight: Input2;
 
     /**
      * input tour start
      * @protected
      */
-    protected _inputTourStart: InputBottemBorderOnly2;
+    protected _inputTourStart: Input2;
 
     /**
      * input tour end
      * @protected
      */
-    protected _inputTourEnd: InputBottemBorderOnly2;
+    protected _inputTourEnd: Input2;
 
     /**
      * input duration from
      * @protected
      */
-    protected _inputDurationFrom: InputBottemBorderOnly2;
+    protected _inputDurationFrom: Input2;
 
     /**
      * input duration until
      * @protected
      */
-    protected _inputDurationUntil: InputBottemBorderOnly2;
+    protected _inputDurationUntil: Input2;
 
     protected _inputPositionBegin: LocationPickerInput;
 
@@ -85,20 +86,20 @@ export class SightingEditModal extends ModalDialog {
     protected _locationPicker: LocationPickerModal;
 
     protected _tourId: number|null = null;
-    
+
     protected _routeCache: GeolocationCoordinates[]|null = null;
 
     /**
      * input distance coast
      * @protected
      */
-    protected _inputDistanceCoast: InputBottemBorderOnly2;
+    protected _inputDistanceCoast: Input2;
 
     /**
      * switch photo taken
      * @protected
      */
-    protected _switchPhotoTaken: Switch;
+    protected _switchPhotoTaken: Switch2;
 
     // protected _switch
 
@@ -112,7 +113,7 @@ export class SightingEditModal extends ModalDialog {
      * input group size
      * @protected
      */
-    protected _inputSpeciesCount: InputBottemBorderOnly2;
+    protected _inputSpeciesCount: Input2;
 
     /**
      * encounter select
@@ -122,40 +123,43 @@ export class SightingEditModal extends ModalDialog {
 
     /**
      * input other
-     * @member {InputBottemBorderOnly2}
+     * @member {Input2}
      */
-    protected _inputOther: InputBottemBorderOnly2;
+    protected _inputOther: Input2;
 
     /**
      * other boats
-     * @member {InputBottemBorderOnly2}
+     * @member {Input2}
      */
-    protected _otherBoats: InputBottemBorderOnly2;
+    protected _otherBoats: Input2;
 
     /**
      * note textarea
-     * @member {Textarea}
+     * @member {Textarea2}
      */
-    protected _textareaNote: Textarea;
+    protected _textareaNote: Textarea2;
 
     /**
      * constructor
-     * @param elementObject
      */
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'sightingmodaldialog', ModalDialogType.large);
+    public constructor() {
+        super({id: 'sightingmodaldialog', modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const rowFirst = new FormRow(bodyCard);
-        const groupVehicle = new FormGroup(rowFirst.createCol(6), 'Boat');
-        this._vehicleSelect = new SelectBottemBorderOnly2(groupVehicle);
+        const rowFirst = new FormRow2({});
+        rowFirst.appendTo(bodyCard);
+        const groupVehicle = new FormGroup2({label: new LangTextV2({text: 'Boat'})});
+        groupVehicle.appendTo(rowFirst.createCol(6));
+        this._vehicleSelect = new SelectBottemBorderOnly2(groupVehicle.getElement());
 
-        const groupVehicleDriver = new FormGroup(rowFirst.createCol(6), 'Skipper');
-        this._vehicleDriverSelect = new SelectBottemBorderOnly2(groupVehicleDriver);
+        const groupVehicleDriver = new FormGroup2({label: new LangTextV2({text: 'Skipper'})});
+        groupVehicleDriver.appendTo(rowFirst.createCol(6));
+        this._vehicleDriverSelect = new SelectBottemBorderOnly2(groupVehicleDriver.getElement());
 
-        const groupbeaufortWind = new FormGroup(bodyCard, 'Wind/Seastate (Beaufort)');
-        this._beaufortWindSelect = new SelectBottemBorderOnly2(groupbeaufortWind);
+        const groupbeaufortWind = new FormGroup2({label: new LangTextV2({text: 'Wind/Seastate (Beaufort)'})});
+        groupbeaufortWind.appendTo(bodyCard);
+        this._beaufortWindSelect = new SelectBottemBorderOnly2(groupbeaufortWind.getElement());
 
         for (let i = 0; i < 13; i++) {
             this._beaufortWindSelect.addValue({
@@ -169,30 +173,44 @@ export class SightingEditModal extends ModalDialog {
             });
         }
 
-        const groupDateSight = new FormGroup(bodyCard, 'Date');
-        this._inputDateSight = new InputBottemBorderOnly2(groupDateSight, 'datesight', InputType.date);
+        const groupDateSight = new FormGroup2({label: new LangTextV2({text: 'Date'})});
+        groupDateSight.appendTo(bodyCard);
+        this._inputDateSight = new Input2({type: InputType2.date});
+        this._inputDateSight.appendTo(groupDateSight);
 
-        const rowTourTime = new FormRow(bodyCard);
-        const groupTourStart = new FormGroup(rowTourTime.createCol(6), 'Start of trip');
-        this._inputTourStart = new InputBottemBorderOnly2(groupTourStart, 'sighttourstart', InputType.time);
+        const rowTourTime = new FormRow2({});
+        rowTourTime.appendTo(bodyCard);
+        const groupTourStart = new FormGroup2({label: new LangTextV2({text: 'Start of trip'})});
+        groupTourStart.appendTo(rowTourTime.createCol(6));
+        this._inputTourStart = new Input2({type: InputType2.time});
+        this._inputTourStart.appendTo(groupTourStart);
 
-        const groupTourEnd = new FormGroup(rowTourTime.createCol(6), 'End of trip');
-        this._inputTourEnd = new InputBottemBorderOnly2(groupTourEnd, 'sighttourend', InputType.time);
+        const groupTourEnd = new FormGroup2({label: new LangTextV2({text: 'End of trip'})});
+        groupTourEnd.appendTo(rowTourTime.createCol(6));
+        this._inputTourEnd = new Input2({type: InputType2.time});
+        this._inputTourEnd.appendTo(groupTourEnd);
 
-        const rowDurationTime = new FormRow(bodyCard);
-        const groupDurationFrom = new FormGroup(rowDurationTime.createCol(6), 'Sighting duration from');
-        this._inputDurationFrom = new InputBottemBorderOnly2(groupDurationFrom, 'durationfrom', InputType.time);
+        const rowDurationTime = new FormRow2({});
+        rowDurationTime.appendTo(bodyCard);
+        const groupDurationFrom = new FormGroup2({label: new LangTextV2({text: 'Sighting duration from'})});
+        groupDurationFrom.appendTo(rowDurationTime.createCol(6));
+        this._inputDurationFrom = new Input2({type: InputType2.time});
+        this._inputDurationFrom.appendTo(groupDurationFrom);
 
-        const groupDurationUntil = new FormGroup(rowDurationTime.createCol(6), 'until');
-        this._inputDurationUntil = new InputBottemBorderOnly2(groupDurationUntil, 'durationuntil', InputType.time);
+        const groupDurationUntil = new FormGroup2({label: new LangTextV2({text: 'until'})});
+        groupDurationUntil.appendTo(rowDurationTime.createCol(6));
+        this._inputDurationUntil = new Input2({type: InputType2.time});
+        this._inputDurationUntil.appendTo(groupDurationUntil);
 
-        const groupPositionBegin = new FormGroup(bodyCard, 'Position begin');
-        this._inputPositionBegin = new LocationPickerInput(groupPositionBegin, 'positionbegin');
+        const groupPositionBegin = new FormGroup2({label: new LangTextV2({text: 'Position begin'})});
+        groupPositionBegin.appendTo(bodyCard);
+        this._inputPositionBegin = new LocationPickerInput(groupPositionBegin.getElement(), 'positionbegin');
 
-        const grouPositionEnd = new FormGroup(bodyCard, 'Position end');
-        this._inputPositionEnd = new LocationPickerInput(grouPositionEnd, 'positionend');
+        const grouPositionEnd = new FormGroup2({label: new LangTextV2({text: 'Position end'})});
+        grouPositionEnd.appendTo(bodyCard);
+        this._inputPositionEnd = new LocationPickerInput(grouPositionEnd.getElement(), 'positionend');
 
-        this._locationPicker = new LocationPickerModal(elementObject);
+        this._locationPicker = new LocationPickerModal(jQuery('body'));
 
         const openPicker = (input: LocationPickerInput, mustBeAfter?: () => GeolocationCoordinates | null): void => {
             input.setOnRequestPicker((current, accept) => {
@@ -209,61 +227,79 @@ export class SightingEditModal extends ModalDialog {
             });
         };
         openPicker(this._inputPositionBegin);
-        // End-picker must come AFTER begin along the route — pass begin's
-        // current value at open-time so the picker can warn if the user
-        // picks a position the boat passed earlier than the begin.
+        /*
+         * End-picker must come AFTER begin along the route — pass begin's
+         * current value at open-time so the picker can warn if the user
+         * picks a position the boat passed earlier than the begin.
+         */
         openPicker(this._inputPositionEnd, () => this._inputPositionBegin.getGcValue());
 
-        const groupDistanceCoast = new FormGroup(bodyCard, 'Distance to nearest coast (nm)');
-        this._inputDistanceCoast = new InputBottemBorderOnly2(groupDistanceCoast, 'distancecoast', InputType.number);
+        const groupDistanceCoast = new FormGroup2({label: new LangTextV2({text: 'Distance to nearest coast (nm)'})});
+        groupDistanceCoast.appendTo(bodyCard);
+        this._inputDistanceCoast = new Input2({type: InputType2.number});
+        this._inputDistanceCoast.appendTo(groupDistanceCoast);
         this._inputDistanceCoast.setReadOnly(true);
 
-        const rowPG = new FormRow(bodyCard);
-        const groupPhotoTaken = new FormGroup(rowPG.createCol(6), 'Photos taken');
-        this._switchPhotoTaken = new Switch(groupPhotoTaken, 'phototaken');
+        const rowPG = new FormRow2({});
+        rowPG.appendTo(bodyCard);
+        const groupPhotoTaken = new FormGroup2({label: new LangTextV2({text: 'Photos taken'})});
+        groupPhotoTaken.appendTo(rowPG.createCol(6));
+        this._switchPhotoTaken = new Switch2({});
+        this._switchPhotoTaken.appendTo(groupPhotoTaken);
 
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const groupDistanceCoastEstimationGPS = new FormGroup(rowPG.createCol(6), 'Estimation without GPS');
+        const groupDistanceCoastEstimationGPS = new FormGroup2({
+            label: new LangTextV2({text: 'Estimation without GPS'})
+        });
+        groupDistanceCoastEstimationGPS.appendTo(rowPG.createCol(6));
         // this.
 
-        const groupSpecie = new FormGroup(bodyCard, 'Species');
-        this._specieSelect = new SelectBottemBorderOnly2(groupSpecie);
+        const groupSpecie = new FormGroup2({label: new LangTextV2({text: 'Species'})});
+        groupSpecie.appendTo(bodyCard);
+        this._specieSelect = new SelectBottemBorderOnly2(groupSpecie.getElement());
 
-        const groupSpeciesCount = new FormGroup(bodyCard, 'Number of animals');
-        this._inputSpeciesCount = new InputBottemBorderOnly2(groupSpeciesCount, undefined, InputType.number);
+        const groupSpeciesCount = new FormGroup2({label: new LangTextV2({text: 'Number of animals'})});
+        groupSpeciesCount.appendTo(bodyCard);
+        this._inputSpeciesCount = new Input2({type: InputType2.number});
+        this._inputSpeciesCount.appendTo(groupSpeciesCount);
 
-        const groupReaction = new FormGroup(bodyCard, 'Reaction');
-        this._reactionSelect = new SelectBottemBorderOnly2(groupReaction);
+        const groupReaction = new FormGroup2({label: new LangTextV2({text: 'Reaction'})});
+        groupReaction.appendTo(bodyCard);
+        this._reactionSelect = new SelectBottemBorderOnly2(groupReaction.getElement());
 
-        const groupOther = new FormGroup(bodyCard, 'Other');
-        this._inputOther = new InputBottemBorderOnly2(groupOther);
+        const groupOther = new FormGroup2({label: new LangTextV2({text: 'Other'})});
+        groupOther.appendTo(bodyCard);
+        this._inputOther = new Input2({type: InputType2.text});
+        this._inputOther.appendTo(groupOther);
 
-        const groupOtherBoats = new FormGroup(bodyCard, 'Other boats present');
-        this._otherBoats = new InputBottemBorderOnly2(groupOtherBoats);
+        const groupOtherBoats = new FormGroup2({label: new LangTextV2({text: 'Other boats present'})});
+        groupOtherBoats.appendTo(bodyCard);
+        this._otherBoats = new Input2({type: InputType2.text});
+        this._otherBoats.appendTo(groupOtherBoats);
 
-        const groupNote = new FormGroup(bodyCard, 'Note');
-        this._textareaNote = new Textarea(groupNote);
+        const groupNote = new FormGroup2({label: new LangTextV2({text: 'Note'})});
+        groupNote.appendTo(bodyCard);
+        this._textareaNote = new Textarea2({});
+        this._textareaNote.appendTo(groupNote);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save changes'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save changes', true);
     }
 
     /**
-     * getId
+     * getSightingId
      */
-    public getId(): number|null {
-        return this._id;
+    public getSightingId(): number|null {
+        return this._sightingId;
     }
 
     /**
-     * setId
+     * setSightingId
      * @param id
      */
-    public setId(id: number|null): void {
-        this._id = id;
+    public setSightingId(id: number|null): void {
+        this._sightingId = id;
     }
 
     public setTourId(tourId: number|null): void {
@@ -627,7 +663,7 @@ export class SightingEditModal extends ModalDialog {
      * resetValues
      */
     public override resetValues(): void {
-        this.setId(null);
+        this.setSightingId(null);
         this.setTourId(null);
         this.setVehicle(0);
         this.setVehicleDriver(0);

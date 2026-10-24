@@ -1,28 +1,28 @@
+/* global JQuery */
 import {
-    Badge,
-    BadgeType,
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ColumnContent,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    DialogConfirm,
-    DialogInfo,
+    Badge2,
+    BadgeType2,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    DialogConfirm2,
+    DialogInfo2,
     IconFa,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
+    Input2,
+    InputType2,
+    LangTextV2,
     LeftNavbarLink,
-    ModalDialogType,
-    SortingColumn,
-    SortOrder,
-    TableWrapper,
-    Td,
-    Th,
-    Tooltip,
-    Tr
+    ModalDialogType2,
+    SortingColumn2,
+    SortOrder2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tooltip2,
+    Tr2
 } from 'bambooo';
 import moment from 'moment';
 import {Coordinate} from 'ol/coordinate';
@@ -61,14 +61,14 @@ const PAGE_SIZE = 30;
 
 type SortKey = 'id' | 'tour_id' | 'date' | 'tour_start' | 'create_datetime' | 'update_datetime';
 
-type SortState = Record<SortKey, SortOrder>;
+type SortState = Record<SortKey, SortOrder2>;
 
 const escapeHtml = (s: string): string => s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+.replace(/&/gu, '&amp;')
+.replace(/</gu, '&lt;')
+.replace(/>/gu, '&gt;')
+.replace(/"/gu, '&quot;')
+.replace(/'/gu, '&#39;');
 
 /**
  * Wrap any (case-insensitive) match of `term` in `<mark>` so search hits are
@@ -86,8 +86,8 @@ const highlight = (text: string, term: string): string => {
         return escaped;
     }
 
-    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return escaped.replace(new RegExp(`(${escapedTerm})`, 'gi'), '<mark>$1</mark>');
+    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+    return escaped.replace(new RegExp(`(${escapedTerm})`, 'giu'), '<mark>$1</mark>');
 };
 
 /**
@@ -105,28 +105,22 @@ export class Sighting extends BasePage {
     public constructor() {
         super();
 
-        this._sightingDialog = new SightingEditModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._sightingDialog = new SightingEditModal();
 
-        this._sightingDeletedDialog = new SightingDeletedModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._sightingDeletedDialog = new SightingDeletedModal();
 
-        this._movementSettingsDialog = new MovementSettingsModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._movementSettingsDialog = new MovementSettingsModal();
 
         // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), new LangText('Add sighting'), () => {
-            this._sightingDialog.setTitle(new LangText('Add new sighting'));
+        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add sighting', () => {
+            this._sightingDialog.setTitle(new LangTextV2({text: 'Add new sighting'}));
             this._sightingDialog.resetValues();
             this._sightingDialog.show();
             return false;
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         this._sightingDialog.setOnSave(async(): Promise<void> => {
-            const sid = this._sightingDialog.getId();
+            const sid = this._sightingDialog.getSightingId();
 
             /*
              * Add-flow is not wired yet — the modal doesn't capture tour_id/unid/etc.
@@ -173,7 +167,7 @@ export class Sighting extends BasePage {
         });
 
         this._sightingDeletedDialog.setOnSave(async(): Promise<void> => {
-            const tid = this._sightingDeletedDialog.getId();
+            const tid = this._sightingDeletedDialog.getSightingId();
 
             if (tid === null) {
                 this._toast.fire({icon: 'error', title: 'ID is not set!'});
@@ -206,12 +200,12 @@ export class Sighting extends BasePage {
     public override async loadContent(): Promise<void> {
         // shared mutable state across loaders / renderers ----------------------------------------
         const sort: SortState = {
-            id: SortOrder.NONE,
-            tour_id: SortOrder.NONE,
-            date: SortOrder.DESC,
-            tour_start: SortOrder.DESC,
-            create_datetime: SortOrder.NONE,
-            update_datetime: SortOrder.NONE
+            id: SortOrder2.NONE,
+            tour_id: SortOrder2.NONE,
+            date: SortOrder2.DESC,
+            tour_start: SortOrder2.DESC,
+            create_datetime: SortOrder2.NONE,
+            update_datetime: SortOrder2.NONE
         };
 
         const filterValues: SightingFilterValues = {
@@ -228,13 +222,17 @@ export class Sighting extends BasePage {
         let inHeaderSearch = '';
         let totalCount = 0;
         let loadedCount = 0;
-        // Mirrors what's been streamed onto the map; fed into the crossfilter dashboard
-        // and re-used to redraw the map when the dashboard filters change.
+        /*
+         * Mirrors what's been streamed onto the map; fed into the crossfilter dashboard
+         * and re-used to redraw the map when the dashboard filters change.
+         */
         const loadedEntries: SightingsEntry[] = [];
 
-        // The search highlight should match anything currently filtering the result —
-        // either the in-header quick-search or the modal's "search" field.
-        const activeHighlight = (): string => inHeaderSearch !== '' ? inHeaderSearch : filterValues.search;
+        /*
+         * The search highlight should match anything currently filtering the result —
+         * either the in-header quick-search or the modal's "search" field.
+         */
+        const activeHighlight = (): string => inHeaderSearch === '' ? filterValues.search : inHeaderSearch;
 
         // Build the filter payload sent to the backend; drop the empty fields.
         const buildApiFilter = (offset: number, limit: number): SightingsFilter => {
@@ -270,9 +268,11 @@ export class Sighting extends BasePage {
                 apiFilter.vehicle_driver_id = filterValues.vehicle_driver_id;
             }
 
-            // The in-header quick-search wins over the modal's search when both are set;
-            // it's the more "active" UI signal.
-            const search = inHeaderSearch !== '' ? inHeaderSearch : filterValues.search;
+            /*
+             * The in-header quick-search wins over the modal's search when both are set;
+             * it's the more "active" UI signal.
+             */
+            const search = inHeaderSearch === '' ? filterValues.search : inHeaderSearch;
             if (search !== '') {
                 apiFilter.search = search;
             }
@@ -285,8 +285,10 @@ export class Sighting extends BasePage {
         };
 
         // Filter card ---------------------------------------------------------------------------
-        const rowFilter = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const filter = new SightingFilter(new ContentCol(rowFilter, ContentColSize.col12));
+        const content = this._wrapper.getContentWrapper().getContent();
+        const rowFilter = new ContentRow2(content.getElement());
+        const filter = new SightingFilter();
+        filter.appendTo(new ContentCol2(rowFilter, ContentColSize2.col12).getElement());
 
         // Lookup maps + initial loads -----------------------------------------------------------
         const mspecies = new Map<number, SpeciesEntry>();
@@ -325,9 +327,11 @@ export class Sighting extends BasePage {
                 mvehicles.set(v.id, v);
             }
 
-            // Operational pickers (new sighting modal + top filter) only get
-            // active boats. mvehicles above still holds every vehicle so old
-            // rows referencing a retired boat keep rendering its name.
+            /*
+             * Operational pickers (new sighting modal + top filter) only get
+             * active boats. mvehicles above still holds every vehicle so old
+             * rows referencing a retired boat keep rendering its name.
+             */
             const activeVehicles = vehicles.filter((v) => v.in_use && !v.isdeleted);
             this._sightingDialog.setVehicleList(activeVehicles);
             filter.setVehicleList(activeVehicles);
@@ -362,22 +366,26 @@ export class Sighting extends BasePage {
         }
 
         // List card -----------------------------------------------------------------------------
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Sighting'));
+        const row1 = new ContentRow2(content.getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
+        card.setTitle(new LangTextV2({text: 'Sighting'}));
 
-        const btnMenu = new ButtonMenu(card.getToolsElement(), IconFa.bars, true, ButtonType.borderless);
+        const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+        btnMenu.appendTo(card.getToolsElement());
 
-        btnMenu.addMenuItem(new LangText('Filter'), () => {
+        btnMenu.addMenuItem(new LangTextV2({text: 'Filter'}), () => {
             filter.show();
         }, 'fa fa-filter');
 
-        // Admin-only: trigger a full rebuild of derived movement data
-        // (sighting_movement + sighting_movement_track). Synchronous on the
-        // server side, so the button stays in a "running" state until the
-        // server returns counts. Filter for admin happens after the
-        // currentuser lookup further down — see below.
-        const rebuildMovementsLabel = new LangText('Rebuild movements');
+        /*
+         * Admin-only: trigger a full rebuild of derived movement data
+         * (sighting_movement + sighting_movement_track). Synchronous on the
+         * server side, so the button stays in a "running" state until the
+         * server returns counts. Filter for admin happens after the
+         * currentuser lookup further down — see below.
+         */
+        const rebuildMovementsLabel = new LangTextV2({text: 'Rebuild movements'});
         const triggerRebuildMovements = async(): Promise<void> => {
             const confirmed = window.confirm(
                 Lang.i().l('Rebuild every sighting\'s movement track now? This may take a while.')
@@ -411,14 +419,16 @@ export class Sighting extends BasePage {
             }
         };
 
-        // Admin-only: edit the persisted MovementConfig (lead/trail/outlier/tz).
-        // Fetched fresh on each open so a hand-edit to the settings row from
-        // another path (admin SQL, another browser tab) doesn't get clobbered.
-        const movementSettingsLabel = new LangText('Movement settings');
+        /*
+         * Admin-only: edit the persisted MovementConfig (lead/trail/outlier/tz).
+         * Fetched fresh on each open so a hand-edit to the settings row from
+         * another path (admin SQL, another browser tab) doesn't get clobbered.
+         */
+        const movementSettingsLabel = new LangTextV2({text: 'Movement settings'});
         const openMovementSettings = async(): Promise<void> => {
             try {
                 const cfg = await SightingMovementAPI.getConfig();
-                this._movementSettingsDialog.setTitle(new LangText('Movement settings'));
+                this._movementSettingsDialog.setTitle(new LangTextV2({text: 'Movement settings'}));
                 this._movementSettingsDialog.setConfig(cfg);
                 this._movementSettingsDialog.show();
             } catch (err) {
@@ -445,16 +455,21 @@ export class Sighting extends BasePage {
             }
         });
 
-        // In-header quick-search — sibling of .card-title in the card-header so AdminLTE's
-        // float layout puts it directly right of the title (and left of the tools menu).
+        /*
+         * In-header quick-search — sibling of .card-title in the card-header so AdminLTE's
+         * float layout puts it directly right of the title (and left of the tools menu).
+         */
         const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
 
-        const searchInput = new InputBottemBorderOnly2(searchSlot, undefined, InputType.text);
+        const searchInput = new Input2({type: InputType2.text});
+        searchInput.appendTo(searchSlot);
         searchInput.setPlaceholder('search note / recognizable …');
 
-        // Map tab on top of the table — the existing layout has both views side-by-side via NavTab,
-        // we keep the same UX. Build the navigation manually since we want full control over which
-        // body the table goes into.
+        /*
+         * Map tab on top of the table — the existing layout has both views side-by-side via NavTab,
+         * we keep the same UX. Build the navigation manually since we want full control over which
+         * body the table goes into.
+         */
         const navContainer = jQuery('<ul class="nav nav-tabs"/>').appendTo(card.getElement());
         const tabBodies = jQuery('<div class="tab-content"/>').appendTo(card.getElement());
 
@@ -496,9 +511,12 @@ export class Sighting extends BasePage {
                 this._addSightingToMap(entry, mspecies);
             }
 
-            // Refresh the movements layer with the filtered set — but
-            // only if the user has opened it. Otherwise we keep the
-            // fetch deferred.
+            /*
+             * Refresh the movements layer with the filtered set — but
+             * only if the user has opened it. Otherwise we keep the
+             * fetch deferred.
+             */
+            // eslint-disable-next-line no-use-before-define
             await refreshMovementsForEntries(filtered);
 
             await this._map.refrech();
@@ -522,9 +540,11 @@ export class Sighting extends BasePage {
         let movementFetchSeq = 0;
 
         const sleepZero = (): Promise<void> => new Promise<void>((resolve) => {
-            // Yield to the event loop between chunks so the page stays
-            // interactive (scroll, layer toggle, etc.). setTimeout(0) is
-            // good enough — we don't need a frame-aligned yield.
+            /*
+             * Yield to the event loop between chunks so the page stays
+             * interactive (scroll, layer toggle, etc.). setTimeout(0) is
+             * good enough — we don't need a frame-aligned yield.
+             */
             setTimeout(resolve, 0);
         });
 
@@ -549,12 +569,15 @@ export class Sighting extends BasePage {
                 const chunk = ids.slice(i, i + MOVEMENT_CHUNK_SIZE);
 
                 try {
+                    // eslint-disable-next-line no-await-in-loop
                     const movements = await SightingMovementAPI.getList(chunk);
 
                     if (seq !== movementFetchSeq) {
-                        // A newer refresh started while this chunk was in
-                        // flight — drop the result, the newer flow will
-                        // repopulate everything from scratch.
+                        /*
+                         * A newer refresh started while this chunk was in
+                         * flight — drop the result, the newer flow will
+                         * repopulate everything from scratch.
+                         */
                         return;
                     }
 
@@ -565,6 +588,7 @@ export class Sighting extends BasePage {
                     console.warn('[Sighting] movement fetch failed', err);
                 }
 
+                // eslint-disable-next-line no-await-in-loop
                 await sleepZero();
             }
         };
@@ -629,12 +653,12 @@ export class Sighting extends BasePage {
                 return;
             }
 
-            DialogConfirm.confirm(
+            DialogConfirm2.confirm(
                 'loadallsightings',
-                ModalDialogType.xlarge,
+                ModalDialogType2.xlarge,
                 'Load all ...',
                 `Load all ${totalCount} sightings under the current filter?`,
-                async(_, modal: DialogConfirm) => {
+                async(_, modal) => {
                     const remaining = totalCount - loadedCount;
                     const more = await SightingsAPI.getList(buildApiFilter(loadedCount, remaining));
 
@@ -645,10 +669,12 @@ export class Sighting extends BasePage {
                         }
                         loadedCount += more.list.length;
 
-                        // Backfill brought in N new sightings — append
-                        // tracks for those only (the existing chunks are
-                        // still valid). Skips silently when the layer is
-                        // hidden, so closed-layer "load all" stays cheap.
+                        /*
+                         * Backfill brought in N new sightings — append
+                         * tracks for those only (the existing chunks are
+                         * still valid). Skips silently when the layer is
+                         * hidden, so closed-layer "load all" stays cheap.
+                         */
                         await appendMovementsForEntries(more.list);
 
                         if (this._map) {
@@ -673,8 +699,10 @@ export class Sighting extends BasePage {
             ]);
         }
 
-        // Admin-only menu entry. We add it here (after the user-info lookup)
-        // rather than at card-build time so non-admins don't see a no-op item.
+        /*
+         * Admin-only menu entry. We add it here (after the user-info lookup)
+         * rather than at card-build time so non-admins don't see a no-op item.
+         */
         if (currentuser?.user?.isAdmin) {
             btnMenu.addMenuItem(rebuildMovementsLabel, () => {
                 triggerRebuildMovements().catch(() => undefined);
@@ -707,10 +735,12 @@ export class Sighting extends BasePage {
         await this._map.addAreaByJson('map_areas/ES7020122.json', 'ES7020122', 'sigthing_ES7020122_layer');
         await this._map.addAreaByJson('map_areas/ES0000526.json', 'ES0000526', 'sigthing_ES0000526_layer');
 
-        // Lazy-fetch movements only when the user opens the layer in
-        // the LayerSwitcher. Visibility changes also fire when the layer
-        // gets unchecked — we drop the source content in that case so
-        // turning it back on always re-fetches the current visible set.
+        /*
+         * Lazy-fetch movements only when the user opens the layer in
+         * the LayerSwitcher. Visibility changes also fire when the layer
+         * gets unchecked — we drop the source content in that case so
+         * turning it back on always re-fetches the current visible set.
+         */
         this._map.setOnMovementsVisibilityChange((visible) => {
             if (!this._map) {
                 return;
@@ -797,9 +827,11 @@ export class Sighting extends BasePage {
             refreshDataDashboards();
         };
 
-        // Export tab — three sub-tabs (Excel Export / Excel Report / Data Page).
-        // The Data Page button hands off to the page-side `generatePdf` orchestrator
-        // since the widget can't trigger map/analytics rendering itself.
+        /*
+         * Export tab — three sub-tabs (Excel Export / Excel Report / Data Page).
+         * The Data Page button hands off to the page-side `generatePdf` orchestrator
+         * since the widget can't trigger map/analytics rendering itself.
+         */
         const generatePdf = async(): Promise<void> => {
             await ensureAllSightingsLoaded();
             await loadYearCompareIfNeeded();
@@ -807,34 +839,40 @@ export class Sighting extends BasePage {
             const olMap = this._map;
             const $body = jQuery('body');
 
-            // Make the panes visible on screen so D3 measures the right container width
-            // and OL has a real canvas to draw into. The mwpa-print-mode CSS in
-            // mwpa.css promotes any `.print-include` pane to display:block right away
-            // (not just under @media print) — without this, the SVGs would already
-            // have been drawn into a 0-width hidden container.
+            /*
+             * Make the panes visible on screen so D3 measures the right container width
+             * and OL has a real canvas to draw into. The mwpa-print-mode CSS in
+             * mwpa.css promotes any `.print-include` pane to display:block right away
+             * (not just under @media print) — without this, the SVGs would already
+             * have been drawn into a 0-width hidden container.
+             */
             mapBody.addClass('print-include');
             analyticsBody.addClass('print-include');
             yearCompareBody.addClass('print-include');
             $body.addClass('mwpa-print-mode');
 
-            // The panes are now visible. Let the layout settle one frame so jQuery
-            // .width() reads the new sizes, then redraw the d3 charts so they fit
-            // the actual on-screen width (not the 0 / 320-fallback they had while
-            // hidden).
+            /*
+             * The panes are now visible. Let the layout settle one frame so jQuery
+             * .width() reads the new sizes, then redraw the d3 charts so they fit
+             * the actual on-screen width (not the 0 / 320-fallback they had while
+             * hidden).
+             */
             await new Promise((resolve) => {
                 window.requestAnimationFrame(() => resolve(undefined));
             });
 
             analytics.setData(loadedEntries);
-            // yearCompare already has its own data; re-set to force re-render at
-            // the now-visible container width.
-            // (loadYearCompareIfNeeded above only kicks off the network fetch.)
-            // We don't store the year dataset on the page, so trigger via the
-            // widget's own data: setData([]) then re-fetch would race; instead,
-            // re-show via a fresh fetch only if the data wasn't there yet.
-            // The simpler, deterministic move: force a re-render by passing the
-            // same list back in. yearCompare keeps a reference internally on
-            // first setData; without an accessor we re-fetch here.
+            /*
+             * yearCompare already has its own data; re-set to force re-render at
+             * the now-visible container width.
+             * (loadYearCompareIfNeeded above only kicks off the network fetch.)
+             * We don't store the year dataset on the page, so trigger via the
+             * widget's own data: setData([]) then re-fetch would race; instead,
+             * re-show via a fresh fetch only if the data wasn't there yet.
+             * The simpler, deterministic move: force a re-render by passing the
+             * same list back in. yearCompare keeps a reference internally on
+             * first setData; without an accessor we re-fetch here.
+             */
             const yearFilter = buildApiFilter(0, 100000);
             delete yearFilter.period_from;
             delete yearFilter.period_to;
@@ -843,18 +881,21 @@ export class Sighting extends BasePage {
                 yearCompare.setData(yearResp.list);
             }
 
-            // OL renders into the visible map container. After updating size it
-            // requests new tiles asynchronously — wait for `rendercomplete` (with
-            // a timeout fallback) so the print snapshot captures filled tiles.
+            /*
+             * OL renders into the visible map container. After updating size it
+             * requests new tiles asynchronously — wait for `rendercomplete` (with
+             * a timeout fallback) so the print snapshot captures filled tiles.
+             */
             if (olMap) {
                 olMap.updateSize();
                 await olMap.refrech();
                 await new Promise<void>((resolve) => {
-                    const timer = window.setTimeout(resolve, 1500);
-                    // Cannot listen on the SightingMap wrapper directly without an
-                    // accessor — refrech() schedules a re-render and tiles load via
-                    // the OL source. The hard timeout is a sane upper bound.
-                    void timer;
+                    /*
+                     * Cannot listen on the SightingMap wrapper directly without an
+                     * accessor — refrech() schedules a re-render and tiles load via
+                     * the OL source. The hard timeout is a sane upper bound.
+                     */
+                    window.setTimeout(resolve, 1500);
                 });
             }
 
@@ -865,12 +906,16 @@ export class Sighting extends BasePage {
                 yearCompareBody.removeClass('print-include');
                 window.removeEventListener('afterprint', cleanup);
 
-                // Re-set analytics width with normal layout so on-screen SVGs match
-                // the (now smaller) Bootstrap-tab container.
+                /*
+                 * Re-set analytics width with normal layout so on-screen SVGs match
+                 * the (now smaller) Bootstrap-tab container.
+                 */
                 analytics.setData(loadedEntries);
 
-                // Map's container is back to its dashboard-tab dimensions — let OL
-                // resize so the on-screen view stays correct.
+                /*
+                 * Map's container is back to its dashboard-tab dimensions — let OL
+                 * resize so the on-screen view stays correct.
+                 */
                 if (olMap) {
                     olMap.updateSize();
                 }
@@ -885,6 +930,7 @@ export class Sighting extends BasePage {
             }
         };
 
+        // eslint-disable-next-line no-new
         new SightingExport(
             exportBody,
             () => ({
@@ -894,105 +940,113 @@ export class Sighting extends BasePage {
                 organization_id: filterValues.organization_id,
                 vehicle_id: filterValues.vehicle_id,
                 vehicle_driver_id: filterValues.vehicle_driver_id,
-                search: inHeaderSearch !== '' ? inHeaderSearch : filterValues.search
+                search: inHeaderSearch === '' ? filterValues.search : inHeaderSearch
             }),
             generatePdf
         );
 
         // Table ---------------------------------------------------------------------------------
-        const tableWrapper = new TableWrapper<SightingsEntry>(listBody, {head_fixed: true});
+        const tableWrapper = new TableWrapper2<SightingsEntry>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(listBody);
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        // Sort registry: each call wires a header to its key in `sort` and ensures clicking it
-        // resets every other header (single-column sort).
-        const sortRegistry: { key: SortKey; column: LangText }[] = [];
+        /*
+         * Sort registry: each call wires a header to its key in `sort` and ensures clicking it
+         * resets every other header (single-column sort).
+         */
+        const sortRegistry: {key: SortKey; column: LangTextV2;}[] = [];
 
-        const makeSortColumn = (label: string, key: SortKey): LangText => {
-            const column = new LangText(label, undefined, (element) => {
-                const newValue = SortingColumn.changeSort(element, sort[key]);
+        const makeSortColumn = (label: string, key: SortKey): LangTextV2 => {
+            const column = new LangTextV2({
+                text: label,
+                onClick: (langText): void => {
+                    const newValue = SortingColumn2.changeSort(langText, sort[key]);
 
-                for (const other of sortRegistry) {
-                    if (other.key !== key) {
-                        sort[other.key] = SortOrder.NONE;
-                        SortingColumn.initSort(other.column, SortOrder.NONE);
+                    for (const other of sortRegistry) {
+                        if (other.key !== key) {
+                            sort[other.key] = SortOrder2.NONE;
+                            SortingColumn2.initSort(other.column, SortOrder2.NONE);
+                        }
                     }
-                }
 
-                sort[key] = newValue as SortOrder;
-                tableWrapper.reset();
+                    sort[key] = newValue as SortOrder2;
+                    tableWrapper.reset();
+                }
             });
 
-            SortingColumn.initSort(column, sort[key]);
+            SortingColumn2.initSort(column, sort[key]);
             sortRegistry.push({key, column});
 
             return column;
         };
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            makeSortColumn('Id', 'id'),
-            makeSortColumn('TourId', 'tour_id'),
-            makeSortColumn('Date', 'date')
-        ]));
+        const thIdTourDate = new Th2({});
+        thIdTourDate.addComponent(makeSortColumn('Id', 'id'));
+        thIdTourDate.append('<br>');
+        thIdTourDate.addComponent(makeSortColumn('TourId', 'tour_id'));
+        thIdTourDate.append('<br>');
+        thIdTourDate.addComponent(makeSortColumn('Date', 'date'));
+        thIdTourDate.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            new LangText('Vehicle'),
-            new LangText('Driver'),
-            new LangText('Organization')
-        ]));
+        const thVehicle = new Th2({});
+        thVehicle.addComponent(new LangTextV2({text: 'Vehicle'}));
+        thVehicle.append('<br>');
+        thVehicle.addComponent(new LangTextV2({text: 'Driver'}));
+        thVehicle.append('<br>');
+        thVehicle.addComponent(new LangTextV2({text: 'Organization'}));
+        thVehicle.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            new LangText('Species'),
-            new LangText('Other species')
-        ]));
+        const thSpecies = new Th2({});
+        thSpecies.addComponent(new LangTextV2({text: 'Species'}));
+        thSpecies.append('<br>');
+        thSpecies.addComponent(new LangTextV2({text: 'Other species'}));
+        thSpecies.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            new LangText('Group-Size'),
-            new LangText('Subgroups')
-        ]));
+        const thGroupSize = new Th2({});
+        thGroupSize.addComponent(new LangTextV2({text: 'Group-Size'}));
+        thGroupSize.append('<br>');
+        thGroupSize.addComponent(new LangTextV2({text: 'Subgroups'}));
+        thGroupSize.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            makeSortColumn('Time begin-end', 'tour_start'),
-            new LangText('Duration')
-        ]));
+        const thTime = new Th2({});
+        thTime.addComponent(makeSortColumn('Time begin-end', 'tour_start'));
+        thTime.append('<br>');
+        thTime.addComponent(new LangTextV2({text: 'Duration'}));
+        thTime.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Location'));
+        new Th2({value: new LangTextV2({text: 'Location'})}).appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Distance<br>(Miles)'));
+        new Th2({value: new LangTextV2({text: 'Distance<br>(Miles)'})}).appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            new LangText('Photos taken'),
-            new LangText('E. without GPS')
-        ]));
+        const thPhotos = new Th2({});
+        thPhotos.addComponent(new LangTextV2({text: 'Photos taken'}));
+        thPhotos.append('<br>');
+        thPhotos.addComponent(new LangTextV2({text: 'E. without GPS'}));
+        thPhotos.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            new LangText('Behaviour'),
-            new LangText('Reaction')
-        ]));
+        const thBehaviour = new Th2({});
+        thBehaviour.addComponent(new LangTextV2({text: 'Behaviour'}));
+        thBehaviour.append('<br>');
+        thBehaviour.addComponent(new LangTextV2({text: 'Reaction'}));
+        thBehaviour.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            makeSortColumn('Created', 'create_datetime'),
-            new LangText('Created by'),
-            makeSortColumn('Updated', 'update_datetime')
-        ]));
+        const thCreated = new Th2({});
+        thCreated.addComponent(makeSortColumn('Created', 'create_datetime'));
+        thCreated.append('<br>');
+        thCreated.addComponent(new LangTextV2({text: 'Created by'}));
+        thCreated.append('<br>');
+        thCreated.addComponent(makeSortColumn('Updated', 'update_datetime'));
+        thCreated.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, '');
+        new Th2({value: ''}).appendTo(trhead);
 
         // Renderer ------------------------------------------------------------------------------
-        const renderRow = (_table: import('bambooo').Table, entry: SightingsEntry): void => {
+        const renderRow = (_table: Table2, entry: SightingsEntry): void => {
             const term = activeHighlight();
-            const trbody = new Tr(table.getTbody());
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
 
             /* Historical hand-maintained rows (sighting_old): muted style + "ALT" badge, read-only. */
             if (entry.is_old) {
@@ -1005,32 +1059,34 @@ export class Sighting extends BasePage {
                 ? ' <span class="badge badge-secondary" title="Alte Daten – manuell erfasst, schreibgeschützt"><i class="fas fa-archive"></i> ALT</span>'
                 : '';
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `<b>#${entry.id}</b>${oldBadge}<br>#${entry.tour_id}<br>${date.format('YYYY.MM.DD')}`);
+            new Td2({
+                value: `<b>#${entry.id}</b>${oldBadge}<br>#${entry.tour_id}<br>${date.format('YYYY.MM.DD')}`
+            }).appendTo(trbody);
 
             const vehicleName = mvehicles.get(entry.vehicle_id!)?.name ?? '';
             const driverName = mdrivers.get(entry.vehicle_driver_id!)?.user.name ?? '';
-            const orgStr = entry.organization_id ? (morganizations.get(entry.organization_id)?.description ?? '') : '';
+            const orgStr = entry.organization_id ? morganizations.get(entry.organization_id)?.description ?? '' : '';
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `${escapeHtml(vehicleName)}<br>${escapeHtml(driverName)}<br>${escapeHtml(orgStr)}`);
+            new Td2({
+                value: `${escapeHtml(vehicleName)}<br>${escapeHtml(driverName)}<br>${escapeHtml(orgStr)}`
+            }).appendTo(trbody);
 
             let otherSpecies = '';
             try {
                 const otherSpeciesList = JSON.parse(entry.other_species ?? '');
                 if (otherSpeciesList) {
                     for (const key in otherSpeciesList) {
-                        if (!Object.prototype.hasOwnProperty.call(otherSpeciesList, key)) {
-                            continue;
-                        }
-                        const v = otherSpeciesList[key];
-                        if (typeof v === 'string' && v.trim() !== '') {
-                            const s = mspecies.get(parseInt(v, 10));
-                            if (s) {
-                                if (otherSpecies !== '') {
-                                    otherSpecies += ', ';
+                        // eslint-disable-next-line prefer-object-has-own
+                        if (Object.prototype.hasOwnProperty.call(otherSpeciesList, key)) {
+                            const v = otherSpeciesList[key];
+                            if (typeof v === 'string' && v.trim() !== '') {
+                                const s = mspecies.get(parseInt(v, 10));
+                                if (s) {
+                                    if (otherSpecies !== '') {
+                                        otherSpecies += ', ';
+                                    }
+                                    otherSpecies += s.name.split(',')[0];
                                 }
-                                otherSpecies += s.name.split(',')[0];
                             }
                         }
                     }
@@ -1039,39 +1095,46 @@ export class Sighting extends BasePage {
                 otherSpecies = '';
             }
 
-            const speciesTd = new Td(trbody);
+            const speciesTd = new Td2({value: ''});
+            speciesTd.appendTo(trbody);
             // eslint-disable-next-line no-new
-            new SpeciesDisplay(speciesTd, entry, mspecies, (speciesId) => {
+            new SpeciesDisplay(speciesTd.getElement(), entry, mspecies, (speciesId) => {
                 if (this._loadPageFn) {
                     this._loadPageFn(new SpeciesProfilePage(speciesId));
                 }
             });
             speciesTd.append(`<br>${escapeHtml(otherSpecies)}`);
 
-            const speciesCountGroupTd = new Td(trbody);
+            const speciesCountGroupTd = new Td2({value: ''});
+            speciesCountGroupTd.appendTo(trbody);
             if (entry.species_count === 0) {
-                // eslint-disable-next-line no-new
-                new Badge(speciesCountGroupTd, '<b style="color: white">0</b>', BadgeType.info, 'red');
+                const badgeZero = new Badge2({type: BadgeType2.info, color: 'red'});
+                badgeZero.appendTo(speciesCountGroupTd);
+                badgeZero.getElement().html('<b style="color: white">0</b>');
             } else {
                 speciesCountGroupTd.append(`<b>${entry.species_count}</b>`);
             }
             speciesCountGroupTd.append(`<br>${UtilSelect.getSelectStr(entry.subgroups!)}`);
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `<b>${escapeHtml(entry.tour_start ?? '')} - ${escapeHtml(entry.tour_end ?? '')}</b><br>${escapeHtml(entry.duration_from ?? '')} - ${escapeHtml(entry.duration_until ?? '')}`);
+            new Td2({
+                value: `<b>${escapeHtml(entry.tour_start ?? '')} - ${escapeHtml(entry.tour_end ?? '')}</b><br>${escapeHtml(entry.duration_from ?? '')} - ${escapeHtml(entry.duration_until ?? '')}`
+            }).appendTo(trbody);
 
-            const tdLocation = new Td(trbody, '');
+            const tdLocation = new Td2({value: ''});
+            tdLocation.appendTo(trbody);
             // eslint-disable-next-line no-new
-            new LocationDisplay(tdLocation, entry.location_begin!, () => {
+            new LocationDisplay(tdLocation.getElement(), entry.location_begin!, () => {
                 if (this._loadPageFn) {
                     this._loadPageFn(new ToursMap(entry.tour_id));
                 }
             });
 
-            // Track-point indicator. Always rendered so the user can spot
-            // at a glance which sightings have a real boat GPS track
-            // behind them (segment_count + 1, grey) vs which only have
-            // hand-entered begin/end anchors or no movement at all (0, red).
+            /*
+             * Track-point indicator. Always rendered so the user can spot
+             * at a glance which sightings have a real boat GPS track
+             * behind them (segment_count + 1, grey) vs which only have
+             * hand-entered begin/end anchors or no movement at all (0, red).
+             */
             const trackCount = entry.track_point_count ?? 0;
             const trackLabel = Lang.i().l('track pts') ?? 'track pts';
             if (trackCount > 0) {
@@ -1085,11 +1148,11 @@ export class Sighting extends BasePage {
             }
 
             const fDistance = parseFloat(entry.distance_coast!) || 0;
-            // eslint-disable-next-line no-new
-            new Td(trbody, `${UtilDistanceCoast.meterToM(fDistance, true)}`);
+            new Td2({value: `${UtilDistanceCoast.meterToM(fDistance, true)}`}).appendTo(trbody);
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `<b>${UtilSelect.getSelectStr(entry.photo_taken!)}</b><br>${UtilSelect.getSelectStr(entry.distance_coast_estimation_gps!)}`);
+            new Td2({
+                value: `<b>${UtilSelect.getSelectStr(entry.photo_taken!)}</b><br>${UtilSelect.getSelectStr(entry.distance_coast_estimation_gps!)}`
+            }).appendTo(trbody);
 
             let behaviourStr = '';
             try {
@@ -1111,23 +1174,28 @@ export class Sighting extends BasePage {
                 behaviourStr = 'not set<br>';
             }
 
-            const tdbehRex = new Td(trbody, behaviourStr);
+            const tdbehRex = new Td2({value: behaviourStr});
+            tdbehRex.appendTo(trbody);
             // eslint-disable-next-line no-new
-            new ReactionDisplay(tdbehRex, entry, mencates);
+            new ReactionDisplay(tdbehRex.getElement(), entry, mencates);
 
             const createDate = moment(entry.create_datetime * 1000);
             const updateDate = moment(entry.update_datetime * 1000);
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `<b>${createDate.format('YYYY.MM.DD HH:mm:ss')}</b><br>${highlight(entry.creater_name, term)}<br>${updateDate.format('YYYY.MM.DD HH:mm:ss')}`);
+            new Td2({
+                value: `<b>${createDate.format('YYYY.MM.DD HH:mm:ss')}</b><br>${highlight(entry.creater_name, term)}<br>${updateDate.format('YYYY.MM.DD HH:mm:ss')}`
+            }).appendTo(trbody);
 
-            // Note column gets the search highlight too — small affordance so the user can
-            // see *why* a row matched a free-text search.
+            /*
+             * Note column gets the search highlight too — small affordance so the user can
+             * see *why* a row matched a free-text search.
+             */
             if (term !== '' && entry.note) {
                 trbody.getElement().attr('title', entry.note);
             }
 
-            const tdAction = new Td(trbody, '');
+            const tdAction = new Td2({value: ''});
+            tdAction.appendTo(trbody);
 
             // Old (hand-imported) rows are read-only — no edit/delete menu.
             if (entry.is_old) {
@@ -1135,14 +1203,15 @@ export class Sighting extends BasePage {
                 return;
             }
 
-            const abtnMenu = new ButtonMenu(tdAction, IconFa.bars, true, ButtonType.borderless);
+            const abtnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+            abtnMenu.appendTo(tdAction);
 
             abtnMenu.addMenuItem('Edit', () => {
                 const distanceCoast = parseFloat(entry.distance_coast!) || 0;
 
                 this._sightingDialog.setTitle('Edit Sighting');
                 this._sightingDialog.resetValues();
-                this._sightingDialog.setId(entry.id);
+                this._sightingDialog.setSightingId(entry.id);
                 this._sightingDialog.setTourId(entry.tour_id);
                 this._sightingDialog.setVehicle(entry.vehicle_id!);
                 this._sightingDialog.setVehicleDriver(entry.vehicle_driver_id!);
@@ -1166,11 +1235,13 @@ export class Sighting extends BasePage {
 
             abtnMenu.addDivider();
 
-            // Per-vessel GFW breakdown — opens a small modal listing
-            // each fishing vessel that was active in the 25 km buffer
-            // on the sighting day. Empty list shows a "no fishing
-            // vessels for this sighting" placeholder so the user can
-            // tell "no activity" from "endpoint failed".
+            /*
+             * Per-vessel GFW breakdown — opens a small modal listing
+             * each fishing vessel that was active in the 25 km buffer
+             * on the sighting day. Empty list shows a "no fishing
+             * vessels for this sighting" placeholder so the user can
+             * tell "no activity" from "endpoint failed".
+             */
             abtnMenu.addMenuItem('Fishing vessels', async() => {
                 let vessels: SightingFishingVesselEntry[] = [];
                 try {
@@ -1189,24 +1260,23 @@ export class Sighting extends BasePage {
                     for (const v of vessels) {
                         const name = v.name && v.name !== '' ? v.name : `<code class="small">${escapeHtml(v.vessel_id)}</code>`;
                         const mmsi = v.mmsi && v.mmsi !== '' ? `<br><small class="text-muted">MMSI ${escapeHtml(v.mmsi)}</small>` : '';
-                        lines.push(`<tr>`
+                        lines.push('<tr>'
                             + `<td>${name}${mmsi}</td>`
                             + `<td>${escapeHtml(v.flag ?? '—')}</td>`
                             + `<td>${escapeHtml(v.gear_type ?? '—')}</td>`
                             + `<td class="text-right">${v.hours.toFixed(2)}</td>`
-                            + `</tr>`);
+                            + '</tr>');
                     }
                     lines.push('</tbody></table>');
                     body.html(lines.join(''));
                 }
 
-                DialogInfo.info(
+                DialogInfo2.info(
                     'fishingvessels',
-                    ModalDialogType.large,
+                    ModalDialogType2.large,
                     `Fishing vessels — Sighting #${entry.id}`,
-                    // @ts-ignore
                     body,
-                    (_, modal: DialogInfo) => modal.hide()
+                    (_, modal) => modal.hide()
                 );
             }, 'fa fa-ship');
 
@@ -1215,13 +1285,14 @@ export class Sighting extends BasePage {
             abtnMenu.addMenuItem('Delete', () => {
                 this._sightingDeletedDialog.setTitle('Delete a sighting');
                 this._sightingDeletedDialog.resetValues();
-                this._sightingDeletedDialog.setId(entry.id);
+                this._sightingDeletedDialog.setSightingId(entry.id);
                 this._sightingDeletedDialog.show();
             }, IconFa.trash);
 
             if (entry.files.length > 0) {
                 tdAction.append('<br>');
-                const btnAttachment = new ButtonMenu(tdAction, IconFa.paperclip, true, ButtonType.borderless);
+                const btnAttachment = new ButtonMenu2({icon: IconFa.paperclip, positionRight: true});
+                btnAttachment.appendTo(tdAction);
 
                 for (const fname of entry.files) {
                     btnAttachment.addMenuItem(fname, () => {
@@ -1229,13 +1300,13 @@ export class Sighting extends BasePage {
                         aImage.src = `/json/sightings/getimage/${entry.id}/${fname}`;
                         aImage.style.width = '100%';
 
-                        DialogInfo.info(
+                        DialogInfo2.info(
                             'sightimage',
-                            ModalDialogType.xlarge,
+                            ModalDialogType2.xlarge,
                             `Image for Sighting #${entry.id}`,
                             // @ts-ignore
                             JQuery<HTMLImageElement>(aImage),
-                            (_, modal: DialogInfo) => modal.hide()
+                            (_, modal) => modal.hide()
                         );
                     }, IconFa.camera);
                 }
@@ -1278,10 +1349,12 @@ export class Sighting extends BasePage {
                         loadedEntries.push(entry);
                     }
 
-                    // If the user already has the movements layer open,
-                    // append tracks for the newly arrived page only —
-                    // cheaper than re-fetching for the whole accumulated
-                    // set on every infinite-scroll tick.
+                    /*
+                     * If the user already has the movements layer open,
+                     * append tracks for the newly arrived page only —
+                     * cheaper than re-fetching for the whole accumulated
+                     * set on every infinite-scroll tick.
+                     */
                     await appendMovementsForEntries(response.list);
 
                     totalCount = response.count;
@@ -1292,7 +1365,7 @@ export class Sighting extends BasePage {
                 } finally {
                     card.hideLoading();
                     Lang.i().lAll();
-                    Tooltip.init();
+                    Tooltip2.init();
 
                     if (this._map) {
                         await this._map.refrech();

@@ -1,54 +1,58 @@
-import {ComponentType, FormGroup, FormRow, LangText, ModalDialog, ModalDialogType, Textarea} from 'bambooo';
+import {FormGroup2, FormRow2, LangTextV2, ModalDialog2, ModalDialogType2, Textarea2} from 'bambooo';
 
 /**
  * Sighting deleted modal dialog.
  */
-export class SightingDeletedModal extends ModalDialog {
+export class SightingDeletedModal extends ModalDialog2 {
 
     /**
      * ID of entry.
      * @member {number|null}
      */
-    protected _id: number|null = null;
+    protected _sightingId: number|null = null;
 
     /**
      * Description, why a user deletes this sighting.
-     * @member {Textarea}
+     * @member {Textarea2}
      */
-    protected _descriptionArea: Textarea;
+    protected _descriptionArea: Textarea2;
 
     /**
      * Constructor from Dialog.
-     * @param {Element} elementObject
      */
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'sightingdeletemodaldialog', ModalDialogType.large);
+    public constructor() {
+        super({id: 'sightingdeletemodaldialog', modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const rowFirst = new FormRow(bodyCard);
-        const groupDesc = new FormGroup(rowFirst.createCol(6), 'Are you sure you want to delete the sighting? Please describe:');
-        this._descriptionArea = new Textarea(groupDesc);
+        const rowFirst = new FormRow2({});
+        rowFirst.appendTo(bodyCard);
+        const groupDesc = new FormGroup2({
+            label: new LangTextV2({text: 'Are you sure you want to delete the sighting? Please describe:'})
+        });
+        groupDesc.appendTo(rowFirst.createCol(6));
+        this._descriptionArea = new Textarea2({});
+        this._descriptionArea.appendTo(groupDesc);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save changes'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save changes', true);
     }
 
     /**
-     * getId
+     * getSightingId
      */
-    public getId(): number|null {
-        return this._id;
+    public getSightingId(): number|null {
+        return this._sightingId;
     }
 
     /**
      * Set the ID of entry.
      * @param {number|null} id - ID of entry.
      */
-    public setId(id: number|null): void {
-        this._id = id;
+    public setSightingId(id: number|null): void {
+        this._sightingId = id;
     }
 
     /**
@@ -71,7 +75,7 @@ export class SightingDeletedModal extends ModalDialog {
      * resetValues
      */
     public override resetValues(): void {
-        this.setId(null);
+        this.setSightingId(null);
         this.setDescription('');
     }
 
