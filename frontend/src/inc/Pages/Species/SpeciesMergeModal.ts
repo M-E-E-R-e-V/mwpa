@@ -1,42 +1,50 @@
-import {ComponentType, FormGroup, LangText, ModalDialog, ModalDialogType, SelectBottemBorderOnly2} from 'bambooo';
+import {
+    FormGroup2,
+    ModalDialog2,
+    ModalDialogType2,
+    Select2
+} from 'bambooo';
 import {SpeciesEntry} from '../../Api/Species';
 
 /**
  * SpeciesMergeModal
  */
-export class SpeciesMergeModal extends ModalDialog {
+export class SpeciesMergeModal extends ModalDialog2 {
 
     /**
      * specie source select
      * @protected
      */
-    protected _specieSourceSelect: SelectBottemBorderOnly2;
+    protected _specieSourceSelect: Select2;
 
     /**
      * specie destination select
      * @protected
      */
-    protected _specieDestinationSelect: SelectBottemBorderOnly2;
+    protected _specieDestinationSelect: Select2;
 
     /**
      * constructor
-     * @param elementObject
      */
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'speciesmergemodaldialog', ModalDialogType.large);
+    public constructor() {
+        super({modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupSrcSpecie = new FormGroup(bodyCard, 'Specie source');
-        this._specieSourceSelect = new SelectBottemBorderOnly2(groupSrcSpecie);
+        const groupSrcSpecie = new FormGroup2({label: 'Specie source'});
+        groupSrcSpecie.appendTo(bodyCard);
+        this._specieSourceSelect = new Select2({});
+        this._specieSourceSelect.appendTo(groupSrcSpecie);
 
-        const groupDstSpecie = new FormGroup(bodyCard, 'Specie destination');
-        this._specieDestinationSelect = new SelectBottemBorderOnly2(groupDstSpecie);
+        const groupDstSpecie = new FormGroup2({label: 'Specie destination'});
+        groupDstSpecie.appendTo(bodyCard);
+        this._specieDestinationSelect = new Select2({});
+        this._specieDestinationSelect.appendTo(groupDstSpecie);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save changes'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save changes', true);
     }
 
     /**

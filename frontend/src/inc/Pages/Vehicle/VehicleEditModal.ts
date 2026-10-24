@@ -1,12 +1,11 @@
 import {
-    ComponentType,
-    FormGroup,
-    InputBottemBorderOnly2,
-    LangText,
-    ModalDialog,
-    ModalDialogType,
-    SelectBottemBorderOnly2,
-    Switch
+    FormGroup2,
+    Input2,
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2,
+    Select2,
+    Switch2
 } from 'bambooo';
 import {OrganizationFullEntry} from '../../Api/Organization';
 
@@ -24,7 +23,7 @@ import {OrganizationFullEntry} from '../../Api/Organization';
  * Both flags exist on the entity as separate columns by design — see
  * `Vehicle.in_use` / `Vehicle.isdeleted`.
  */
-export class VehicleEditModal extends ModalDialog {
+export class VehicleEditModal extends ModalDialog2 {
 
     /**
      * id of entry (null for create)
@@ -36,79 +35,84 @@ export class VehicleEditModal extends ModalDialog {
      * input name
      * @protected
      */
-    protected _inputName: InputBottemBorderOnly2;
+    protected _inputName: Input2;
 
     /**
      * Select organization
      * @protected
      */
-    protected _selectOrganization: SelectBottemBorderOnly2;
+    protected _selectOrganization: Select2;
 
     /**
      * Switch "in use"
      * @protected
      */
-    protected _switchInUse: Switch;
+    protected _switchInUse: Switch2;
 
     /**
      * Switch "is deleted" (soft delete)
      * @protected
      */
-    protected _switchIsDeleted: Switch;
+    protected _switchIsDeleted: Switch2;
 
     /**
      * constructor
-     * @param elementObject
      */
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'vehiclemodaldialog', ModalDialogType.large);
+    public constructor() {
+        super({modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupName = new FormGroup(bodyCard, new LangText('Vehicle Name'));
-        this._inputName = new InputBottemBorderOnly2(groupName);
+        const groupName = new FormGroup2({label: new LangTextV2({text: 'Vehicle Name'})});
+        groupName.appendTo(bodyCard);
+        this._inputName = new Input2({});
+        this._inputName.appendTo(groupName);
         this._inputName.setPlaceholder('Name of vehicle');
 
-        const groupOrganization = new FormGroup(bodyCard, new LangText('Organization'));
-        this._selectOrganization = new SelectBottemBorderOnly2(groupOrganization);
+        const groupOrganization = new FormGroup2({label: new LangTextV2({text: 'Organization'})});
+        groupOrganization.appendTo(bodyCard);
+        this._selectOrganization = new Select2({});
+        this._selectOrganization.appendTo(groupOrganization);
 
-        const groupInUse = new FormGroup(
-            bodyCard,
-            new LangText('In use (shown in operational pickers)')
-        );
-        this._switchInUse = new Switch(groupInUse, 'vehicleinuse');
+        const groupInUse = new FormGroup2({
+            label: new LangTextV2({text: 'In use (shown in operational pickers)'})
+        });
+        groupInUse.appendTo(bodyCard);
+        this._switchInUse = new Switch2({});
+        this._switchInUse.appendTo(groupInUse);
 
-        const groupIsDeleted = new FormGroup(
-            bodyCard,
-            new LangText('Deleted (hidden from admin list)')
-        );
-        this._switchIsDeleted = new Switch(groupIsDeleted, 'vehicleisdeleted');
+        const groupIsDeleted = new FormGroup2({
+            label: new LangTextV2({text: 'Deleted (hidden from admin list)'})
+        });
+        groupIsDeleted.appendTo(bodyCard);
+        this._switchIsDeleted = new Switch2({});
+        this._switchIsDeleted.appendTo(groupIsDeleted);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save changes'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save changes', true);
     }
 
     /**
-     * getId
+     * getVehicleId
      */
-    public getId(): number|null {
+    public getVehicleId(): number|null {
         return this._id;
     }
 
     /**
-     * setId
+     * setVehicleId
      * @param id
      */
-    public setId(id: number|null): void {
+    public setVehicleId(id: number|null): void {
         this._id = id;
     }
 
     /**
      * getName
      */
-    public getName(): string {
+    public override getName(): string {
         return this._inputName.getValue();
     }
 
@@ -116,7 +120,7 @@ export class VehicleEditModal extends ModalDialog {
      * setName
      * @param name
      */
-    public setName(name: string): void {
+    public override setName(name: string): void {
         this._inputName.setValue(name);
     }
 
@@ -187,7 +191,7 @@ export class VehicleEditModal extends ModalDialog {
      * resetValues
      */
     public override resetValues(): void {
-        this.setId(null);
+        this.setVehicleId(null);
         this.setName('');
         this.setOrganization(0);
         this.setInUse(true);

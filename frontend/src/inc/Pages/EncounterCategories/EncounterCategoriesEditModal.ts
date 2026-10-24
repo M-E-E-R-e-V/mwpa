@@ -1,13 +1,12 @@
 import {
-    ComponentType,
-    FormGroup,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
-    ModalDialog,
-    ModalDialogType,
-    Switch,
-    Textarea
+    FormGroup2,
+    Input2,
+    InputType2,
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2,
+    Switch2,
+    Textarea2
 } from 'bambooo';
 
 /**
@@ -18,36 +17,42 @@ import {
  * dedicated endpoint would create the same UX-asymmetry we already
  * had on Vehicle.
  */
-export class EncounterCategoriesEditModal extends ModalDialog {
+export class EncounterCategoriesEditModal extends ModalDialog2 {
 
     protected _id: number|null = null;
-    protected _inputName: InputBottemBorderOnly2;
-    protected _textareaDescription: Textarea;
-    protected _switchDeleted: Switch;
+    protected _inputName: Input2;
+    protected _textareaDescription: Textarea2;
+    protected _switchDeleted: Switch2;
 
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, `encountercatmodal-${Date.now()}`, ModalDialogType.large);
+    public constructor() {
+        super({modalType: ModalDialogType2.large});
 
-        const body = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const body = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupName = new FormGroup(body, new LangText('Name'));
-        this._inputName = new InputBottemBorderOnly2(groupName, undefined, InputType.text);
+        const groupName = new FormGroup2({label: new LangTextV2({text: 'Name'})});
+        groupName.appendTo(body);
+        this._inputName = new Input2({type: InputType2.text});
+        this._inputName.appendTo(groupName);
 
-        const groupDescription = new FormGroup(body, new LangText('Description'));
-        this._textareaDescription = new Textarea(groupDescription);
+        const groupDescription = new FormGroup2({label: new LangTextV2({text: 'Description'})});
+        groupDescription.appendTo(body);
+        this._textareaDescription = new Textarea2({});
+        this._textareaDescription.appendTo(groupDescription);
 
-        const groupDeleted = new FormGroup(body, new LangText('Deleted'));
-        this._switchDeleted = new Switch(groupDeleted, 'encounterDeleted');
+        const groupDeleted = new FormGroup2({label: new LangTextV2({text: 'Deleted'})});
+        groupDeleted.appendTo(body);
+        this._switchDeleted = new Switch2({});
+        this._switchDeleted.appendTo(groupDeleted);
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save', true);
     }
 
-    public getId(): number|null {
+    public getEntryId(): number|null {
         return this._id;
     }
 
-    public setId(id: number|null): void {
+    public setEntryId(id: number|null): void {
         this._id = id;
     }
 
@@ -58,11 +63,11 @@ export class EncounterCategoriesEditModal extends ModalDialog {
         this._switchDeleted.setEnable(false);
     }
 
-    public getName(): string {
+    public override getName(): string {
         return this._inputName.getValue().trim();
     }
 
-    public setName(name: string): void {
+    public override setName(name: string): void {
         this._inputName.setValue(name);
     }
 

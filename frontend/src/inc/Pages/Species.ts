@@ -1,27 +1,26 @@
 import {
-    Badge,
-    BadgeType,
-    ButtonClass,
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    DialogConfirm,
+    Badge2,
+    BadgeType2,
+    ButtonClass2,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    DialogConfirm2,
     IconFa,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
+    Input2,
+    InputType2,
+    LangTextV2,
     LeftNavbarLink,
-    ModalDialogType,
-    SortingColumn,
-    SortOrder,
-    Table,
-    TableWrapper,
-    Td,
-    Th,
-    Tr,
+    ModalDialogType2,
+    SortingColumn2,
+    SortOrder2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tr2,
     UtilColor
 } from 'bambooo';
 import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species';
@@ -38,14 +37,14 @@ import {SpeciesMergeModal} from './Species/SpeciesMergeModal';
 const PAGE_SIZE = 30;
 
 type SortKey = 'id' | 'name' | 'ottid' | 'aphiaid' | 'group';
-type SortState = Record<SortKey, SortOrder>;
+type SortState = Record<SortKey, SortOrder2>;
 
 const escapeHtml = (s: string): string => s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+.replace(/&/gu, '&amp;')
+.replace(/</gu, '&lt;')
+.replace(/>/gu, '&gt;')
+.replace(/"/gu, '&quot;')
+.replace(/'/gu, '&#39;');
 
 const highlight = (text: string, term: string): string => {
     if (text === '') {
@@ -55,7 +54,7 @@ const highlight = (text: string, term: string): string => {
     if (term === '') {
         return escaped;
     }
-    const safe = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const safe = term.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
     return escaped.replace(new RegExp(safe, 'giu'), (match) => `<mark>${match}</mark>`);
 };
 
@@ -79,18 +78,14 @@ export class Species extends BasePage {
     public constructor() {
         super();
 
-        this._speciesDialog = new SpeciesEditModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._speciesDialog = new SpeciesEditModal();
 
-        this._mergeDialog = new SpeciesMergeModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._mergeDialog = new SpeciesMergeModal();
 
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Specie', async() => {
             this._speciesDialog.resetValues();
-            this._speciesDialog.setTitle(new LangText('Add Specie'));
+            this._speciesDialog.setTitle(new LangTextV2({text: 'Add Specie'}));
 
             const groups = await SpeciesGroupAPI.getList();
             if (groups) {
@@ -102,7 +97,7 @@ export class Species extends BasePage {
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         this._speciesDialog.setOnSave(async(): Promise<void> => {
-            let tid = this._speciesDialog.getId();
+            let tid = this._speciesDialog.getSpecieId();
             if (tid === null) {
                 tid = 0;
             }
@@ -151,107 +146,109 @@ export class Species extends BasePage {
     public override async loadContent(): Promise<void> {
         const lang = Lang.i();
 
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Species'));
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const col = new ContentCol2(row1, ContentColSize2.col12);
+        const card = new Card2({});
+        card.appendTo(col.getElement());
+        card.setTitle(new LangTextV2({text: 'Species'}));
 
         // In-header quick search.
         const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
-        const searchInput = new InputBottemBorderOnly2(searchSlot, undefined, InputType.text);
+        const searchInput = new Input2({type: InputType2.text});
+        searchInput.appendTo(searchSlot);
         searchInput.setPlaceholder(`${lang.l('search name / group / ott-id / WoRMS …')}`);
 
         const sort: SortState = {
-            id: SortOrder.NONE,
-            name: SortOrder.ASC,
-            ottid: SortOrder.NONE,
-            aphiaid: SortOrder.NONE,
-            group: SortOrder.NONE
+            id: SortOrder2.NONE,
+            name: SortOrder2.ASC,
+            ottid: SortOrder2.NONE,
+            aphiaid: SortOrder2.NONE,
+            group: SortOrder2.NONE
         };
 
         let searchTerm = '';
         let allSpecies: SpeciesEntry[] = [];
 
-        const tableWrapper = new TableWrapper<SpeciesEntry>(card.getElement(), {head_fixed: true});
+        const tableWrapper = new TableWrapper2<SpeciesEntry>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(card.getElement());
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        const sortRegistry: {key: SortKey; column: LangText}[] = [];
+        const sortRegistry: {key: SortKey; column: LangTextV2;}[] = [];
 
-        const makeSortColumn = (label: string, key: SortKey): LangText => {
-            const column = new LangText(label, undefined, (element) => {
-                const newValue = SortingColumn.changeSort(element, sort[key]);
+        const makeSortColumn = (label: string, key: SortKey): LangTextV2 => {
+            const column = new LangTextV2({
+                text: label,
+                onClick: (element): void => {
+                    const newValue = SortingColumn2.changeSort(element, sort[key]);
 
-                for (const other of sortRegistry) {
-                    if (other.key !== key) {
-                        sort[other.key] = SortOrder.NONE;
-                        SortingColumn.initSort(other.column, SortOrder.NONE);
+                    for (const other of sortRegistry) {
+                        if (other.key !== key) {
+                            sort[other.key] = SortOrder2.NONE;
+                            SortingColumn2.initSort(other.column, SortOrder2.NONE);
+                        }
                     }
-                }
 
-                sort[key] = newValue as SortOrder;
-                tableWrapper.reset();
+                    sort[key] = newValue as SortOrder2;
+                    tableWrapper.reset();
+                }
             });
 
-            SortingColumn.initSort(column, sort[key]);
+            SortingColumn2.initSort(column, sort[key]);
             sortRegistry.push({key, column});
             return column;
         };
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Id', 'id'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Name', 'name'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Ott-Id', 'ottid'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('WoRMS', 'aphiaid'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Species Group', 'group'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Action'));
+        new Th2({value: makeSortColumn('Id', 'id')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Name', 'name')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Ott-Id', 'ottid')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('WoRMS', 'aphiaid')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Species Group', 'group')}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Action'})}).appendTo(trhead);
 
-        const renderRow = (_table: Table, specie: SpeciesEntry): void => {
-            const trbody = new Tr(table.getTbody());
+        const renderRow = (_table: Table2, specie: SpeciesEntry): void => {
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
             const term = searchTerm;
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `#${specie.id}`);
+            new Td2({value: `#${specie.id}`}).appendTo(trbody);
 
-            const nameTd = new Td(trbody, '');
+            const nameTd = new Td2({value: ''});
+            nameTd.appendTo(trbody);
             nameTd.getElement().html(`<b>${highlight(specie.name, term)}</b>`);
 
-            const ottIdTd = new Td(trbody, '');
+            const ottIdTd = new Td2({value: ''});
+            ottIdTd.appendTo(trbody);
             if (specie.ottid !== 0) {
-                const ottBadge = new Badge(
-                    ottIdTd,
-                    `<b style="color: ${UtilColor.getContrastYIQ('#6c757d')}">${specie.ottid}</b>`,
-                    BadgeType.info,
-                    '#6c757d'
-                );
+                const ottBadge = new Badge2({type: BadgeType2.info, color: '#6c757d'});
+                ottBadge.appendTo(ottIdTd);
+                ottBadge.getElement().html(`<b style="color: ${UtilColor.getContrastYIQ('#6c757d')}">${specie.ottid}</b>`);
                 UtilOttLink.setDialog(ottBadge.getElement(), `ID: ${specie.ottid}`, specie.ottid);
             }
 
-            const aphiaIdTd = new Td(trbody, '');
+            const aphiaIdTd = new Td2({value: ''});
+            aphiaIdTd.appendTo(trbody);
             const aphiaValue = specie.aphiaid ?? 0;
             if (aphiaValue !== 0) {
-                const aphiaBadge = new Badge(
-                    aphiaIdTd,
-                    `<b style="color: ${UtilColor.getContrastYIQ('#1b6ec2')}">${aphiaValue}</b>`,
-                    BadgeType.info,
-                    '#1b6ec2'
-                );
+                const aphiaBadge = new Badge2({type: BadgeType2.info, color: '#1b6ec2'});
+                aphiaBadge.appendTo(aphiaIdTd);
+                aphiaBadge.getElement().html(`<b style="color: ${UtilColor.getContrastYIQ('#1b6ec2')}">${aphiaValue}</b>`);
                 UtilWormsLink.setDialog(aphiaBadge.getElement(), specie.name, aphiaValue);
             }
 
-            const speciesGroupTd = new Td(trbody, '');
+            const speciesGroupTd = new Td2({value: ''});
+            speciesGroupTd.appendTo(trbody);
             // eslint-disable-next-line no-new
-            new SpeciesGroupDisplay(speciesGroupTd, specie.species_group ?? {
+            new SpeciesGroupDisplay(speciesGroupTd.getElement(), specie.species_group ?? {
                 name: 'Unknown',
                 color: 'white'
             });
 
-            const actionTd = new Td(trbody, '');
-            const btnMenu = new ButtonMenu(actionTd, IconFa.bars, true, ButtonType.borderless);
+            const actionTd = new Td2({value: ''});
+            actionTd.appendTo(trbody);
+            const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+            btnMenu.appendTo(actionTd);
 
             btnMenu.addMenuItem(lang.l('Profile'), (): void => {
                 if (this._loadPageFn) {
@@ -261,8 +258,8 @@ export class Species extends BasePage {
 
             btnMenu.addMenuItem('Edit', async(): Promise<void> => {
                 this._speciesDialog.resetValues();
-                this._speciesDialog.setTitle(new LangText('Edit Species'));
-                this._speciesDialog.setId(specie.id);
+                this._speciesDialog.setTitle(new LangTextV2({text: 'Edit Species'}));
+                this._speciesDialog.setSpecieId(specie.id);
                 this._speciesDialog.setName(specie.name);
                 this._speciesDialog.setOttId(specie.ottid);
                 this._speciesDialog.setAphiaId(specie.aphiaid ?? 0);
@@ -278,7 +275,7 @@ export class Species extends BasePage {
 
             btnMenu.addMenuItem('Merge', async(): Promise<void> => {
                 this._mergeDialog.resetValues();
-                this._mergeDialog.setTitle(new LangText('Merge Species'));
+                this._mergeDialog.setTitle(new LangTextV2({text: 'Merge Species'}));
 
                 const tspecies = await SpeciesAPI.getList();
                 if (tspecies) {
@@ -292,9 +289,9 @@ export class Species extends BasePage {
             btnMenu.addDivider();
 
             btnMenu.addMenuItem('Delete', (): void => {
-                DialogConfirm.confirm(
+                DialogConfirm2.confirm(
                     'dcDeleteSpecie',
-                    ModalDialogType.large,
+                    ModalDialogType2.large,
                     'Delete Specie',
                     'Are you sure you want to delete the specie?',
                     async(_, dialog) => {
@@ -312,7 +309,7 @@ export class Species extends BasePage {
                     },
                     undefined,
                     'Delete',
-                    ButtonClass.danger
+                    ButtonClass2.danger
                 );
             }, IconFa.trash);
 
@@ -339,11 +336,11 @@ export class Species extends BasePage {
                     return `${s.aphiaid ?? 0}`.includes(term);
                 });
 
-            const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder.NONE);
+            const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder2.NONE);
 
             if (activeKey) {
                 const order = sort[activeKey];
-                const dir = order === SortOrder.DESC ? -1 : 1;
+                const dir = order === SortOrder2.DESC ? -1 : 1;
                 filtered.sort((a, b) => {
                     let av: string | number;
                     let bv: string | number;
@@ -371,8 +368,8 @@ export class Species extends BasePage {
                             break;
                     }
 
-                    if (av < bv) return -1 * dir;
-                    if (av > bv) return 1 * dir;
+                    if (av < bv) {return -1 * dir;}
+                    if (av > bv) {return Number(dir);}
                     return 0;
                 });
             }

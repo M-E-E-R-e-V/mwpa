@@ -1,12 +1,10 @@
 import {
-    ComponentType,
-    FormGroup,
-    InputBottemBorderOnly2,
-    LangText,
-    ModalDialog,
-    ModalDialogType,
-    Multiple,
-    SelectBottemBorderOnly2
+    FormGroup2,
+    Input2,
+    ModalDialog2,
+    ModalDialogType2,
+    Multiple2,
+    Select2
 } from 'bambooo';
 import {RoleEntry} from '../../Api/Acl';
 import {GroupRoles} from '../../Api/Group';
@@ -15,7 +13,7 @@ import {OrganizationFullEntry} from '../../Api/Organization';
 /**
  * Group edit modal
  */
-export class GroupEditModal extends ModalDialog {
+export class GroupEditModal extends ModalDialog2 {
 
     /**
      * ID from group
@@ -27,40 +25,43 @@ export class GroupEditModal extends ModalDialog {
      * input name
      * @protected
      */
-    protected _inputName: InputBottemBorderOnly2;
+    protected _inputName: Input2;
 
     /**
      * Role select
      * @protected
      */
-    protected _selectRole: SelectBottemBorderOnly2;
+    protected _selectRole: Select2;
 
     /**
      * Organization select
      * @protected
      */
-    protected _selectOrganization: SelectBottemBorderOnly2;
+    protected _selectOrganization: Select2;
 
     /**
      * Multi-select for RBAC roles (groups_roles).
      * @protected
      */
-    protected _selectAclRoles: Multiple;
+    protected _selectAclRoles: Multiple2;
 
     /**
      * constructor
-     * @param {ComponentType} elementObject
      */
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'groupmodal', ModalDialogType.large);
+    public constructor() {
+        super({modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupName = new FormGroup(bodyCard, 'Name');
-        this._inputName = new InputBottemBorderOnly2(groupName);
+        const groupName = new FormGroup2({label: 'Name'});
+        groupName.appendTo(bodyCard);
+        this._inputName = new Input2({});
+        this._inputName.appendTo(groupName);
 
-        const groupRole = new FormGroup(bodyCard, 'Role');
-        this._selectRole = new SelectBottemBorderOnly2(groupRole);
+        const groupRole = new FormGroup2({label: 'Role'});
+        groupRole.appendTo(bodyCard);
+        this._selectRole = new Select2({});
+        this._selectRole.appendTo(groupRole);
 
         for (const role of Object.values(GroupRoles)) {
             this._selectRole.addValue({
@@ -69,28 +70,32 @@ export class GroupEditModal extends ModalDialog {
             });
         }
 
-        const groupOrg = new FormGroup(bodyCard, 'Organization');
-        this._selectOrganization = new SelectBottemBorderOnly2(groupOrg);
+        const groupOrg = new FormGroup2({label: 'Organization'});
+        groupOrg.appendTo(bodyCard);
+        this._selectOrganization = new Select2({});
+        this._selectOrganization.appendTo(groupOrg);
 
         this._selectOrganization.addValue({
             key: '0',
             value: 'None set'
         });
 
-        const groupAclRoles = new FormGroup(bodyCard, 'Access roles');
-        this._selectAclRoles = new Multiple(groupAclRoles);
+        const groupAclRoles = new FormGroup2({label: 'Access roles'});
+        groupAclRoles.appendTo(bodyCard);
+        this._selectAclRoles = new Multiple2({});
+        this._selectAclRoles.appendTo(groupAclRoles);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save changes'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save changes', true);
     }
 
     /**
      * Set id from group
      * @param {number} id
      */
-    public setId(id: number): void {
+    public setGroupId(id: number): void {
         this._id = id;
     }
 
@@ -98,7 +103,7 @@ export class GroupEditModal extends ModalDialog {
      * Return id from group
      * @returns {number|null}
      */
-    public getId(): number|null {
+    public getGroupId(): number|null {
         return this._id;
     }
 
@@ -106,7 +111,7 @@ export class GroupEditModal extends ModalDialog {
      * Set the group name
      * @param {string} name
      */
-    public setName(name: string): void {
+    public override setName(name: string): void {
         this._inputName.setValue(name);
     }
 
@@ -114,7 +119,7 @@ export class GroupEditModal extends ModalDialog {
      * Return the group name
      * @returns {string}
      */
-    public getName(): string {
+    public override getName(): string {
         return this._inputName.getValue();
     }
 

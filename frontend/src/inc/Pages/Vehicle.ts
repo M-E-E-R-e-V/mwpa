@@ -1,27 +1,26 @@
 import {
-    Badge,
-    BadgeType,
-    ButtonClass,
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    DialogConfirm,
+    Badge2,
+    BadgeType2,
+    ButtonClass2,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    DialogConfirm2,
     IconFa,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
+    Input2,
+    InputType2,
+    LangTextV2,
     LeftNavbarLink,
-    ModalDialogType,
-    SortingColumn,
-    SortOrder,
-    Table,
-    TableWrapper,
-    Td,
-    Th,
-    Tr
+    ModalDialogType2,
+    SortingColumn2,
+    SortOrder2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tr2
 } from 'bambooo';
 import {Organization as OrganizationAPI, OrganizationFullEntry} from '../Api/Organization';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
@@ -33,14 +32,14 @@ const PAGE_SIZE = 30;
 
 type SortKey = 'id' | 'name' | 'organization' | 'status';
 
-type SortState = Record<SortKey, SortOrder>;
+type SortState = Record<SortKey, SortOrder2>;
 
 const escapeHtml = (s: string): string => s
-.replace(/&/g, '&amp;')
-.replace(/</g, '&lt;')
-.replace(/>/g, '&gt;')
-.replace(/"/g, '&quot;')
-.replace(/'/g, '&#39;');
+.replace(/&/gu, '&amp;')
+.replace(/</gu, '&lt;')
+.replace(/>/gu, '&gt;')
+.replace(/"/gu, '&quot;')
+.replace(/'/gu, '&#39;');
 
 /**
  * Wrap any (case-insensitive) match of `term` in `<mark>` so search hits are
@@ -57,7 +56,7 @@ const highlight = (text: string, term: string): string => {
         return escaped;
     }
 
-    const safe = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const safe = term.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
     return escaped.replace(new RegExp(safe, 'giu'), (match) => `<mark>${match}</mark>`);
 };
 
@@ -66,8 +65,8 @@ const highlight = (text: string, term: string): string => {
  * (1), `deleted` last (2). Keeps the most relevant rows on top.
  */
 const statusRank = (v: VehicleEntry): number => {
-    if (v.isdeleted) return 2;
-    if (!v.in_use) return 1;
+    if (v.isdeleted) {return 2;}
+    if (!v.in_use) {return 1;}
     return 0;
 };
 
@@ -106,16 +105,14 @@ export class Vehicle extends BasePage {
     public constructor() {
         super();
 
-        this._vehicleDialog = new VehicleEditModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._vehicleDialog = new VehicleEditModal();
 
         // Navbar Left -------------------------------------------------------------------------------------------------
 
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Vehicle', async() => {
             this._vehicleDialog.resetValues();
-            this._vehicleDialog.setTitle(new LangText('Add Vehicle'));
+            this._vehicleDialog.setTitle(new LangTextV2({text: 'Add Vehicle'}));
 
             await this._refreshOrganizationList();
             this._vehicleDialog.setInUse(true);
@@ -127,7 +124,7 @@ export class Vehicle extends BasePage {
         // save --------------------------------------------------------------------------------------------------------
 
         this._vehicleDialog.setOnSave(async(): Promise<void> => {
-            let tid = this._vehicleDialog.getId();
+            let tid = this._vehicleDialog.getVehicleId();
 
             if (tid === null) {
                 tid = 0;
@@ -199,113 +196,109 @@ export class Vehicle extends BasePage {
     public override async loadContent(): Promise<void> {
         const lang = Lang.i();
 
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
+        const content = this._wrapper.getContentWrapper().getContent();
+        const row1 = new ContentRow2(content.getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
 
-        card.setTitle(new LangText('Vehicles'));
+        card.setTitle(new LangTextV2({text: 'Vehicles'}));
 
         // In-header quick search — same affordance as the Sighting list.
         const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
-        const searchInput = new InputBottemBorderOnly2(searchSlot, undefined, InputType.text);
+        const searchInput = new Input2({type: InputType2.text});
+        searchInput.appendTo(searchSlot);
         searchInput.setPlaceholder(`${lang.l('search name / organization …')}`);
 
-        // Sort state — single-column sort, default by id descending so the
-        // newest vehicle surfaces at the top.
+        /*
+         * Sort state — single-column sort, default by id descending so the
+         * newest vehicle surfaces at the top.
+         */
         const sort: SortState = {
-            id: SortOrder.DESC,
-            name: SortOrder.NONE,
-            organization: SortOrder.NONE,
-            status: SortOrder.NONE
+            id: SortOrder2.DESC,
+            name: SortOrder2.NONE,
+            organization: SortOrder2.NONE,
+            status: SortOrder2.NONE
         };
 
         let searchTerm = '';
         let allVehicles: VehicleEntry[] = [];
         let orgNameById = new Map<number, string>();
 
-        const tableWrapper = new TableWrapper<VehicleEntry>(card.getElement(), {head_fixed: true});
+        const tableWrapper = new TableWrapper2<VehicleEntry>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(card.getElement());
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        // Sort registry — keeps single-column behaviour clean: clicking a header
-        // resets every other registered header's indicator and state.
-        const sortRegistry: {key: SortKey; column: LangText}[] = [];
+        /*
+         * Sort registry — keeps single-column behaviour clean: clicking a header
+         * resets every other registered header's indicator and state.
+         */
+        const sortRegistry: {key: SortKey; column: LangTextV2;}[] = [];
 
-        const makeSortColumn = (label: string, key: SortKey): LangText => {
-            const column = new LangText(label, undefined, (element) => {
-                const newValue = SortingColumn.changeSort(element, sort[key]);
+        const makeSortColumn = (label: string, key: SortKey): LangTextV2 => {
+            const column = new LangTextV2({
+                text: label,
+                onClick: (langText): void => {
+                    const newValue = SortingColumn2.changeSort(langText, sort[key]);
 
-                for (const other of sortRegistry) {
-                    if (other.key !== key) {
-                        sort[other.key] = SortOrder.NONE;
-                        SortingColumn.initSort(other.column, SortOrder.NONE);
+                    for (const other of sortRegistry) {
+                        if (other.key !== key) {
+                            sort[other.key] = SortOrder2.NONE;
+                            SortingColumn2.initSort(other.column, SortOrder2.NONE);
+                        }
                     }
-                }
 
-                sort[key] = newValue as SortOrder;
-                tableWrapper.reset();
+                    sort[key] = newValue as SortOrder2;
+                    tableWrapper.reset();
+                }
             });
 
-            SortingColumn.initSort(column, sort[key]);
+            SortingColumn2.initSort(column, sort[key]);
             sortRegistry.push({key, column});
 
             return column;
         };
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Id', 'id'));
+        new Th2({value: makeSortColumn('Id', 'id')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Name', 'name')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Organization', 'organization')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Status', 'status')}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Action'})}).appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Name', 'name'));
-
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Organization', 'organization'));
-
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Status', 'status'));
-
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Action'));
-
-        const renderRow = (_table: Table, vehicle: VehicleEntry): void => {
-            const trbody = new Tr(table.getTbody());
+        const renderRow = (_table: Table2, vehicle: VehicleEntry): void => {
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
             const term = searchTerm;
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `#${vehicle.id}`);
+            new Td2({value: `#${vehicle.id}`}).appendTo(trbody);
 
-            const nameTd = new Td(trbody, '');
-            nameTd.getElement().html(`<b>${highlight(vehicle.name, term)}</b>`);
+            new Td2({value: `<b>${highlight(vehicle.name, term)}</b>`}).appendTo(trbody);
 
             const orgName = orgNameById.get(vehicle.organization_id) ?? `#${vehicle.organization_id}`;
-            const orgTd = new Td(trbody, '');
-            orgTd.getElement().html(highlight(orgName, term));
+            new Td2({value: highlight(orgName, term)}).appendTo(trbody);
 
-            const statusTd = new Td(trbody, '');
+            const statusTd = new Td2({value: ''});
+            statusTd.appendTo(trbody);
 
             if (vehicle.isdeleted) {
-                // eslint-disable-next-line no-new
-                new Badge(statusTd, lang.l('deleted') ?? 'deleted', BadgeType.secondary);
+                new Badge2({text: lang.l('deleted') ?? 'deleted', type: BadgeType2.secondary}).appendTo(statusTd);
             } else if (vehicle.in_use) {
-                // eslint-disable-next-line no-new
-                new Badge(statusTd, lang.l('in use') ?? 'in use', BadgeType.success);
+                new Badge2({text: lang.l('in use') ?? 'in use', type: BadgeType2.success}).appendTo(statusTd);
             } else {
-                // eslint-disable-next-line no-new
-                new Badge(statusTd, lang.l('not in use') ?? 'not in use', BadgeType.warning);
+                new Badge2({text: lang.l('not in use') ?? 'not in use', type: BadgeType2.warning}).appendTo(statusTd);
             }
 
-            const tdAction = new Td(trbody, '');
+            const tdAction = new Td2({value: ''});
+            tdAction.appendTo(trbody);
 
-            const btnRMenu = new ButtonMenu(
-                tdAction.getElement(),
-                IconFa.bars,
-                true,
-                ButtonType.borderless
-            );
+            const btnRMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+            btnRMenu.appendTo(tdAction);
 
             btnRMenu.addMenuItem('Edit', async(): Promise<void> => {
                 this._vehicleDialog.resetValues();
-                this._vehicleDialog.setTitle(new LangText('Edit Vehicle'));
-                this._vehicleDialog.setId(vehicle.id);
+                this._vehicleDialog.setTitle(new LangTextV2({text: 'Edit Vehicle'}));
+                this._vehicleDialog.setVehicleId(vehicle.id);
                 this._vehicleDialog.setName(vehicle.name);
 
                 await this._refreshOrganizationList();
@@ -321,9 +314,9 @@ export class Vehicle extends BasePage {
             btnRMenu.addMenuItem(
                 'Delete',
                 (): void => {
-                    DialogConfirm.confirm(
+                    DialogConfirm2.confirm(
                         'dcDeleteVehicle',
-                        ModalDialogType.large,
+                        ModalDialogType2.large,
                         'Delete Vehicle',
                         'Are you sure you want to delete the vehicle?'
                         + ' Historical sightings keep their reference, but the vehicle disappears from operational pickers.',
@@ -350,7 +343,7 @@ export class Vehicle extends BasePage {
                         },
                         undefined,
                         'Delete',
-                        ButtonClass.danger
+                        ButtonClass2.danger
                     );
                 },
                 IconFa.trash
@@ -373,11 +366,11 @@ export class Vehicle extends BasePage {
                     return org.includes(term);
                 });
 
-            const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder.NONE);
+            const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder2.NONE);
 
             if (activeKey) {
                 const order = sort[activeKey];
-                const dir = order === SortOrder.DESC ? -1 : 1;
+                const dir = order === SortOrder2.DESC ? -1 : 1;
                 filtered.sort((a, b) => {
                     let av: string | number;
                     let bv: string | number;
@@ -401,8 +394,8 @@ export class Vehicle extends BasePage {
                             break;
                     }
 
-                    if (av < bv) return -1 * dir;
-                    if (av > bv) return 1 * dir;
+                    if (av < bv) {return -1 * dir;}
+                    if (av > bv) {return Number(dir);}
                     return 0;
                 });
             }
@@ -411,9 +404,11 @@ export class Vehicle extends BasePage {
             return filtered.slice(offset, offset + PAGE_SIZE);
         };
 
-        // Reload everything (vehicles + orgs) and reset the wrapper so the
-        // first page renders. Hooked to the page's _onLoadTable contract so
-        // save/delete can trigger a refresh.
+        /*
+         * Reload everything (vehicles + orgs) and reset the wrapper so the
+         * first page renders. Hooked to the page's _onLoadTable contract so
+         * save/delete can trigger a refresh.
+         */
         this._onLoadTable = async(): Promise<void> => {
             card.showLoading();
 
@@ -444,8 +439,10 @@ export class Vehicle extends BasePage {
             false
         );
 
-        // Debounced quick-search — same 300 ms cadence as the Sighting page
-        // so the typing rhythm feels consistent across admin lists.
+        /*
+         * Debounced quick-search — same 300 ms cadence as the Sighting page
+         * so the typing rhythm feels consistent across admin lists.
+         */
         let searchTimer: ReturnType<typeof setTimeout> | null = null;
         searchInput.getElement().on('keyup', () => {
             if (searchTimer !== null) {

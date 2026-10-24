@@ -1,27 +1,26 @@
 import {
-    Badge,
-    BadgeType,
-    ButtonClass,
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    DialogConfirm,
+    Badge2,
+    BadgeType2,
+    ButtonClass2,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    DialogConfirm2,
     IconFa,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
+    Input2,
+    InputType2,
+    LangTextV2,
     LeftNavbarLink,
-    ModalDialogType,
-    SortingColumn,
-    SortOrder,
-    Table,
-    TableWrapper,
-    Td,
-    Th,
-    Tr
+    ModalDialogType2,
+    SortingColumn2,
+    SortOrder2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tr2
 } from 'bambooo';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Lang} from '../Lang';
@@ -31,14 +30,14 @@ import {EncounterCategoriesEditModal} from './EncounterCategories/EncounterCateg
 const PAGE_SIZE = 30;
 
 type SortKey = 'id' | 'name' | 'status';
-type SortState = Record<SortKey, SortOrder>;
+type SortState = Record<SortKey, SortOrder2>;
 
 const escapeHtml = (s: string): string => s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+.replace(/&/gu, '&amp;')
+.replace(/</gu, '&lt;')
+.replace(/>/gu, '&gt;')
+.replace(/"/gu, '&quot;')
+.replace(/'/gu, '&#39;');
 
 const highlight = (text: string, term: string): string => {
     if (text === '') {
@@ -48,7 +47,7 @@ const highlight = (text: string, term: string): string => {
     if (term === '') {
         return escaped;
     }
-    const safe = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const safe = term.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
     return escaped.replace(new RegExp(safe, 'giu'), (match) => `<mark>${match}</mark>`);
 };
 
@@ -70,20 +69,18 @@ export class EncounterCategories extends BasePage {
     public constructor() {
         super();
 
-        this._dialog = new EncounterCategoriesEditModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._dialog = new EncounterCategoriesEditModal();
 
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Encounter', () => {
             this._dialog.resetValues();
-            this._dialog.setTitle(new LangText('Add Encounter Category'));
+            this._dialog.setTitle(new LangTextV2({text: 'Add Encounter Category'}));
             this._dialog.show();
             return false;
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         this._dialog.setOnSave(async(): Promise<void> => {
-            const id = this._dialog.getId();
+            const id = this._dialog.getEntryId();
             const name = this._dialog.getName();
 
             if (name === '') {
@@ -115,89 +112,95 @@ export class EncounterCategories extends BasePage {
     public override async loadContent(): Promise<void> {
         const lang = Lang.i();
 
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Encounter Categories'));
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const col = new ContentCol2(row1, ContentColSize2.col12);
+        const card = new Card2({});
+        card.appendTo(col.getElement());
+        card.setTitle(new LangTextV2({text: 'Encounter Categories'}));
 
         const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
-        const searchInput = new InputBottemBorderOnly2(searchSlot, undefined, InputType.text);
+        const searchInput = new Input2({type: InputType2.text});
+        searchInput.appendTo(searchSlot);
         searchInput.setPlaceholder(`${lang.l('search name / description …')}`);
 
         const sort: SortState = {
-            id: SortOrder.NONE,
-            name: SortOrder.ASC,
-            status: SortOrder.NONE
+            id: SortOrder2.NONE,
+            name: SortOrder2.ASC,
+            status: SortOrder2.NONE
         };
 
         let searchTerm = '';
         let allEntries: EncounterCategorieEntry[] = [];
 
-        const tableWrapper = new TableWrapper<EncounterCategorieEntry>(card.getElement(), {head_fixed: true});
+        const tableWrapper = new TableWrapper2<EncounterCategorieEntry>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(card.getElement());
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        const sortRegistry: {key: SortKey; column: LangText}[] = [];
+        const sortRegistry: {key: SortKey; column: LangTextV2;}[] = [];
 
-        const makeSortColumn = (label: string, key: SortKey): LangText => {
-            const column = new LangText(label, undefined, (element) => {
-                const newValue = SortingColumn.changeSort(element, sort[key]);
+        const makeSortColumn = (label: string, key: SortKey): LangTextV2 => {
+            const column = new LangTextV2({
+                text: label,
+                onClick: (element): void => {
+                    const newValue = SortingColumn2.changeSort(element, sort[key]);
 
-                for (const other of sortRegistry) {
-                    if (other.key !== key) {
-                        sort[other.key] = SortOrder.NONE;
-                        SortingColumn.initSort(other.column, SortOrder.NONE);
+                    for (const other of sortRegistry) {
+                        if (other.key !== key) {
+                            sort[other.key] = SortOrder2.NONE;
+                            SortingColumn2.initSort(other.column, SortOrder2.NONE);
+                        }
                     }
-                }
 
-                sort[key] = newValue as SortOrder;
-                tableWrapper.reset();
+                    sort[key] = newValue as SortOrder2;
+                    tableWrapper.reset();
+                }
             });
 
-            SortingColumn.initSort(column, sort[key]);
+            SortingColumn2.initSort(column, sort[key]);
             sortRegistry.push({key, column});
             return column;
         };
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Id', 'id'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Name', 'name'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Description'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Status', 'status'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Action'));
+        new Th2({value: makeSortColumn('Id', 'id')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Name', 'name')}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Description'})}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Status', 'status')}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Action'})}).appendTo(trhead);
 
-        const renderRow = (_table: Table, entry: EncounterCategorieEntry): void => {
-            const trbody = new Tr(table.getTbody());
+        const renderRow = (_table: Table2, entry: EncounterCategorieEntry): void => {
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
             const term = searchTerm;
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `#${entry.id}`);
+            new Td2({value: `#${entry.id}`}).appendTo(trbody);
 
-            const nameTd = new Td(trbody, '');
+            const nameTd = new Td2({value: ''});
+            nameTd.appendTo(trbody);
             nameTd.getElement().html(`<b>${highlight(entry.name, term)}</b>`);
 
-            const descTd = new Td(trbody, '');
+            const descTd = new Td2({value: ''});
+            descTd.appendTo(trbody);
             descTd.getElement().html(highlight(entry.description ?? '', term));
 
-            const statusTd = new Td(trbody, '');
+            const statusTd = new Td2({value: ''});
+            statusTd.appendTo(trbody);
             if (entry.isdeleted) {
-                // eslint-disable-next-line no-new
-                new Badge(statusTd, lang.l('deleted') ?? 'deleted', BadgeType.secondary);
+                new Badge2({text: lang.l('deleted') ?? 'deleted', type: BadgeType2.secondary}).appendTo(statusTd);
             } else {
-                // eslint-disable-next-line no-new
-                new Badge(statusTd, lang.l('active') ?? 'active', BadgeType.success);
+                new Badge2({text: lang.l('active') ?? 'active', type: BadgeType2.success}).appendTo(statusTd);
             }
 
-            const actionTd = new Td(trbody, '');
-            const btnMenu = new ButtonMenu(actionTd, IconFa.bars, true, ButtonType.borderless);
+            const actionTd = new Td2({value: ''});
+            actionTd.appendTo(trbody);
+            const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+            btnMenu.appendTo(actionTd);
 
             btnMenu.addMenuItem('Edit', (): void => {
                 this._dialog.resetValues();
-                this._dialog.setTitle(new LangText('Edit Encounter Category'));
-                this._dialog.setId(entry.id);
+                this._dialog.setTitle(new LangTextV2({text: 'Edit Encounter Category'}));
+                this._dialog.setEntryId(entry.id);
                 this._dialog.setName(entry.name);
                 this._dialog.setDescription(entry.description ?? '');
                 this._dialog.setIsDeleted(entry.isdeleted);
@@ -207,9 +210,9 @@ export class EncounterCategories extends BasePage {
             btnMenu.addDivider();
 
             btnMenu.addMenuItem('Delete', (): void => {
-                DialogConfirm.confirm(
+                DialogConfirm2.confirm(
                     'dcDeleteEncounter',
-                    ModalDialogType.large,
+                    ModalDialogType2.large,
                     'Delete Encounter Category',
                     'Soft-delete this encounter category?'
                     + ' Historical sightings that reference it keep the link;'
@@ -230,14 +233,14 @@ export class EncounterCategories extends BasePage {
                     },
                     undefined,
                     'Delete',
-                    ButtonClass.danger
+                    ButtonClass2.danger
                 );
             }, IconFa.trash);
 
             Lang.i().lAll();
         };
 
-        const statusRank = (e: EncounterCategorieEntry): number => (e.isdeleted ? 1 : 0);
+        const statusRank = (e: EncounterCategorieEntry): number => e.isdeleted ? 1 : 0;
 
         const buildPage = (page: number): EncounterCategorieEntry[] => {
             const term = searchTerm.toLowerCase();
@@ -251,11 +254,11 @@ export class EncounterCategories extends BasePage {
                     return (e.description ?? '').toLowerCase().includes(term);
                 });
 
-            const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder.NONE);
+            const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder2.NONE);
 
             if (activeKey) {
                 const order = sort[activeKey];
-                const dir = order === SortOrder.DESC ? -1 : 1;
+                const dir = order === SortOrder2.DESC ? -1 : 1;
                 filtered.sort((a, b) => {
                     let av: string | number;
                     let bv: string | number;
@@ -275,8 +278,8 @@ export class EncounterCategories extends BasePage {
                             break;
                     }
 
-                    if (av < bv) return -1 * dir;
-                    if (av > bv) return 1 * dir;
+                    if (av < bv) {return -1 * dir;}
+                    if (av > bv) {return Number(dir);}
                     return 0;
                 });
             }

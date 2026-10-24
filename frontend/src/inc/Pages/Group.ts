@@ -1,15 +1,16 @@
 import {
-    ButtonMenu, ButtonType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow, IconFa,
-    LangText,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    IconFa,
+    LangTextV2,
     LeftNavbarLink,
-    Table,
-    Td,
-    Th,
-    Tr
+    Table2,
+    Td2,
+    Th2,
+    Tr2
 } from 'bambooo';
 import {Acl as AclAPI} from '../Api/Acl';
 import {Group as GroupAPI, GroupEntry, GroupOrganization} from '../Api/Group';
@@ -41,9 +42,7 @@ export class Group extends BasePage {
     public constructor() {
         super();
 
-        this._groupModal = new GroupEditModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._groupModal = new GroupEditModal();
 
         // Navbar Left -------------------------------------------------------------------------------------------------
 
@@ -69,7 +68,7 @@ export class Group extends BasePage {
         // save --------------------------------------------------------------------------------------------------------
 
         this._groupModal.setOnSave(async(): Promise<void> => {
-            const editingId = this._groupModal.getId();
+            const editingId = this._groupModal.getGroupId();
             const tid = editingId ?? 0;
 
             try {
@@ -116,12 +115,14 @@ export class Group extends BasePage {
      */
     public override async loadContent(): Promise<void> {
         this._onLoadTable = async(): Promise<void> => {
-            this._wrapper.getContentWrapper().getContent().empty();
+            const content = this._wrapper.getContentWrapper().getContent();
+            content.empty();
 
-            const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-            const card = new Card(new ContentCol(row1, ContentColSize.col12));
+            const row1 = new ContentRow2(content.getElement());
+            const card = new Card2({});
+            card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
 
-            card.setTitle(new LangText('Groups'));
+            card.setTitle(new LangTextV2({text: 'Groups'}));
             card.showLoading();
 
             const groups = await GroupAPI.getGroupList();
@@ -136,63 +137,48 @@ export class Group extends BasePage {
                 }
             }
 
-            const table = new Table(card.getElement());
-            const trhead = new Tr(table.getThead());
+            const table = new Table2({});
+            table.appendTo(card.getElement());
 
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Id'));
+            const trhead = new Tr2();
+            trhead.appendTo(table.getThead());
 
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Name'));
-
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Role'));
-
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Organization'));
-
-            // eslint-disable-next-line no-new
-            new Th(trhead, '');
+            new Th2({value: new LangTextV2({text: 'Id'})}).appendTo(trhead);
+            new Th2({value: new LangTextV2({text: 'Name'})}).appendTo(trhead);
+            new Th2({value: new LangTextV2({text: 'Role'})}).appendTo(trhead);
+            new Th2({value: new LangTextV2({text: 'Organization'})}).appendTo(trhead);
+            new Th2({value: ''}).appendTo(trhead);
 
             if (groups && groups.list) {
                 for (const group of groups.list) {
-                    const trbody = new Tr(table.getTbody());
+                    const trbody = new Tr2();
+                    trbody.appendTo(table.getTbody());
 
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `#${group.id}`);
-
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `${group.description}`);
-
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `${group.role}`);
+                    new Td2({value: `#${group.id}`}).appendTo(trbody);
+                    new Td2({value: `${group.description}`}).appendTo(trbody);
+                    new Td2({value: `${group.role}`}).appendTo(trbody);
 
                     const org = orgList.get(group.organization_id);
 
                     if (org) {
-                        // eslint-disable-next-line no-new
-                        new Td(trbody, `${org.name}`);
+                        new Td2({value: `${org.name}`}).appendTo(trbody);
                     } else {
-                        // eslint-disable-next-line no-new
-                        new Td(trbody, 'not set');
+                        new Td2({value: 'not set'}).appendTo(trbody);
                     }
 
                     // action
-                    const actionTd = new Td(trbody, '');
+                    const actionTd = new Td2({value: ''});
+                    actionTd.appendTo(trbody);
 
-                    const btnMenu = new ButtonMenu(
-                        actionTd,
-                        IconFa.bars,
-                        true,
-                        ButtonType.borderless
-                    );
+                    const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+                    btnMenu.appendTo(actionTd);
 
                     btnMenu.addMenuItem(
                         'Edit',
                         async(): Promise<void> => {
                             this._groupModal.resetValues();
                             this._groupModal.setTitle('Edit Group');
-                            this._groupModal.setId(group.id);
+                            this._groupModal.setGroupId(group.id);
                             this._groupModal.setName(group.description);
                             this._groupModal.setRole(group.role);
 
