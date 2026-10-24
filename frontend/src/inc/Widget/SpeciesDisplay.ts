@@ -6,9 +6,9 @@ import {UtilSpeciesContextMenu} from '../Utils/UtilSpeciesContextMenu';
 
 /**
  * Optional callback fired when the user picks "Profiling" from the
- * species context menu. The page that owns the SpeciesDisplay is
- * responsible for actually loading the profile page (it owns
- * `_loadPageFn`).
+ * species context menu. The caller that creates the SpeciesDisplay is
+ * responsible for actually loading the profile page (typically via
+ * `PageLoader.getInstance().load(...)`).
  */
 export type SpeciesDisplayProfileFn = (speciesId: number) => void;
 

@@ -6,7 +6,6 @@ import {
     ContentRow2,
     IconFa,
     LangTextV2,
-    LeftNavbarLink,
     Table2,
     Td2,
     Th2,
@@ -88,17 +87,16 @@ export class Roles extends BasePage {
      * loadContent
      */
     public override async loadContent(): Promise<void> {
-        const content = this._wrapper.getContentWrapper().getContent();
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add role', async(): Promise<void> => {
+        this.addNavbarButton('Add role', 'fas fa-plus', async(): Promise<void> => {
             this._openRoleDialog('Add new role').show();
         });
+
+        const content = this._wrapper.getContentWrapper().getContent();
 
         this._onLoadTable = async(): Promise<void> => {
             content.empty();
 
-            const row = new ContentRow2(content.getElement());
+            const row = new ContentRow2(content.getContentFluidElement());
             const card = new Card2({});
             card.appendTo(new ContentCol2(row, ContentColSize2.col12).getElement());
             card.setTitle(new LangTextV2({text: 'Roles'}));

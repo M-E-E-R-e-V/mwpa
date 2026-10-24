@@ -130,7 +130,7 @@ export class OceanFishingMap extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
-        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Ocean & Fishing'}));

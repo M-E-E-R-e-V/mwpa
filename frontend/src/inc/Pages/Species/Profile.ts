@@ -5,9 +5,9 @@ import {
     ContentColSize2,
     ContentRow2,
     LangTextV2,
-    SidebarMenuItem,
-    SidebarMenuItemBadge,
-    SidebarMenuTree
+    SidebarMenuItem2,
+    SidebarMenuItemBadge2,
+    SidebarMenuTree2
 } from 'bambooo';
 import * as d3raw from 'd3';
 import moment from 'moment';
@@ -70,7 +70,7 @@ export class SpeciesProfile extends BasePage {
     /**
      * Badge in the sidebar — set to n_sightings on load.
      */
-    protected _badge: SidebarMenuItemBadge | null = null;
+    protected _badge: SidebarMenuItemBadge2 | null = null;
 
     /**
      * Mini map for the spatial heatmap — kept on the instance so unload
@@ -146,23 +146,23 @@ export class SpeciesProfile extends BasePage {
 
     public override async loadContent(): Promise<void> {
         const lang = Lang.i();
-        const menuItem = this._wrapper.getMainSidebar().getSidebar().getMenu().getMenuItem(Species.NAME);
+        const menuItem = this._wrapper.getMainSidebar()?.getSidebar().getMenu()?.getMenuItem(Species.NAME) ?? null;
         const titleKey = 'Species Profile';
         const titleSuffix = ` #${this._speciesId}`;
 
         if (menuItem !== null) {
-            const menuTree = new SidebarMenuTree(menuItem);
-            const pmenuItem = new SidebarMenuItem(menuTree, true);
+            const menuTree = new SidebarMenuTree2(menuItem);
+            const pmenuItem = new SidebarMenuItem2(menuTree, true);
             pmenuItem.setTitle(`${lang.l(titleKey)}${titleSuffix}`);
             pmenuItem.setActiv(true);
 
-            this._badge = new SidebarMenuItemBadge(pmenuItem);
+            this._badge = new SidebarMenuItemBadge2(pmenuItem);
             this._badge.setContent('…');
         }
 
         // KPI bar ----------------------------------------------------------------------------------------------------
 
-        const rowKpi = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowKpi = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const kpiCard = new Card2({});
         kpiCard.appendTo(new ContentCol2(rowKpi, ContentColSize2.col12).getElement());
         kpiCard.setTitle(new LangTextV2({text: `${titleKey}${titleSuffix}`}));
@@ -213,7 +213,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 1b — tour clustering (ICC), pseudo-replication diagnostic ------------------------------------------------
 
-        const rowIcc = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowIcc = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const iccCard = new Card2({});
         iccCard.appendTo(new ContentCol2(rowIcc, ContentColSize2.col12).getElement());
         iccCard.setTitle(new LangTextV2({text: 'Tour clustering (ICC)'}));
@@ -222,7 +222,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 2 — time distribution (monthly + hourly side-by-side) ---------------------------------------------------
 
-        const rowTime = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowTime = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const monthlyCard = new Card2({});
         monthlyCard.appendTo(new ContentCol2(rowTime, ContentColSize2.colMd6).getElement());
         monthlyCard.setTitle(new LangTextV2({text: 'Sightings per month'}));
@@ -239,7 +239,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 2b — seasonality (phenology polar) + yearly SPUE trend --------------------------------------------------
 
-        const rowPhen = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowPhen = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const phenCard = new Card2({});
         phenCard.appendTo(new ContentCol2(rowPhen, ContentColSize2.colMd6).getElement());
         phenCard.setTitle(new LangTextV2({text: 'Seasonality (effort-corrected)'}));
@@ -254,7 +254,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 3 — group size + ratios ---------------------------------------------------------------------------------
 
-        const rowGroup = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowGroup = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const sizeCard = new Card2({});
         sizeCard.appendTo(new ContentCol2(rowGroup, ContentColSize2.colMd6).getElement());
         sizeCard.setTitle(new LangTextV2({text: 'Group size distribution'}));
@@ -271,7 +271,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 4 — environment grid (4 mini-histograms) ----------------------------------------------------------------
 
-        const rowEnv = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowEnv = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const envCard = new Card2({});
         envCard.appendTo(new ContentCol2(rowEnv, ContentColSize2.col12).getElement());
         envCard.setTitle(new LangTextV2({text: 'Environment preference'}));
@@ -289,7 +289,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 4b — environmental response curves (target-group, effort-corrected) -------------------------------------
 
-        const rowResp = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowResp = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const respCard = new Card2({});
         respCard.appendTo(new ContentCol2(rowResp, ContentColSize2.col12).getElement());
         respCard.setTitle(new LangTextV2({text: 'Environmental response (effort-corrected)'}));
@@ -308,7 +308,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 5 — behaviour + reaction donuts -------------------------------------------------------------------------
 
-        const rowBeh = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowBeh = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const behaviourCard = new Card2({});
         behaviourCard.appendTo(new ContentCol2(rowBeh, ContentColSize2.colMd6).getElement());
         behaviourCard.setTitle(new LangTextV2({text: 'Behaviour mix'}));
@@ -325,7 +325,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 5b — behaviour co-occurrence chord ----------------------------------------------------------------------
 
-        const rowChord = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowChord = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const chordCard = new Card2({});
         chordCard.appendTo(new ContentCol2(rowChord, ContentColSize2.col12).getElement());
         chordCard.setTitle(new LangTextV2({text: 'Behaviour co-occurrence'}));
@@ -337,7 +337,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 6 — movement signature ----------------------------------------------------------------------------------
 
-        const rowMove = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowMove = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const movementCard = new Card2({});
         movementCard.appendTo(new ContentCol2(rowMove, ContentColSize2.col12).getElement());
         movementCard.setTitle(new LangTextV2({text: 'Movement signature (derived from SightingMovement)'}));
@@ -358,7 +358,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 7 — SPUE (Sightings Per Unit Effort) --------------------------------------------------------------------
 
-        const rowSpue = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowSpue = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const spueCard = new Card2({});
         spueCard.appendTo(new ContentCol2(rowSpue, ContentColSize2.col12).getElement());
         spueCard.setTitle(new LangTextV2({text: 'Sightings per tour-hour (SPUE)'}));
@@ -368,7 +368,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 8 — yearly trend ----------------------------------------------------------------------------------------
 
-        const rowYearly = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowYearly = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const yearlyCard = new Card2({});
         yearlyCard.appendTo(new ContentCol2(rowYearly, ContentColSize2.colMd6).getElement());
         yearlyCard.setTitle(new LangTextV2({text: 'Sightings per year'}));
@@ -386,7 +386,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 9 — pressure indicators --------------------------------------------------------------------------------
 
-        const rowPress = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowPress = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const pressureCard = new Card2({});
         pressureCard.appendTo(new ContentCol2(rowPress, ContentColSize2.col12).getElement());
         pressureCard.setTitle(new LangTextV2({text: 'Pressure indicators'}));
@@ -403,7 +403,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 10 — extra env distributions ---------------------------------------------------------------------------
 
-        const rowEnvExtra = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowEnvExtra = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const envExtraCard = new Card2({});
         envExtraCard.appendTo(new ContentCol2(rowEnvExtra, ContentColSize2.col12).getElement());
         envExtraCard.setTitle(new LangTextV2({text: 'Extended environment (oceanographic)'}));
@@ -428,7 +428,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 11 — spatial heatmap ------------------------------------------------------------------------------------
 
-        const rowMap = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowMap = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const mapCard = new Card2({});
         mapCard.appendTo(new ContentCol2(rowMap, ContentColSize2.col12).getElement());
         mapCard.setTitle(new LangTextV2({text: 'Spatial distribution'}));
@@ -438,7 +438,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 11b — KDE utilisation distribution + Getis-Ord Gi* hotspots ---------------------------------------------
 
-        const rowSpatial = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowSpatial = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const spatialCard = new Card2({});
         spatialCard.appendTo(new ContentCol2(rowSpatial, ContentColSize2.col12).getElement());
         spatialCard.setTitle(new LangTextV2({text: 'Hotspots & utilization distribution'}));
@@ -468,7 +468,7 @@ export class SpeciesProfile extends BasePage {
 
         // Row 12 — seismic exposure -----------------------------------------------------------------------------------
 
-        const rowSeismic = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const rowSeismic = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const seismicCard = new Card2({});
         seismicCard.appendTo(new ContentCol2(rowSeismic, ContentColSize2.col12).getElement());
         seismicCard.setTitle(new LangTextV2({text: 'Seismic exposure'}));

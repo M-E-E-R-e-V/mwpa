@@ -4,8 +4,7 @@ import {
     ContentCol2,
     ContentColSize2,
     ContentRow2,
-    LangTextV2,
-    LeftNavbarLink
+    LangTextV2
 } from 'bambooo';
 import * as d3raw from 'd3';
 import moment from 'moment';
@@ -123,12 +122,16 @@ export class Earthquake extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Reload', 'fas fa-sync', async() => {
+            await this._reload();
+        });
+
         const lang = Lang.i();
         const content = this._wrapper.getContentWrapper().getContent();
 
         // Filter card --------------------------------------------------------------------------------------------
 
-        const rowFilter = new ContentRow2(content.getElement());
+        const rowFilter = new ContentRow2(content.getContentFluidElement());
         const filterCard = new Card2({});
         filterCard.appendTo(new ContentCol2(rowFilter, ContentColSize2.col12).getElement());
         filterCard.setTitle(new LangTextV2({text: 'Earthquakes'}));
@@ -204,7 +207,7 @@ export class Earthquake extends BasePage {
 
         // Map card -----------------------------------------------------------------------------------------------
 
-        const rowMap = new ContentRow2(content.getElement());
+        const rowMap = new ContentRow2(content.getContentFluidElement());
         const mapCard = new Card2({});
         mapCard.appendTo(new ContentCol2(rowMap, ContentColSize2.col12).getElement());
         mapCard.setTitle(new LangTextV2({text: 'Map'}));
@@ -228,7 +231,7 @@ export class Earthquake extends BasePage {
 
         // Impact "Auswertung" card --------------------------------------------------------------------------------
 
-        const rowImpact = new ContentRow2(content.getElement());
+        const rowImpact = new ContentRow2(content.getContentFluidElement());
         this._impactCard = new Card2({});
         this._impactCard.appendTo(new ContentCol2(rowImpact, ContentColSize2.col12).getElement());
         this._impactCard.setTitle(new LangTextV2({text: 'Impact analysis'}));
@@ -251,7 +254,7 @@ export class Earthquake extends BasePage {
 
         // Table card ---------------------------------------------------------------------------------------------
 
-        const rowTable = new ContentRow2(content.getElement());
+        const rowTable = new ContentRow2(content.getContentFluidElement());
         const tableCard = new Card2({});
         tableCard.appendTo(new ContentCol2(rowTable, ContentColSize2.col12).getElement());
         tableCard.setTitle(new LangTextV2({text: 'Events'}));
@@ -324,12 +327,6 @@ export class Earthquake extends BasePage {
 
             await this._refreshImpactForCurrentList();
         };
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Reload', async() => {
-            await this._reload();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', 'fa fa-redo');
 
         await this._reload();
     }

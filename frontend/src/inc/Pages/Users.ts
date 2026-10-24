@@ -10,7 +10,6 @@ import {
     Input2,
     InputType2,
     LangTextV2,
-    LeftNavbarLink,
     SortingColumn2,
     SortOrder2,
     Switch2,
@@ -80,21 +79,6 @@ export class Users extends BasePage {
 
         this._usersDialog = new UsersEditModal();
 
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add User', async() => {
-            const groups = await GroupAPI.getGroupList();
-
-            this._usersDialog.resetValues();
-            this._usersDialog.setTitle(new LangTextV2({text: 'Add User'}));
-
-            if (groups && groups.list) {
-                this._usersDialog.setMainGroupList(groups.list);
-            }
-
-            this._usersDialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
-
         this._usersDialog.setOnSave(async(): Promise<void> => {
             let tid = this._usersDialog.getUserId();
             if (tid === null) {
@@ -139,12 +123,25 @@ export class Users extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add User', 'fas fa-plus', async() => {
+            const groups = await GroupAPI.getGroupList();
+
+            this._usersDialog.resetValues();
+            this._usersDialog.setTitle(new LangTextV2({text: 'Add User'}));
+
+            if (groups && groups.list) {
+                this._usersDialog.setMainGroupList(groups.list);
+            }
+
+            this._usersDialog.show();
+        });
+
         const lang = Lang.i();
 
         const filter: UserListFilter = {filter: {show_disabled: false}};
 
         const content = this._wrapper.getContentWrapper().getContent();
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Users'}));

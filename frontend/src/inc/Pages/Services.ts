@@ -96,7 +96,7 @@ export class Services extends BasePage {
 
     public override async loadContent(): Promise<void> {
         const content = this._wrapper.getContentWrapper().getContent();
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Services'}));
@@ -300,7 +300,7 @@ export class Services extends BasePage {
         }, AUTO_REFRESH_MS);
     }
 
-    public override unloadContent(): void {
+    public override async unloadContent(): Promise<void> {
         if (this._refreshTimer !== null) {
             clearInterval(this._refreshTimer);
             this._refreshTimer = null;

@@ -4,9 +4,9 @@ import {
     ContentCol2,
     ContentColSize2,
     ContentRow2,
-    SidebarMenuItem,
-    SidebarMenuItemBadge,
-    SidebarMenuTree
+    SidebarMenuItem2,
+    SidebarMenuItemBadge2,
+    SidebarMenuTree2
 } from 'bambooo';
 import moment from 'moment';
 import {Coordinate} from 'ol/coordinate';
@@ -88,7 +88,7 @@ export class ToursMap extends BasePage {
     /**
      * @protected
      */
-    protected _badge: SidebarMenuItemBadge | null = null;
+    protected _badge: SidebarMenuItemBadge2 | null = null;
 
     /**
      * Chart above the map (count bars + speed line).
@@ -154,18 +154,18 @@ export class ToursMap extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
-        const menuItem = this._wrapper.getMainSidebar().getSidebar().getMenu().getMenuItem(Tours.NAME);
-        let menuTree: SidebarMenuTree | null = null;
+        const menuItem = this._wrapper.getMainSidebar()?.getSidebar().getMenu()?.getMenuItem(Tours.NAME) ?? null;
+        let menuTree: SidebarMenuTree2 | null = null;
 
         const title = `Tour #${this._tourId}`;
 
         if (menuItem !== null) {
-            menuTree = new SidebarMenuTree(menuItem);
-            const pmenuItem = new SidebarMenuItem(menuTree, true);
+            menuTree = new SidebarMenuTree2(menuItem);
+            const pmenuItem = new SidebarMenuItem2(menuTree, true);
             pmenuItem.setTitle(title);
             pmenuItem.setActiv(true);
 
-            this._badge = new SidebarMenuItemBadge(pmenuItem);
+            this._badge = new SidebarMenuItemBadge2(pmenuItem);
             this._badge.setContent('0');
         }
 
@@ -173,7 +173,7 @@ export class ToursMap extends BasePage {
 
         // chart card --------------------------------------------------------------------------------------------------
 
-        const rowChart = new ContentRow2(contentWrapper.getElement());
+        const rowChart = new ContentRow2(contentWrapper.getContentFluidElement());
         const chartCol = new ContentCol2(rowChart, ContentColSize2.col12);
         const chartCard = new Card2({});
         chartCard.appendTo(chartCol.getElement());
@@ -207,7 +207,7 @@ export class ToursMap extends BasePage {
 
         // map card ----------------------------------------------------------------------------------------------------
 
-        const rowMap = new ContentRow2(contentWrapper.getElement());
+        const rowMap = new ContentRow2(contentWrapper.getContentFluidElement());
         const mapCol = new ContentCol2(rowMap, ContentColSize2.col12);
         const card = new Card2({});
         card.appendTo(mapCol.getElement());

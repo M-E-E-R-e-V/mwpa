@@ -71,47 +71,35 @@ gulp.task('copy-data', async() => {
         return true;
     };
 
-    return gulp.src([
-            funcFindNodeModules('admin-lte', 'plugins/**/*')
-        ])
-        .pipe(gulp.dest(`${assetsPath}plugins`))
+    // Await each copy to completion. The old `&&`-chained form did NOT wait for
+    // the (async) gulp streams (`&&` only tests truthiness), which could race
+    // and cut copies off. Sequential awaits make the copy deterministic.
+    const streamDone = (stream) => new Promise((resolve, reject) => {
+        stream.on('error', reject).on('finish', resolve).on('end', resolve);
+    });
 
-        &&
+    const copy = (src, dest) => streamDone(gulp.src(src).pipe(gulp.dest(dest)));
 
-        // single files
-        gulp.src([
-            funcFindNodeModules('admin-lte', 'dist/js/adminlte.js')
-        ])
-        .pipe(gulp.dest(assetsPath))
+    // AdminLTE 4 vanilla bundle (wires data-lte-toggle via delegation).
+    await copy(funcFindNodeModules('admin-lte', 'dist/js/adminlte.js'), assetsPath);
 
-        &&
+    await copy(funcFindNodeModules('ionicons-css', 'dist/**/*'), `${assetsPath}ionicons-css`);
 
-        gulp.src([
-            funcFindNodeModules('ionicons-css', 'dist/**/*')
-        ])
-        .pipe(gulp.dest(`${assetsPath}ionicons-css`))
+    // AdminLTE 4 theme CSS (adminlte.css).
+    await copy(funcFindNodeModules('admin-lte', 'dist/css/**/*'), `${assetsPath}css`);
 
-        &&
+    await copy(funcFindNodeModules('bambooo', 'bambooo.css'), `${assetsPath}css`);
 
-        gulp.src([
-            funcFindNodeModules('admin-lte', 'dist/css/**/*'),
-        ])
-        .pipe(gulp.dest(`${assetsPath}css`))
+    // AdminLTE 4 no longer vendors plugins/ (jquery, moment, select2, …) — those
+    // stay in assets/plugins/ from the previous build. BUT it also no longer
+    // ships Bootstrap: pull the Bootstrap 5 bundle (incl. Popper) from the
+    // bootstrap package, overwriting the legacy Bootstrap 4 bundle on disk.
+    await copy([
+        funcFindNodeModules('bootstrap', 'dist/js/bootstrap.bundle.min.js'),
+        funcFindNodeModules('bootstrap', 'dist/js/bootstrap.bundle.min.js.map'),
+    ], `${assetsPath}plugins/bootstrap/js`);
 
-        &&
-
-        gulp.src([
-            funcFindNodeModules('bambooo', 'bambooo.css'),
-        ])
-        .pipe(gulp.dest(`${assetsPath}css`))
-
-        &&
-
-        // await download('https://cablemap.info/cablemap.info.aspx').pipe(gulp.dest(assetsPath))
-
-        // &&
-
-        await downloadGoogleFont();
+    await downloadGoogleFont();
 });
 
 gulp.task('build-webpack', () => {

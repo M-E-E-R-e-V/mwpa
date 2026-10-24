@@ -6,7 +6,6 @@ import {
     ContentRow2,
     IconFa,
     LangTextV2,
-    LeftNavbarLink,
     Table2,
     Td2,
     Th2,
@@ -43,27 +42,6 @@ export class Group extends BasePage {
         super();
 
         this._groupModal = new GroupEditModal();
-
-        // Navbar Left -------------------------------------------------------------------------------------------------
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Group', async() => {
-            this._groupModal.resetValues();
-            this._groupModal.setTitle('Add new Group');
-
-            const [orgs, roles] = await Promise.all([
-                OrganizationAPI.getOrganizations(),
-                AclAPI.getRoles()
-            ]);
-
-            if (orgs !== null) {
-                this._groupModal.setOrganizations(orgs);
-            }
-
-            this._groupModal.setAclRolesCatalog(roles);
-            this._groupModal.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         // save --------------------------------------------------------------------------------------------------------
 
@@ -114,11 +92,28 @@ export class Group extends BasePage {
      * loadContent
      */
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add Group', 'fas fa-plus', async() => {
+            this._groupModal.resetValues();
+            this._groupModal.setTitle('Add new Group');
+
+            const [orgs, roles] = await Promise.all([
+                OrganizationAPI.getOrganizations(),
+                AclAPI.getRoles()
+            ]);
+
+            if (orgs !== null) {
+                this._groupModal.setOrganizations(orgs);
+            }
+
+            this._groupModal.setAclRolesCatalog(roles);
+            this._groupModal.show();
+        });
+
         this._onLoadTable = async(): Promise<void> => {
             const content = this._wrapper.getContentWrapper().getContent();
             content.empty();
 
-            const row1 = new ContentRow2(content.getElement());
+            const row1 = new ContentRow2(content.getContentFluidElement());
             const card = new Card2({});
             card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
 

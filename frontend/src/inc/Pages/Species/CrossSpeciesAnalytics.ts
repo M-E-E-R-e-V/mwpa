@@ -78,7 +78,7 @@ export class CrossSpeciesAnalytics extends BasePage {
 
         // Header card — short explainer ------------------------------------------------------------------------------
 
-        const rowHead = new ContentRow2(contentWrapper.getElement());
+        const rowHead = new ContentRow2(contentWrapper.getContentFluidElement());
         const headCard = new Card2({});
         headCard.appendTo(new ContentCol2(rowHead, ContentColSize2.col12).getElement());
         headCard.setTitle(new LangTextV2({text: title}));
@@ -126,7 +126,7 @@ export class CrossSpeciesAnalytics extends BasePage {
         ];
 
         for (const spec of cardSpecs) {
-            const row = new ContentRow2(contentWrapper.getElement());
+            const row = new ContentRow2(contentWrapper.getContentFluidElement());
             const card = new Card2({});
             card.appendTo(new ContentCol2(row, ContentColSize2.col12).getElement());
             card.setTitle(new LangTextV2({text: spec.titleKey}));

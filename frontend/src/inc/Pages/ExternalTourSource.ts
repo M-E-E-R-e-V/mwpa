@@ -10,7 +10,6 @@ import {
     DialogConfirm2,
     IconFa,
     LangTextV2,
-    LeftNavbarLink,
     ModalDialogType2,
     Table2,
     TableWrapper2,
@@ -54,15 +53,6 @@ export class ExternalTourSource extends BasePage {
         super();
 
         this._dialog = new ExternalTourSourceEditModal();
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add source', async() => {
-            this._dialog.resetValues();
-            this._dialog.setTitle(new LangTextV2({text: 'Add external tour source'}));
-            await this._refreshOrganizationList();
-            this._dialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         this._dialog.setOnSave(async(): Promise<void> => {
             const id = this._dialog.getSourceId();
@@ -110,8 +100,15 @@ export class ExternalTourSource extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add source', 'fas fa-plus', async() => {
+            this._dialog.resetValues();
+            this._dialog.setTitle(new LangTextV2({text: 'Add external tour source'}));
+            await this._refreshOrganizationList();
+            this._dialog.show();
+        });
+
         const content = this._wrapper.getContentWrapper().getContent();
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'External tour sources'}));

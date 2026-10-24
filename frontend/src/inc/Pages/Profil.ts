@@ -50,12 +50,12 @@ export class Profil extends BasePage {
     public override async loadContent(): Promise<void> {
         const content = this._wrapper.getContentWrapper().getContent();
 
-        const row1 = new ContentRow2(content.getElement(), ContentRowClass2.mb2);
+        const row1 = new ContentRow2(content.getContentFluidElement(), ContentRowClass2.mb2);
 
         const colHead = new ContentCol2(row1, ContentColSize2.colSm12);
         colHead.getElement().append('<h1>Profile</h1>');
 
-        const row2 = new ContentRow2(content.getElement());
+        const row2 = new ContentRow2(content.getContentFluidElement());
 
         const colProfile = new ContentCol2(row2, ContentColSize2.colMd3);
         const colForm = new ContentCol2(row2, ContentColSize2.colMd9);

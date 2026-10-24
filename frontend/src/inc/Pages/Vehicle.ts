@@ -12,7 +12,6 @@ import {
     Input2,
     InputType2,
     LangTextV2,
-    LeftNavbarLink,
     ModalDialogType2,
     SortingColumn2,
     SortOrder2,
@@ -107,20 +106,6 @@ export class Vehicle extends BasePage {
 
         this._vehicleDialog = new VehicleEditModal();
 
-        // Navbar Left -------------------------------------------------------------------------------------------------
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Vehicle', async() => {
-            this._vehicleDialog.resetValues();
-            this._vehicleDialog.setTitle(new LangTextV2({text: 'Add Vehicle'}));
-
-            await this._refreshOrganizationList();
-            this._vehicleDialog.setInUse(true);
-            this._vehicleDialog.setIsDeleted(false);
-            this._vehicleDialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
-
         // save --------------------------------------------------------------------------------------------------------
 
         this._vehicleDialog.setOnSave(async(): Promise<void> => {
@@ -194,10 +179,20 @@ export class Vehicle extends BasePage {
      * loadContent
      */
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add Vehicle', 'fas fa-plus', async() => {
+            this._vehicleDialog.resetValues();
+            this._vehicleDialog.setTitle(new LangTextV2({text: 'Add Vehicle'}));
+
+            await this._refreshOrganizationList();
+            this._vehicleDialog.setInUse(true);
+            this._vehicleDialog.setIsDeleted(false);
+            this._vehicleDialog.show();
+        });
+
         const lang = Lang.i();
 
         const content = this._wrapper.getContentWrapper().getContent();
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
 

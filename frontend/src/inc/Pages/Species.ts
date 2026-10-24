@@ -12,7 +12,6 @@ import {
     Input2,
     InputType2,
     LangTextV2,
-    LeftNavbarLink,
     ModalDialogType2,
     SortingColumn2,
     SortOrder2,
@@ -26,6 +25,7 @@ import {
 import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species';
 import {SpeciesGroup as SpeciesGroupAPI} from '../Api/SpeciesGroup';
 import {Lang} from '../Lang';
+import {PageLoader} from '../PageLoader';
 import {UtilOttLink} from '../Utils/UtilOttLink';
 import {UtilWormsLink} from '../Utils/UtilWormsLink';
 import {SpeciesGroupDisplay} from '../Widget/SpeciesGroupDisplay';
@@ -82,20 +82,6 @@ export class Species extends BasePage {
 
         this._mergeDialog = new SpeciesMergeModal();
 
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Specie', async() => {
-            this._speciesDialog.resetValues();
-            this._speciesDialog.setTitle(new LangTextV2({text: 'Add Specie'}));
-
-            const groups = await SpeciesGroupAPI.getList();
-            if (groups) {
-                this._speciesDialog.setSpeciesGroupList(groups);
-            }
-
-            this._speciesDialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
-
         this._speciesDialog.setOnSave(async(): Promise<void> => {
             let tid = this._speciesDialog.getSpecieId();
             if (tid === null) {
@@ -144,9 +130,21 @@ export class Species extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add Specie', 'fas fa-plus', async() => {
+            this._speciesDialog.resetValues();
+            this._speciesDialog.setTitle(new LangTextV2({text: 'Add Specie'}));
+
+            const groups = await SpeciesGroupAPI.getList();
+            if (groups) {
+                this._speciesDialog.setSpeciesGroupList(groups);
+            }
+
+            this._speciesDialog.show();
+        });
+
         const lang = Lang.i();
 
-        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const col = new ContentCol2(row1, ContentColSize2.col12);
         const card = new Card2({});
         card.appendTo(col.getElement());
@@ -251,9 +249,7 @@ export class Species extends BasePage {
             btnMenu.appendTo(actionTd);
 
             btnMenu.addMenuItem(lang.l('Profile'), (): void => {
-                if (this._loadPageFn) {
-                    this._loadPageFn(new SpeciesProfilePage(specie.id));
-                }
+                PageLoader.getInstance().load(new SpeciesProfilePage(specie.id)).then();
             }, 'fas fa-chart-bar');
 
             btnMenu.addMenuItem('Edit', async(): Promise<void> => {

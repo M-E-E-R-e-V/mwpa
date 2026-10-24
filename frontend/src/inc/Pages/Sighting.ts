@@ -13,7 +13,6 @@ import {
     Input2,
     InputType2,
     LangTextV2,
-    LeftNavbarLink,
     ModalDialogType2,
     SortingColumn2,
     SortOrder2,
@@ -38,6 +37,7 @@ import {User as UserAPI} from '../Api/User';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {Lang} from '../Lang';
+import {PageLoader} from '../PageLoader';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../Utils/UtilLocation';
 import {UtilSelect} from '../Utils/UtilSelect';
@@ -110,14 +110,6 @@ export class Sighting extends BasePage {
         this._sightingDeletedDialog = new SightingDeletedModal();
 
         this._movementSettingsDialog = new MovementSettingsModal();
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add sighting', () => {
-            this._sightingDialog.setTitle(new LangTextV2({text: 'Add new sighting'}));
-            this._sightingDialog.resetValues();
-            this._sightingDialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         this._sightingDialog.setOnSave(async(): Promise<void> => {
             const sid = this._sightingDialog.getSightingId();
@@ -198,6 +190,12 @@ export class Sighting extends BasePage {
      * loadContent
      */
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add sighting', 'fas fa-plus', () => {
+            this._sightingDialog.setTitle(new LangTextV2({text: 'Add new sighting'}));
+            this._sightingDialog.resetValues();
+            this._sightingDialog.show();
+        });
+
         // shared mutable state across loaders / renderers ----------------------------------------
         const sort: SortState = {
             id: SortOrder2.NONE,
@@ -286,7 +284,7 @@ export class Sighting extends BasePage {
 
         // Filter card ---------------------------------------------------------------------------
         const content = this._wrapper.getContentWrapper().getContent();
-        const rowFilter = new ContentRow2(content.getElement());
+        const rowFilter = new ContentRow2(content.getContentFluidElement());
         const filter = new SightingFilter();
         filter.appendTo(new ContentCol2(rowFilter, ContentColSize2.col12).getElement());
 
@@ -366,7 +364,7 @@ export class Sighting extends BasePage {
         }
 
         // List card -----------------------------------------------------------------------------
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Sighting'}));
@@ -1099,9 +1097,7 @@ export class Sighting extends BasePage {
             speciesTd.appendTo(trbody);
             // eslint-disable-next-line no-new
             new SpeciesDisplay(speciesTd.getElement(), entry, mspecies, (speciesId) => {
-                if (this._loadPageFn) {
-                    this._loadPageFn(new SpeciesProfilePage(speciesId));
-                }
+                PageLoader.getInstance().load(new SpeciesProfilePage(speciesId)).then();
             });
             speciesTd.append(`<br>${escapeHtml(otherSpecies)}`);
 
@@ -1124,9 +1120,7 @@ export class Sighting extends BasePage {
             tdLocation.appendTo(trbody);
             // eslint-disable-next-line no-new
             new LocationDisplay(tdLocation.getElement(), entry.location_begin!, () => {
-                if (this._loadPageFn) {
-                    this._loadPageFn(new ToursMap(entry.tour_id));
-                }
+                PageLoader.getInstance().load(new ToursMap(entry.tour_id)).then();
             });
 
             /*
@@ -1431,9 +1425,7 @@ export class Sighting extends BasePage {
                 const div = jQuery('<div/>');
                 // eslint-disable-next-line no-new
                 new SpeciesDisplay(div, entry, mspecies, (speciesId) => {
-                    if (this._loadPageFn) {
-                        this._loadPageFn(new SpeciesProfilePage(speciesId));
-                    }
+                    PageLoader.getInstance().load(new SpeciesProfilePage(speciesId)).then();
                 });
                 return div;
             },

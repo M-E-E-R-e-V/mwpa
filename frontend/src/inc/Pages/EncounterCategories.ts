@@ -12,7 +12,6 @@ import {
     Input2,
     InputType2,
     LangTextV2,
-    LeftNavbarLink,
     ModalDialogType2,
     SortingColumn2,
     SortOrder2,
@@ -71,14 +70,6 @@ export class EncounterCategories extends BasePage {
 
         this._dialog = new EncounterCategoriesEditModal();
 
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Encounter', () => {
-            this._dialog.resetValues();
-            this._dialog.setTitle(new LangTextV2({text: 'Add Encounter Category'}));
-            this._dialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
-
         this._dialog.setOnSave(async(): Promise<void> => {
             const id = this._dialog.getEntryId();
             const name = this._dialog.getName();
@@ -110,9 +101,15 @@ export class EncounterCategories extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add Encounter', 'fas fa-plus', () => {
+            this._dialog.resetValues();
+            this._dialog.setTitle(new LangTextV2({text: 'Add Encounter Category'}));
+            this._dialog.show();
+        });
+
         const lang = Lang.i();
 
-        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const col = new ContentCol2(row1, ContentColSize2.col12);
         const card = new Card2({});
         card.appendTo(col.getElement());

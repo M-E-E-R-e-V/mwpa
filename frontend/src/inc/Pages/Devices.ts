@@ -60,7 +60,7 @@ export class Devices extends BasePage {
             const content = this._wrapper.getContentWrapper().getContent();
             content.empty();
 
-            const row = new ContentRow2(content.getElement());
+            const row = new ContentRow2(content.getContentFluidElement());
             const card = new Card2({});
             card.appendTo(new ContentCol2(row, ContentColSize2.col12).getElement());
             card.setTitle(new LangTextV2({text: 'Devices'}));

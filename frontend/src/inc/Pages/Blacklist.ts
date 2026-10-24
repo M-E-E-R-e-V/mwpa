@@ -58,7 +58,7 @@ export class Blacklist extends BasePage {
 
         const content = this._wrapper.getContentWrapper().getContent();
 
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Blacklist (blocked IPs)'}));
@@ -161,7 +161,7 @@ export class Blacklist extends BasePage {
          * LoginLockoutRegistry; entries expire when the lock elapses.
          */
 
-        const row2 = new ContentRow2(content.getElement());
+        const row2 = new ContentRow2(content.getContentFluidElement());
         const lockCard = new Card2({});
         lockCard.appendTo(new ContentCol2(row2, ContentColSize2.col12).getElement());
         lockCard.setTitle(new LangTextV2({text: 'Login lockouts'}));
