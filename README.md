@@ -153,7 +153,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 |---|---|
 | [`schemas/`](schemas/) | Runtime types &amp; validators (using `vts`), generated from `schemas/schema.json` via [vtseditor](https://github.com/stefanwerfling/vtseditor). Shared by backend &amp; frontend. |
 | [`backend/`](backend/) | Node.js Express app on the [`figtree`](https://github.com/stefanwerfling/figtree) framework — services, repositories, REST routes. |
-| [`frontend/`](frontend/) | Browser SPA — webpack bundle, AdminLTE 3 + jQuery + Bootstrap 4 + the in-house [`bambooo`](https://github.com/stefanwerfling/bambooo) widget library. |
+| [`frontend/`](frontend/) | Browser SPA — webpack bundle, AdminLTE 4 + jQuery + Bootstrap 5 + the in-house [`bambooo`](https://github.com/stefanwerfling/bambooo) v2 widget library. |
 
 ## Features
 
@@ -201,7 +201,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 | ORM | TypeORM on MariaDB |
 | Schema validation | [vts](https://github.com/stefanwerfling/vts) generated from JSON via [vtseditor](https://github.com/stefanwerfling/vtseditor) |
 | Auth | Express session + custom RBAC (`mwpa_schemas` rights) |
-| Frontend UI | AdminLTE 3, jQuery, Bootstrap 4, [bambooo](https://github.com/stefanwerfling/bambooo) widgets |
+| Frontend UI | AdminLTE 4, jQuery, Bootstrap 5, [bambooo](https://github.com/stefanwerfling/bambooo) v2 widgets |
 | Maps | OpenLayers + `ol-layerswitcher`, OSM tile cache |
 | Analytics | d3 + dc.js (crossfilter), in-page charts and dashboards |
 | Office exports | `node-xlsx` (sightings list), `JSZip` direct-XML patch (AROC template) |
