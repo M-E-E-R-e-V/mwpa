@@ -1,4 +1,5 @@
-import {Component} from 'bambooo';
+/* global JQuery */
+import {ComponentType, Widget2} from 'bambooo';
 import {Map as OlMap, Overlay, View} from 'ol';
 import LayerSwitcher from 'ol-layerswitcher';
 import {Coordinate} from 'ol/coordinate';
@@ -47,7 +48,7 @@ export type BaseMapLoadOptions = {
  * Does NOT know anything about sightings, tours, ocean metrics, etc.
  * Domain layers come in via {@link addLayer}.
  */
-export class BaseMap extends Component<HTMLDivElement> {
+export class BaseMap extends Widget2 {
 
     /**
      * @protected
@@ -85,8 +86,29 @@ export class BaseMap extends Component<HTMLDivElement> {
      */
     protected _layers: MapLayer[] = [];
 
-    public constructor(aelement?: any) {
-        super(jQuery<HTMLDivElement>('<div></div>').appendTo(aelement));
+    public constructor(aelement?: ComponentType) {
+        super({
+            element: jQuery<HTMLDivElement>('<div></div>')
+        });
+
+        this._element.appendTo(BaseMap._asParent(aelement));
+    }
+
+    /**
+     * Resolve a parent element (bambooo component, jQuery, DOM node or
+     * selector) to a jQuery handle the map container can be appended to.
+     * @param {ComponentType} element
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _asParent(element?: ComponentType): JQuery {
+        const maybe = element as {getElement?: () => JQuery;} | null | undefined;
+
+        if (maybe && typeof maybe.getElement === 'function') {
+            return maybe.getElement();
+        }
+
+        return jQuery(element as JQuery.Selector);
     }
 
     /**

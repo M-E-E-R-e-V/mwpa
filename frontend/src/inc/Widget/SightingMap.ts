@@ -1,4 +1,4 @@
-import {Component} from 'bambooo';
+import {ComponentType, Widget2} from 'bambooo';
 import {Map as OlMap} from 'ol';
 import {Coordinate} from 'ol/coordinate';
 import {Style} from 'ol/style';
@@ -37,7 +37,7 @@ export type SightingMapLoadOptions = {
  * instead of this widget — see the OceanFishingMap page for the
  * preferred pattern.
  */
-export class SightingMap extends Component<HTMLDivElement> {
+export class SightingMap extends Widget2 {
 
     /**
      * @protected
@@ -79,14 +79,14 @@ export class SightingMap extends Component<HTMLDivElement> {
      */
     protected _loadOptions: SightingMapLoadOptions = {};
 
-    public constructor(aelement?: any) {
+    public constructor(aelement?: ComponentType) {
         /*
          * BaseMap creates its own child div under `aelement`. We hold a
          * reference but never own a separate DOM node ourselves — the
-         * `_element` we hand to Component is the same one BaseMap uses.
+         * `_element` we hand to Widget2 is the same one BaseMap uses.
          */
         const base = new BaseMap(aelement);
-        super(base.getElement());
+        super({element: base.getElement()});
         this._base = base;
     }
 
@@ -208,8 +208,10 @@ export class SightingMap extends Component<HTMLDivElement> {
 
     public async refrech(): Promise<void> {
         this._points?.refresh();
-        // Heatmap shares the points source but needs an explicit rebuild
-        // to re-rasterise its gradient — see SightingHeatmapLayer.refresh.
+        /*
+         * Heatmap shares the points source but needs an explicit rebuild
+         * to re-rasterise its gradient — see SightingHeatmapLayer.refresh.
+         */
         this._heatmap?.refresh();
     }
 

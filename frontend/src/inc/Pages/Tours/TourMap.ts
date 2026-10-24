@@ -1,8 +1,9 @@
+/* global JQuery */
 import {
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
     SidebarMenuItem,
     SidebarMenuItemBadge,
     SidebarMenuTree
@@ -172,8 +173,10 @@ export class ToursMap extends BasePage {
 
         // chart card --------------------------------------------------------------------------------------------------
 
-        const rowChart = new ContentRow(contentWrapper);
-        const chartCard = new Card(new ContentCol(rowChart, ContentColSize.col12));
+        const rowChart = new ContentRow2(contentWrapper.getElement());
+        const chartCol = new ContentCol2(rowChart, ContentColSize2.col12);
+        const chartCard = new Card2({});
+        chartCard.appendTo(chartCol.getElement());
         chartCard.setTitle('Tracking points · time / count / speed');
 
         const chartTools = chartCard.getToolsElement();
@@ -204,8 +207,10 @@ export class ToursMap extends BasePage {
 
         // map card ----------------------------------------------------------------------------------------------------
 
-        const rowMap = new ContentRow(contentWrapper);
-        const card = new Card(new ContentCol(rowMap, ContentColSize.col12));
+        const rowMap = new ContentRow2(contentWrapper.getElement());
+        const mapCol = new ContentCol2(rowMap, ContentColSize2.col12);
+        const card = new Card2({});
+        card.appendTo(mapCol.getElement());
         card.setTitle(title);
 
         this._map = new BaseMap(card.getBodyElement());
@@ -457,7 +462,7 @@ export class ToursMap extends BasePage {
      * chart from scratch. Used both for the first paint and after every
      * delete/transfer.
      */
-    private async _loadTrackingData(card: Card, title: string, defaultViewCenter: Coordinate | null): Promise<void> {
+    private async _loadTrackingData(card: Card2, title: string, defaultViewCenter: Coordinate | null): Promise<void> {
         if (this._map) {
             this._map.setView(defaultViewCenter);
         }
