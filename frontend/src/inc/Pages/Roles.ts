@@ -1,17 +1,16 @@
 import {
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
     IconFa,
-    LangText,
+    LangTextV2,
     LeftNavbarLink,
-    Table,
-    Td,
-    Th,
-    Tr
+    Table2,
+    Td2,
+    Th2,
+    Tr2
 } from 'bambooo';
 import {Acl as AclAPI} from '../Api/Acl';
 import {Lang} from '../Lang';
@@ -20,30 +19,29 @@ import {RoleEditModal} from './Roles/RoleEditModal';
 import {RoleRightsEditModal} from './Roles/RoleRightsEditModal';
 
 /**
- * Roles admin page. Lists every role with actions to rename (RoleEditModal),
- * assign rights (RoleRightsEditModal) and delete. New roles are created via the
- * "Add role" navbar link (RoleEditModal with id=0). The system roles seeded
- * from ACLRbac.ROLES (root, user) can't be renamed or deleted.
+ * Roles admin page (bambooo v2). Lists roles with rename (RoleEditModal),
+ * rights (RoleRightsEditModal) and delete actions. New roles via the "Add role"
+ * navbar link. The seeded system roles (root, user) can't be renamed/deleted.
  */
 export class Roles extends BasePage {
 
     protected override _name: string = 'admin-roles';
 
-    protected _editModal: RoleEditModal;
+    /**
+     * Open the create/rename dialog, wired to save.
+     * @param {string} title
+     * @return {RoleEditModal}
+     * @protected
+     */
+    protected _openRoleDialog(title: string): RoleEditModal {
+        const dialog = new RoleEditModal();
+        dialog.setTitle(title);
 
-    protected _rightsModal: RoleRightsEditModal;
-
-    public constructor() {
-        super();
-
-        this._editModal = new RoleEditModal(this._wrapper.getContentWrapper().getContent().getElement());
-        this._rightsModal = new RoleRightsEditModal(this._wrapper.getContentWrapper().getContent().getElement());
-
-        this._editModal.setOnSave(async(): Promise<void> => {
+        dialog.setOnSave(async(): Promise<void> => {
             try {
-                const ok = await AclAPI.saveRoleName(this._editModal.getId(), this._editModal.getName());
-                if (ok) {
-                    this._editModal.hide();
+                if (await AclAPI.saveRoleName(dialog.getRoleId(), dialog.getName())) {
+                    dialog.hide();
+                    dialog.destroy();
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
@@ -56,14 +54,24 @@ export class Roles extends BasePage {
             }
         });
 
-        this._rightsModal.setOnSave(async(): Promise<void> => {
+        return dialog;
+    }
+
+    /**
+     * Open the rights dialog for a role, wired to save.
+     * @param {string} roleName
+     * @return {RoleRightsEditModal}
+     * @protected
+     */
+    protected _openRoleRightsDialog(roleName: string): RoleRightsEditModal {
+        const dialog = new RoleRightsEditModal();
+        dialog.setTitle(`Rights for role: ${roleName}`);
+
+        dialog.setOnSave(async(): Promise<void> => {
             try {
-                const ok = await AclAPI.saveRoleRights(
-                    this._rightsModal.getRoleId(),
-                    this._rightsModal.getRoleRights()
-                );
-                if (ok) {
-                    this._rightsModal.hide();
+                if (await AclAPI.saveRoleRights(dialog.getRoleId(), dialog.getRoleRights())) {
+                    dialog.hide();
+                    dialog.destroy();
                     this._toast.fire({icon: 'success', title: 'Rights saved.'});
                 } else {
                     this._toast.fire({icon: 'error', title: 'Rights save failed.'});
@@ -72,65 +80,74 @@ export class Roles extends BasePage {
                 this._toast.fire({icon: 'error', title: message});
             }
         });
+
+        return dialog;
     }
 
+    /**
+     * loadContent
+     */
     public override async loadContent(): Promise<void> {
+        const content = this._wrapper.getContentWrapper().getContent();
+
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add role', async(): Promise<void> => {
-            this._editModal.resetValues();
-            this._editModal.setTitle('Add new role');
-            this._editModal.setId(0);
-            this._editModal.setName('');
-            this._editModal.show();
+            this._openRoleDialog('Add new role').show();
         });
 
         this._onLoadTable = async(): Promise<void> => {
-            this._wrapper.getContentWrapper().getContent().empty();
+            content.empty();
 
-            const row = new ContentRow(this._wrapper.getContentWrapper().getContent());
-            const card = new Card(new ContentCol(row, ContentColSize.col12));
-            card.setTitle(new LangText('Roles'));
+            const row = new ContentRow2(content.getElement());
+            const card = new Card2({});
+            card.appendTo(new ContentCol2(row, ContentColSize2.col12).getElement());
+            card.setTitle(new LangTextV2({text: 'Roles'}));
             card.showLoading();
 
-            const table = new Table(card.getElement(), {striped: true});
-            const trhead = new Tr(table.getThead());
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Name'));
-            // eslint-disable-next-line no-new
-            new Th(trhead, '120px');
+            const table = new Table2({striped: true});
+            table.appendTo(card.getElement());
+
+            const trhead = new Tr2();
+            trhead.appendTo(table.getThead());
+            new Th2({value: new LangTextV2({text: 'Name'})}).appendTo(trhead);
+            new Th2({value: '', width: '120px'}).appendTo(trhead);
 
             const roles = await AclAPI.getRoles();
 
             for (const role of roles) {
-                const trbody = new Tr(table.getTbody());
-                // eslint-disable-next-line no-new
-                new Td(trbody, `<i class="fas fa-user-tag mr-2 text-muted"></i><b>${role.name}</b>`);
+                const trbody = new Tr2();
+                trbody.appendTo(table.getTbody());
 
-                const actionTd = new Td(trbody, '');
-                const btnMenu = new ButtonMenu(actionTd, IconFa.bars, true, ButtonType.borderless);
+                new Td2({
+                    value: `<i class="fas fa-user-tag mr-2 text-muted"></i><b>${role.name}</b>`
+                }).appendTo(trbody);
 
-                btnMenu.addMenuItem('Edit', () => {
-                    this._editModal.resetValues();
-                    this._editModal.setTitle(`Edit role: ${role.name}`);
-                    this._editModal.setId(role.id);
-                    this._editModal.setName(role.name);
-                    this._editModal.show();
+                const actionTd = new Td2({value: ''});
+                actionTd.appendTo(trbody);
+
+                const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+                btnMenu.appendTo(actionTd);
+
+                btnMenu.addMenuItem('Edit', (): void => {
+                    const dialog = this._openRoleDialog(`Edit role: ${role.name}`);
+                    dialog.setRoleId(role.id);
+                    dialog.setName(role.name);
+                    dialog.show();
                 }, IconFa.edit);
 
                 btnMenu.addMenuItem('Set rights', async(): Promise<void> => {
-                    this._rightsModal.resetValues();
-                    this._rightsModal.setTitle(`Rights for role: ${role.name}`);
-                    this._rightsModal.setRoleId(role.id);
+                    const dialog = this._openRoleRightsDialog(role.name);
+                    dialog.setRoleId(role.id);
 
                     const [allRights, roleRights] = await Promise.all([
                         AclAPI.getRights(),
                         AclAPI.getRoleRights(role.id)
                     ]);
 
-                    this._rightsModal.setRights(allRights);
-                    this._rightsModal.setRoleRights(roleRights);
-                    this._rightsModal.show();
-                }, 'fa fa-lock');
+                    dialog.setRights(allRights);
+                    dialog.setRoleRights(roleRights);
+                    dialog.show();
+                }, IconFa.lock);
 
                 // System roles (root, user) are seeded from code and must stay.
                 if (role.name !== 'root' && role.name !== 'user') {
@@ -140,8 +157,7 @@ export class Roles extends BasePage {
                             return;
                         }
                         try {
-                            const ok = await AclAPI.deleteRole(role.id);
-                            if (ok) {
+                            if (await AclAPI.deleteRole(role.id)) {
                                 this._toast.fire({icon: 'success', title: 'Role deleted.'});
                                 if (this._onLoadTable) {
                                     await this._onLoadTable();

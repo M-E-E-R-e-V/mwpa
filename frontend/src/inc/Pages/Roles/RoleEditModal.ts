@@ -1,52 +1,79 @@
 import {
-    ComponentType,
-    FormGroup,
-    InputBottemBorderOnly2,
-    LangText,
-    ModalDialog,
-    ModalDialogType
+    FormGroup2,
+    Input2,
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2
 } from 'bambooo';
 
 /**
- * Modal for renaming a role. Roles cannot be created/deleted from the UI —
- * the catalog is seeded from ACLRbac constants on backend boot.
+ * Create / rename a role (v2). System roles (root, user) can't be renamed —
+ * the caller guards that; this dialog only edits the name.
  */
-export class RoleEditModal extends ModalDialog {
+export class RoleEditModal extends ModalDialog2 {
 
     protected _id: number = 0;
 
-    protected _inputName: InputBottemBorderOnly2;
+    protected _inputName: Input2;
 
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, `rolemodal-${Date.now()}`, ModalDialogType.large);
+    /**
+     * Constructor
+     */
+    public constructor() {
+        super({modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupName = new FormGroup(bodyCard, 'Name');
-        this._inputName = new InputBottemBorderOnly2(groupName);
+        jQuery(
+            '<h5 class="mb-3 text-primary"><i class="fas fa-user-tag mr-2"></i>Role</h5>'
+        ).appendTo(bodyCard);
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save changes'), true);
+        const groupName = new FormGroup2({label: new LangTextV2({text: 'name'})});
+        groupName.appendTo(bodyCard);
+        this._inputName = new Input2({});
+        this._inputName.appendTo(groupName);
+
+        this.addButtonClose('Close');
+        this.addButtonSave('Save changes', true);
     }
 
-    public setId(id: number): void {
+    /**
+     * Set id
+     * @param {number} id
+     */
+    public setRoleId(id: number): void {
         this._id = id;
     }
 
-    public getId(): number {
+    /**
+     * Return id
+     * @return {number}
+     */
+    public getRoleId(): number {
         return this._id;
     }
 
-    public setName(name: string): void {
+    /**
+     * Set the name
+     * @param {string} name
+     */
+    public override setName(name: string): void {
         this._inputName.setValue(name);
     }
 
-    public getName(): string {
+    /**
+     * Return name
+     * @return {string}
+     */
+    public override getName(): string {
         return this._inputName.getValue();
     }
 
+    /**
+     * Reset values
+     */
     public override resetValues(): void {
-        this._id = 0;
+        this.setRoleId(0);
         this.setName('');
     }
 
