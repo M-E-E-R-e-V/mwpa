@@ -14,7 +14,7 @@ export class UtilOttLink {
     public static setDialog(element: any, titleName: string, ottid: string|number): void {
         const tooltpSpecStr = 'Click for more Information';
 
-        element.attr('data-toggle', 'tooltip');
+        element.attr('data-bs-toggle', 'tooltip');
         element.attr('data-html', 'true');
         element.attr('data-original-title', tooltpSpecStr);
         element.css({

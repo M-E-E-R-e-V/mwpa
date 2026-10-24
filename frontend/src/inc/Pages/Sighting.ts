@@ -478,11 +478,11 @@ export class Sighting extends BasePage {
         const exportTabId = `sighting-tab-export-${Date.now()}`;
 
         const lang = Lang.i();
-        navContainer.append(`<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#${listTabId}">${lang.l('List')}</a></li>`);
-        navContainer.append(`<li class="nav-item"><a class="nav-link" href="#${mapTabId}" data-toggle="tab">${lang.l('Map')}</a></li>`);
-        navContainer.append(`<li class="nav-item"><a class="nav-link" href="#${analyticsTabId}" data-toggle="tab">${lang.l('Analytics')}</a></li>`);
-        navContainer.append(`<li class="nav-item"><a class="nav-link" href="#${yearCompareTabId}" data-toggle="tab">${lang.l('Year comparison')}</a></li>`);
-        navContainer.append(`<li class="nav-item"><a class="nav-link" href="#${exportTabId}" data-toggle="tab">${lang.l('Export')}</a></li>`);
+        navContainer.append(`<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#${listTabId}">${lang.l('List')}</a></li>`);
+        navContainer.append(`<li class="nav-item"><a class="nav-link" href="#${mapTabId}" data-bs-toggle="tab">${lang.l('Map')}</a></li>`);
+        navContainer.append(`<li class="nav-item"><a class="nav-link" href="#${analyticsTabId}" data-bs-toggle="tab">${lang.l('Analytics')}</a></li>`);
+        navContainer.append(`<li class="nav-item"><a class="nav-link" href="#${yearCompareTabId}" data-bs-toggle="tab">${lang.l('Year comparison')}</a></li>`);
+        navContainer.append(`<li class="nav-item"><a class="nav-link" href="#${exportTabId}" data-bs-toggle="tab">${lang.l('Export')}</a></li>`);
 
         const listBody = jQuery(`<div class="tab-pane fade active show" id="${listTabId}"/>`).appendTo(tabBodies);
         const mapBody = jQuery(`<div class="tab-pane fade" id="${mapTabId}"/>`).appendTo(tabBodies);
