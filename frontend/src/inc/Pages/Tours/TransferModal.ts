@@ -1,14 +1,16 @@
+/* global JQuery */
 import {
-    ButtonClass,
-    ButtonDefault,
+    ButtonClass2,
+    ButtonDefault2,
+    Component,
     ComponentType,
-    FormGroup,
-    FormRow,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
-    ModalDialog,
-    ModalDialogType
+    FormGroup2,
+    FormRow2,
+    Input2,
+    InputType2,
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2
 } from 'bambooo';
 import moment from 'moment';
 import {ToursTrackingNeighborTour} from '../../Api/Tours';
@@ -21,14 +23,14 @@ export type TransferModalConfirmFn = (targetTourId: number) => void;
  * tours of the same vehicle when available; otherwise the admin can
  * type a Tour-ID by hand.
  */
-export class TransferModal extends ModalDialog {
+export class TransferModal extends ModalDialog2 {
 
     protected _radioPrev: JQuery<HTMLInputElement>;
     protected _radioNext: JQuery<HTMLInputElement>;
     protected _radioManual: JQuery<HTMLInputElement>;
-    protected _inputManual: InputBottemBorderOnly2;
+    protected _inputManual: Input2;
 
-    protected _btnConfirm: ButtonDefault;
+    protected _btnConfirm: ButtonDefault2;
 
     protected _prev?: ToursTrackingNeighborTour;
     protected _next?: ToursTrackingNeighborTour;
@@ -38,15 +40,19 @@ export class TransferModal extends ModalDialog {
     protected _onConfirm: TransferModalConfirmFn | null = null;
 
     public constructor(elementObject: ComponentType) {
-        super(elementObject, 'tourstrackingtransfermodal', ModalDialogType.large);
+        super({
+            id: 'tourstrackingtransfermodal',
+            modalType: ModalDialogType2.large,
+            target: (elementObject as Component<HTMLElement>).getElement()
+        });
 
-        this.setTitle(new LangText('Transfer tracking points'));
+        this.setTitle(new LangTextV2({text: 'Transfer tracking points'}));
 
-        const body = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const body = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
         this._rangeInfo = jQuery<HTMLDivElement>('<div class="text-muted small pb-2"/>').appendTo(body);
 
-        const escape = (s: string): string => s.replace(/[&<>"']/g, (ch) =>
+        const escape = (s: string): string => s.replace(/[&<>"']/gu, (ch) =>
             ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'})[ch] ?? ch);
 
         const radioName = `tourstrackingtransfer-${Math.random().toString(36).slice(2, 8)}`;
@@ -69,13 +75,21 @@ export class TransferModal extends ModalDialog {
         ).appendTo(manualWrap);
         jQuery('<label class="form-check-label"/>').text('Other tour by ID').appendTo(manualWrap);
 
-        const row = new FormRow(body);
-        const groupManual = new FormGroup(row.createCol(4), new LangText('Tour ID'));
-        this._inputManual = new InputBottemBorderOnly2(groupManual, undefined, InputType.number);
+        const row = new FormRow2({});
+        row.appendTo(body);
+        const groupManual = new FormGroup2({label: new LangTextV2({text: 'Tour ID'})});
+        groupManual.appendTo(row.createCol(4));
+        this._inputManual = new Input2({type: InputType2.number});
+        this._inputManual.appendTo(groupManual);
         this._inputManual.setPlaceholder('e.g. 12345');
 
-        this.addButtonClose(new LangText('Close'));
-        this._btnConfirm = new ButtonDefault(this._footer, 'Transfer', 'fas fa-exchange-alt', ButtonClass.primary);
+        this.addButtonClose('Close');
+        this._btnConfirm = new ButtonDefault2({
+            title: 'Transfer',
+            icon: 'fas fa-exchange-alt',
+            btnClass: ButtonClass2.primary
+        });
+        this._btnConfirm.appendTo(this.getFooter());
         this._btnConfirm.setOnClickFn(() => {
             const targetId = this._resolveTargetId();
             if (targetId <= 0) {

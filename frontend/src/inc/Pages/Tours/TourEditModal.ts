@@ -1,16 +1,15 @@
-import {ComponentType, ModalDialog, ModalDialogType} from 'bambooo';
+import {ModalDialog2, ModalDialogType2} from 'bambooo';
 
 /**
  * TourEditModal
  */
-export class TourEditModal extends ModalDialog {
+export class TourEditModal extends ModalDialog2 {
 
     /**
      * constructor
-     * @param elementObject
      */
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'tourmodaldialog', ModalDialogType.large);
+    public constructor() {
+        super({id: 'tourmodaldialog', modalType: ModalDialogType2.large});
     }
 
 }

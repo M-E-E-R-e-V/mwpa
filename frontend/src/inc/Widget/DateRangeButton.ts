@@ -1,4 +1,5 @@
-import {ComponentType, Component} from 'bambooo';
+/* global JQuery */
+import {ComponentType, Widget2} from 'bambooo';
 import moment from 'moment';
 
 export interface InputDateRanges {
@@ -9,18 +10,19 @@ export type DateRangeChangeFn = (start: moment.Moment|null, end: moment.Moment|n
 
 const PLACEHOLDER_LABEL = 'Date Range picker';
 
-export class DateRangeButton extends Component<HTMLButtonElement> {
+export class DateRangeButton extends Widget2 {
 
-    protected _label: any;
+    protected _label: JQuery;
     protected _start: moment.Moment|null = null;
     protected _end: moment.Moment|null = null;
     protected _onChange: DateRangeChangeFn|null = null;
 
     public constructor(element: ComponentType) {
-        super();
+        super({
+            element: jQuery<HTMLButtonElement>('<button type="button" class="btn btn-default" />')
+        });
 
-        const telement = this._getAnyElement(element);
-        this._element = jQuery<HTMLButtonElement>('<button type="button" class="btn btn-default" />').appendTo(telement);
+        this._element.appendTo(DateRangeButton._asParent(element));
         this._element.append(`<i class="far fa-calendar-alt"></i> <span class="label">${PLACEHOLDER_LABEL}</span> <i class="fas fa-caret-down"></i>`);
         this._label = this._element.find('span.label');
 
@@ -39,7 +41,7 @@ export class DateRangeButton extends Component<HTMLButtonElement> {
             }
         });
 
-        this._element.on('apply.daterangepicker', (_event: unknown, picker: {startDate: moment.Moment; endDate: moment.Moment}) => {
+        this._element.on('apply.daterangepicker', (_event: unknown, picker: {startDate: moment.Moment; endDate: moment.Moment;}) => {
             this._start = picker.startDate.clone();
             this._end = picker.endDate.clone();
             this._label.text(`${this._start.format('YYYY-MM-DD')} – ${this._end.format('YYYY-MM-DD')}`);
@@ -105,6 +107,23 @@ export class DateRangeButton extends Component<HTMLButtonElement> {
      */
     public setOnChange(fn: DateRangeChangeFn): void {
         this._onChange = fn;
+    }
+
+    /**
+     * Resolve a parent element (bambooo component, jQuery or selector) to a
+     * jQuery handle the button can be appended to.
+     * @param {ComponentType} element
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _asParent(element: ComponentType): JQuery {
+        const maybe = element as {getElement?: () => JQuery;} | null | undefined;
+
+        if (maybe && typeof maybe.getElement === 'function') {
+            return maybe.getElement();
+        }
+
+        return jQuery(element as JQuery.Selector);
     }
 
 }

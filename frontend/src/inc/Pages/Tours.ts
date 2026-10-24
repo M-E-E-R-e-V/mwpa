@@ -1,25 +1,24 @@
 import {
-    Badge,
-    BadgeType,
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ColumnContent,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
+    Badge2,
+    BadgeType2,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
     IconFa,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
+    Input2,
+    InputType2,
+    LangTextV2,
     LeftNavbarLink,
-    SortingColumn,
-    SortOrder,
-    TableWrapper,
-    Td,
-    Th,
-    Tooltip,
-    Tr
+    SortingColumn2,
+    SortOrder2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tooltip2,
+    Tr2
 } from 'bambooo';
 import moment from 'moment';
 import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
@@ -36,14 +35,14 @@ const PAGE_SIZE = 50;
 
 type SortKey = 'id' | 'date' | 'tour_start' | 'tour_end' | 'create_datetime' | 'update_datetime';
 
-type SortState = Record<SortKey, SortOrder>;
+type SortState = Record<SortKey, SortOrder2>;
 
 const escapeHtml = (s: string): string => s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+.replace(/&/gu, '&amp;')
+.replace(/</gu, '&lt;')
+.replace(/>/gu, '&gt;')
+.replace(/"/gu, '&quot;')
+.replace(/'/gu, '&#39;');
 
 const highlight = (text: string, term: string): string => {
     if (text === '') {
@@ -56,8 +55,8 @@ const highlight = (text: string, term: string): string => {
         return escaped;
     }
 
-    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return escaped.replace(new RegExp(`(${escapedTerm})`, 'gi'), '<mark>$1</mark>');
+    const safe = term.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+    return escaped.replace(new RegExp(safe, 'giu'), (match) => `<mark>${match}</mark>`);
 };
 
 /**
@@ -74,13 +73,11 @@ export class Tours extends BasePage {
     public constructor() {
         super();
 
-        this._tourDialog = new TourEditModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._tourDialog = new TourEditModal();
 
         // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), new LangText('Add tour'), () => {
-            this._tourDialog.setTitle(new LangText('Add new tour'));
+        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add tour', () => {
+            this._tourDialog.setTitle(new LangTextV2({text: 'Add new tour'}));
             this._tourDialog.show();
             return false;
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
@@ -92,12 +89,12 @@ export class Tours extends BasePage {
     public override async loadContent(): Promise<void> {
         // shared mutable state across loaders / renderers ----------------------------------------
         const sort: SortState = {
-            id: SortOrder.NONE,
-            date: SortOrder.DESC,
-            tour_start: SortOrder.DESC,
-            tour_end: SortOrder.NONE,
-            create_datetime: SortOrder.NONE,
-            update_datetime: SortOrder.NONE
+            id: SortOrder2.NONE,
+            date: SortOrder2.DESC,
+            tour_start: SortOrder2.DESC,
+            tour_end: SortOrder2.NONE,
+            create_datetime: SortOrder2.NONE,
+            update_datetime: SortOrder2.NONE
         };
 
         const filterValues: TourFilterValues = {
@@ -111,7 +108,7 @@ export class Tours extends BasePage {
         };
 
         let inHeaderSearch = '';
-        const activeHighlight = (): string => inHeaderSearch !== '' ? inHeaderSearch : filterValues.search;
+        const activeHighlight = (): string => inHeaderSearch === '' ? filterValues.search : inHeaderSearch;
 
         // Lookup maps populated once on first load and reused by the row renderer.
         const mvehicles = new Map<number, VehicleEntry>();
@@ -130,8 +127,10 @@ export class Tours extends BasePage {
                     tour_end: sort.tour_end,
                     create_datetime: sort.create_datetime,
                     update_datetime: sort.update_datetime,
-                    // schema fields kept empty — server-side sort by computed
-                    // counts is not implemented (counts are post-query batched)
+                    /*
+                     * schema fields kept empty — server-side sort by computed
+                     * counts is not implemented (counts are post-query batched)
+                     */
                     count_sightings: '',
                     count_trackings: ''
                 },
@@ -158,7 +157,7 @@ export class Tours extends BasePage {
                 apiFilter.only_without_tracks = true;
             }
 
-            const search = inHeaderSearch !== '' ? inHeaderSearch : filterValues.search;
+            const search = inHeaderSearch === '' ? filterValues.search : inHeaderSearch;
             if (search !== '') {
                 apiFilter.search = search;
             }
@@ -167,8 +166,10 @@ export class Tours extends BasePage {
         };
 
         // Filter card ---------------------------------------------------------------------------
-        const rowFilter = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const filter = new TourFilter(new ContentCol(rowFilter, ContentColSize.col12));
+        const content = this._wrapper.getContentWrapper().getContent();
+        const rowFilter = new ContentRow2(content.getElement());
+        const filter = new TourFilter();
+        filter.appendTo(new ContentCol2(rowFilter, ContentColSize2.col12).getElement());
 
         // Lookup maps + initial loads -----------------------------------------------------------
         const [
@@ -204,116 +205,129 @@ export class Tours extends BasePage {
         }
 
         // List card -----------------------------------------------------------------------------
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Tours'));
+        const row1 = new ContentRow2(content.getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
+        card.setTitle(new LangTextV2({text: 'Tours'}));
 
-        const btnMenu = new ButtonMenu(card.getToolsElement(), IconFa.bars, true, ButtonType.borderless);
-        btnMenu.addMenuItem(new LangText('Filter'), () => {
+        const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+        btnMenu.appendTo(card.getToolsElement());
+        btnMenu.addMenuItem(new LangTextV2({text: 'Filter'}), () => {
             filter.show();
         }, 'fa fa-filter');
 
-        // In-header quick-search — sibling of .card-title in the card-header so AdminLTE's
-        // float layout puts it directly right of the title.
+        /*
+         * In-header quick-search — sibling of .card-title in the card-header so AdminLTE's
+         * float layout puts it directly right of the title.
+         */
         const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
 
-        const searchInput = new InputBottemBorderOnly2(searchSlot, undefined, InputType.text);
+        const searchInput = new Input2({type: InputType2.text});
+        searchInput.appendTo(searchSlot);
         searchInput.setPlaceholder('search persons / tour-fid …');
 
         // Table ---------------------------------------------------------------------------------
-        const tableWrapper = new TableWrapper<TourEntry>(card.getElement(), {head_fixed: true});
+        const tableWrapper = new TableWrapper2<TourEntry>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(card.getElement());
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        // Sort registry: each call wires a header to its key in `sort` and ensures clicking it
-        // resets every other header (single-column sort).
-        const sortRegistry: { key: SortKey; column: LangText }[] = [];
+        /*
+         * Sort registry: each call wires a header to its key in `sort` and ensures clicking it
+         * resets every other header (single-column sort).
+         */
+        const sortRegistry: {key: SortKey; column: LangTextV2;}[] = [];
 
-        const makeSortColumn = (label: string, key: SortKey): LangText => {
-            const column = new LangText(label, undefined, (element) => {
-                const newValue = SortingColumn.changeSort(element, sort[key]);
+        const makeSortColumn = (label: string, key: SortKey): LangTextV2 => {
+            const column = new LangTextV2({
+                text: label,
+                onClick: (langText): void => {
+                    const newValue = SortingColumn2.changeSort(langText, sort[key]);
 
-                for (const other of sortRegistry) {
-                    if (other.key !== key) {
-                        sort[other.key] = SortOrder.NONE;
-                        SortingColumn.initSort(other.column, SortOrder.NONE);
+                    for (const other of sortRegistry) {
+                        if (other.key !== key) {
+                            sort[other.key] = SortOrder2.NONE;
+                            SortingColumn2.initSort(other.column, SortOrder2.NONE);
+                        }
                     }
-                }
 
-                sort[key] = newValue as SortOrder;
-                tableWrapper.reset();
+                    sort[key] = newValue as SortOrder2;
+                    tableWrapper.reset();
+                }
             });
 
-            SortingColumn.initSort(column, sort[key]);
+            SortingColumn2.initSort(column, sort[key]);
             sortRegistry.push({key, column});
 
             return column;
         };
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            makeSortColumn('Id', 'id'),
-            makeSortColumn('Date', 'date')
-        ]));
+        const thIdDate = new Th2({});
+        thIdDate.addComponent(makeSortColumn('Id', 'id'));
+        thIdDate.append('<br>');
+        thIdDate.addComponent(makeSortColumn('Date', 'date'));
+        thIdDate.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            new LangText('Vehicle'),
-            new LangText('Driver'),
-            new LangText('Organization')
-        ]));
+        const thVehicle = new Th2({});
+        thVehicle.addComponent(new LangTextV2({text: 'Vehicle'}));
+        thVehicle.append('<br>');
+        thVehicle.addComponent(new LangTextV2({text: 'Driver'}));
+        thVehicle.append('<br>');
+        thVehicle.addComponent(new LangTextV2({text: 'Organization'}));
+        thVehicle.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            makeSortColumn('Time begin-end', 'tour_start'),
-            new LangText('Sightings')
-        ]));
+        const thTime = new Th2({});
+        thTime.addComponent(makeSortColumn('Time begin-end', 'tour_start'));
+        thTime.append('<br>');
+        thTime.addComponent(new LangTextV2({text: 'Sightings'}));
+        thTime.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Tracking points'));
+        new Th2({value: new LangTextV2({text: 'Tracking points'})}).appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Persons on boat'));
+        new Th2({value: new LangTextV2({text: 'Persons on boat'})}).appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            new LangText('from Device'),
-            new LangText('Created by'),
-            makeSortColumn('Created', 'create_datetime')
-        ]));
+        const thCreated = new Th2({});
+        thCreated.addComponent(new LangTextV2({text: 'from Device'}));
+        thCreated.append('<br>');
+        thCreated.addComponent(new LangTextV2({text: 'Created by'}));
+        thCreated.append('<br>');
+        thCreated.addComponent(makeSortColumn('Created', 'create_datetime'));
+        thCreated.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, '');
+        new Th2({value: ''}).appendTo(trhead);
 
         // Renderer ------------------------------------------------------------------------------
-        const renderRow = (_table: import('bambooo').Table, entry: TourEntry): void => {
+        const renderRow = (_table: Table2, entry: TourEntry): void => {
             const term = activeHighlight();
-            const trbody = new Tr(table.getTbody());
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
 
             const date = moment(entry.date?.split(' ')[0]);
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `<b>#${entry.id}</b><br>${date.format('YYYY.MM.DD')}`);
+            new Td2({value: `<b>#${entry.id}</b><br>${date.format('YYYY.MM.DD')}`}).appendTo(trbody);
 
             const vehicleName = mvehicles.get(entry.vehicle_id)?.name ?? '';
             const driverName = mdrivers.get(entry.vehicle_driver_id)?.user.name ?? '';
-            const orgStr = entry.organization_id ? (morganizations.get(entry.organization_id)?.description ?? '') : '';
+            const orgStr = entry.organization_id ? morganizations.get(entry.organization_id)?.description ?? '' : '';
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `${escapeHtml(vehicleName)}<br>${escapeHtml(driverName)}<br>${escapeHtml(orgStr)}`);
+            new Td2({
+                value: `${escapeHtml(vehicleName)}<br>${escapeHtml(driverName)}<br>${escapeHtml(orgStr)}`
+            }).appendTo(trbody);
 
-            const tdTimeCount = new Td(trbody, `<b>${escapeHtml(entry.tour_start ?? '')} - ${escapeHtml(entry.tour_end ?? '')}</b><br>`);
-            // eslint-disable-next-line no-new
-            new Badge(
-                tdTimeCount,
-                `${entry.count_sightings}`,
-                entry.count_sightings > 0 ? BadgeType.success : BadgeType.secondary
-            );
+            const tdTimeCount = new Td2({value: `<b>${escapeHtml(entry.tour_start ?? '')} - ${escapeHtml(entry.tour_end ?? '')}</b><br>`});
+            tdTimeCount.appendTo(trbody);
+            new Badge2({
+                text: `${entry.count_sightings}`,
+                type: entry.count_sightings > 0 ? BadgeType2.success : BadgeType2.secondary
+            }).appendTo(tdTimeCount);
 
-            const tdTrackingCount = new Td(trbody, '');
+            const tdTrackingCount = new Td2({value: ''});
+            tdTrackingCount.appendTo(trbody);
 
             if (entry.count_trackings > 0) {
-                const badgeTracking = new Badge(tdTrackingCount, `${entry.count_trackings}`, BadgeType.info);
+                const badgeTracking = new Badge2({text: `${entry.count_trackings}`, type: BadgeType2.info});
+                badgeTracking.appendTo(tdTrackingCount);
                 badgeTracking.getElement().on('click', () => {
                     if (this._loadPageFn) {
                         this._loadPageFn(new ToursMap(entry.id));
@@ -324,8 +338,10 @@ export class Tours extends BasePage {
                 tdTrackingCount.addValue(`${entry.count_trackings}`);
             }
 
-            // Persons on boat — JSON list, render as comma-separated names. Search highlight
-            // applies so the in-header search clearly tells the user *why* a row matched.
+            /*
+             * Persons on boat — JSON list, render as comma-separated names. Search highlight
+             * applies so the in-header search clearly tells the user *why* a row matched.
+             */
             let personsStr = '';
             try {
                 const persons = JSON.parse(entry.record_by_persons ?? '');
@@ -337,18 +353,21 @@ export class Tours extends BasePage {
             } catch {
                 personsStr = entry.record_by_persons ?? '';
             }
-            // eslint-disable-next-line no-new
-            new Td(trbody, highlight(personsStr, term));
+
+            new Td2({value: highlight(personsStr, term)}).appendTo(trbody);
 
             const deviceName = mdevices.get(entry.device_id)?.name ?? 'not set';
             const createrName = mcreaters.get(entry.creater_id)?.name ?? 'not set';
             const createDate = moment(entry.create_datetime * 1000);
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `${escapeHtml(deviceName)}<br>${escapeHtml(createrName)}<br><b>${createDate.format('YYYY.MM.DD HH:mm:ss')}</b>`);
+            new Td2({
+                value: `${escapeHtml(deviceName)}<br>${escapeHtml(createrName)}<br><b>${createDate.format('YYYY.MM.DD HH:mm:ss')}</b>`
+            }).appendTo(trbody);
 
-            const tdAction = new Td(trbody, '');
-            const abtnMenu = new ButtonMenu(tdAction, IconFa.bars, true, ButtonType.borderless);
+            const tdAction = new Td2({value: ''});
+            tdAction.appendTo(trbody);
+            const abtnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+            abtnMenu.appendTo(tdAction);
 
             abtnMenu.addMenuItem('Show Map', () => {
                 if (this._loadPageFn) {
@@ -357,7 +376,8 @@ export class Tours extends BasePage {
             }, IconFa.hockeypuck);
 
             abtnMenu.addMenuItem('Delete', () => {
-                alert('Delete todo');
+                // eslint-disable-next-line no-alert
+                window.alert('Delete todo');
             }, IconFa.trash);
         };
 
@@ -396,7 +416,7 @@ export class Tours extends BasePage {
                 } finally {
                     card.hideLoading();
                     Lang.i().lAll();
-                    Tooltip.init();
+                    Tooltip2.init();
                 }
             },
             renderRow

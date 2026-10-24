@@ -1,15 +1,15 @@
 import {
-    ButtonClass,
-    ButtonDefault,
-    Card,
+    ButtonClass2,
+    ButtonDefault2,
+    Card2,
     ComponentType,
-    FormGroup,
-    FormRow,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
+    FormGroup2,
+    FormRow2,
+    Input2,
+    InputType2,
+    LangTextV2,
     SelectBottemBorderOnly2,
-    Switch
+    Switch2
 } from 'bambooo';
 import {OrganizationEntry} from '../../Api/Organization';
 import {VehicleEntry} from '../../Api/Vehicle';
@@ -42,58 +42,65 @@ const ALL_OPTION = {key: '', value: '— all —'};
  * shared widget contract (getValues / setOnApply / resetValues) keeps
  * both pages structurally identical.
  */
-export class TourFilter extends Card {
+export class TourFilter extends Card2 {
 
     protected _dateRange: DateRangeButton;
     protected _selectOrganization: SelectBottemBorderOnly2;
     protected _selectVehicle: SelectBottemBorderOnly2;
     protected _selectDriver: SelectBottemBorderOnly2;
-    protected _inputSearch: InputBottemBorderOnly2;
-    protected _switchOnlyWithoutTracks: Switch;
+    protected _inputSearch: Input2;
+    protected _switchOnlyWithoutTracks: Switch2;
     protected _onApply: TourFilterApplyFn|null = null;
 
-    public constructor(elementObject: ComponentType) {
-        super(elementObject);
+    public constructor() {
+        super({});
 
         this.getMainElement().addClass('tour-filter');
-        this.setTitle(new LangText('Filter'));
+        this.setTitle(new LangTextV2({text: 'Filter'}));
         this.hide();
 
-        const btnClose = new ButtonDefault(this.getToolsElement(), undefined, 'fa fa-times');
+        const btnClose = new ButtonDefault2({icon: 'fa fa-times'});
+        btnClose.appendTo(this.getToolsElement());
         btnClose.setOnClickFn(() => {
             this.hide();
         });
 
         const body = jQuery('<div class="card-body"/>').appendTo(this.getBodyElement());
 
-        const row = new FormRow(body);
+        const row = new FormRow2({});
+        row.appendTo(body);
 
-        const groupPeriod = new FormGroup(row.createCol(2), new LangText('Period'));
-        this._dateRange = new DateRangeButton(groupPeriod);
+        const groupPeriod = new FormGroup2({label: new LangTextV2({text: 'Period'})});
+        groupPeriod.appendTo(row.createCol(2));
+        this._dateRange = new DateRangeButton(groupPeriod.getElement());
 
-        const groupOrganization = new FormGroup(row.createCol(2), new LangText('Organization'));
-        this._selectOrganization = TourFilter._buildSelect(groupOrganization);
+        const groupOrganization = new FormGroup2({label: new LangTextV2({text: 'Organization'})});
+        groupOrganization.appendTo(row.createCol(2));
+        this._selectOrganization = TourFilter._buildSelect(groupOrganization.getElement());
 
-        const groupVehicle = new FormGroup(row.createCol(2), new LangText('Vehicle'));
-        this._selectVehicle = TourFilter._buildSelect(groupVehicle);
+        const groupVehicle = new FormGroup2({label: new LangTextV2({text: 'Vehicle'})});
+        groupVehicle.appendTo(row.createCol(2));
+        this._selectVehicle = TourFilter._buildSelect(groupVehicle.getElement());
 
-        const groupDriver = new FormGroup(row.createCol(2), new LangText('Driver'));
-        this._selectDriver = TourFilter._buildSelect(groupDriver);
+        const groupDriver = new FormGroup2({label: new LangTextV2({text: 'Driver'})});
+        groupDriver.appendTo(row.createCol(2));
+        this._selectDriver = TourFilter._buildSelect(groupDriver.getElement());
 
-        const groupSearch = new FormGroup(row.createCol(3), new LangText('Search'));
-        this._inputSearch = new InputBottemBorderOnly2(groupSearch, undefined, InputType.text);
+        const groupSearch = new FormGroup2({label: new LangTextV2({text: 'Search'})});
+        groupSearch.appendTo(row.createCol(3));
+        this._inputSearch = new Input2({type: InputType2.text});
+        this._inputSearch.appendTo(groupSearch);
         this._inputSearch.setPlaceholder('persons / tour-fid …');
 
-        const groupOnlyWithoutTracks = new FormGroup(row.createCol(1), new LangText('Without tracks'));
-        this._switchOnlyWithoutTracks = new Switch(
-            groupOnlyWithoutTracks,
-            'tour-filter-only-without-tracks',
-            'only'
-        );
+        const groupOnlyWithoutTracks = new FormGroup2({label: new LangTextV2({text: 'Without tracks'})});
+        groupOnlyWithoutTracks.appendTo(row.createCol(1));
+        this._switchOnlyWithoutTracks = new Switch2({label: 'only'});
+        this._switchOnlyWithoutTracks.appendTo(groupOnlyWithoutTracks);
 
         const actions = jQuery('<div class="text-right pt-1"/>').appendTo(body);
 
-        const btnReset = new ButtonDefault(actions, 'Reset', 'fa fa-undo');
+        const btnReset = new ButtonDefault2({title: 'Reset', icon: 'fa fa-undo'});
+        btnReset.appendTo(actions);
         btnReset.setOnClickFn(() => {
             this.resetValues();
 
@@ -104,7 +111,8 @@ export class TourFilter extends Card {
 
         actions.append(' ');
 
-        const btnApply = new ButtonDefault(actions, 'Apply', 'fa fa-check', ButtonClass.primary);
+        const btnApply = new ButtonDefault2({title: 'Apply', icon: 'fa fa-check', btnClass: ButtonClass2.primary});
+        btnApply.appendTo(actions);
         btnApply.setOnClickFn(() => {
             if (this._onApply) {
                 this._onApply(this.getValues());
@@ -118,7 +126,7 @@ export class TourFilter extends Card {
         return select;
     }
 
-    private static _populateSelect(select: SelectBottemBorderOnly2, entries: ReadonlyArray<{key: string; value: string}>): void {
+    private static _populateSelect(select: SelectBottemBorderOnly2, entries: readonly {key: string; value: string;}[]): void {
         select.clearValues();
         select.setValues([ALL_OPTION, ...entries]);
         select.setSelectedValue('');

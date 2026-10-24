@@ -1,9 +1,10 @@
+/* global JQuery */
 import {
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    LangText,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    LangTextV2,
     LeftNavbarLink
 } from 'bambooo';
 import * as d3raw from 'd3';
@@ -89,7 +90,7 @@ export class Earthquake extends BasePage {
      * Impact card (the "Auswertung" panel) plus the 4 host divs for
      * its bar charts. Card is hidden until impact mode is active.
      */
-    protected _impactCard: Card | null = null;
+    protected _impactCard: Card2 | null = null;
     protected _hostSpecies: HTMLDivElement | null = null;
     protected _hostBehaviour: HTMLDivElement | null = null;
     protected _hostEncounter: HTMLDivElement | null = null;
@@ -123,13 +124,14 @@ export class Earthquake extends BasePage {
 
     public override async loadContent(): Promise<void> {
         const lang = Lang.i();
-        const contentWrapper = this._wrapper.getContentWrapper().getContent();
+        const content = this._wrapper.getContentWrapper().getContent();
 
         // Filter card --------------------------------------------------------------------------------------------
 
-        const rowFilter = new ContentRow(contentWrapper);
-        const filterCard = new Card(new ContentCol(rowFilter, ContentColSize.col12));
-        filterCard.setTitle(new LangText('Earthquakes'));
+        const rowFilter = new ContentRow2(content.getElement());
+        const filterCard = new Card2({});
+        filterCard.appendTo(new ContentCol2(rowFilter, ContentColSize2.col12).getElement());
+        filterCard.setTitle(new LangTextV2({text: 'Earthquakes'}));
 
         const filterBody = jQuery('<div class="card-body d-flex flex-wrap align-items-end" style="gap: 1rem;"/>').appendTo(filterCard.getBodyElement());
 
@@ -160,9 +162,9 @@ export class Earthquake extends BasePage {
         this._windowSel.attr('title', lang.l('Impact window hint'));
         for (const opt of Earthquake.WINDOW_OPTIONS) {
             jQuery<HTMLOptionElement>(`<option value="${opt.value}"></option>`)
-                .text(lang.l(opt.labelKey))
-                .attr('title', lang.l(opt.hint))
-                .appendTo(this._windowSel);
+            .text(lang.l(opt.labelKey))
+            .attr('title', lang.l(opt.hint))
+            .appendTo(this._windowSel);
         }
         // Default to "off" — no automatic impact load on first paint.
         this._windowSel.val('0');
@@ -202,13 +204,16 @@ export class Earthquake extends BasePage {
 
         // Map card -----------------------------------------------------------------------------------------------
 
-        const rowMap = new ContentRow(contentWrapper);
-        const mapCard = new Card(new ContentCol(rowMap, ContentColSize.col12));
-        mapCard.setTitle(new LangText('Map'));
+        const rowMap = new ContentRow2(content.getElement());
+        const mapCard = new Card2({});
+        mapCard.appendTo(new ContentCol2(rowMap, ContentColSize2.col12).getElement());
+        mapCard.setTitle(new LangTextV2({text: 'Map'}));
         this._map = new BaseMap(mapCard.getBodyElement());
         this._map.setHeight(Math.max(500, window.innerHeight - 380));
-        // Zoom 5 over (-15, 28) frames the full Canaries archipelago +
-        // Moroccan shelf — at 6 only the central islands fit.
+        /*
+         * Zoom 5 over (-15, 28) frames the full Canaries archipelago +
+         * Moroccan shelf — at 6 only the central islands fit.
+         */
         this._map.load({initialCenterLonLat: [-15, 28], initialZoom: 5});
         this._map.addLayer(new OsmBaseLayer());
 
@@ -223,9 +228,10 @@ export class Earthquake extends BasePage {
 
         // Impact "Auswertung" card --------------------------------------------------------------------------------
 
-        const rowImpact = new ContentRow(contentWrapper);
-        this._impactCard = new Card(new ContentCol(rowImpact, ContentColSize.col12));
-        this._impactCard.setTitle(new LangText('Impact analysis'));
+        const rowImpact = new ContentRow2(content.getElement());
+        this._impactCard = new Card2({});
+        this._impactCard.appendTo(new ContentCol2(rowImpact, ContentColSize2.col12).getElement());
+        this._impactCard.setTitle(new LangTextV2({text: 'Impact analysis'}));
 
         const impactBody = jQuery('<div class="card-body"/>').appendTo(this._impactCard.getBodyElement());
         this._impactSummary = jQuery<HTMLDivElement>('<div class="mb-3"/>').appendTo(impactBody);
@@ -245,9 +251,10 @@ export class Earthquake extends BasePage {
 
         // Table card ---------------------------------------------------------------------------------------------
 
-        const rowTable = new ContentRow(contentWrapper);
-        const tableCard = new Card(new ContentCol(rowTable, ContentColSize.col12));
-        tableCard.setTitle(new LangText('Events'));
+        const rowTable = new ContentRow2(content.getElement());
+        const tableCard = new Card2({});
+        tableCard.appendTo(new ContentCol2(rowTable, ContentColSize2.col12).getElement());
+        tableCard.setTitle(new LangTextV2({text: 'Events'}));
 
         const tableHost = jQuery<HTMLDivElement>('<div class="card-body p-0" style="max-height: 480px; overflow-y: auto;"/>').appendTo(tableCard.getBodyElement());
         const table = jQuery<HTMLTableElement>('<table class="table table-sm table-striped table-hover mb-0"/>').appendTo(tableHost);
@@ -273,7 +280,7 @@ export class Earthquake extends BasePage {
 
                 const list: EarthquakeEntry[] = res?.list ?? [];
                 this._currentList = list;
-                tableCard.setTitle(new LangText(`${lang.l('Events')} (${list.length}${res?.count !== undefined && res.count > list.length ? `/${res.count}` : ''})`));
+                tableCard.setTitle(new LangTextV2({text: `${lang.l('Events')} (${list.length}${res?.count !== undefined && res.count > list.length ? `/${res.count}` : ''})`}));
 
                 if (this._eqLayer && this._map) {
                     this._eqLayer.setEarthquakes(list);
@@ -281,13 +288,15 @@ export class Earthquake extends BasePage {
                     if (list.length > 0) {
                         const avgLon = list.reduce((s, e) => s + e.lon, 0) / list.length;
                         const avgLat = list.reduce((s, e) => s + e.lat, 0) / list.length;
-                        // Keep the archipelago-overview zoom — setView's
-                        // default of 12.5 would crop down to a single island.
+                        /*
+                         * Keep the archipelago-overview zoom — setView's
+                         * default of 12.5 would crop down to a single island.
+                         */
                         this._map.setView(fromLonLat([avgLon, avgLat]), 5);
                     }
                 }
 
-                const escape = (s: string): string => s.replace(/[&<>"']/g, (ch) =>
+                const escape = (s: string): string => s.replace(/[&<>"']/gu, (ch) =>
                     ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'})[ch] ?? ch);
 
                 for (const e of list) {
@@ -402,19 +411,18 @@ export class Earthquake extends BasePage {
         }
         this._sightingLayer.clearFeatures();
         for (const s of sightings) {
-            if (!Number.isFinite(s.lat) || !Number.isFinite(s.lon) || (s.lat === 0 && s.lon === 0)) {
-                continue;
+            if (Number.isFinite(s.lat) && Number.isFinite(s.lon) && !(s.lat === 0 && s.lon === 0)) {
+                const tooltip = `<b>${this._escape(s.species_name || `#${s.species_id}`)}</b><br>` +
+                    `${s.date} ${s.tour_start}<br>` +
+                    `${this._escape(s.encounter_name || '—')}<br>` +
+                    `Δ ${s.distance_km.toFixed(1)} km / ${s.hours_offset > 0 ? '+' : ''}${s.hours_offset.toFixed(1)} h`;
+                this._sightingLayer.addSighting(
+                    SightingMapObjectType.Odontoceti,
+                    s.id,
+                    tooltip,
+                    [s.lon, s.lat]
+                );
             }
-            const tooltip = `<b>${this._escape(s.species_name || `#${s.species_id}`)}</b><br>` +
-                `${s.date} ${s.tour_start}<br>` +
-                `${this._escape(s.encounter_name || '—')}<br>` +
-                `Δ ${s.distance_km.toFixed(1)} km / ${s.hours_offset > 0 ? '+' : ''}${s.hours_offset.toFixed(1)} h`;
-            this._sightingLayer.addSighting(
-                SightingMapObjectType.Odontoceti,
-                s.id,
-                tooltip,
-                [s.lon, s.lat]
-            );
         }
         this._sightingLayer.refresh();
     }
@@ -483,9 +491,11 @@ export class Earthquake extends BasePage {
         }
         const avgLat = pts.reduce((s, p) => s + p.lat, 0) / pts.length;
         const avgLon = pts.reduce((s, p) => s + p.lon, 0) / pts.length;
-        // Zoom 6 keeps a few neighbouring islands visible so the user
-        // can see where the affected sightings sit relative to the
-        // event without dropping into single-coastline detail.
+        /*
+         * Zoom 6 keeps a few neighbouring islands visible so the user
+         * can see where the affected sightings sit relative to the
+         * event without dropping into single-coastline detail.
+         */
         this._map.setView(fromLonLat([avgLon, avgLat]), 6);
     }
 
@@ -507,7 +517,7 @@ export class Earthquake extends BasePage {
     }
 
     private _escape(s: string): string {
-        return s.replace(/[&<>"']/g, (ch) =>
+        return s.replace(/[&<>"']/gu, (ch) =>
             ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'})[ch] ?? ch);
     }
 
@@ -540,25 +550,25 @@ export class Earthquake extends BasePage {
         const y = d3.scaleLinear().domain([0, Math.max(1, yMax)]).nice().range([innerH, 0]);
 
         g.append('g')
-            .attr('transform', `translate(0,${innerH})`)
-            .call(d3.axisBottom(x))
-            .selectAll('text')
-            .style('font-size', '10px')
-            .attr('transform', 'rotate(-35)')
-            .style('text-anchor', 'end');
+        .attr('transform', `translate(0,${innerH})`)
+        .call(d3.axisBottom(x))
+        .selectAll('text')
+        .style('font-size', '10px')
+        .attr('transform', 'rotate(-35)')
+        .style('text-anchor', 'end');
         g.append('g').call(d3.axisLeft(y).ticks(4)).selectAll('text').style('font-size', '10px');
 
         g.selectAll('rect')
-            .data(data)
-            .enter()
-            .append('rect')
-            .attr('x', (_b: EarthquakeImpactBucket, i: number) => x(labels[i]))
-            .attr('width', x.bandwidth())
-            .attr('y', (b: EarthquakeImpactBucket) => y(b.count))
-            .attr('height', (b: EarthquakeImpactBucket) => innerH - y(b.count))
-            .attr('fill', color)
-            .append('title')
-            .text((b: EarthquakeImpactBucket) => `${b.key}: ${b.count}`);
+        .data(data)
+        .enter()
+        .append('rect')
+        .attr('x', (_b: EarthquakeImpactBucket, i: number) => x(labels[i]))
+        .attr('width', x.bandwidth())
+        .attr('y', (b: EarthquakeImpactBucket) => y(b.count))
+        .attr('height', (b: EarthquakeImpactBucket) => innerH - y(b.count))
+        .attr('fill', color)
+        .append('title')
+        .text((b: EarthquakeImpactBucket) => `${b.key}: ${b.count}`);
     }
 
 }
