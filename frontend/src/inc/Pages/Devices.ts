@@ -1,16 +1,16 @@
 import {
-    Badge,
-    BadgeType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    LangText,
-    Table,
-    Td,
-    Th,
-    Tooltip,
-    Tr
+    Badge2,
+    BadgeType2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    LangTextV2,
+    Table2,
+    Td2,
+    Th2,
+    Tooltip2,
+    Tr2
 } from 'bambooo';
 import moment from 'moment';
 import {Devices as DevicesAPI, DeviceEntry} from '../Api/Devices';
@@ -57,11 +57,13 @@ export class Devices extends BasePage {
 
     public override async loadContent(): Promise<void> {
         this._onLoadTable = async(): Promise<void> => {
-            this._wrapper.getContentWrapper().getContent().empty();
+            const content = this._wrapper.getContentWrapper().getContent();
+            content.empty();
 
-            const row = new ContentRow(this._wrapper.getContentWrapper().getContent());
-            const card = new Card(new ContentCol(row, ContentColSize.col12));
-            card.setTitle(new LangText('Devices'));
+            const row = new ContentRow2(content.getElement());
+            const card = new Card2({});
+            card.appendTo(new ContentCol2(row, ContentColSize2.col12).getElement());
+            card.setTitle(new LangTextV2({text: 'Devices'}));
             card.showLoading();
 
             const devices = await DevicesAPI.getList();
@@ -69,29 +71,24 @@ export class Devices extends BasePage {
             card.setTitle(`${Lang.i().l('Devices')} (${devices.length})`);
 
             const tableWrap = jQuery('<div class="table-responsive"/>').appendTo(card.getElement());
-            const table = new Table(tableWrap, {striped: true});
-            const thead = new Tr(table.getThead());
+            const table = new Table2({striped: true});
+            table.appendTo(tableWrap);
+            const thead = new Tr2();
+            thead.appendTo(table.getThead());
 
-            // eslint-disable-next-line no-new
-            new Th(thead, new LangText('Id'));
-            // eslint-disable-next-line no-new
-            new Th(thead, new LangText('Device'));
-            // eslint-disable-next-line no-new
-            new Th(thead, new LangText('User / Organization'));
-            // eslint-disable-next-line no-new
-            new Th(thead, new LangText('Description'));
-            // eslint-disable-next-line no-new
-            new Th(thead, new LangText('Activity'));
-            // eslint-disable-next-line no-new
-            new Th(thead, new LangText('First seen'));
-            // eslint-disable-next-line no-new
-            new Th(thead, new LangText('Last login'));
+            new Th2({value: new LangTextV2({text: 'Id'})}).appendTo(thead);
+            new Th2({value: new LangTextV2({text: 'Device'})}).appendTo(thead);
+            new Th2({value: new LangTextV2({text: 'User / Organization'})}).appendTo(thead);
+            new Th2({value: new LangTextV2({text: 'Description'})}).appendTo(thead);
+            new Th2({value: new LangTextV2({text: 'Activity'})}).appendTo(thead);
+            new Th2({value: new LangTextV2({text: 'First seen'})}).appendTo(thead);
+            new Th2({value: new LangTextV2({text: 'Last login'})}).appendTo(thead);
 
             for (const d of devices) {
                 this._renderRow(table, d);
             }
 
-            Tooltip.init();
+            Tooltip2.init();
             card.hideLoading();
             Lang.i().lAll();
         };
@@ -103,19 +100,21 @@ export class Devices extends BasePage {
      * Build one table row from a DeviceEntry. Pulled out so the renderer is
      * easy to read alongside the column definitions.
      */
-    protected _renderRow(table: Table, d: DeviceEntry): void {
-        const trbody = new Tr(table.getTbody());
+    protected _renderRow(table: Table2, d: DeviceEntry): void {
+        const trbody = new Tr2();
+        trbody.appendTo(table.getTbody());
 
-        // eslint-disable-next-line no-new
-        new Td(trbody, `<b>#${d.id}</b>`);
+        new Td2({value: `<b>#${d.id}</b>`}).appendTo(trbody);
 
         // device — truncated identity with full identity in tooltip
-        const deviceTd = new Td(trbody);
-        const identityHtml = `<code data-toggle="tooltip" data-original-title="${escapeHtml(d.identity)}" style="cursor:help;">${escapeHtml(truncateIdentity(d.identity))}</code>`;
+        const deviceTd = new Td2({});
+        deviceTd.appendTo(trbody);
+        const identityHtml = `<code data-bs-toggle="tooltip" data-bs-title="${escapeHtml(d.identity)}" style="cursor:help;">${escapeHtml(truncateIdentity(d.identity))}</code>`;
         deviceTd.append(identityHtml);
 
         // user + org — name on top, email + org muted below
-        const userTd = new Td(trbody);
+        const userTd = new Td2({});
+        userTd.appendTo(trbody);
         const userLine = d.user_id > 0
             ? `<b>${escapeHtml(d.user_name || '(unnamed user)')}</b>`
             : '<span class="text-muted">(unbound)</span>';
@@ -125,27 +124,25 @@ export class Devices extends BasePage {
             : `<small class="text-muted"><i class="fas fa-building mr-1"></i>${escapeHtml(d.organization_name)}</small>`;
         userTd.append([userLine, emailLine, orgLine].filter((s) => s !== '').join('<br>'));
 
-        // eslint-disable-next-line no-new
-        new Td(trbody, escapeHtml(d.description || ''));
+        new Td2({value: escapeHtml(d.description || '')}).appendTo(trbody);
 
         // activity column — sighting + tour badges + recency hint
-        const activityTd = new Td(trbody);
+        const activityTd = new Td2({});
+        activityTd.appendTo(trbody);
 
-        // eslint-disable-next-line no-new
-        new Badge(
-            activityTd,
-            `<i class="fas fa-binoculars mr-1"></i>${d.sighting_count}`,
-            BadgeType.info,
-            d.sighting_count > 0 ? 'primary' : 'secondary'
-        );
+        const sightingBadge = new Badge2({
+            type: BadgeType2.info,
+            color: d.sighting_count > 0 ? 'primary' : 'secondary'
+        });
+        sightingBadge.getElement().html(`<i class="fas fa-binoculars mr-1"></i>${d.sighting_count}`);
+        sightingBadge.appendTo(activityTd);
         activityTd.append('&nbsp;');
-        // eslint-disable-next-line no-new
-        new Badge(
-            activityTd,
-            `<i class="fas fa-route mr-1"></i>${d.tour_count}`,
-            BadgeType.info,
-            d.tour_count > 0 ? 'success' : 'secondary'
-        );
+        const tourBadge = new Badge2({
+            type: BadgeType2.info,
+            color: d.tour_count > 0 ? 'success' : 'secondary'
+        });
+        tourBadge.getElement().html(`<i class="fas fa-route mr-1"></i>${d.tour_count}`);
+        tourBadge.appendTo(activityTd);
 
         if (d.last_sighting_datetime > 0) {
             const days = daysSince(d.last_sighting_datetime);
@@ -162,16 +159,13 @@ export class Devices extends BasePage {
                 label = '1d ago';
             }
             activityTd.append('<br>');
-            // eslint-disable-next-line no-new
-            new Badge(activityTd, label, BadgeType.info, recency);
+            new Badge2({text: label, type: BadgeType2.info, color: recency}).appendTo(activityTd);
         } else {
             activityTd.append('<br><span class="text-muted small">no sightings yet</span>');
         }
 
-        // eslint-disable-next-line no-new
-        new Td(trbody, formatTs(d.create_datetime));
-        // eslint-disable-next-line no-new
-        new Td(trbody, formatTs(d.update_datetime));
+        new Td2({value: formatTs(d.create_datetime)}).appendTo(trbody);
+        new Td2({value: formatTs(d.update_datetime)}).appendTo(trbody);
     }
 
 }

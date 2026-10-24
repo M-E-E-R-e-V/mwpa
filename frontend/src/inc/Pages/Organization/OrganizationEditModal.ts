@@ -1,16 +1,15 @@
 import {
-    ComponentType,
-    FormGroup,
-    FormRow,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
-    ModalDialog,
-    ModalDialogType
+    FormGroup2,
+    FormRow2,
+    Input2,
+    InputType2,
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2
 } from 'bambooo';
 
 
-export class OrganizationEditModal extends ModalDialog {
+export class OrganizationEditModal extends ModalDialog2 {
 
     /**
      * ID from organization
@@ -22,163 +21,192 @@ export class OrganizationEditModal extends ModalDialog {
      * input name
      * @protected
      */
-    protected _inputName: InputBottemBorderOnly2;
+    protected _inputName: Input2;
 
     /**
      * input country
      * @protected
      */
-    protected _inputCountry: InputBottemBorderOnly2;
+    protected _inputCountry: Input2;
 
     /**
      * input location
      * @protected
      */
-    protected _inputLocation: InputBottemBorderOnly2;
+    protected _inputLocation: Input2;
 
     /**
      * input lon
      * @protected
      */
-    protected _inputLon: InputBottemBorderOnly2;
+    protected _inputLon: Input2;
 
     /**
      * input lat
      * @protected
      */
-    protected _inputLat: InputBottemBorderOnly2;
+    protected _inputLat: Input2;
 
     /**
      * input province
      * @protected
      */
-    protected _inputProvince: InputBottemBorderOnly2;
+    protected _inputProvince: Input2;
 
     /**
      * input island
      * @protected
      */
-    protected _inputIsland: InputBottemBorderOnly2;
+    protected _inputIsland: Input2;
 
     /**
      * input port
      * @protected
      */
-    protected _inputPort: InputBottemBorderOnly2;
+    protected _inputPort: Input2;
 
     /**
      * input email
      * @protected
      */
-    protected _inputEmail: InputBottemBorderOnly2;
+    protected _inputEmail: Input2;
 
     /**
      * input web
      * @protected
      */
-    protected _inputWeb: InputBottemBorderOnly2;
+    protected _inputWeb: Input2;
 
     /**
      * input AROC reference
      * @protected
      */
-    protected _inputArocReference: InputBottemBorderOnly2;
+    protected _inputArocReference: Input2;
 
     /**
      * input AROC region (CAN/RES/AND)
      * @protected
      */
-    protected _inputArocRegion: InputBottemBorderOnly2;
+    protected _inputArocRegion: Input2;
 
     /**
      * input AROC number
      * @protected
      */
-    protected _inputArocNumber: InputBottemBorderOnly2;
+    protected _inputArocNumber: Input2;
 
     /**
      * input AROC authorized boats
      * @protected
      */
-    protected _inputArocAuthorizedBoats: InputBottemBorderOnly2;
+    protected _inputArocAuthorizedBoats: Input2;
 
     /**
      * constructor
-     * @param elementObject
      */
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'organizationmodal', ModalDialogType.large);
+    public constructor() {
+        super({modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupName = new FormGroup(bodyCard, new LangText('Name'));
-        this._inputName = new InputBottemBorderOnly2(groupName, 'orgname');
+        const groupName = new FormGroup2({label: new LangTextV2({text: 'Name'})});
+        groupName.appendTo(bodyCard);
+        this._inputName = new Input2({});
+        this._inputName.appendTo(groupName);
 
-        const groupCountry = new FormGroup(bodyCard, new LangText('Country'));
-        this._inputCountry = new InputBottemBorderOnly2(groupCountry, 'country');
+        const groupCountry = new FormGroup2({label: new LangTextV2({text: 'Country'})});
+        groupCountry.appendTo(bodyCard);
+        this._inputCountry = new Input2({});
+        this._inputCountry.appendTo(groupCountry);
 
-        const groupLocation = new FormGroup(bodyCard, new LangText('Location'));
-        this._inputLocation = new InputBottemBorderOnly2(groupLocation, 'location');
+        const groupLocation = new FormGroup2({label: new LangTextV2({text: 'Location'})});
+        groupLocation.appendTo(bodyCard);
+        this._inputLocation = new Input2({});
+        this._inputLocation.appendTo(groupLocation);
 
-        const rowPosition = new FormRow(bodyCard);
-        const groupLon = new FormGroup(rowPosition.createCol(6), new LangText('Lon'));
-        this._inputLon = new InputBottemBorderOnly2(groupLon, 'lon');
+        const rowPosition = new FormRow2({});
+        rowPosition.appendTo(bodyCard);
 
-        const groupLat = new FormGroup(rowPosition.createCol(6), new LangText('Lat'));
-        this._inputLat = new InputBottemBorderOnly2(groupLat, 'lat');
+        const groupLon = new FormGroup2({label: new LangTextV2({text: 'Lon'})});
+        groupLon.appendTo(rowPosition.createCol(6));
+        this._inputLon = new Input2({});
+        this._inputLon.appendTo(groupLon);
+
+        const groupLat = new FormGroup2({label: new LangTextV2({text: 'Lat'})});
+        groupLat.appendTo(rowPosition.createCol(6));
+        this._inputLat = new Input2({});
+        this._inputLat.appendTo(groupLat);
 
         // AROC office-report fields ---------------------------------------------------------------------------------
 
         jQuery('<hr/>').appendTo(bodyCard);
         jQuery('<h6 class="text-muted"></h6>').text('AROC').appendTo(bodyCard);
 
-        const rowPlace = new FormRow(bodyCard);
-        const groupProvince = new FormGroup(rowPlace.createCol(4), new LangText('Province'));
-        this._inputProvince = new InputBottemBorderOnly2(groupProvince, 'province');
+        const rowPlace = new FormRow2({});
+        rowPlace.appendTo(bodyCard);
 
-        const groupIsland = new FormGroup(rowPlace.createCol(4), new LangText('Island'));
-        this._inputIsland = new InputBottemBorderOnly2(groupIsland, 'island');
+        const groupProvince = new FormGroup2({label: new LangTextV2({text: 'Province'})});
+        groupProvince.appendTo(rowPlace.createCol(4));
+        this._inputProvince = new Input2({});
+        this._inputProvince.appendTo(groupProvince);
 
-        const groupPort = new FormGroup(rowPlace.createCol(4), new LangText('Port'));
-        this._inputPort = new InputBottemBorderOnly2(groupPort, 'port');
+        const groupIsland = new FormGroup2({label: new LangTextV2({text: 'Island'})});
+        groupIsland.appendTo(rowPlace.createCol(4));
+        this._inputIsland = new Input2({});
+        this._inputIsland.appendTo(groupIsland);
 
-        const rowContact = new FormRow(bodyCard);
-        const groupEmail = new FormGroup(rowContact.createCol(6), new LangText('E-Mail'));
-        this._inputEmail = new InputBottemBorderOnly2(groupEmail, 'email');
+        const groupPort = new FormGroup2({label: new LangTextV2({text: 'Port'})});
+        groupPort.appendTo(rowPlace.createCol(4));
+        this._inputPort = new Input2({});
+        this._inputPort.appendTo(groupPort);
 
-        const groupWeb = new FormGroup(rowContact.createCol(6), new LangText('Website'));
-        this._inputWeb = new InputBottemBorderOnly2(groupWeb, 'web');
+        const rowContact = new FormRow2({});
+        rowContact.appendTo(bodyCard);
 
-        const rowAroc1 = new FormRow(bodyCard);
-        const groupArocRegion = new FormGroup(rowAroc1.createCol(4), new LangText('AROC region'));
-        this._inputArocRegion = new InputBottemBorderOnly2(groupArocRegion, 'aroc_region');
+        const groupEmail = new FormGroup2({label: new LangTextV2({text: 'E-Mail'})});
+        groupEmail.appendTo(rowContact.createCol(6));
+        this._inputEmail = new Input2({});
+        this._inputEmail.appendTo(groupEmail);
 
-        const groupArocNumber = new FormGroup(rowAroc1.createCol(4), new LangText('AROC number'));
-        this._inputArocNumber = new InputBottemBorderOnly2(groupArocNumber, 'aroc_number');
+        const groupWeb = new FormGroup2({label: new LangTextV2({text: 'Website'})});
+        groupWeb.appendTo(rowContact.createCol(6));
+        this._inputWeb = new Input2({});
+        this._inputWeb.appendTo(groupWeb);
 
-        const groupArocBoats = new FormGroup(rowAroc1.createCol(4), new LangText('Authorized boats'));
-        this._inputArocAuthorizedBoats = new InputBottemBorderOnly2(
-            groupArocBoats,
-            'aroc_authorized_boats',
-            InputType.number
-        );
+        const rowAroc1 = new FormRow2({});
+        rowAroc1.appendTo(bodyCard);
 
-        const groupArocReference = new FormGroup(bodyCard, new LangText('AROC reference'));
-        this._inputArocReference = new InputBottemBorderOnly2(groupArocReference, 'aroc_reference');
+        const groupArocRegion = new FormGroup2({label: new LangTextV2({text: 'AROC region'})});
+        groupArocRegion.appendTo(rowAroc1.createCol(4));
+        this._inputArocRegion = new Input2({});
+        this._inputArocRegion.appendTo(groupArocRegion);
+
+        const groupArocNumber = new FormGroup2({label: new LangTextV2({text: 'AROC number'})});
+        groupArocNumber.appendTo(rowAroc1.createCol(4));
+        this._inputArocNumber = new Input2({});
+        this._inputArocNumber.appendTo(groupArocNumber);
+
+        const groupArocBoats = new FormGroup2({label: new LangTextV2({text: 'Authorized boats'})});
+        groupArocBoats.appendTo(rowAroc1.createCol(4));
+        this._inputArocAuthorizedBoats = new Input2({type: InputType2.number});
+        this._inputArocAuthorizedBoats.appendTo(groupArocBoats);
+
+        const groupArocReference = new FormGroup2({label: new LangTextV2({text: 'AROC reference'})});
+        groupArocReference.appendTo(bodyCard);
+        this._inputArocReference = new Input2({});
+        this._inputArocReference.appendTo(groupArocReference);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        // buttons -----------------------------------------------------------------------------------------------------
-
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save changes'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save changes', true);
     }
 
     /**
      * Set id from organization
      * @param {number} id
      */
-    public setId(id: number): void {
+    public setOrganizationId(id: number): void {
         this._id = id;
     }
 
@@ -186,7 +214,7 @@ export class OrganizationEditModal extends ModalDialog {
      * Return id from organization
      * @returns {number|null}
      */
-    public getId(): number|null {
+    public getOrganizationId(): number|null {
         return this._id;
     }
 
@@ -194,7 +222,7 @@ export class OrganizationEditModal extends ModalDialog {
      * Set the organization name
      * @param {string} name
      */
-    public setName(name: string): void {
+    public override setName(name: string): void {
         this._inputName.setValue(name);
     }
 
@@ -202,7 +230,7 @@ export class OrganizationEditModal extends ModalDialog {
      * Return the organization name
      * @returns {string}
      */
-    public getName(): string {
+    public override getName(): string {
         return this._inputName.getValue();
     }
 
@@ -339,7 +367,11 @@ export class OrganizationEditModal extends ModalDialog {
 
     public getArocAuthorizedBoats(): number {
         const raw = this._inputArocAuthorizedBoats.getValue().trim();
-        if (raw === '') return 0;
+
+        if (raw === '') {
+            return 0;
+        }
+
         const n = parseInt(raw, 10);
         return Number.isFinite(n) && n > 0 ? n : 0;
     }

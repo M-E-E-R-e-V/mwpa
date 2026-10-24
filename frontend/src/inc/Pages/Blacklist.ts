@@ -1,20 +1,19 @@
 import {
-    ButtonClass,
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    DialogConfirm,
+    ButtonClass2,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    DialogConfirm2,
     IconFa,
-    LangText,
-    ModalDialogType,
-    Table,
-    TableWrapper,
-    Td,
-    Th,
-    Tr
+    LangTextV2,
+    ModalDialogType2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tr2
 } from 'bambooo';
 import moment from 'moment';
 import {Blacklist as BlacklistAPI, BlacklistEntry, LoginLockoutEntry} from '../Api/Blacklist';
@@ -57,60 +56,51 @@ export class Blacklist extends BasePage {
     public override async loadContent(): Promise<void> {
         const lang = Lang.i();
 
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Blacklist (blocked IPs)'));
+        const content = this._wrapper.getContentWrapper().getContent();
 
-        const tableWrapper = new TableWrapper<BlacklistEntry>(card.getElement(), {head_fixed: true});
+        const row1 = new ContentRow2(content.getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
+        card.setTitle(new LangTextV2({text: 'Blacklist (blocked IPs)'}));
+
+        const tableWrapper = new TableWrapper2<BlacklistEntry>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(card.getElement());
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('IP'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Count'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('First blocked'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Last blocked'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Last path'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Browser'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('OS'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Hostname'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Action'));
+        new Th2({value: new LangTextV2({text: 'IP'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Count'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'First blocked'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Last blocked'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Last path'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Browser'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'OS'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Hostname'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Action'})}).appendTo(trhead);
 
-        const renderRow = (_table: Table, entry: BlacklistEntry): void => {
-            const trbody = new Tr(table.getTbody());
+        const renderRow = (_table: Table2, entry: BlacklistEntry): void => {
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, entry.ip);
-            // eslint-disable-next-line no-new
-            new Td(trbody, `${entry.count}`);
-            // eslint-disable-next-line no-new
-            new Td(trbody, Blacklist._fmtTs(entry.first_blocked));
-            // eslint-disable-next-line no-new
-            new Td(trbody, Blacklist._fmtTs(entry.last_blocked));
-            // eslint-disable-next-line no-new
-            new Td(trbody, entry.last_path);
-            // eslint-disable-next-line no-new
-            new Td(trbody, entry.browser);
-            // eslint-disable-next-line no-new
-            new Td(trbody, entry.os);
-            // eslint-disable-next-line no-new
-            new Td(trbody, entry.hostname);
+            new Td2({value: entry.ip}).appendTo(trbody);
+            new Td2({value: `${entry.count}`}).appendTo(trbody);
+            new Td2({value: Blacklist._fmtTs(entry.first_blocked)}).appendTo(trbody);
+            new Td2({value: Blacklist._fmtTs(entry.last_blocked)}).appendTo(trbody);
+            new Td2({value: entry.last_path}).appendTo(trbody);
+            new Td2({value: entry.browser}).appendTo(trbody);
+            new Td2({value: entry.os}).appendTo(trbody);
+            new Td2({value: entry.hostname}).appendTo(trbody);
 
-            const actionTd = new Td(trbody, '');
-            const btnMenu = new ButtonMenu(actionTd, IconFa.bars, true, ButtonType.borderless);
+            const actionTd = new Td2({value: ''});
+            actionTd.appendTo(trbody);
+            const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+            btnMenu.appendTo(actionTd);
 
             btnMenu.addMenuItem('Unblock', (): void => {
-                DialogConfirm.confirm(
+                DialogConfirm2.confirm(
                     'dcUnblockIp',
-                    ModalDialogType.large,
+                    ModalDialogType2.large,
                     'Unblock IP',
                     `Unblock ${entry.ip}? This resets the rate limiter for this IP immediately.`,
                     async(_, dialog) => {
@@ -132,38 +122,38 @@ export class Blacklist extends BasePage {
                     },
                     undefined,
                     'Unblock',
-                    ButtonClass.danger
+                    ButtonClass2.danger
                 );
             }, IconFa.trash);
 
             Lang.i().lAll();
         };
 
+        tableWrapper.setDataSource(
+            async(page) => {
+                if (page !== 0) {
+                    return [];
+                }
+
+                let list: BlacklistEntry[] = [];
+
+                try {
+                    list = await BlacklistAPI.getList();
+                } catch (message) {
+                    this._toast.fire({icon: 'error', title: message});
+                }
+
+                card.setTitle(`${lang.l('Blacklist (blocked IPs)') ?? 'Blacklist (blocked IPs)'} (${list.length})`);
+
+                return list;
+            },
+            renderRow,
+            false
+        );
+
         this._onLoadTable = async(): Promise<void> => {
-            tableWrapper.setDataSource(
-                async(page) => {
-                    if (page !== 0) {
-                        return [];
-                    }
-
-                    let list: BlacklistEntry[] = [];
-
-                    try {
-                        list = await BlacklistAPI.getList();
-                    } catch (message) {
-                        this._toast.fire({icon: 'error', title: message});
-                    }
-
-                    card.setTitle(`${lang.l('Blacklist (blocked IPs)') ?? 'Blacklist (blocked IPs)'} (${list.length})`);
-
-                    return list;
-                },
-                renderRow,
-                false
-            );
+            await tableWrapper.reset();
         };
-
-        this._onLoadTable();
 
         /*
          * Login lockouts (Sperrliste) — (account, device) pairs locked out after
@@ -171,95 +161,88 @@ export class Blacklist extends BasePage {
          * LoginLockoutRegistry; entries expire when the lock elapses.
          */
 
-        const row2 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const lockCard = new Card(new ContentCol(row2, ContentColSize.col12));
-        lockCard.setTitle(new LangText('Login lockouts'));
+        const row2 = new ContentRow2(content.getElement());
+        const lockCard = new Card2({});
+        lockCard.appendTo(new ContentCol2(row2, ContentColSize2.col12).getElement());
+        lockCard.setTitle(new LangTextV2({text: 'Login lockouts'}));
 
-        const lockTableWrapper = new TableWrapper<LoginLockoutEntry>(lockCard.getElement(), {head_fixed: true});
+        const lockTableWrapper = new TableWrapper2<LoginLockoutEntry>({tableOptions: {head_fixed: true}});
+        lockTableWrapper.appendTo(lockCard.getElement());
         const lockTable = lockTableWrapper.getTable();
-        const lockHead = new Tr(lockTable.getThead());
+        const lockHead = new Tr2();
+        lockHead.appendTo(lockTable.getThead());
 
         for (const label of ['Email', 'Device', 'Count', 'First attempt', 'Last attempt', 'Locked until', 'Browser', 'OS', 'Action']) {
-            // eslint-disable-next-line no-new
-            new Th(lockHead, new LangText(label));
+            new Th2({value: new LangTextV2({text: label})}).appendTo(lockHead);
         }
 
-        const loadLockoutTable = async(): Promise<void> => {
-            lockTableWrapper.setDataSource(
-                async(page) => {
-                    if (page !== 0) {
-                        return [];
-                    }
+        lockTableWrapper.setDataSource(
+            async(page) => {
+                if (page !== 0) {
+                    return [];
+                }
 
-                    let list: LoginLockoutEntry[] = [];
+                let list: LoginLockoutEntry[] = [];
 
-                    try {
-                        list = await BlacklistAPI.getLockoutList();
-                    } catch (message) {
-                        this._toast.fire({icon: 'error', title: message});
-                    }
+                try {
+                    list = await BlacklistAPI.getLockoutList();
+                } catch (message) {
+                    this._toast.fire({icon: 'error', title: message});
+                }
 
-                    lockCard.setTitle(`${lang.l('Login lockouts') ?? 'Login lockouts'} (${list.length})`);
+                lockCard.setTitle(`${lang.l('Login lockouts') ?? 'Login lockouts'} (${list.length})`);
 
-                    return list;
-                },
-                (_table: Table, entry: LoginLockoutEntry): void => {
-                    const trbody = new Tr(lockTable.getTbody());
-                    const device = entry.device.length > 14 ? `${entry.device.slice(0, 14)}…` : entry.device;
+                return list;
+            },
+            (_table: Table2, entry: LoginLockoutEntry): void => {
+                const trbody = new Tr2();
+                trbody.appendTo(lockTable.getTbody());
+                const device = entry.device.length > 14 ? `${entry.device.slice(0, 14)}…` : entry.device;
 
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, entry.email);
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, device);
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `${entry.count}`);
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, Blacklist._fmtTs(entry.first_attempt));
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, Blacklist._fmtTs(entry.last_attempt));
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, Blacklist._fmtTs(entry.locked_until));
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, entry.browser);
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, entry.os);
+                new Td2({value: entry.email}).appendTo(trbody);
+                new Td2({value: device}).appendTo(trbody);
+                new Td2({value: `${entry.count}`}).appendTo(trbody);
+                new Td2({value: Blacklist._fmtTs(entry.first_attempt)}).appendTo(trbody);
+                new Td2({value: Blacklist._fmtTs(entry.last_attempt)}).appendTo(trbody);
+                new Td2({value: Blacklist._fmtTs(entry.locked_until)}).appendTo(trbody);
+                new Td2({value: entry.browser}).appendTo(trbody);
+                new Td2({value: entry.os}).appendTo(trbody);
 
-                    const actionTd = new Td(trbody, '');
-                    const btnMenu = new ButtonMenu(actionTd, IconFa.bars, true, ButtonType.borderless);
+                const actionTd = new Td2({value: ''});
+                actionTd.appendTo(trbody);
+                const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+                btnMenu.appendTo(actionTd);
 
-                    btnMenu.addMenuItem('Unlock', (): void => {
-                        DialogConfirm.confirm(
-                            'dcUnlockLogin',
-                            ModalDialogType.large,
-                            'Unlock login',
-                            `Unlock ${entry.email} on this device? They can log in again immediately.`,
-                            async(_, dialog) => {
-                                try {
-                                    if (await BlacklistAPI.unblockLockout(entry.key)) {
-                                        this._toast.fire({icon: 'success', title: 'Login unlocked.'});
-                                    } else {
-                                        this._toast.fire({icon: 'info', title: 'Lockout was no longer active.'});
-                                    }
-                                } catch (message) {
-                                    this._toast.fire({icon: 'error', title: message});
+                btnMenu.addMenuItem('Unlock', (): void => {
+                    DialogConfirm2.confirm(
+                        'dcUnlockLogin',
+                        ModalDialogType2.large,
+                        'Unlock login',
+                        `Unlock ${entry.email} on this device? They can log in again immediately.`,
+                        async(_, dialog) => {
+                            try {
+                                if (await BlacklistAPI.unblockLockout(entry.key)) {
+                                    this._toast.fire({icon: 'success', title: 'Login unlocked.'});
+                                } else {
+                                    this._toast.fire({icon: 'info', title: 'Lockout was no longer active.'});
                                 }
+                            } catch (message) {
+                                this._toast.fire({icon: 'error', title: message});
+                            }
 
-                                dialog.hide();
-                                await loadLockoutTable();
-                            },
-                            undefined,
-                            'Unlock',
-                            ButtonClass.danger
-                        );
-                    }, IconFa.trash);
+                            dialog.hide();
+                            await lockTableWrapper.reset();
+                        },
+                        undefined,
+                        'Unlock',
+                        ButtonClass2.danger
+                    );
+                }, IconFa.trash);
 
-                    Lang.i().lAll();
-                },
-                false
-            );
-        };
-
-        await loadLockoutTable();
+                Lang.i().lAll();
+            },
+            false
+        );
     }
 
 }

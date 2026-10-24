@@ -1,4 +1,5 @@
-import {Badge, BadgeType, Component, ComponentType, DialogInfo, ModalDialogType} from 'bambooo';
+/* global JQuery */
+import {Badge2, BadgeType2, Component, ComponentType, DialogInfo2, ModalDialogType2} from 'bambooo';
 import {EncounterCategorieEntry} from '../Api/EncounterCategories';
 import {SightingsEntry} from '../Api/Sightings';
 
@@ -19,9 +20,10 @@ export class ReactionDisplay extends Component<HTMLSpanElement> {
             }
         }
 
-        this._badge = new Badge(element, `${reactionName}`, BadgeType.secondary);
+        this._badge = new Badge2({text: `${reactionName}`, type: BadgeType2.secondary});
+        this._badge.appendTo(this._getAnyElement(element));
 
-        this._element = this._badge.getElement();
+        this._element = this._badge.getElement() as JQuery<HTMLSpanElement>;
 
         const tooltpSpecStr = 'Click for more Information';
 
@@ -41,12 +43,12 @@ export class ReactionDisplay extends Component<HTMLSpanElement> {
                 }
             }
 
-            DialogInfo.info(
+            DialogInfo2.info(
                 'sightspeciesinfo',
-                ModalDialogType.xlarge,
+                ModalDialogType2.xlarge,
                 `REACTION Definitions: [${reactionName}] by Sighting #${sighting.id}`,
                 infoStr,
-                (_, modal: DialogInfo) => {
+                (_, modal: DialogInfo2) => {
                     modal.hide();
                 }
             );

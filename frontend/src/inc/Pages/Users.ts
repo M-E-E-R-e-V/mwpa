@@ -1,26 +1,24 @@
 import {
-    Badge,
-    BadgeType,
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ColumnContent,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
+    Badge2,
+    BadgeType2,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
     IconFa,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
+    Input2,
+    InputType2,
+    LangTextV2,
     LeftNavbarLink,
-    SortingColumn,
-    SortOrder,
-    Switch,
-    Table,
-    TableWrapper,
-    Td,
-    Th,
-    Tr,
+    SortingColumn2,
+    SortOrder2,
+    Switch2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tr2,
     UtilAvatarGenerator,
     UtilColor,
     UtilShorname
@@ -34,14 +32,14 @@ import {UsersEditModal} from './Users/UsersEditModal';
 const PAGE_SIZE = 30;
 
 type SortKey = 'id' | 'username' | 'fullname' | 'group' | 'status' | 'admin';
-type SortState = Record<SortKey, SortOrder>;
+type SortState = Record<SortKey, SortOrder2>;
 
 const escapeHtml = (s: string): string => s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+.replace(/&/gu, '&amp;')
+.replace(/</gu, '&lt;')
+.replace(/>/gu, '&gt;')
+.replace(/"/gu, '&quot;')
+.replace(/'/gu, '&#39;');
 
 const highlight = (text: string, term: string): string => {
     if (text === '') {
@@ -51,11 +49,11 @@ const highlight = (text: string, term: string): string => {
     if (term === '') {
         return escaped;
     }
-    const safe = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const safe = term.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
     return escaped.replace(new RegExp(safe, 'giu'), (match) => `<mark>${match}</mark>`);
 };
 
-const statusRank = (u: UserData): number => (u.disable ? 1 : 0);
+const statusRank = (u: UserData): number => u.disable ? 1 : 0;
 
 /**
  * Users admin page — modern Sighting-style:
@@ -80,16 +78,14 @@ export class Users extends BasePage {
     public constructor() {
         super();
 
-        this._usersDialog = new UsersEditModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._usersDialog = new UsersEditModal();
 
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add User', async() => {
             const groups = await GroupAPI.getGroupList();
 
             this._usersDialog.resetValues();
-            this._usersDialog.setTitle(new LangText('Add User'));
+            this._usersDialog.setTitle(new LangTextV2({text: 'Add User'}));
 
             if (groups && groups.list) {
                 this._usersDialog.setMainGroupList(groups.list);
@@ -100,7 +96,7 @@ export class Users extends BasePage {
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         this._usersDialog.setOnSave(async(): Promise<void> => {
-            let tid = this._usersDialog.getId();
+            let tid = this._usersDialog.getUserId();
             if (tid === null) {
                 tid = 0;
             }
@@ -147,77 +143,86 @@ export class Users extends BasePage {
 
         const filter: UserListFilter = {filter: {show_disabled: false}};
 
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Users'));
+        const content = this._wrapper.getContentWrapper().getContent();
+        const row1 = new ContentRow2(content.getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
+        card.setTitle(new LangTextV2({text: 'Users'}));
 
         const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
-        const searchInput = new InputBottemBorderOnly2(searchSlot, undefined, InputType.text);
+        const searchInput = new Input2({type: InputType2.text});
+        searchInput.appendTo(searchSlot);
         searchInput.setPlaceholder(`${lang.l('search username / fullname / email …')}`);
 
         const sort: SortState = {
-            id: SortOrder.NONE,
-            username: SortOrder.ASC,
-            fullname: SortOrder.NONE,
-            group: SortOrder.NONE,
-            status: SortOrder.NONE,
-            admin: SortOrder.NONE
+            id: SortOrder2.NONE,
+            username: SortOrder2.ASC,
+            fullname: SortOrder2.NONE,
+            group: SortOrder2.NONE,
+            status: SortOrder2.NONE,
+            admin: SortOrder2.NONE
         };
 
         let searchTerm = '';
         let allUsers: UserData[] = [];
         let groupNameById = new Map<number, string>();
 
-        const tableWrapper = new TableWrapper<UserData>(card.getElement(), {head_fixed: true});
+        const tableWrapper = new TableWrapper2<UserData>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(card.getElement());
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        const sortRegistry: {key: SortKey; column: LangText}[] = [];
+        const sortRegistry: {key: SortKey; column: LangTextV2;}[] = [];
 
-        const makeSortColumn = (label: string, key: SortKey): LangText => {
-            const column = new LangText(label, undefined, (element) => {
-                const newValue = SortingColumn.changeSort(element, sort[key]);
+        const makeSortColumn = (label: string, key: SortKey): LangTextV2 => {
+            const column = new LangTextV2({
+                text: label,
+                onClick: (langText): void => {
+                    const newValue = SortingColumn2.changeSort(langText, sort[key]);
 
-                for (const other of sortRegistry) {
-                    if (other.key !== key) {
-                        sort[other.key] = SortOrder.NONE;
-                        SortingColumn.initSort(other.column, SortOrder.NONE);
+                    for (const other of sortRegistry) {
+                        if (other.key !== key) {
+                            sort[other.key] = SortOrder2.NONE;
+                            SortingColumn2.initSort(other.column, SortOrder2.NONE);
+                        }
                     }
-                }
 
-                sort[key] = newValue as SortOrder;
-                tableWrapper.reset();
+                    sort[key] = newValue as SortOrder2;
+                    tableWrapper.reset();
+                }
             });
 
-            SortingColumn.initSort(column, sort[key]);
+            SortingColumn2.initSort(column, sort[key]);
             sortRegistry.push({key, column});
             return column;
         };
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            makeSortColumn('Id', 'id'),
-            new LangText('Avatar')
-        ]));
+        const thIdAvatar = new Th2({});
+        thIdAvatar.addComponent(makeSortColumn('Id', 'id'));
+        thIdAvatar.append('<br>');
+        thIdAvatar.addComponent(new LangTextV2({text: 'Avatar'}));
+        thIdAvatar.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            makeSortColumn('Username', 'username'),
-            makeSortColumn('Fullname', 'fullname')
-        ]));
+        const thName = new Th2({});
+        thName.addComponent(makeSortColumn('Username', 'username'));
+        thName.append('<br>');
+        thName.addComponent(makeSortColumn('Fullname', 'fullname'));
+        thName.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new ColumnContent([
-            new LangText('EMail'),
-            makeSortColumn('Main-Group', 'group')
-        ]));
+        const thEmailGroup = new Th2({});
+        thEmailGroup.addComponent(new LangTextV2({text: 'EMail'}));
+        thEmailGroup.append('<br>');
+        thEmailGroup.addComponent(makeSortColumn('Main-Group', 'group'));
+        thEmailGroup.appendTo(trhead);
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, makeSortColumn('Admin', 'admin'));
+        new Th2({value: makeSortColumn('Admin', 'admin')}).appendTo(trhead);
 
         // Disabled column: header doubles as "show disabled" filter switch.
-        const thDisabled = new Th(trhead, makeSortColumn('Disabled', 'status'));
-        const filterDisabled = new Switch(thDisabled, 'filterDisabled', 'Show all');
+        const thDisabled = new Th2({value: makeSortColumn('Disabled', 'status')});
+        thDisabled.appendTo(trhead);
+        const filterDisabled = new Switch2({label: 'Show all'});
+        filterDisabled.appendTo(thDisabled);
         if (filter.filter && filter.filter.show_disabled !== undefined) {
             filterDisabled.setEnable(filter.filter.show_disabled);
         }
@@ -231,11 +236,11 @@ export class Users extends BasePage {
             }
         });
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Action'));
+        new Th2({value: new LangTextV2({text: 'Action'})}).appendTo(trhead);
 
-        const renderRow = (_table: Table, user: UserData): void => {
-            const trbody = new Tr(table.getTbody());
+        const renderRow = (_table: Table2, user: UserData): void => {
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
             const term = searchTerm;
 
             const avatarImg = UtilAvatarGenerator.generateAvatar(
@@ -244,46 +249,51 @@ export class Users extends BasePage {
                 UtilColor.getColor(user.username)
             );
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `#${user.id}<br><div class="image"><img src="${avatarImg}" class="img-circle elevation-2" alt="User Image" width="33px"></div>`);
+            new Td2({
+                value: `#${user.id}<br><div class="image"><img src="${avatarImg}" class="img-circle elevation-2" alt="User Image" width="33px"></div>`
+            }).appendTo(trbody);
 
-            const tdName = new Td(trbody, '');
+            const tdName = new Td2({value: ''});
+            tdName.appendTo(trbody);
             tdName.getElement().html(
                 `<b>${highlight(user.username, term)}</b><br>${highlight(user.fullname, term)}`
             );
 
             const groupName = groupNameById.get(user.main_groupid) ?? 'Unknown';
-            const tdEmailGroup = new Td(trbody, '');
+            const tdEmailGroup = new Td2({value: ''});
+            tdEmailGroup.appendTo(trbody);
             tdEmailGroup.getElement().html(`${highlight(user.email, term)}<br>`);
-            // eslint-disable-next-line no-new
-            new Badge(tdEmailGroup, `<b>${escapeHtml(groupName)}</b>`, BadgeType.info);
+            const groupBadge = new Badge2({type: BadgeType2.info});
+            groupBadge.getElement().html(`<b>${escapeHtml(groupName)}</b>`);
+            groupBadge.appendTo(tdEmailGroup);
 
-            const tdAdmin = new Td(trbody, '');
+            const tdAdmin = new Td2({value: ''});
+            tdAdmin.appendTo(trbody);
             if (user.isAdmin) {
-                // eslint-disable-next-line no-new
-                new Badge(tdAdmin, lang.l('admin') ?? 'admin', BadgeType.warning);
+                new Badge2({text: lang.l('admin') ?? 'admin', type: BadgeType2.warning}).appendTo(tdAdmin);
             } else {
                 tdAdmin.getElement().html('<span class="text-muted">—</span>');
             }
 
-            const tdDisable = new Td(trbody, '');
+            const tdDisable = new Td2({value: ''});
+            tdDisable.appendTo(trbody);
             if (user.disable) {
-                // eslint-disable-next-line no-new
-                new Badge(tdDisable, lang.l('disabled') ?? 'disabled', BadgeType.danger);
+                new Badge2({text: lang.l('disabled') ?? 'disabled', type: BadgeType2.danger}).appendTo(tdDisable);
             } else {
-                // eslint-disable-next-line no-new
-                new Badge(tdDisable, lang.l('active') ?? 'active', BadgeType.success);
+                new Badge2({text: lang.l('active') ?? 'active', type: BadgeType2.success}).appendTo(tdDisable);
             }
 
-            const actionTd = new Td(trbody, '');
-            const btnMenu = new ButtonMenu(actionTd, IconFa.bars, true, ButtonType.borderless);
+            const actionTd = new Td2({value: ''});
+            actionTd.appendTo(trbody);
+            const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+            btnMenu.appendTo(actionTd);
 
             btnMenu.addMenuItem('Edit', async(): Promise<void> => {
                 const groups = await GroupAPI.getGroupList();
 
                 this._usersDialog.resetValues();
-                this._usersDialog.setTitle(new LangText('Edit User'));
-                this._usersDialog.setId(user.id);
+                this._usersDialog.setTitle(new LangTextV2({text: 'Edit User'}));
+                this._usersDialog.setUserId(user.id);
                 this._usersDialog.setUsername(user.username);
                 this._usersDialog.setFullname(user.fullname);
                 this._usersDialog.setEMail(user.email);
@@ -314,11 +324,11 @@ export class Users extends BasePage {
                         || u.email.toLowerCase().includes(term);
                 });
 
-            const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder.NONE);
+            const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder2.NONE);
 
             if (activeKey) {
                 const order = sort[activeKey];
-                const dir = order === SortOrder.DESC ? -1 : 1;
+                const dir = order === SortOrder2.DESC ? -1 : 1;
                 filtered.sort((a, b) => {
                     let av: string | number;
                     let bv: string | number;
@@ -350,8 +360,8 @@ export class Users extends BasePage {
                             break;
                     }
 
-                    if (av < bv) return -1 * dir;
-                    if (av > bv) return 1 * dir;
+                    if (av < bv) {return -1 * dir;}
+                    if (av > bv) {return Number(dir);}
                     return 0;
                 });
             }

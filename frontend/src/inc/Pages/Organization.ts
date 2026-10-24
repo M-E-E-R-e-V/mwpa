@@ -1,17 +1,16 @@
 import {
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
     IconFa,
-    LangText,
+    LangTextV2,
     LeftNavbarLink,
-    Table,
-    Td,
-    Th,
-    Tr
+    Table2,
+    Td2,
+    Th2,
+    Tr2
 } from 'bambooo';
 import {
     Organization as OrganizationAPI,
@@ -53,20 +52,16 @@ export class Organization extends BasePage {
     public constructor() {
         super();
 
-        this._orgModal = new OrganizationEditModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._orgModal = new OrganizationEditModal();
 
-        this._orgTrackingAreaModal = new OrganizationTrackingAreaModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._orgTrackingAreaModal = new OrganizationTrackingAreaModal();
 
         // Navbar Left -------------------------------------------------------------------------------------------------
 
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Organization', () => {
             this._orgModal.resetValues();
-            this._orgModal.setTitle(new LangText('Add new Organization'));
+            this._orgModal.setTitle(new LangTextV2({text: 'Add new Organization'}));
             this._orgModal.show();
             return false;
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
@@ -74,7 +69,7 @@ export class Organization extends BasePage {
         // save --------------------------------------------------------------------------------------------------------
 
         this._orgTrackingAreaModal.setOnSave(async(): Promise<void> => {
-            let tid = this._orgTrackingAreaModal.getId();
+            let tid = this._orgTrackingAreaModal.getTrackingAreaId();
 
             if (tid === null) {
                 tid = 0;
@@ -109,7 +104,7 @@ export class Organization extends BasePage {
         });
 
         this._orgModal.setOnSave(async(): Promise<void> => {
-            let tid = this._orgModal.getId();
+            let tid = this._orgModal.getOrganizationId();
 
             if (tid === null) {
                 tid = 0;
@@ -160,75 +155,54 @@ export class Organization extends BasePage {
      */
     public override async loadContent(): Promise<void> {
         this._onLoadTable = async(): Promise<void> => {
-            this._wrapper.getContentWrapper().getContent().empty();
+            const content = this._wrapper.getContentWrapper().getContent();
+            content.empty();
 
-            const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-            const card = new Card(new ContentCol(row1, ContentColSize.col12));
+            const row1 = new ContentRow2(content.getElement());
+            const card = new Card2({});
+            card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
 
-            card.setTitle(new LangText('Organization'));
+            card.setTitle(new LangTextV2({text: 'Organization'}));
             card.showLoading();
 
             const orgs = await OrganizationAPI.getOrganizations();
 
-            const table = new Table(card.getElement());
-            const trhead = new Tr(table.getThead());
+            const table = new Table2({});
+            table.appendTo(card.getElement());
 
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Id'));
+            const trhead = new Tr2();
+            trhead.appendTo(table.getThead());
 
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Name'));
-
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Country'));
-
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Location'));
-
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Lon'));
-
-            // eslint-disable-next-line no-new
-            new Th(trhead, new LangText('Lat'));
-
-            // eslint-disable-next-line no-new
-            new Th(trhead, 'Action');
+            new Th2({value: new LangTextV2({text: 'Id'})}).appendTo(trhead);
+            new Th2({value: new LangTextV2({text: 'Name'})}).appendTo(trhead);
+            new Th2({value: new LangTextV2({text: 'Country'})}).appendTo(trhead);
+            new Th2({value: new LangTextV2({text: 'Location'})}).appendTo(trhead);
+            new Th2({value: new LangTextV2({text: 'Lon'})}).appendTo(trhead);
+            new Th2({value: new LangTextV2({text: 'Lat'})}).appendTo(trhead);
+            new Th2({value: 'Action'}).appendTo(trhead);
 
             if (orgs) {
                 for (const org of orgs) {
-                    const trbody = new Tr(table.getTbody());
+                    const trbody = new Tr2();
+                    trbody.appendTo(table.getTbody());
 
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `#${org.id}`);
+                    new Td2({value: `#${org.id}`}).appendTo(trbody);
+                    new Td2({value: `${org.description}`}).appendTo(trbody);
+                    new Td2({value: `${org.country}`}).appendTo(trbody);
+                    new Td2({value: `${org.location}`}).appendTo(trbody);
+                    new Td2({value: `${org.lon}`}).appendTo(trbody);
+                    new Td2({value: `${org.lat}`}).appendTo(trbody);
 
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `${org.description}`);
+                    const tdAction = new Td2({value: ''});
+                    tdAction.appendTo(trbody);
 
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `${org.country}`);
-
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `${org.location}`);
-
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `${org.lon}`);
-
-                    // eslint-disable-next-line no-new
-                    new Td(trbody, `${org.lat}`);
-
-                    const tdAction = new Td(trbody, '');
-
-                    const btnRMenu = new ButtonMenu(
-                        tdAction.getElement(),
-                        IconFa.bars,
-                        true,
-                        ButtonType.borderless
-                    );
+                    const btnRMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+                    btnRMenu.appendTo(tdAction);
 
                     btnRMenu.addMenuItem('Edit', async(): Promise<void> => {
                         this._orgModal.resetValues();
-                        this._orgModal.setTitle(new LangText('Edit Organization'));
-                        this._orgModal.setId(org.id);
+                        this._orgModal.setTitle(new LangTextV2({text: 'Edit Organization'}));
+                        this._orgModal.setOrganizationId(org.id);
                         this._orgModal.setName(org.description);
                         this._orgModal.setCountry(org.country);
                         this._orgModal.setLocation(org.location);
@@ -263,7 +237,7 @@ export class Organization extends BasePage {
                             });
 
                             if (ta !== null) {
-                                this._orgTrackingAreaModal.setId(ta.id);
+                                this._orgTrackingAreaModal.setTrackingAreaId(ta.id);
                                 this._orgTrackingAreaModal.setGeoJsonStr(ta.geojsonstr);
                             }
 

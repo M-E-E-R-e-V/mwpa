@@ -1,23 +1,22 @@
 import {
-    Badge,
-    BadgeType,
-    ButtonClass,
-    ButtonDefault,
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    DialogConfirm,
+    Badge2,
+    BadgeType2,
+    ButtonClass2,
+    ButtonDefault2,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    DialogConfirm2,
     IconFa,
-    LangText,
-    ModalDialogType,
-    Table,
-    TableWrapper,
-    Td,
-    Th,
-    Tr
+    LangTextV2,
+    ModalDialogType2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tr2
 } from 'bambooo';
 import moment from 'moment';
 import {Service as ServiceAPI, ServiceInfoEntry} from '../Api/Service';
@@ -28,28 +27,28 @@ const PAGE_SIZE = 50;
 const AUTO_REFRESH_MS = 5000;
 
 const escapeHtml = (s: string): string => s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+.replace(/&/gu, '&amp;')
+.replace(/</gu, '&lt;')
+.replace(/>/gu, '&gt;')
+.replace(/"/gu, '&quot;')
+.replace(/'/gu, '&#39;');
 
 /**
  * Map figtree's `ServiceStatus` enum to a bambooo Badge type so the
  * colour-coding is consistent across the list (rows + scheduler
  * sub-status).
  */
-const statusBadge = (status: string): BadgeType => {
+const statusBadge = (status: string): BadgeType2 => {
     switch (status) {
         case 'success':
-            return BadgeType.success;
+            return BadgeType2.success;
         case 'progress':
-            return BadgeType.info;
+            return BadgeType2.info;
         case 'error':
-            return BadgeType.danger;
+            return BadgeType2.danger;
         case 'none':
         default:
-            return BadgeType.secondary;
+            return BadgeType2.secondary;
     }
 };
 
@@ -58,15 +57,15 @@ const statusBadge = (status: string): BadgeType => {
  * + badge colour. Critical services get a red badge so admins know
  * what they're about to stop.
  */
-const importanceLabel = (importance: string): {text: string; badge: BadgeType} => {
+const importanceLabel = (importance: string): {text: string; badge: BadgeType2;} => {
     switch (importance) {
         case '2':
-            return {text: 'critical', badge: BadgeType.danger};
+            return {text: 'critical', badge: BadgeType2.danger};
         case '1':
-            return {text: 'important', badge: BadgeType.warning};
+            return {text: 'important', badge: BadgeType2.warning};
         case '0':
         default:
-            return {text: 'optional', badge: BadgeType.secondary};
+            return {text: 'optional', badge: BadgeType2.secondary};
     }
 };
 
@@ -96,13 +95,18 @@ export class Services extends BasePage {
     protected _refreshTimer: ReturnType<typeof setInterval> | null = null;
 
     public override async loadContent(): Promise<void> {
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Services'));
+        const content = this._wrapper.getContentWrapper().getContent();
+        const row1 = new ContentRow2(content.getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
+        card.setTitle(new LangTextV2({text: 'Services'}));
 
-        // Top-right manual refresh — handy when the auto-poll interval
-        // (5s) feels too slow during a debugging session.
-        const btnRefresh = new ButtonDefault(card.getToolsElement(), undefined, 'fa fa-sync', ButtonClass.tool);
+        /*
+         * Top-right manual refresh — handy when the auto-poll interval
+         * (5s) feels too slow during a debugging session.
+         */
+        const btnRefresh = new ButtonDefault2({icon: 'fa fa-sync', btnClass: ButtonClass2.tool});
+        btnRefresh.appendTo(card.getToolsElement());
         btnRefresh.setOnClickFn(() => {
             if (this._onLoadTable) {
                 this._onLoadTable();
@@ -111,42 +115,38 @@ export class Services extends BasePage {
 
         let allServices: ServiceInfoEntry[] = [];
 
-        const tableWrapper = new TableWrapper<ServiceInfoEntry>(card.getElement(), {head_fixed: true});
+        const tableWrapper = new TableWrapper2<ServiceInfoEntry>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(card.getElement());
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Name'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Type'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Importance'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Status'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Scheduler'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Dependencies'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Action'));
+        new Th2({value: new LangTextV2({text: 'Name'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Type'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Importance'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Status'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Scheduler'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Dependencies'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Action'})}).appendTo(trhead);
 
-        const renderRow = (_table: Table, entry: ServiceInfoEntry): void => {
-            const trbody = new Tr(table.getTbody());
+        const renderRow = (_table: Table2, entry: ServiceInfoEntry): void => {
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `<b>${escapeHtml(entry.name)}</b>`);
+            new Td2({value: `<b>${escapeHtml(entry.name)}</b>`}).appendTo(trbody);
 
-            const typeTd = new Td(trbody, '');
+            const typeTd = new Td2({value: ''});
+            typeTd.appendTo(trbody);
             typeTd.append(entry.type === '1' ? 'scheduler' : 'runner');
 
             const imp = importanceLabel(entry.importance);
-            const impTd = new Td(trbody, '');
-            // eslint-disable-next-line no-new
-            new Badge(impTd, imp.text, imp.badge);
+            const impTd = new Td2({value: ''});
+            impTd.appendTo(trbody);
+            new Badge2({text: imp.text, type: imp.badge}).appendTo(impTd);
 
-            const statusTd = new Td(trbody, '');
-            // eslint-disable-next-line no-new
-            new Badge(statusTd, entry.status, statusBadge(entry.status));
+            const statusTd = new Td2({value: ''});
+            statusTd.appendTo(trbody);
+            new Badge2({text: entry.status, type: statusBadge(entry.status)}).appendTo(statusTd);
             if (entry.inProcess) {
                 statusTd.append(' <span class="text-info small"><i class="fas fa-spinner fa-spin"></i> running</span>');
             }
@@ -154,13 +154,13 @@ export class Services extends BasePage {
                 statusTd.append(`<br><small class="text-muted">${escapeHtml(entry.statusMsg)}</small>`);
             }
 
-            const schedTd = new Td(trbody, '');
+            const schedTd = new Td2({value: ''});
+            schedTd.appendTo(trbody);
             if (entry.scheduler) {
                 const sched = entry.scheduler;
                 schedTd.append(`<code class="small">${escapeHtml(sched.cron)}</code><br>`);
                 const subBadge = statusBadge(sched.status);
-                // eslint-disable-next-line no-new
-                new Badge(schedTd, sched.status, subBadge);
+                new Badge2({text: sched.status, type: subBadge}).appendTo(schedTd);
                 if (sched.inProcess) {
                     schedTd.append(' <span class="text-info small"><i class="fas fa-spinner fa-spin"></i> tick</span>');
                 }
@@ -174,19 +174,24 @@ export class Services extends BasePage {
                 schedTd.append('<span class="text-muted">—</span>');
             }
 
-            const depsTd = new Td(trbody, '');
+            const depsTd = new Td2({value: ''});
+            depsTd.appendTo(trbody);
             if (entry.dependencies.length === 0) {
                 depsTd.append('<span class="text-muted">—</span>');
             } else {
                 depsTd.append(entry.dependencies.map((d) => `<code class="small">${escapeHtml(d)}</code>`).join(' '));
             }
 
-            const actionTd = new Td(trbody, '');
-            const btnMenu = new ButtonMenu(actionTd, IconFa.bars, true, ButtonType.borderless);
+            const actionTd = new Td2({value: ''});
+            actionTd.appendTo(trbody);
+            const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+            btnMenu.appendTo(actionTd);
 
-            // Invoke only makes sense for scheduler services — runners
-            // are one-shot anyway, and the cluster of long-living ones
-            // (HttpService, MariaDB) doesn't expose a useful invoke.
+            /*
+             * Invoke only makes sense for scheduler services — runners
+             * are one-shot anyway, and the cluster of long-living ones
+             * (HttpService, MariaDB) doesn't expose a useful invoke.
+             */
             if (entry.type === '1') {
                 btnMenu.addMenuItem('Invoke now', async(): Promise<void> => {
                     try {
@@ -218,9 +223,11 @@ export class Services extends BasePage {
             }, 'fa fa-power-off');
 
             btnMenu.addMenuItem('Stop', (): void => {
-                // Critical / important services get an extra confirmation
-                // step — stopping MariaDBService while the cron is mid-tick
-                // mangles state. Optional services skip it.
+                /*
+                 * Critical / important services get an extra confirmation
+                 * step — stopping MariaDBService while the cron is mid-tick
+                 * mangles state. Optional services skip it.
+                 */
                 const requireConfirm = entry.importance !== '0';
                 const performStop = async(): Promise<void> => {
                     try {
@@ -236,9 +243,9 @@ export class Services extends BasePage {
                 };
 
                 if (requireConfirm) {
-                    DialogConfirm.confirm(
+                    DialogConfirm2.confirm(
                         'dcStopService',
-                        ModalDialogType.large,
+                        ModalDialogType2.large,
                         `Stop ${entry.name}`,
                         `Stop the ${imp.text} service "${entry.name}"?`
                         + ' Dependent services will be stopped too. This affects the live backend.',
@@ -248,7 +255,7 @@ export class Services extends BasePage {
                         },
                         undefined,
                         'Stop',
-                        ButtonClass.danger
+                        ButtonClass2.danger
                     );
                 } else {
                     performStop();
@@ -281,9 +288,11 @@ export class Services extends BasePage {
 
         await this._onLoadTable();
 
-        // Poll while the page is mounted — every 5 s is fast enough
-        // to see a manual invoke flip from `progress` → `success`
-        // without spamming the backend.
+        /*
+         * Poll while the page is mounted — every 5 s is fast enough
+         * to see a manual invoke flip from `progress` → `success`
+         * without spamming the backend.
+         */
         this._refreshTimer = setInterval(() => {
             if (this._onLoadTable) {
                 this._onLoadTable();

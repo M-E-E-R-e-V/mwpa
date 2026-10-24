@@ -1,16 +1,16 @@
 import {
-    Badge,
-    BadgeType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    LangText,
-    Table,
-    TableWrapper,
-    Td,
-    Th,
-    Tr
+    Badge2,
+    BadgeType2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    LangTextV2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tr2
 } from 'bambooo';
 import moment from 'moment';
 import {ExternalTour as ExternalTourAPI, ExternalTourEntry} from '../Api/ExternalTour';
@@ -21,11 +21,11 @@ import {BasePage} from './BasePage';
 const PAGE_SIZE = 50;
 
 const escapeHtml = (s: string): string => s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+.replace(/&/gu, '&amp;')
+.replace(/</gu, '&lt;')
+.replace(/>/gu, '&gt;')
+.replace(/"/gu, '&quot;')
+.replace(/'/gu, '&#39;');
 
 /**
  * Format a unix-seconds price (in cents) as a currency string.
@@ -53,63 +53,55 @@ export class ToursExternal extends BasePage {
     protected override _name: string = ToursExternal.NAME;
 
     public override async loadContent(): Promise<void> {
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('Tours External'));
+        const content = this._wrapper.getContentWrapper().getContent();
+        const row1 = new ContentRow2(content.getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
+        card.setTitle(new LangTextV2({text: 'Tours External'}));
 
         let allTours: ExternalTourEntry[] = [];
         let orgNameById = new Map<number, string>();
 
-        const tableWrapper = new TableWrapper<ExternalTourEntry>(card.getElement(), {head_fixed: true});
+        const tableWrapper = new TableWrapper2<ExternalTourEntry>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(card.getElement());
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Date / Time'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Organisation'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Item'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Meeting point'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Capacity'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Status'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Prices'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Last seen'));
+        new Th2({value: new LangTextV2({text: 'Date / Time'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Organisation'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Item'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Meeting point'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Capacity'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Status'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Prices'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Last seen'})}).appendTo(trhead);
 
-        const renderRow = (_table: Table, entry: ExternalTourEntry): void => {
-            const trbody = new Tr(table.getTbody());
+        const renderRow = (_table: Table2, entry: ExternalTourEntry): void => {
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
 
             const startLocal = moment(entry.start_at * 1000).utc();
             const startUtc = moment(entry.start_at_utc * 1000).utc();
-            // eslint-disable-next-line no-new
-            new Td(
-                trbody,
-                `<b>${startLocal.format('YYYY-MM-DD')}</b>`
-                + `<br>${startLocal.format('HH:mm')}<span class="text-muted small"> local</span>`
-                + `<br><small class="text-muted">${startUtc.format('HH:mm')} UTC</small>`
-            );
+            new Td2({
+                value: `<b>${startLocal.format('YYYY-MM-DD')}</b>`
+                    + `<br>${startLocal.format('HH:mm')}<span class="text-muted small"> local</span>`
+                    + `<br><small class="text-muted">${startUtc.format('HH:mm')} UTC</small>`
+            }).appendTo(trbody);
 
             const orgName = orgNameById.get(entry.organization_id) ?? `#${entry.organization_id}`;
-            // eslint-disable-next-line no-new
-            new Td(
-                trbody,
-                `${escapeHtml(orgName)}<br><small class="text-muted">${escapeHtml(entry.provider)}</small>`
-            );
+            new Td2({
+                value: `${escapeHtml(orgName)}<br><small class="text-muted">${escapeHtml(entry.provider)}</small>`
+            }).appendTo(trbody);
 
-            // eslint-disable-next-line no-new
-            new Td(
-                trbody,
-                `<b>${escapeHtml(entry.item_name)}</b>`
-                + `<br><small class="text-muted">${escapeHtml(entry.duration_text)}</small>`
-                + `<br><small class="text-muted">#${escapeHtml(entry.item_pk)} / ext ${escapeHtml(entry.external_id)}</small>`
-            );
+            new Td2({
+                value: `<b>${escapeHtml(entry.item_name)}</b>`
+                    + `<br><small class="text-muted">${escapeHtml(entry.duration_text)}</small>`
+                    + `<br><small class="text-muted">#${escapeHtml(entry.item_pk)} / ext ${escapeHtml(entry.external_id)}</small>`
+            }).appendTo(trbody);
 
-            const meetingTd = new Td(trbody, '');
+            const meetingTd = new Td2({value: ''});
+            meetingTd.appendTo(trbody);
             if (entry.meeting_name && entry.meeting_name !== '') {
                 meetingTd.append(escapeHtml(entry.meeting_name));
             }
@@ -119,26 +111,23 @@ export class ToursExternal extends BasePage {
                 meetingTd.append('<span class="text-muted">—</span>');
             }
 
-            // eslint-disable-next-line no-new
-            new Td(
-                trbody,
-                `<b>${entry.capacity_bookable}</b> bookable`
-                + (entry.capacity_reserved > 0 ? `<br><small>${entry.capacity_reserved} reserved</small>` : '')
-            );
+            new Td2({
+                value: `<b>${entry.capacity_bookable}</b> bookable${
+                    entry.capacity_reserved > 0 ? `<br><small>${entry.capacity_reserved} reserved</small>` : ''}`
+            }).appendTo(trbody);
 
-            const statusTd = new Td(trbody, '');
+            const statusTd = new Td2({value: ''});
+            statusTd.appendTo(trbody);
             if (entry.is_sold_out) {
-                // eslint-disable-next-line no-new
-                new Badge(statusTd, 'sold out', BadgeType.danger);
+                new Badge2({text: 'sold out', type: BadgeType2.danger}).appendTo(statusTd);
             } else if (entry.is_bookable) {
-                // eslint-disable-next-line no-new
-                new Badge(statusTd, 'bookable', BadgeType.success);
+                new Badge2({text: 'bookable', type: BadgeType2.success}).appendTo(statusTd);
             } else {
-                // eslint-disable-next-line no-new
-                new Badge(statusTd, 'closed', BadgeType.secondary);
+                new Badge2({text: 'closed', type: BadgeType2.secondary}).appendTo(statusTd);
             }
 
-            const pricesTd = new Td(trbody, '');
+            const pricesTd = new Td2({value: ''});
+            pricesTd.appendTo(trbody);
             if (entry.customer_types.length === 0) {
                 pricesTd.append('<span class="text-muted">—</span>');
             } else {
@@ -150,13 +139,11 @@ export class ToursExternal extends BasePage {
                 pricesTd.append(lines.join(''));
             }
 
-            // eslint-disable-next-line no-new
-            new Td(
-                trbody,
-                entry.last_seen_at > 0
+            new Td2({
+                value: entry.last_seen_at > 0
                     ? `<small>${moment(entry.last_seen_at * 1000).fromNow()}</small>`
                     : '<span class="text-muted">—</span>'
-            );
+            }).appendTo(trbody);
 
             Lang.i().lAll();
         };

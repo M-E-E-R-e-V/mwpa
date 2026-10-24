@@ -1,4 +1,4 @@
-import {ButtonDefault, ComponentType, LangText, ModalDialog, ModalDialogType} from 'bambooo';
+import {ButtonDefault2, ModalDialog2, ModalDialogType2} from 'bambooo';
 import {Map as OlMap, View} from 'ol';
 import {GeoJSON} from 'ol/format';
 import {Draw, Modify, Snap} from 'ol/interaction';
@@ -12,7 +12,7 @@ import XYZ from 'ol/source/XYZ';
  * OrganizationTrackingAreaModal
  * @see for a patch https://jsfiddle.net/ko822xjw/
  */
-export class OrganizationTrackingAreaModal extends ModalDialog {
+export class OrganizationTrackingAreaModal extends ModalDialog2 {
 
     /**
      * ID from tracking area
@@ -70,12 +70,11 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
 
     /**
      * constructor
-     * @param elementObject
      */
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'organizationtrackingareamodal', ModalDialogType.large);
+    public constructor() {
+        super({modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
         const wrapperHeight = 450;
 
@@ -128,9 +127,14 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
 
         this._createDraw();
 
-        const btnPlay = new ButtonDefault(bodyCard, 'Start Editing', 'fa-play');
-        const btnStop = new ButtonDefault(bodyCard, 'Stop Editing', 'fa-stop');
-        const btnClear = new ButtonDefault(bodyCard, 'Clear Points', 'fa-trash');
+        const btnPlay = new ButtonDefault2({title: 'Start Editing', icon: 'fa-play'});
+        btnPlay.appendTo(bodyCard);
+
+        const btnStop = new ButtonDefault2({title: 'Stop Editing', icon: 'fa-stop'});
+        btnStop.appendTo(bodyCard);
+
+        const btnClear = new ButtonDefault2({title: 'Clear Points', icon: 'fa-trash'});
+        btnClear.appendTo(bodyCard);
         btnStop.hide();
 
         btnPlay.setOnClickFn(() => {
@@ -153,8 +157,8 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save changes'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save changes', true);
     }
 
     private _startDraw(): void {
@@ -249,7 +253,7 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
      * Set id from tracking area
      * @param {number} id
      */
-    public setId(id: number): void {
+    public setTrackingAreaId(id: number): void {
         this._id = id;
     }
 
@@ -257,7 +261,7 @@ export class OrganizationTrackingAreaModal extends ModalDialog {
      * Return id from tracking area
      * @returns {number|null}
      */
-    public getId(): number|null {
+    public getTrackingAreaId(): number|null {
         return this._id;
     }
 

@@ -1,23 +1,22 @@
 import {
-    Badge,
-    BadgeType,
-    ButtonClass,
-    ButtonMenu,
-    ButtonType,
-    Card,
-    ContentCol,
-    ContentColSize,
-    ContentRow,
-    DialogConfirm,
+    Badge2,
+    BadgeType2,
+    ButtonClass2,
+    ButtonMenu2,
+    Card2,
+    ContentCol2,
+    ContentColSize2,
+    ContentRow2,
+    DialogConfirm2,
     IconFa,
-    LangText,
+    LangTextV2,
     LeftNavbarLink,
-    ModalDialogType,
-    Table,
-    TableWrapper,
-    Td,
-    Th,
-    Tr
+    ModalDialogType2,
+    Table2,
+    TableWrapper2,
+    Td2,
+    Th2,
+    Tr2
 } from 'bambooo';
 import moment from 'moment';
 import {ExternalTourSource as ExternalTourSourceAPI, ExternalTourSourceEntry} from '../Api/ExternalTourSource';
@@ -29,11 +28,11 @@ import {ExternalTourSourceEditModal} from './ExternalTourSource/ExternalTourSour
 const PAGE_SIZE = 30;
 
 const escapeHtml = (s: string): string => s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+.replace(/&/gu, '&amp;')
+.replace(/</gu, '&lt;')
+.replace(/>/gu, '&gt;')
+.replace(/"/gu, '&quot;')
+.replace(/'/gu, '&#39;');
 
 /**
  * Admin page — manages `organization_external_tour_source` rows.
@@ -54,21 +53,19 @@ export class ExternalTourSource extends BasePage {
     public constructor() {
         super();
 
-        this._dialog = new ExternalTourSourceEditModal(
-            this._wrapper.getContentWrapper().getContent().getElement()
-        );
+        this._dialog = new ExternalTourSourceEditModal();
 
         // eslint-disable-next-line no-new
         new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add source', async() => {
             this._dialog.resetValues();
-            this._dialog.setTitle(new LangText('Add external tour source'));
+            this._dialog.setTitle(new LangTextV2({text: 'Add external tour source'}));
             await this._refreshOrganizationList();
             this._dialog.show();
             return false;
         }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         this._dialog.setOnSave(async(): Promise<void> => {
-            const id = this._dialog.getId();
+            const id = this._dialog.getSourceId();
             const orgId = this._dialog.getOrganization();
 
             if (orgId === 0) {
@@ -113,67 +110,61 @@ export class ExternalTourSource extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
-        const row1 = new ContentRow(this._wrapper.getContentWrapper().getContent());
-        const card = new Card(new ContentCol(row1, ContentColSize.col12));
-        card.setTitle(new LangText('External tour sources'));
+        const content = this._wrapper.getContentWrapper().getContent();
+        const row1 = new ContentRow2(content.getElement());
+        const card = new Card2({});
+        card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
+        card.setTitle(new LangTextV2({text: 'External tour sources'}));
 
         let allSources: ExternalTourSourceEntry[] = [];
         let orgNameById = new Map<number, string>();
 
-        const tableWrapper = new TableWrapper<ExternalTourSourceEntry>(card.getElement(), {head_fixed: true});
+        const tableWrapper = new TableWrapper2<ExternalTourSourceEntry>({tableOptions: {head_fixed: true}});
+        tableWrapper.appendTo(card.getElement());
         const table = tableWrapper.getTable();
-        const trhead = new Tr(table.getThead());
+        const trhead = new Tr2();
+        trhead.appendTo(table.getThead());
 
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Id'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Organisation'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Provider / Company / Items'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Status'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Last pull'));
-        // eslint-disable-next-line no-new
-        new Th(trhead, new LangText('Action'));
+        new Th2({value: new LangTextV2({text: 'Id'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Organisation'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Provider / Company / Items'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Status'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Last pull'})}).appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Action'})}).appendTo(trhead);
 
-        const renderRow = (_table: Table, entry: ExternalTourSourceEntry): void => {
-            const trbody = new Tr(table.getTbody());
+        const renderRow = (_table: Table2, entry: ExternalTourSourceEntry): void => {
+            const trbody = new Tr2();
+            trbody.appendTo(table.getTbody());
 
-            // eslint-disable-next-line no-new
-            new Td(trbody, `#${entry.id}`);
+            new Td2({value: `#${entry.id}`}).appendTo(trbody);
 
             const orgName = orgNameById.get(entry.organization_id) ?? `#${entry.organization_id}`;
-            // eslint-disable-next-line no-new
-            new Td(trbody, escapeHtml(orgName));
+            new Td2({value: escapeHtml(orgName)}).appendTo(trbody);
 
             const itemPks = entry.item_pks.length === 0
                 ? '<span class="text-muted">all items</span>'
                 : escapeHtml(entry.item_pks.join(', '));
-            // eslint-disable-next-line no-new
-            new Td(
-                trbody,
-                `<b>${escapeHtml(entry.provider)}</b>`
-                + `<br><span class="text-muted small">${escapeHtml(entry.company_shortname)}</span>`
-                + `<br><span class="small">${itemPks}</span>`
-            );
+            new Td2({
+                value: `<b>${escapeHtml(entry.provider)}</b>`
+                    + `<br><span class="text-muted small">${escapeHtml(entry.company_shortname)}</span>`
+                    + `<br><span class="small">${itemPks}</span>`
+            }).appendTo(trbody);
 
-            const tdStatus = new Td(trbody, '');
+            const tdStatus = new Td2({value: ''});
+            tdStatus.appendTo(trbody);
             if (entry.enabled) {
-                // eslint-disable-next-line no-new
-                new Badge(tdStatus, 'enabled', BadgeType.success);
+                new Badge2({text: 'enabled', type: BadgeType2.success}).appendTo(tdStatus);
             } else {
-                // eslint-disable-next-line no-new
-                new Badge(tdStatus, 'disabled', BadgeType.secondary);
+                new Badge2({text: 'disabled', type: BadgeType2.secondary}).appendTo(tdStatus);
             }
             if (entry.last_error && entry.last_error !== '') {
                 tdStatus.append('<br>');
-                // eslint-disable-next-line no-new
-                new Badge(tdStatus, 'last pull failed', BadgeType.danger);
+                new Badge2({text: 'last pull failed', type: BadgeType2.danger}).appendTo(tdStatus);
                 tdStatus.append(`<br><small class="text-danger">${escapeHtml(entry.last_error)}</small>`);
             }
 
-            const tdLast = new Td(trbody, '');
+            const tdLast = new Td2({value: ''});
+            tdLast.appendTo(trbody);
             if (entry.last_full_pull_at && entry.last_full_pull_at > 0) {
                 const when = moment(entry.last_full_pull_at * 1000);
                 tdLast.append(`<b>${when.format('YYYY-MM-DD HH:mm:ss')}</b><br><small class="text-muted">${when.fromNow()}</small>`);
@@ -181,13 +172,15 @@ export class ExternalTourSource extends BasePage {
                 tdLast.append('<span class="text-muted">never</span>');
             }
 
-            const tdAction = new Td(trbody, '');
-            const btnMenu = new ButtonMenu(tdAction.getElement(), IconFa.bars, true, ButtonType.borderless);
+            const tdAction = new Td2({value: ''});
+            tdAction.appendTo(trbody);
+            const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
+            btnMenu.appendTo(tdAction);
 
             btnMenu.addMenuItem('Edit', async(): Promise<void> => {
                 this._dialog.resetValues();
-                this._dialog.setTitle(new LangText('Edit external tour source'));
-                this._dialog.setId(entry.id);
+                this._dialog.setTitle(new LangTextV2({text: 'Edit external tour source'}));
+                this._dialog.setSourceId(entry.id);
                 await this._refreshOrganizationList();
                 this._dialog.setOrganization(entry.organization_id);
                 this._dialog.setProvider(entry.provider);
@@ -201,9 +194,9 @@ export class ExternalTourSource extends BasePage {
             btnMenu.addDivider();
 
             btnMenu.addMenuItem('Delete', (): void => {
-                DialogConfirm.confirm(
+                DialogConfirm2.confirm(
                     'dcDeleteExternalTourSource',
-                    ModalDialogType.large,
+                    ModalDialogType2.large,
                     'Delete external tour source',
                     'Delete this source config?'
                     + ' Pulled external_tour rows remain in the database as a historical record.',
@@ -222,7 +215,7 @@ export class ExternalTourSource extends BasePage {
                     },
                     undefined,
                     'Delete',
-                    ButtonClass.danger
+                    ButtonClass2.danger
                 );
             }, IconFa.trash);
 

@@ -1,4 +1,5 @@
-import {Badge, BadgeType, Component, UtilColor} from 'bambooo';
+/* global JQuery */
+import {Badge2, BadgeType2, Component, UtilColor} from 'bambooo';
 import {SightingsEntry} from '../Api/Sightings';
 import {SpeciesEntry} from '../Api/Species';
 import {UtilSpeciesContextMenu} from '../Utils/UtilSpeciesContextMenu';
@@ -41,9 +42,8 @@ export class SpeciesDisplay extends Component<HTMLSpanElement> {
 
         let specieName = '';
         let specieColor = '#ffffff';
-        let specie: SpeciesEntry|undefined;
 
-        specie = speciesList.get(sighting.species_id!);
+        const specie: SpeciesEntry|undefined = speciesList.get(sighting.species_id!);
 
         if (specie) {
             specieName = specie.name.split(',')[0];
@@ -63,18 +63,17 @@ export class SpeciesDisplay extends Component<HTMLSpanElement> {
             }
         }
 
-        this._badge = new Badge(
-            element,
-            `<b style="color: ${UtilColor.getContrastYIQ(specieColor)}">${specieName}</b>`,
-            BadgeType.info,
-            specieColor
-        );
+        this._badge = new Badge2({type: BadgeType2.info, color: specieColor});
+        this._badge.appendTo(this._getAnyElement(element));
+        this._badge.getElement().html(`<b style="color: ${UtilColor.getContrastYIQ(specieColor)}">${specieName}</b>`);
 
-        this._element = this._badge.getElement();
+        this._element = this._badge.getElement() as JQuery<HTMLSpanElement>;
 
         if (specie) {
-            // Left-click reveals the context menu with the two
-            // external taxon links + the internal profiling page.
+            /*
+             * Left-click reveals the context menu with the two
+             * external taxon links + the internal profiling page.
+             */
             UtilSpeciesContextMenu.attach(this._element, {
                 speciesId: specie.id,
                 speciesName: specieName,

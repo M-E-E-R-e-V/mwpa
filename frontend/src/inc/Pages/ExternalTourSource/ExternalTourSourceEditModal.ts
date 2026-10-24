@@ -1,13 +1,12 @@
 import {
-    ComponentType,
-    FormGroup,
-    InputBottemBorderOnly2,
-    InputType,
-    LangText,
-    ModalDialog,
-    ModalDialogType,
-    SelectBottemBorderOnly2,
-    Switch
+    FormGroup2,
+    Input2,
+    InputType2,
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2,
+    Select2,
+    Switch2
 } from 'bambooo';
 import {OrganizationFullEntry} from '../../Api/Organization';
 
@@ -22,56 +21,68 @@ import {OrganizationFullEntry} from '../../Api/Organization';
  * a class for; widening it later is a matter of adding entries
  * (and the corresponding backend provider class).
  */
-export class ExternalTourSourceEditModal extends ModalDialog {
+export class ExternalTourSourceEditModal extends ModalDialog2 {
 
     protected _id: number|null = null;
 
-    protected _selectOrganization: SelectBottemBorderOnly2;
-    protected _selectProvider: SelectBottemBorderOnly2;
-    protected _inputBaseUrl: InputBottemBorderOnly2;
-    protected _inputCompanyShortname: InputBottemBorderOnly2;
-    protected _inputItemPks: InputBottemBorderOnly2;
-    protected _switchEnabled: Switch;
+    protected _selectOrganization: Select2;
+    protected _selectProvider: Select2;
+    protected _inputBaseUrl: Input2;
+    protected _inputCompanyShortname: Input2;
+    protected _inputItemPks: Input2;
+    protected _switchEnabled: Switch2;
 
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, `externaltoursourcemodal-${Date.now()}`, ModalDialogType.large);
+    public constructor() {
+        super({modalType: ModalDialogType2.large});
 
-        const body = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const body = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupOrg = new FormGroup(body, new LangText('Organization'));
-        this._selectOrganization = new SelectBottemBorderOnly2(groupOrg);
+        const groupOrg = new FormGroup2({label: new LangTextV2({text: 'Organization'})});
+        groupOrg.appendTo(body);
+        this._selectOrganization = new Select2({});
+        this._selectOrganization.appendTo(groupOrg);
 
-        const groupProvider = new FormGroup(body, new LangText('Provider'));
-        this._selectProvider = new SelectBottemBorderOnly2(groupProvider);
+        const groupProvider = new FormGroup2({label: new LangTextV2({text: 'Provider'})});
+        groupProvider.appendTo(body);
+        this._selectProvider = new Select2({});
+        this._selectProvider.appendTo(groupProvider);
         this._selectProvider.setValues([{key: 'fareharbor', value: 'FareHarbor'}]);
         this._selectProvider.setSelectedValue('fareharbor');
 
-        const groupBaseUrl = new FormGroup(body, new LangText('Base URL'));
-        this._inputBaseUrl = new InputBottemBorderOnly2(groupBaseUrl, undefined, InputType.text);
+        const groupBaseUrl = new FormGroup2({label: new LangTextV2({text: 'Base URL'})});
+        groupBaseUrl.appendTo(body);
+        this._inputBaseUrl = new Input2({type: InputType2.text});
+        this._inputBaseUrl.appendTo(groupBaseUrl);
         this._inputBaseUrl.setPlaceholder('https://fareharbor.com/api/v1');
         this._inputBaseUrl.setValue('https://fareharbor.com/api/v1');
 
-        const groupShortname = new FormGroup(body, new LangText('Company shortname'));
-        this._inputCompanyShortname = new InputBottemBorderOnly2(groupShortname, undefined, InputType.text);
+        const groupShortname = new FormGroup2({label: new LangTextV2({text: 'Company shortname'})});
+        groupShortname.appendTo(body);
+        this._inputCompanyShortname = new Input2({type: InputType2.text});
+        this._inputCompanyShortname.appendTo(groupShortname);
         this._inputCompanyShortname.setPlaceholder('whalewatching-gomera');
 
-        const groupItemPks = new FormGroup(body, new LangText('Item ids (comma-separated; empty = all)'));
-        this._inputItemPks = new InputBottemBorderOnly2(groupItemPks, undefined, InputType.text);
+        const groupItemPks = new FormGroup2({label: new LangTextV2({text: 'Item ids (comma-separated; empty = all)'})});
+        groupItemPks.appendTo(body);
+        this._inputItemPks = new Input2({type: InputType2.text});
+        this._inputItemPks.appendTo(groupItemPks);
         this._inputItemPks.setPlaceholder('326313, 326315');
 
-        const groupEnabled = new FormGroup(body, new LangText('Enabled'));
-        this._switchEnabled = new Switch(groupEnabled, 'extToursourceEnabled');
+        const groupEnabled = new FormGroup2({label: new LangTextV2({text: 'Enabled'})});
+        groupEnabled.appendTo(body);
+        this._switchEnabled = new Switch2({});
+        this._switchEnabled.appendTo(groupEnabled);
         this._switchEnabled.setEnable(true);
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save', true);
     }
 
-    public getId(): number|null {
+    public getSourceId(): number|null {
         return this._id;
     }
 
-    public setId(id: number|null): void {
+    public setSourceId(id: number|null): void {
         this._id = id;
     }
 

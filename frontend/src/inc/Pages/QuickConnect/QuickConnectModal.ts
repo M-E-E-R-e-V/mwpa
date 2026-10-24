@@ -1,8 +1,8 @@
+/* global JQuery */
 import {
-    ComponentType,
-    LangText,
-    ModalDialog,
-    ModalDialogType
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2
 } from 'bambooo';
 import QRCode from 'qrcode';
 import {QuickConnectPayload} from 'mwpa_schemas';
@@ -16,7 +16,7 @@ import {QuickConnect} from '../../Api/QuickConnect';
  * and TTL-bound on the server side, so the modal does not have to track expiry
  * any more strictly than a friendly countdown.
  */
-export class QuickConnectModal extends ModalDialog {
+export class QuickConnectModal extends ModalDialog2 {
 
     /**
      * Pixel size of the rendered QR PNG. 280px fits the bootstrap default modal
@@ -38,21 +38,21 @@ export class QuickConnectModal extends ModalDialog {
 
     private _currentExpiresAt: number = 0;
 
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'quickconnectmodal', ModalDialogType.small);
+    public constructor(elementObject: JQuery) {
+        super({modalType: ModalDialogType2.small, target: elementObject, id: 'quickconnectmodal'});
 
-        this.setTitle(new LangText('App Quick Connect'));
+        this.setTitle(new LangTextV2({text: 'App Quick Connect'}));
 
-        const body = jQuery<HTMLDivElement>('<div class="text-center" />').appendTo(this._body);
+        const body = jQuery<HTMLDivElement>('<div class="text-center" />').appendTo(this.getBody());
 
         jQuery<HTMLParagraphElement>('<p class="text-muted" />')
-            .text('Scan this code with the MWPA mobile app to sign in.')
-            .appendTo(body);
+        .text('Scan this code with the MWPA mobile app to sign in.')
+        .appendTo(body);
 
         const qrWrap = jQuery<HTMLDivElement>('<div class="my-3" />').appendTo(body);
         this._qrImg = jQuery<HTMLImageElement>('<img alt="Quick Connect QR" />')
-            .css({width: `${QuickConnectModal.QR_PIXEL_SIZE}px`, height: `${QuickConnectModal.QR_PIXEL_SIZE}px`})
-            .appendTo(qrWrap) as JQuery<HTMLImageElement>;
+        .css({width: `${QuickConnectModal.QR_PIXEL_SIZE}px`, height: `${QuickConnectModal.QR_PIXEL_SIZE}px`})
+        .appendTo(qrWrap) as JQuery<HTMLImageElement>;
 
         this._infoUsername = jQuery<HTMLDivElement>('<div class="font-weight-bold" />').appendTo(body);
         this._infoServer = jQuery<HTMLDivElement>('<div class="small text-muted" />').appendTo(body);
@@ -60,7 +60,7 @@ export class QuickConnectModal extends ModalDialog {
 
         this._errorBox = jQuery<HTMLDivElement>('<div class="alert alert-danger mt-3" style="display:none;" />').appendTo(body);
 
-        const btnRefresh = this.addButtonSave(new LangText('Refresh'), true);
+        const btnRefresh = this.addButtonSave('Refresh', true);
         btnRefresh.setOnClickFn(async() => {
             await this._loadAndRender();
         });
@@ -68,10 +68,12 @@ export class QuickConnectModal extends ModalDialog {
             await this._loadAndRender();
         });
 
-        this.addButtonClose(new LangText('Close'));
+        this.addButtonClose('Close');
 
-        // Bind directly to the bootstrap event so we don't steal the public
-        // setOnHidden slot from callers that want to e.g. destroy() on close.
+        /*
+         * Bind directly to the bootstrap event so we don't steal the public
+         * setOnHidden slot from callers that want to e.g. destroy() on close.
+         */
         this._element.on('hidden.bs.modal', () => {
             this._stopCountdown();
         });

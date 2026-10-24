@@ -1,18 +1,20 @@
 import {
-    ComponentType,
-    FormGroup, FormRow,
-    InputBottemBorderOnly2, InputType, LangText,
-    ModalDialog,
-    ModalDialogType,
-    SelectBottemBorderOnly2,
-    Switch
+    FormGroup2,
+    FormRow2,
+    Input2,
+    InputType2,
+    LangTextV2,
+    ModalDialog2,
+    ModalDialogType2,
+    Select2,
+    Switch2
 } from 'bambooo';
 import {GroupEntry} from '../../Api/Group';
 
 /**
  * UsersEditModal
  */
-export class UsersEditModal extends ModalDialog {
+export class UsersEditModal extends ModalDialog2 {
 
     /**
      * id of entry
@@ -24,128 +26,148 @@ export class UsersEditModal extends ModalDialog {
      * input Username
      * @protected
      */
-    protected _inputUsername: InputBottemBorderOnly2;
+    protected _inputUsername: Input2;
 
     /**
      * input Fullname
      * @protected
      */
-    protected _inputFullname: InputBottemBorderOnly2;
+    protected _inputFullname: Input2;
 
     /**
      * input password
      * @protected
      */
-    protected _inputPassword: InputBottemBorderOnly2;
+    protected _inputPassword: Input2;
 
     /**
      * input password repeat
      * @protected
      */
-    protected _inputPasswordRepeat: InputBottemBorderOnly2;
+    protected _inputPasswordRepeat: Input2;
 
     /**
      * input pin repeat
      * @protected
      */
-    protected _inputPin: InputBottemBorderOnly2;
+    protected _inputPin: Input2;
 
     /**
      * input pin repeat
      * @protected
      */
-    protected _inputPinRepeat: InputBottemBorderOnly2;
+    protected _inputPinRepeat: Input2;
 
     /**
      * input EMail
      * @protected
      */
-    protected _inputEMail: InputBottemBorderOnly2;
+    protected _inputEMail: Input2;
 
     /**
      * select main group
      * @protected
      */
-    protected _selectMainGroup: SelectBottemBorderOnly2;
+    protected _selectMainGroup: Select2;
 
     /**
      * switch is admin
      * @protected
      */
-    protected _switchIsAdmin: Switch;
+    protected _switchIsAdmin: Switch2;
 
     /**
      * switch is disabled
      * @protected
      */
-    protected _switchIsDisabled: Switch;
+    protected _switchIsDisabled: Switch2;
 
     /**
      * constructor
-     * @param elementObject
      */
-    public constructor(elementObject: ComponentType) {
-        super(elementObject, 'usersmodaldialog', ModalDialogType.large);
+    public constructor() {
+        super({modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this._body);
+        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupUsername = new FormGroup(bodyCard, 'Username');
-        this._inputUsername = new InputBottemBorderOnly2(groupUsername);
+        const groupUsername = new FormGroup2({label: new LangTextV2({text: 'Username'})});
+        groupUsername.appendTo(bodyCard);
+        this._inputUsername = new Input2({});
+        this._inputUsername.appendTo(groupUsername);
         this._inputUsername.setPlaceholder('Name of user');
 
-        const groupFullname = new FormGroup(bodyCard, 'Fullname');
-        this._inputFullname = new InputBottemBorderOnly2(groupFullname);
+        const groupFullname = new FormGroup2({label: new LangTextV2({text: 'Fullname'})});
+        groupFullname.appendTo(bodyCard);
+        this._inputFullname = new Input2({});
+        this._inputFullname.appendTo(groupFullname);
         this._inputFullname.setPlaceholder('Fullname of user');
 
-        const groupPassword = new FormGroup(bodyCard, 'Password');
-        this._inputPassword = new InputBottemBorderOnly2(groupPassword, undefined, InputType.password);
+        const groupPassword = new FormGroup2({label: new LangTextV2({text: 'Password'})});
+        groupPassword.appendTo(bodyCard);
+        this._inputPassword = new Input2({type: InputType2.password});
+        this._inputPassword.appendTo(groupPassword);
         this._inputPassword.setPlaceholder('');
 
-        const groupPasswordRepeat = new FormGroup(bodyCard, 'Password repeat');
-        this._inputPasswordRepeat = new InputBottemBorderOnly2(groupPasswordRepeat, undefined, InputType.password);
+        const groupPasswordRepeat = new FormGroup2({label: new LangTextV2({text: 'Password repeat'})});
+        groupPasswordRepeat.appendTo(bodyCard);
+        this._inputPasswordRepeat = new Input2({type: InputType2.password});
+        this._inputPasswordRepeat.appendTo(groupPasswordRepeat);
         this._inputPasswordRepeat.setPlaceholder('');
 
-        const groupPing = new FormGroup(bodyCard, 'Pin');
-        this._inputPin = new InputBottemBorderOnly2(groupPing, undefined, InputType.password);
+        const groupPing = new FormGroup2({label: new LangTextV2({text: 'Pin'})});
+        groupPing.appendTo(bodyCard);
+        this._inputPin = new Input2({type: InputType2.password});
+        this._inputPin.appendTo(groupPing);
         this._inputPin.setPlaceholder('');
 
-        const groupPinRepeat = new FormGroup(bodyCard, 'Pin repeat');
-        this._inputPinRepeat = new InputBottemBorderOnly2(groupPinRepeat, undefined, InputType.password);
+        const groupPinRepeat = new FormGroup2({label: new LangTextV2({text: 'Pin repeat'})});
+        groupPinRepeat.appendTo(bodyCard);
+        this._inputPinRepeat = new Input2({type: InputType2.password});
+        this._inputPinRepeat.appendTo(groupPinRepeat);
         this._inputPinRepeat.setPlaceholder('');
 
-        const groupEMail = new FormGroup(bodyCard, 'EMail');
-        this._inputEMail = new InputBottemBorderOnly2(groupEMail);
+        const groupEMail = new FormGroup2({label: new LangTextV2({text: 'EMail'})});
+        groupEMail.appendTo(bodyCard);
+        this._inputEMail = new Input2({});
+        this._inputEMail.appendTo(groupEMail);
         this._inputEMail.setPlaceholder('e@mail.org');
 
-        const groupMainGroup = new FormGroup(bodyCard, 'Main group');
-        this._selectMainGroup = new SelectBottemBorderOnly2(groupMainGroup);
+        const groupMainGroup = new FormGroup2({label: new LangTextV2({text: 'Main group'})});
+        groupMainGroup.appendTo(bodyCard);
+        this._selectMainGroup = new Select2({});
+        this._selectMainGroup.appendTo(groupMainGroup);
 
-        const rowOpt = new FormRow(bodyCard);
+        const rowOpt = new FormRow2({});
+        rowOpt.appendTo(bodyCard);
 
-        const groupIsAdmin = new FormGroup(rowOpt.createCol(4), 'Is Admin');
-        this._switchIsAdmin = new Switch(groupIsAdmin, 'userisadmin');
+        const groupIsAdmin = new FormGroup2({label: new LangTextV2({text: 'Is Admin'})});
+        groupIsAdmin.appendTo(rowOpt.createCol(4));
+        this._switchIsAdmin = new Switch2({});
+        this._switchIsAdmin.appendTo(groupIsAdmin);
 
-        const groupIsDisabled = new FormGroup(rowOpt.createCol(4), 'Is Disabled');
-        this._switchIsDisabled = new Switch(groupIsDisabled, 'userisdisabled');
+        const groupIsDisabled = new FormGroup2({label: new LangTextV2({text: 'Is Disabled'})});
+        groupIsDisabled.appendTo(rowOpt.createCol(4));
+        this._switchIsDisabled = new Switch2({});
+        this._switchIsDisabled.appendTo(groupIsDisabled);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose(new LangText('Close'));
-        this.addButtonSave(new LangText('Save changes'), true);
+        this.addButtonClose('Close');
+        this.addButtonSave('Save changes', true);
     }
 
     /**
-     * getId
+     * getUserId
      */
-    public getId(): number|null {
+    public getUserId(): number|null {
         return this._id;
     }
 
     /**
-     * setId
+     * setUserId
      * @param id
      */
-    public setId(id: number|null): void {
+    public setUserId(id: number|null): void {
         this._id = id;
     }
 
@@ -314,7 +336,7 @@ export class UsersEditModal extends ModalDialog {
      * resetValues
      */
     public override resetValues(): void {
-        this.setId(null);
+        this.setUserId(null);
         this.setUsername('');
         this.setFullname('');
         this.setEMail('');
