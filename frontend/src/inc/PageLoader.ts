@@ -14,6 +14,7 @@ import {User as UserApi} from './Api/User';
 import {PageSideMenuEntry} from './Base/PageSideMenuEntry';
 import {Lang} from './Lang';
 import {Session} from './Session';
+import {About as AboutPage} from './Pages/About';
 import {Admin as AdminPage} from './Pages/Admin';
 import {AisLiveMap as AisLiveMapPage} from './Pages/AisLiveMap';
 import {BasePage} from './Pages/BasePage';
@@ -272,6 +273,12 @@ export class PageLoader {
                     aclRight: 'blacklist_read'
                 }
             ]
+        },
+        {
+            title: new LangTextV2({text: 'About'}),
+            icon: 'fa-solid fa-circle-info',
+            name: 'about',
+            page: AboutPage
         }
     ];
 
