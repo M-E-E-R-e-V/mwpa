@@ -71,6 +71,16 @@ const escapeHtml = (s: string): string => s
 .replace(/'/gu, '&#39;');
 
 /**
+ * Lookup maps the sighting map popover needs to resolve ids → display names.
+ */
+type SightingPopupLookups = {
+    species: Map<number, SpeciesEntry>;
+    vehicles: Map<number, VehicleEntry>;
+    drivers: Map<number, VehicleDriverEntry>;
+    organizations: Map<number, OrganizationEntry>;
+};
+
+/**
  * Wrap any (case-insensitive) match of `term` in `<mark>` so search hits are
  * highlighted in the rendered cells. HTML in the source text is escaped first;
  * the term is regex-escaped before matching.
@@ -296,6 +306,18 @@ export class Sighting extends BasePage {
         const mencates = new Map<number, EncounterCategorieEntry>();
         const morganizations = new Map<number, OrganizationEntry>();
 
+        /*
+         * Bundle passed to _addSightingToMap so the map popover can resolve
+         * vehicle/driver/organization names (filled by the loads below; the map
+         * markers are only built afterwards, so the maps are populated by then).
+         */
+        const sightingLookups: SightingPopupLookups = {
+            species: mspecies,
+            vehicles: mvehicles,
+            drivers: mdrivers,
+            organizations: morganizations
+        };
+
         const [
             species,
             vehicles,
@@ -506,7 +528,7 @@ export class Sighting extends BasePage {
             this._map.clearFeatureList();
 
             for (const entry of filtered) {
-                this._addSightingToMap(entry, mspecies);
+                this._addSightingToMap(entry, sightingLookups);
             }
 
             /*
@@ -682,7 +704,7 @@ export class Sighting extends BasePage {
                     if (more) {
                         for (const entry of more.list) {
                             loadedEntries.push(entry);
-                            this._addSightingToMap(entry, mspecies);
+                            this._addSightingToMap(entry, sightingLookups);
                         }
                         loadedCount += more.list.length;
 
@@ -864,7 +886,7 @@ export class Sighting extends BasePage {
             if (more) {
                 for (const entry of more.list) {
                     loadedEntries.push(entry);
-                    this._addSightingToMap(entry, mspecies);
+                    this._addSightingToMap(entry, sightingLookups);
                 }
                 loadedCount += more.list.length;
 
@@ -1357,7 +1379,7 @@ export class Sighting extends BasePage {
                 }
             }
 
-            this._addSightingToMap(entry, mspecies);
+            this._addSightingToMap(entry, sightingLookups);
         };
 
         // Hook the data source — TableWrapper drives infinite scroll itself ----------------------
@@ -1457,7 +1479,7 @@ export class Sighting extends BasePage {
      * Push one sighting onto the map (used both by the table renderer and the bulk
      * "load all" backfill). Silently ignores entries without a valid begin location.
      */
-    protected _addSightingToMap(entry: SightingsEntry, mspecies: Map<number, SpeciesEntry>): void {
+    protected _addSightingToMap(entry: SightingsEntry, lookups: SightingPopupLookups): void {
         if (!this._map) {
             return;
         }
@@ -1472,16 +1494,83 @@ export class Sighting extends BasePage {
         this._map.addSighting(
             objectType,
             entry.unid!,
-            () => {
-                const div = jQuery('<div/>');
-                // eslint-disable-next-line no-new
-                new SpeciesDisplay(div, entry, mspecies, (speciesId) => {
-                    PageLoader.getInstance().load(new SpeciesProfilePage(speciesId)).then();
-                });
-                return div;
-            },
+            () => this._buildSightingPopup(entry, lookups),
             UtilLocation.geoLocationToOlCoordinates(bgeol)
         );
+    }
+
+    /**
+     * Build the rich map-popover content for a sighting: the coloured species
+     * badge plus the key fields (mirroring the list columns). Returned as a
+     * detached div; the map serialises it to an HTML string for the Bootstrap
+     * popover, so the content is static (no live click handlers).
+     * @param {SightingsEntry} entry
+     * @param {SightingPopupLookups} lookups
+     * @return {JQuery}
+     * @protected
+     */
+    protected _buildSightingPopup(entry: SightingsEntry, lookups: SightingPopupLookups): JQuery {
+        const lang = Lang.i();
+        const div = jQuery('<div class="sighting-popup" style="min-width:230px;"/>');
+
+        const head = jQuery('<div class="mb-1"/>').appendTo(div);
+        // eslint-disable-next-line no-new
+        new SpeciesDisplay(head, entry, lookups.species);
+
+        const date = entry.date ? moment(entry.date.split(' ')[0]).format('YYYY.MM.DD') : '';
+        const vehicleName = entry.vehicle_id ? lookups.vehicles.get(entry.vehicle_id)?.name ?? '' : '';
+        const driverName = entry.vehicle_driver_id ? lookups.drivers.get(entry.vehicle_driver_id)?.user.name ?? '' : '';
+        const orgStr = entry.organization_id ? lookups.organizations.get(entry.organization_id)?.description ?? '' : '';
+
+        const extra: string[] = [];
+        if (entry.juveniles !== undefined && entry.juveniles > 0) {
+            extra.push(`${entry.juveniles} juv`);
+        }
+        if (entry.calves !== undefined && entry.calves > 0) {
+            extra.push(`${entry.calves} calves`);
+        }
+        if (entry.newborns !== undefined && entry.newborns > 0) {
+            extra.push(`${entry.newborns} newborn`);
+        }
+        const groupStr = entry.species_count === undefined
+            ? ''
+            : `${entry.species_count}${extra.length > 0 ? ` (${extra.join(', ')})` : ''}`;
+
+        const timeStr = entry.tour_start ?? entry.tour_end
+            ? `${entry.tour_start ?? ''} – ${entry.tour_end ?? ''}`
+            : '';
+
+        const distanceNum = Number(entry.distance_coast);
+        const distanceStr = entry.distance_coast && Number.isFinite(distanceNum)
+            ? `${distanceNum.toFixed(2)} mi`
+            : entry.distance_coast ?? '';
+
+        const rows: [string, string][] = [
+            ['Date', date],
+            ['Sighting', `#${entry.id} · Tour #${entry.tour_id}`],
+            ['Time', timeStr],
+            ['Group-Size', groupStr],
+            ['Subgroups', entry.subgroups ? UtilSelect.getSelectStr(entry.subgroups) : ''],
+            ['Vehicle', vehicleName],
+            ['Driver', driverName],
+            ['Organization', orgStr],
+            ['Beaufort', entry.beaufort_wind ?? ''],
+            ['Distance', distanceStr],
+            ['Photos', entry.photo_taken ? UtilSelect.getSelectStr(entry.photo_taken) : ''],
+            ['Note', entry.note ?? '']
+        ];
+
+        const trs = rows
+        .filter(([, value]) => value !== '')
+        .map(([label, value]) =>
+            '<tr><td style="color:#6c757d;white-space:nowrap;vertical-align:top;padding:1px 8px 1px 0;">' +
+            `${escapeHtml(lang.l(label))}</td>` +
+            `<td style="vertical-align:top;padding:1px 0;">${escapeHtml(value)}</td></tr>`)
+        .join('');
+
+        jQuery(`<table style="font-size:0.82rem;border-collapse:collapse;"><tbody>${trs}</tbody></table>`).appendTo(div);
+
+        return div;
     }
 
 }
