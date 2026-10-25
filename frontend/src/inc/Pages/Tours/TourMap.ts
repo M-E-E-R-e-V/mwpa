@@ -215,12 +215,15 @@ export class ToursMap extends BasePage {
 
         this._map = new BaseMap(card.getBodyElement());
 
-        const wHeight = jQuery(window).height();
-        if (wHeight) {
-            // The chart card eats ~240px on top of what the map card already
-            // had reserved — back off another 200px so the page still fits.
-            this._map.setHeight(Math.max(320, wHeight - 420));
-        }
+        /*
+         * Fill the map to the viewport bottom by measuring the map card body's
+         * own top (below the chart card above it). Adapts to the AdminLTE 4
+         * chrome — the old fixed `window.height() - 420` offset left a gap under
+         * the map once the page-title header was dropped. Window-offset fallback
+         * if layout isn't ready.
+         */
+        const tmMapTop = card.getBodyElement()[0]?.getBoundingClientRect().top ?? 0;
+        this._map.setHeight(Math.max(320, tmMapTop > 0 ? window.innerHeight - tmMapTop - 16 : window.innerHeight - 420));
 
         this._map.load({
             initialCenterLonLat: [11.030, 47.739],

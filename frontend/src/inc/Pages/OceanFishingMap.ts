@@ -187,7 +187,12 @@ export class OceanFishingMap extends BasePage {
         if (wHeight) {
             // "Big": map gets almost the whole viewport — charts scroll below the fold.
             // "Small": chart grid fits on the same screen as the map.
-            const chromeReserve = 80 + 60 + 50; // navbar + page header + filter bar
+            /*
+             * navbar + filter bar. The AdminLTE 4 flip dropped the page-title
+             * header (~60px) the old reserve also subtracted, so the map gets
+             * that height back and reaches closer to the viewport foot.
+             */
+            const chromeReserve = 80 + 50;
             this._mapBigHeight = Math.max(420, wHeight - chromeReserve - 120);
             this._mapSmallHeight = Math.max(320, wHeight - chromeReserve - 760);
         }

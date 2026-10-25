@@ -140,12 +140,41 @@ export class SightingDashboard extends Widget2 {
         this._cf = cf;
 
         // Time chart -----------------------------------------------------------------------------
-        const dayDim = cf.dimension((d) => parseDay(d));
-        const dayGroup = dayDim.group();
-
         const days = sightings.map((d) => parseDay(d)).filter((t) => t > 0);
         const minDay = days.length > 0 ? Math.min(...days) : Date.now();
         const maxDay = days.length > 0 ? Math.max(...days) : Date.now();
+
+        /*
+         * Pick the time-bucket granularity from the data span so the bar chart
+         * never draws sub-pixel (negative-width) bars. With the manually-entered
+         * old data reaching back to the 1990s a daily bucket would be ~11k bars
+         * across ~750px — each bar narrower than the inter-bar gap, which makes
+         * the SVG `<rect>` width go negative ("A negative value is not valid").
+         * Day up to ~1y span, week up to ~5y, month beyond.
+         */
+        const spanDays = (maxDay - minDay) / DAY_MS;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let xUnits: any = (d3 as any).timeDay;
+        let bucketOf: (t: number) => number = (t): number => t;
+        let padMs = DAY_MS;
+
+        if (spanDays > 1500) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            xUnits = (d3 as any).timeMonth;
+            bucketOf = (t): number => {
+                const d = new Date(t);
+                return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1);
+            };
+            padMs = 31 * DAY_MS;
+        } else if (spanDays > 370) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            xUnits = (d3 as any).timeWeek;
+            bucketOf = (t): number => t - (t % (7 * DAY_MS));
+            padMs = 7 * DAY_MS;
+        }
+
+        const dayDim = cf.dimension((d) => bucketOf(parseDay(d)));
+        const dayGroup = dayDim.group();
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const timeChart = (dc as any).barChart(this._timeChartEl[0]);
@@ -156,9 +185,8 @@ export class SightingDashboard extends Widget2 {
         .dimension(dayDim)
         .group(dayGroup)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .x((d3 as any).scaleTime().domain([new Date(minDay - DAY_MS), new Date(maxDay + DAY_MS)]))
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .xUnits((d3 as any).timeDay)
+        .x((d3 as any).scaleTime().domain([new Date(minDay - padMs), new Date(maxDay + padMs)]))
+        .xUnits(xUnits)
         .elasticY(true)
         .brushOn(true)
         .renderHorizontalGridLines(true)
@@ -323,7 +351,7 @@ export class SightingDashboard extends Widget2 {
      * the supplied default so dc draws something on first render.
      */
     protected _approxWidth(el: JQuery, fallback: number): number {
-        const w = el.width() ?? 0;
+        const w = el.width() || 0;
         return w > 0 ? w : fallback;
     }
 

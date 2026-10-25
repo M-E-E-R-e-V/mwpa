@@ -432,8 +432,8 @@ export class MetricCharts extends Widget2 {
             return;
         }
 
-        const containerWidth = handle.target.width() ?? 280;
-        const containerHeight = handle.target.height() ?? 200;
+        const containerWidth = handle.target.width() || 280;
+        const containerHeight = handle.target.height() || 200;
         const margin = {top: 6, right: 10, bottom: 42, left: 52};
         const width = containerWidth - margin.left - margin.right;
         const height = containerHeight - margin.top - margin.bottom;
@@ -487,8 +487,8 @@ export class MetricCharts extends Widget2 {
             return;
         }
 
-        const containerWidth = handle.target.width() ?? 280;
-        const containerHeight = handle.target.height() ?? 200;
+        const containerWidth = handle.target.width() || 280;
+        const containerHeight = handle.target.height() || 200;
         const margin = {top: 6, right: 10, bottom: 42, left: 52};
         const width = containerWidth - margin.left - margin.right;
         const height = containerHeight - margin.top - margin.bottom;
@@ -575,8 +575,8 @@ export class MetricCharts extends Widget2 {
         }))
         .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-        const containerWidth = handle.target.width() ?? 280;
-        const containerHeight = handle.target.height() ?? 200;
+        const containerWidth = handle.target.width() || 280;
+        const containerHeight = handle.target.height() || 200;
         const margin = {top: 6, right: 10, bottom: 42, left: 52};
         const width = containerWidth - margin.left - margin.right;
         const height = containerHeight - margin.top - margin.bottom;
@@ -655,8 +655,8 @@ export class MetricCharts extends Widget2 {
         .slice(0, 8)
         .map(([label, count]) => ({label, count}));
 
-        const containerWidth = handle.target.width() ?? 280;
-        const containerHeight = handle.target.height() ?? 200;
+        const containerWidth = handle.target.width() || 280;
+        const containerHeight = handle.target.height() || 200;
         const margin = {top: 6, right: 24, bottom: 38, left: 110};
         const width = containerWidth - margin.left - margin.right;
         const height = containerHeight - margin.top - margin.bottom;

@@ -212,7 +212,14 @@ export class Earthquake extends BasePage {
         mapCard.appendTo(new ContentCol2(rowMap, ContentColSize2.col12).getElement());
         mapCard.setTitle(new LangTextV2({text: 'Map'}));
         this._map = new BaseMap(mapCard.getBodyElement());
-        this._map.setHeight(Math.max(500, window.innerHeight - 380));
+        /*
+         * Fill the map to the viewport bottom by measuring the card body's own
+         * top (adapts to the AdminLTE 4 chrome, which no longer has the page
+         * header the old fixed `-380` offset accounted for). Fall back to the
+         * window-offset estimate if layout isn't available yet.
+         */
+        const eqMapTop = mapCard.getBodyElement()[0]?.getBoundingClientRect().top ?? 0;
+        this._map.setHeight(Math.max(500, eqMapTop > 0 ? window.innerHeight - eqMapTop - 16 : window.innerHeight - 380));
         /*
          * Zoom 5 over (-15, 28) frames the full Canaries archipelago +
          * Moroccan shelf — at 6 only the central islands fit.

@@ -711,16 +711,29 @@ export class Sighting extends BasePage {
         }
 
         this._map = new SightingMap(mapContainer);
-        let wHeight = jQuery(window).height();
 
         /*
-         * Map height accounts for the dashboard sitting above it (~310px: ~140 time bar +
-         * 220 row charts + spacing/header). Falls back to a sane minimum on small screens.
+         * Fill the map down to the viewport bottom. Measure the map container's
+         * own top offset (below the filter, tabs and the dashboard that sits
+         * above it) and subtract it from the viewport height — this adapts to
+         * whatever chrome the shell has (the AdminLTE 4 flip hides the page-title
+         * header, so the old fixed `window.height() - 220 - 320` offset left a
+         * large empty gap under the map). While the Map tab is still hidden the
+         * container has no layout (top ≈ 0), so fall back to a window estimate
+         * for the first (invisible) render; `shown.bs.tab` recomputes it.
          */
         const dashboardHeight = 320;
-        if (wHeight) {
-            this._map.setHeight(Math.max(300, wHeight - 220 - dashboardHeight));
-        }
+        const computeMapHeight = (): number => {
+            const top = mapContainer[0]?.getBoundingClientRect().top ?? 0;
+
+            if (top <= 0) {
+                return Math.max(300, window.innerHeight - 220 - dashboardHeight);
+            }
+
+            return Math.max(300, window.innerHeight - top - 16);
+        };
+
+        this._map.setHeight(computeMapHeight());
 
         this._map.load({
             useHeatmap: true,
@@ -757,16 +770,35 @@ export class Sighting extends BasePage {
                 return;
             }
 
-            wHeight = jQuery(window).height();
-            if (wHeight) {
-                this._map.setHeight(Math.max(300, wHeight - 220 - dashboardHeight));
+            /*
+             * Defer to the next frame: `shown.bs.tab` fires before the now-
+             * visible dashboard above the map has settled its layout, so
+             * measuring the map container's top offset immediately yields a
+             * too-small value (map ends up too tall, overshooting the viewport).
+             */
+            window.requestAnimationFrame(() => {
+                if (!this._map) {
+                    return;
+                }
+
+                this._map.setHeight(computeMapHeight());
                 this._map.updateSize();
-            }
+            });
 
             triggerBackfillIfNeeded();
         });
 
         navContainer.find(`a[href="#${analyticsTabId}"]`).on('shown.bs.tab', () => {
+            /*
+             * The analytics charts are first drawn at load while this tab is
+             * hidden (width 0 → fallback width). Re-render now that the tab is
+             * visible so the D3 charts size to the real container width. Deferred
+             * a frame so the pane layout has settled.
+             */
+            window.requestAnimationFrame(() => {
+                analytics.setData(loadedEntries);
+            });
+
             triggerBackfillIfNeeded();
         });
 
