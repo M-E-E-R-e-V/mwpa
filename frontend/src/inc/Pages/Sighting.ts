@@ -78,6 +78,8 @@ type SightingPopupLookups = {
     vehicles: Map<number, VehicleEntry>;
     drivers: Map<number, VehicleDriverEntry>;
     organizations: Map<number, OrganizationEntry>;
+    behaviours: Map<number, BehaviouralStateEntry>;
+    encounterCategories: Map<number, EncounterCategorieEntry>;
 };
 
 /**
@@ -315,7 +317,9 @@ export class Sighting extends BasePage {
             species: mspecies,
             vehicles: mvehicles,
             drivers: mdrivers,
-            organizations: morganizations
+            organizations: morganizations,
+            behaviours: mbehaviours,
+            encounterCategories: mencates
         };
 
         const [
@@ -1545,12 +1549,55 @@ export class Sighting extends BasePage {
             ? `${distanceNum.toFixed(2)} mi`
             : entry.distance_coast ?? '';
 
+        // Other species (JSON id map) → comma-separated names.
+        const otherSpeciesNames: string[] = [];
+        try {
+            const otherSpeciesList = JSON.parse(entry.other_species ?? '');
+            if (otherSpeciesList && typeof otherSpeciesList === 'object') {
+                for (const value of Object.values(otherSpeciesList)) {
+                    if (typeof value === 'string' && value.trim() !== '') {
+                        const s = lookups.species.get(parseInt(value, 10));
+                        if (s) {
+                            otherSpeciesNames.push(s.name.split(',')[0]);
+                        }
+                    }
+                }
+            }
+        } catch {
+            // not set / malformed — leave empty
+        }
+
+        // Behaviours (JSON id map) → comma-separated names.
+        const behaviourNames: string[] = [];
+        try {
+            const ebehaviours = JSON.parse(entry.behaviours ?? '');
+            if (ebehaviours && typeof ebehaviours === 'object') {
+                for (const value of Object.values(ebehaviours)) {
+                    if (typeof value === 'string') {
+                        const b = lookups.behaviours.get(parseInt(value, 10));
+                        if (b) {
+                            behaviourNames.push(b.name);
+                        }
+                    }
+                }
+            }
+        } catch {
+            // not set / malformed — leave empty
+        }
+
+        const reactionStr = entry.reaction_id
+            ? lookups.encounterCategories.get(entry.reaction_id)?.name ?? ''
+            : '';
+
         const rows: [string, string][] = [
             ['Date', date],
             ['Sighting', `#${entry.id} · Tour #${entry.tour_id}`],
             ['Time', timeStr],
+            ['Other species', otherSpeciesNames.join(', ')],
             ['Group-Size', groupStr],
             ['Subgroups', entry.subgroups ? UtilSelect.getSelectStr(entry.subgroups) : ''],
+            ['Behaviour', behaviourNames.join(', ')],
+            ['Reaction', reactionStr],
             ['Vehicle', vehicleName],
             ['Driver', driverName],
             ['Organization', orgStr],
