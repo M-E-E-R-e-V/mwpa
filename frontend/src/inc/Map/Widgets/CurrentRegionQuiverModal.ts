@@ -1,4 +1,5 @@
 import {SightingCurrentRegion} from '../../Api/SightingCurrentRegion';
+import {UtilBootstrap} from '../../Utils/UtilBootstrap';
 import {CurrentRegionQuiver} from './CurrentRegionQuiver';
 
 /**
@@ -49,7 +50,7 @@ export class CurrentRegionQuiverModal {
             $modal.remove();
         });
 
-        ($modal as unknown as {modal: (action: string) => void;}).modal('show');
+        UtilBootstrap.showModal($modal[0]);
 
         void CurrentRegionQuiverModal._loadAndRender(sightingId, $target, $meta);
     }

@@ -15,6 +15,7 @@ import {
     SpeciesRegressionSeries
 } from '../../Api/Species';
 import {Lang} from '../../Lang';
+import {UtilBootstrap} from '../../Utils/UtilBootstrap';
 import {BasePage} from '../BasePage';
 
 /*
@@ -426,8 +427,7 @@ export class CrossSpeciesAnalytics extends BasePage {
         );
         tools.append(btn);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (btn as unknown as {popover: (opts: any) => void;}).popover({
+        UtilBootstrap.attachInfoPopover(btn, {
             html: true,
             sanitize: false,
             trigger: 'click',
@@ -435,15 +435,7 @@ export class CrossSpeciesAnalytics extends BasePage {
             container: 'body',
             title: escape(lang.l(titleKey)),
             content: `<div style="font-size:0.85rem;line-height:1.45;max-width:380px;">${escape(lang.l(descKey))}</div>`
-        });
-
-        btn.on('shown.bs.popover', () => {
-            jQuery(document).one('click.cross-species-info', (ev) => {
-                if (!jQuery(ev.target).closest('.popover, .cross-species-info').length) {
-                    (btn as unknown as {popover: (action: string) => void;}).popover('hide');
-                }
-            });
-        });
+        }, '.cross-species-info', 'cross-species-info');
     }
 
 }

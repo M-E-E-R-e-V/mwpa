@@ -264,13 +264,14 @@ export class BaseMap extends Widget2 {
      */
     public disposePopover(andRemove: boolean = false): void {
         if (this._popover) {
-            this._popover.popover('dispose');
-
-            if (andRemove) {
-                this._popover.remove();
-            }
-
+            // Bootstrap 5 vanilla Popover instance — tear it down via dispose().
+            this._popover.dispose();
             this._popover = undefined;
+        }
+
+        if (andRemove && this._popoverAnchor) {
+            this._popoverAnchor.remove();
+            this._popoverAnchor = undefined;
         }
     }
 
@@ -306,6 +307,15 @@ export class BaseMap extends Widget2 {
         });
 
         this._map.addControl(this._layerSwitcher);
+    }
+
+    /**
+     * Return the Bootstrap 5 Popover constructor from the global bundle
+     * (loaded via the `bootstrap.bundle` script tag), or undefined if absent.
+     * @protected
+     */
+    protected _getBsPopover(): any {
+        return (window as unknown as {bootstrap?: {Popover?: any;};}).bootstrap?.Popover;
     }
 
     /**
@@ -346,9 +356,22 @@ export class BaseMap extends Widget2 {
 
             overlay.setPosition(evt.coordinate);
 
-            this._popover = this._popoverAnchor.popover({
+            const Popover = this._getBsPopover();
+
+            if (!Popover || !this._popoverAnchor) {
+                return;
+            }
+
+            /*
+             * Bootstrap 5 removed the jQuery `$(el).popover()` plugin — use the
+             * vanilla `new bootstrap.Popover(el, {...})` API (mirrors bambooo v2
+             * BaseMap). `trigger: 'manual'` + explicit `.show()` keeps the
+             * click-to-open behaviour; dispose() tears it down.
+             */
+            this._popover = new Popover(this._popoverAnchor[0], {
                 html: true,
-                content: () => {
+                trigger: 'manual',
+                content: (): string => {
                     const content = feature.get('content');
 
                     if (typeof content === 'string') {
@@ -359,7 +382,7 @@ export class BaseMap extends Widget2 {
                         if (typeof returnContent === 'string') {
                             return returnContent;
                         } else if (typeof returnContent === 'object') {
-                            return jQuery(returnContent).html();
+                            return jQuery(returnContent).html() ?? '';
                         }
                     }
 
@@ -367,7 +390,7 @@ export class BaseMap extends Widget2 {
                 }
             });
 
-            this._popover.popover('show');
+            this._popover.show();
         });
 
         this._map.on('pointermove', (evt) => {

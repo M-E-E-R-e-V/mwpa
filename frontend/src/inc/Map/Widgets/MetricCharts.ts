@@ -2,6 +2,7 @@
 import {Widget2} from 'bambooo';
 import * as d3raw from 'd3';
 import {SightingEnvironmentEntry} from '../../Api/SightingEnvironment';
+import {UtilBootstrap} from '../../Utils/UtilBootstrap';
 
 /*
  * d3 ships its own typings via `@types/d3` packages — not installed in
@@ -351,9 +352,12 @@ export class MetricCharts extends Widget2 {
             + '<i class="fa fa-info-circle"/></button>'
         ).appendTo(head);
 
-        // Bootstrap 4 popover. `sanitize:false` because we deliberately
-        // feed HTML strings we control; titles still go through escapeHtml.
-        infoBtn.popover({
+        /*
+         * Bootstrap 5 info popover (auto-dismiss on outside click).
+         * `sanitize:false` because we deliberately feed HTML strings we control;
+         * titles still go through escapeHtml.
+         */
+        UtilBootstrap.attachInfoPopover(infoBtn, {
             html: true,
             sanitize: false,
             trigger: 'click',
@@ -361,17 +365,7 @@ export class MetricCharts extends Widget2 {
             container: 'body',
             title: spec.title,
             content: `<div style="font-size:0.8rem;line-height:1.4;max-width:340px;">${spec.description}</div>`
-        });
-
-        // Auto-dismiss any open popover when the user clicks anywhere
-        // outside it (default Bootstrap behaviour is to keep them open).
-        infoBtn.on('shown.bs.popover', () => {
-            jQuery(document).one('click.metric-chart-info', (ev) => {
-                if (!jQuery(ev.target).closest('.popover, .metric-chart-info').length) {
-                    infoBtn.popover('hide');
-                }
-            });
-        });
+        }, '.metric-chart-info', 'metric-chart-info');
 
         const target = jQuery('<div style="height:200px;"/>').appendTo(card);
         return {target, xLabel: spec.xLabel, yLabel: spec.yLabel};

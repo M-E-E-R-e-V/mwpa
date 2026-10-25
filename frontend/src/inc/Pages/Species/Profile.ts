@@ -36,6 +36,7 @@ import {SightingHeatmapLayer} from '../../Map/Layers/SightingHeatmapLayer';
 import {SightingPointsLayer} from '../../Map/Layers/SightingPointsLayer';
 import {SpatialGridLayer, SpatialGridMode} from '../../Map/Layers/SpatialGridLayer';
 import {SightingMapObjectType} from '../../Map/Styles/SightingStyles';
+import {UtilBootstrap} from '../../Utils/UtilBootstrap';
 import {BasePage} from '../BasePage';
 import {Species} from '../Species';
 
@@ -966,9 +967,11 @@ export class SpeciesProfile extends BasePage {
         );
         tools.append(btn);
 
-        // Bootstrap 4 popover. `sanitize:false` keeps our HTML; titles still
-        // run through escapeHtml.
-        (btn as unknown as {popover: (opts: object) => void;}).popover({
+        /*
+         * Bootstrap 5 info popover (auto-dismiss on outside click).
+         * `sanitize:false` keeps our HTML; titles still run through escapeHtml.
+         */
+        UtilBootstrap.attachInfoPopover(btn, {
             html: true,
             sanitize: false,
             trigger: 'click',
@@ -976,16 +979,7 @@ export class SpeciesProfile extends BasePage {
             container: 'body',
             title: escape(lang.l(titleKey)),
             content: `<div style="font-size:0.85rem;line-height:1.45;max-width:340px;">${escape(lang.l(descKey))}</div>`
-        });
-
-        // Auto-dismiss on outside click — Bootstrap's default leaves them open.
-        btn.on('shown.bs.popover', () => {
-            jQuery(document).one('click.species-profile-info', (ev) => {
-                if (!jQuery(ev.target).closest('.popover, .species-profile-info').length) {
-                    (btn as unknown as {popover: (action: string) => void;}).popover('hide');
-                }
-            });
-        });
+        }, '.species-profile-info', 'species-profile-info');
     }
 
     /**
