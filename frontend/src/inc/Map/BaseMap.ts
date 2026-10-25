@@ -370,6 +370,15 @@ export class BaseMap extends Widget2 {
              */
             this._popover = new Popover(this._popoverAnchor[0], {
                 html: true,
+                /*
+                 * Bootstrap 5 sanitizes popover HTML by default, which strips
+                 * inline `style` attributes — that blanked the feature content
+                 * (species badges carry their colour as `style="background:…"`
+                 * and the label as `<b style="color:…">`, so sanitizing left an
+                 * invisible white-on-transparent badge). We build this HTML
+                 * ourselves, so disable the sanitizer.
+                 */
+                sanitize: false,
                 trigger: 'manual',
                 content: (): string => {
                     const content = feature.get('content');
