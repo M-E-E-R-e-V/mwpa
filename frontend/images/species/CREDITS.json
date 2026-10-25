@@ -1,0 +1,218 @@
+{
+ "stenella-frontalis": {
+  "matched": "stenella frontalis",
+  "sci": "Stenella frontalis",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/84ad49f0-8974-400f-8ec8-4cecdbf1a678",
+  "bytes": 2044
+ },
+ "tursiops-truncatus": {
+  "matched": "tursiops truncatus",
+  "sci": "Tursiops truncatus",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/0b5c6b41-3a44-4c9e-869a-63ed54bf7c65",
+  "bytes": 1963
+ },
+ "globicephala": {
+  "matched": "globicephala macrorhynchus",
+  "sci": "Globicephala macrorhynchus",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/671a8126-83a4-4b11-83aa-56b1c18970ef",
+  "bytes": 1830
+ },
+ "stenella-coeruleoalba": {
+  "matched": "stenella coeruleoalba",
+  "sci": "Stenella coeruleoalbus",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/f00a3f93-cd4b-48d4-bc25-1482eadd1bef",
+  "bytes": 1883
+ },
+ "delphinus-delphis": {
+  "matched": "delphinus delphis",
+  "sci": "Delphinus delphis",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/d6fe7b30-3229-48a8-8dc9-22173fafa899",
+  "bytes": 1915
+ },
+ "mesoplodon-densirostris": {
+  "matched": "mesoplodon densirostris",
+  "sci": "Mesoplodon densirostris",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/ddfa8553-e06d-4d15-a8d8-1215e94c2de4",
+  "bytes": 1675
+ },
+ "physeter-macrocephalus": {
+  "matched": "physeter macrocephalus",
+  "sci": "Physeter macrocephalus",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/6579c20d-f8c2-46d8-8d23-5dd2571584bc",
+  "bytes": 1800
+ },
+ "ziphiidae": {
+  "matched": "ziphiidae",
+  "sci": "Ziphiidae",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/2c27b37e-baa8-467f-861c-10309de215ba",
+  "bytes": 1676
+ },
+ "steno-bredanensis": {
+  "matched": "steno bredanensis",
+  "sci": "Steno bredanensis",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/41a350a0-a19c-41ed-a85e-47e6b4ba7da4",
+  "bytes": 1861
+ },
+ "grampus-griseus": {
+  "matched": "grampus griseus",
+  "sci": "Grampus griseus",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/78d1f7fa-aece-4f92-bacf-843418d95723",
+  "bytes": 2009
+ },
+ "mysticeti": {
+  "matched": "mysticeti",
+  "sci": "Mysticeti",
+  "contributor": "Jonathan Pople",
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "image": "https://www.phylopic.org/images/93d5c0be-5e91-4b88-a8be-8e24fd91fd42",
+  "bytes": 1835
+ },
+ "balaenoptera-physalus": {
+  "matched": "balaenoptera physalus",
+  "sci": "Balaenoptera physalus",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/8366482f-d41c-4ab2-8403-3d70fb04ad5f",
+  "bytes": 1750
+ },
+ "balaenoptera-borealis": {
+  "matched": "balaenoptera borealis",
+  "sci": "Balaenoptera borealis",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/8f46e2da-12f6-4ceb-8612-8ebe417b178d",
+  "bytes": 1893
+ },
+ "balaenoptera-musculus": {
+  "matched": "balaenoptera musculus",
+  "sci": "Balaenoptera musculus",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/16969246-31e0-48e3-90ff-cad9a8746073",
+  "bytes": 1933
+ },
+ "cetacea": {
+  "matched": "cetacea",
+  "sci": "Cetacea",
+  "contributor": "Scott Hartman",
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "image": "https://www.phylopic.org/images/e68270c1-3091-4aee-92ae-51341a40e94a",
+  "bytes": 3211
+ },
+ "orcinus-orca": {
+  "matched": "orcinus orca",
+  "sci": "Orcinus orca",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/880129b5-b78b-40a9-88ad-55f7d1dc823f",
+  "bytes": 1948
+ },
+ "balaenoptera-edeni": {
+  "matched": "balaenoptera",
+  "sci": "Balaenoptera",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/8f46e2da-12f6-4ceb-8612-8ebe417b178d",
+  "bytes": 1893
+ },
+ "lagenodelphis-hosei": {
+  "matched": "lagenodelphis hosei",
+  "sci": "Lagenodelphis hosei",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/b44dd0dd-5d9e-438f-a388-baddb20319ff",
+  "bytes": 1794
+ },
+ "pseudorca-crassidens": {
+  "matched": "pseudorca crassidens",
+  "sci": "Pseudorca crassidens",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/4533cdfe-04d6-4b76-a06a-ba2d505b67d2",
+  "bytes": 1826
+ },
+ "ziphius-cavirostris": {
+  "matched": "ziphius cavirostris",
+  "sci": "Ziphius cavirostris",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/625c4c03-2e1d-41d6-889c-6bea1c9764b2",
+  "bytes": 1703
+ },
+ "mesoplodon-europaeus": {
+  "matched": "mesoplodon europaeus",
+  "sci": "Mesoplodon europaeus",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/62caa540-65ad-4160-a967-fe2367990a85",
+  "bytes": 1522
+ },
+ "hyperoodon-ampullatus": {
+  "matched": "hyperoodon ampullatus",
+  "sci": "Hyperoodon ampullatus",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/2fad47bd-9a34-4bc1-b6cc-b7c4415b109d",
+  "bytes": 1735
+ },
+ "kogia-breviceps": {
+  "matched": "kogia breviceps",
+  "sci": "Kogia breviceps",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/5bfb840e-071f-4a1a-b101-0a747a5453e7",
+  "bytes": 1726
+ },
+ "megaptera-novaeangliae": {
+  "matched": "megaptera novaeangliae",
+  "sci": "Balaenoptera novaeangliae",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/ce70490a-79a5-47fc-afb9-834e45803ab4",
+  "bytes": 2300
+ },
+ "eubalaena-glacialis": {
+  "matched": "eubalaena glacialis",
+  "sci": "Eubalaena glacialis",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/fb533874-aa63-4f76-baf0-e9ceacd7333c",
+  "bytes": 2082
+ },
+ "balaenoptera-acutorostrata": {
+  "matched": "balaenoptera acutorostrata",
+  "sci": "Agaphelus acutorostrata",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "image": "https://www.phylopic.org/images/374accb5-16d5-4cb9-a67a-e881ddfec114",
+  "bytes": 1766
+ },
+ "cheloniidae": {
+  "matched": "cheloniidae",
+  "sci": "Cheloniidae",
+  "contributor": "T. Michael Keesey",
+  "license": "https://creativecommons.org/publicdomain/mark/1.0/",
+  "image": "https://www.phylopic.org/images/c23f793b-36fb-41fb-86b0-2b9eedf2593f",
+  "bytes": 4558
+ }
+}
