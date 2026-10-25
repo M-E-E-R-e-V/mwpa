@@ -17,6 +17,24 @@ type AboutSpecies = {
 };
 
 /**
+ * An external data source shown in the About page.
+ */
+type AboutSource = {
+    name: string;
+    url: string;
+    desc: string;
+};
+
+/**
+ * A grouped set of external data sources.
+ */
+type AboutSourceGroup = {
+    icon: string;
+    title: string;
+    items: AboutSource[];
+};
+
+/**
  * About — project info + a species-silhouette gallery + third-party credits /
  * attribution (incl. the PhyloPic silhouettes, which are CC BY-SA 3.0 and
  * therefore require a visible attribution).
@@ -61,6 +79,58 @@ export class About extends BasePage {
     ];
 
     /**
+     * External data sources the platform integrates, grouped by domain.
+     * @protected
+     */
+    protected static readonly _SOURCES: AboutSourceGroup[] = [
+        {
+            icon: 'fa-water', title: 'Oceanography & climate', items: [
+                {name: 'Copernicus Marine (CMEMS)', url: 'https://marine.copernicus.eu/', desc: 'currents, biogeochemistry'},
+                {name: 'NOAA CoastWatch / ERDDAP', url: 'https://coastwatch.pfeg.noaa.gov/erddap/', desc: 'chlorophyll-a, salinity, sea-level anomaly'},
+                {name: 'NASA POWER', url: 'https://power.larc.nasa.gov/', desc: 'solar radiation / UV, meteorology'},
+                {name: 'Open-Meteo', url: 'https://open-meteo.com/', desc: 'weather & marine weather'},
+                {name: 'NOAA CPC / PSL', url: 'https://www.cpc.ncep.noaa.gov/', desc: 'climate indices (NAO, AMO, …)'}
+            ]
+        },
+        {
+            icon: 'fa-ruler-vertical', title: 'Bathymetry', items: [
+                {name: 'EMODnet Bathymetry', url: 'https://emodnet.ec.europa.eu/en/bathymetry', desc: 'depth grid & map tiles'},
+                {name: 'NOAA NGDC ETOPO 2022', url: 'https://www.ncei.noaa.gov/products/etopo-global-relief-model', desc: 'depth (fallback)'}
+            ]
+        },
+        {
+            icon: 'fa-bolt', title: 'Seismic', items: [
+                {name: 'EMSC SeismicPortal', url: 'https://www.seismicportal.eu/', desc: 'earthquakes'},
+                {name: 'USGS Earthquake', url: 'https://earthquake.usgs.gov/', desc: 'earthquakes'}
+            ]
+        },
+        {
+            icon: 'fa-ship', title: 'Maritime traffic', items: [
+                {name: 'AISStream', url: 'https://aisstream.io/', desc: 'live AIS vessel positions'},
+                {name: 'Global Fishing Watch', url: 'https://globalfishingwatch.org/', desc: 'fishing effort'}
+            ]
+        },
+        {
+            icon: 'fa-paw', title: 'Taxonomy', items: [
+                {name: 'WoRMS', url: 'https://www.marinespecies.org/', desc: 'World Register of Marine Species (AphiaID)'},
+                {name: 'Open Tree of Life', url: 'https://tree.opentreeoflife.org/', desc: 'taxonomy / phylogeny'},
+                {name: 'OneZoom', url: 'https://www.onezoom.org/', desc: 'tree-of-life explorer'}
+            ]
+        },
+        {
+            icon: 'fa-map', title: 'Base maps', items: [
+                {name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/', desc: 'base map'},
+                {name: 'IDEE / IGN España', url: 'https://www.idee.es/', desc: 'relief tiles'}
+            ]
+        },
+        {
+            icon: 'fa-calendar-check', title: 'Tours', items: [
+                {name: 'FareHarbor', url: 'https://fareharbor.com/', desc: 'external tour bookings'}
+            ]
+        }
+    ];
+
+    /**
      * constructor
      */
     public constructor() {
@@ -91,6 +161,11 @@ export class About extends BasePage {
                 '.mwpa-species-cell:hover{box-shadow:0 4px 14px rgba(0,0,0,.1);transform:translateY(-2px);}' +
                 '.mwpa-species-cell img{height:46px;max-width:100%;object-fit:contain;margin-bottom:8px;}' +
                 '.mwpa-species-cell .cap{font-size:.74rem;color:#495057;line-height:1.2;}' +
+                '.mwpa-sources{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px 28px;}' +
+                '.mwpa-sources h6{font-weight:600;margin-bottom:6px;}' +
+                '.mwpa-sources ul{list-style:none;padding-left:0;margin-bottom:0;}' +
+                '.mwpa-sources li{font-size:.86rem;margin-bottom:4px;line-height:1.3;}' +
+                '.mwpa-sources li .desc{color:#6c757d;}' +
                 '</style>'
             ).appendTo('head');
         }
@@ -121,6 +196,18 @@ export class About extends BasePage {
             '<p class="mb-0"><i class="fab fa-github text-primary me-2"></i>' +
             'Open source on <a href="https://github.com/stefanwerfling/mwpa" target="_blank" rel="noopener">GitHub</a>.</p>'
         );
+
+        // Data sources -------------------------------------------------------------------------
+        const cardSources = new Card2({bodyType: CardBodyType2.none});
+        cardSources.appendTo(col.getElement());
+        cardSources.setTitle(new LangTextV2({text: 'Data sources'}));
+
+        const groups = About._SOURCES.map((g) =>
+            `<div class="src-group"><h6><i class="fas ${g.icon} me-2 text-primary"></i>${g.title}</h6><ul>${
+                g.items.map((it) =>
+                    `<li><a href="${it.url}" target="_blank" rel="noopener">${it.name}</a> <span class="desc">— ${it.desc}</span></li>`).join('')
+            }</ul></div>`).join('');
+        cardSources.getBodyElement().append(`<div class="mwpa-sources">${groups}</div>`);
 
         // Species silhouettes gallery ----------------------------------------------------------
         const cardSpecies = new Card2({bodyType: CardBodyType2.none});
