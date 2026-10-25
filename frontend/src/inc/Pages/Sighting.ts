@@ -41,6 +41,7 @@ import {PageLoader} from '../PageLoader';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../Utils/UtilLocation';
 import {UtilSelect} from '../Utils/UtilSelect';
+import {UtilSpeciesSilhouette} from '../Utils/UtilSpeciesSilhouette';
 import {LocationDisplay} from '../Widget/LocationDisplay';
 import {ReactionDisplay} from '../Widget/ReactionDisplay';
 import {SightingAnalytics} from '../Widget/SightingAnalytics';
@@ -1517,9 +1518,17 @@ export class Sighting extends BasePage {
         const lang = Lang.i();
         const div = jQuery('<div class="sighting-popup" style="min-width:230px;"/>');
 
-        const head = jQuery('<div class="mb-1"/>').appendTo(div);
+        const head = jQuery('<div class="mb-1" style="display:flex;align-items:center;gap:8px;"/>').appendTo(div);
+
+        // Species silhouette (coloured with the species-group colour) + badge.
+        const specie = entry.species_id ? lookups.species.get(entry.species_id) : undefined;
+        const silName = specie?.name ?? entry.other ?? '';
+        const silColor = specie?.species_group?.color || '#17a2b8';
+        head[0]?.insertAdjacentHTML('beforeend', UtilSpeciesSilhouette.svg(silName, silColor, 30));
+
+        const badgeWrap = jQuery('<div/>').appendTo(head);
         // eslint-disable-next-line no-new
-        new SpeciesDisplay(head, entry, lookups.species);
+        new SpeciesDisplay(badgeWrap, entry, lookups.species);
 
         const date = entry.date ? moment(entry.date.split(' ')[0]).format('YYYY.MM.DD') : '';
         const vehicleName = entry.vehicle_id ? lookups.vehicles.get(entry.vehicle_id)?.name ?? '' : '';
