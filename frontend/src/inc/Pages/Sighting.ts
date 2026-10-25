@@ -643,6 +643,25 @@ export class Sighting extends BasePage {
         const refreshDataDashboards = (): void => {
             dashboard.setData(loadedEntries);
             analytics.setData(loadedEntries);
+
+            /*
+             * The dashboard just grew to its data-filled height, which changes
+             * where the map below it starts — re-fit the map to the viewport.
+             * Deferred a frame so the dashboard layout has settled before we
+             * measure (otherwise the map would be sized against the empty,
+             * short dashboard and overshoot the viewport bottom).
+             */
+            if (this._map) {
+                window.requestAnimationFrame(() => {
+                    if (!this._map) {
+                        return;
+                    }
+
+                    // eslint-disable-next-line no-use-before-define
+                    this._map.setHeight(computeMapHeight());
+                    this._map.updateSize();
+                });
+            }
         };
 
         const triggerBackfillIfNeeded = (): void => {
