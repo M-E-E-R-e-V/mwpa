@@ -1,5 +1,6 @@
 import {
     Card2,
+    CardBodyType2,
     ContentCol2,
     ContentColSize2,
     ContentRow2,
@@ -109,7 +110,7 @@ export class About extends BasePage {
         const col = new ContentCol2(row, ContentColSize2.colLg10);
 
         // Project ------------------------------------------------------------------------------
-        const cardProject = new Card2({});
+        const cardProject = new Card2({bodyType: CardBodyType2.none});
         cardProject.appendTo(col.getElement());
         cardProject.setTitle(new LangTextV2({text: 'The project'}));
         cardProject.getBodyElement().append(
@@ -122,7 +123,7 @@ export class About extends BasePage {
         );
 
         // Species silhouettes gallery ----------------------------------------------------------
-        const cardSpecies = new Card2({});
+        const cardSpecies = new Card2({bodyType: CardBodyType2.none});
         cardSpecies.appendTo(col.getElement());
         cardSpecies.setTitle(new LangTextV2({text: 'Species silhouettes'}));
 
@@ -134,7 +135,7 @@ export class About extends BasePage {
         cardSpecies.getBodyElement().append(`<div class="mwpa-species-grid">${cells}</div>`);
 
         // Credits ------------------------------------------------------------------------------
-        const cardCredits = new Card2({});
+        const cardCredits = new Card2({bodyType: CardBodyType2.none});
         cardCredits.appendTo(col.getElement());
         cardCredits.setTitle(new LangTextV2({text: 'Credits & licenses'}));
         cardCredits.getBodyElement().append(
