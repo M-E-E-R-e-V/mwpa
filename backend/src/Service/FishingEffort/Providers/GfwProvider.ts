@@ -410,7 +410,8 @@ export class GfwProvider implements FishingEffortProvider {
         let parsed: GfwReportResponse;
         try {
             parsed = JSON.parse(response.body) as GfwReportResponse;
-        } catch {
+        } catch (e) {
+            Logger.getLogger().warn(`GfwProvider: failed to parse report response — ${(e as Error).message}`);
             return null;
         }
 

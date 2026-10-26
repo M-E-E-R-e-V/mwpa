@@ -393,7 +393,8 @@ export class ErddapProvider implements OceanProvider {
             }
 
             return values;
-        } catch {
+        } catch (e) {
+            Logger.getLogger().warn(`ErddapProvider: failed to parse response — ${(e as Error).message}`);
             return null;
         }
     }

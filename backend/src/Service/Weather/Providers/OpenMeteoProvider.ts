@@ -1,3 +1,4 @@
+import {Logger} from '@stefanwerfling/figtree';
 import {httpGetWithRetry} from '../../Common/HttpGet.js';
 import {RateLimiter} from '../../Common/RateLimiter.js';
 import {WeatherInfo, WeatherProvider, WeatherSample} from '../Types.js';
@@ -280,7 +281,8 @@ export class OpenMeteoProvider implements WeatherProvider {
         try {
             const body = JSON.parse(response.body) as OpenMeteoMarineResponse;
             return body.hourly ?? null;
-        } catch {
+        } catch (e) {
+            Logger.getLogger().warn(`OpenMeteoProvider: failed to parse marine response — ${(e as Error).message}`);
             return null;
         }
     }
@@ -321,7 +323,8 @@ export class OpenMeteoProvider implements WeatherProvider {
         try {
             const body = JSON.parse(response.body) as OpenMeteoForecastResponse;
             return body.hourly ?? null;
-        } catch {
+        } catch (e) {
+            Logger.getLogger().warn(`OpenMeteoProvider: failed to parse forecast response — ${(e as Error).message}`);
             return null;
         }
     }

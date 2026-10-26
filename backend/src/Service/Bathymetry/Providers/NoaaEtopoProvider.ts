@@ -1,3 +1,4 @@
+import {Logger} from '@stefanwerfling/figtree';
 import {httpGetWithRetry} from '../../Common/HttpGet.js';
 import {RateLimiter} from '../../Common/RateLimiter.js';
 import {BathymetryProvider, DepthInfo} from '../Types.js';
@@ -67,7 +68,8 @@ export class NoaaEtopoProvider implements BathymetryProvider {
 
         try {
             body = JSON.parse(response.body) as EsriIdentifyResponse;
-        } catch {
+        } catch (e) {
+            Logger.getLogger().warn(`NoaaEtopoProvider: failed to parse identify response — ${(e as Error).message}`);
             return null;
         }
 
