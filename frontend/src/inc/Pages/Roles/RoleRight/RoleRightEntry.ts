@@ -1,6 +1,6 @@
 import {CheckBox2, ICollectionEntryWidget2, Td2, Tr2} from 'bambooo';
 import {RightEntry} from '../../../Api/Acl';
-import {RoleRightListWidget} from './RoleRightListWidget';
+import type {RoleRightListWidget} from './RoleRightListWidget';
 
 /**
  * One right row in the role-rights table (v2). Carries the right id + raw key
