@@ -384,7 +384,7 @@ export class Users extends BasePage {
                     }
                 }
 
-                card.setTitle(`Users (${allUsers.length})`);
+                card.setTitle(`${Lang.i().l('Users')} (${allUsers.length})`);
                 await tableWrapper.reset();
             } finally {
                 card.hideLoading();

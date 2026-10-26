@@ -231,7 +231,7 @@ export class OrphanTracks extends BasePage {
                     }
 
                     const count = response.count ?? 0;
-                    card.setTitle(`Orphan Tracks (${count})`);
+                    card.setTitle(`${Lang.i().l('Orphan Tracks')} (${count})`);
 
                     return response.list;
                 } finally {

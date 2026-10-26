@@ -1431,7 +1431,7 @@ export class Sighting extends BasePage {
 
                     totalCount = response.count;
                     loadedCount += response.list.length;
-                    card.setTitle(`Sighting (${response.count})`);
+                    card.setTitle(`${Lang.i().l('Sighting')} (${response.count})`);
 
                     return response.list;
                 } finally {

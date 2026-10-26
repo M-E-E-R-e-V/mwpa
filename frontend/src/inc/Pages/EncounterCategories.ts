@@ -289,7 +289,7 @@ export class EncounterCategories extends BasePage {
             card.showLoading();
             try {
                 allEntries = await EncounterCategoriesAPI.getList();
-                card.setTitle(`Encounter Categories (${allEntries.length})`);
+                card.setTitle(`${Lang.i().l('Encounter Categories')} (${allEntries.length})`);
                 await tableWrapper.reset();
             } finally {
                 card.hideLoading();

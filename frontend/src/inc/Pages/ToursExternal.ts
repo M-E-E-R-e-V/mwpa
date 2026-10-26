@@ -167,7 +167,7 @@ export class ToursExternal extends BasePage {
                     orgNameById.set(o.id, o.description);
                 }
 
-                card.setTitle(`Tours External (${allTours.length})`);
+                card.setTitle(`${Lang.i().l('Tours External')} (${allTours.length})`);
                 await tableWrapper.reset();
             } finally {
                 card.hideLoading();

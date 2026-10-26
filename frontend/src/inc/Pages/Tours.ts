@@ -404,7 +404,7 @@ export class Tours extends BasePage {
                     }
 
                     const count = response.count ?? 0;
-                    card.setTitle(`Tours (${count})`);
+                    card.setTitle(`${Lang.i().l('Tours')} (${count})`);
 
                     return response.list;
                 } finally {

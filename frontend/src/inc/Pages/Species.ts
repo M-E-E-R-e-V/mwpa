@@ -379,7 +379,7 @@ export class Species extends BasePage {
             try {
                 const species = await SpeciesAPI.getList();
                 allSpecies = species ?? [];
-                card.setTitle(`Species (${allSpecies.length})`);
+                card.setTitle(`${Lang.i().l('Species')} (${allSpecies.length})`);
                 await tableWrapper.reset();
             } finally {
                 card.hideLoading();

@@ -273,7 +273,7 @@ export class Services extends BasePage {
         this._onLoadTable = async(): Promise<void> => {
             try {
                 allServices = await ServiceAPI.getStatus();
-                card.setTitle(`Services (${allServices.length})`);
+                card.setTitle(`${Lang.i().l('Services')} (${allServices.length})`);
                 await tableWrapper.reset();
             } finally {
                 Lang.i().lAll();
