@@ -41,6 +41,7 @@ import {Nav} from '../Nav';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../Utils/UtilLocation';
 import {UtilSelect} from '../Utils/UtilSelect';
+import {SightingPopup, SightingPopupLookups} from '../Utils/SightingPopup';
 import {UtilSpeciesSilhouette} from '../Utils/UtilSpeciesSilhouette';
 import {LocationDisplay} from '../Widget/LocationDisplay';
 import {ReactionDisplay} from '../Widget/ReactionDisplay';
@@ -74,15 +75,6 @@ const escapeHtml = (s: string): string => s
 /**
  * Lookup maps the sighting map popover needs to resolve ids → display names.
  */
-type SightingPopupLookups = {
-    species: Map<number, SpeciesEntry>;
-    vehicles: Map<number, VehicleEntry>;
-    drivers: Map<number, VehicleDriverEntry>;
-    organizations: Map<number, OrganizationEntry>;
-    behaviours: Map<number, BehaviouralStateEntry>;
-    encounterCategories: Map<number, EncounterCategorieEntry>;
-};
-
 /**
  * Wrap any (case-insensitive) match of `term` in `<mark>` so search hits are
  * highlighted in the rendered cells. HTML in the source text is escaped first;
@@ -1528,91 +1520,7 @@ export class Sighting extends BasePage {
         // eslint-disable-next-line no-new
         new SpeciesDisplay(head, entry, lookups.species);
 
-        const date = entry.date ? moment(entry.date.split(' ')[0]).format('YYYY.MM.DD') : '';
-        const vehicleName = entry.vehicle_id ? lookups.vehicles.get(entry.vehicle_id)?.name ?? '' : '';
-        const driverName = entry.vehicle_driver_id ? lookups.drivers.get(entry.vehicle_driver_id)?.user.name ?? '' : '';
-        const orgStr = entry.organization_id ? lookups.organizations.get(entry.organization_id)?.description ?? '' : '';
-
-        const extra: string[] = [];
-        if (entry.juveniles !== undefined && entry.juveniles > 0) {
-            extra.push(`${entry.juveniles} juv`);
-        }
-        if (entry.calves !== undefined && entry.calves > 0) {
-            extra.push(`${entry.calves} calves`);
-        }
-        if (entry.newborns !== undefined && entry.newborns > 0) {
-            extra.push(`${entry.newborns} newborn`);
-        }
-        const groupStr = entry.species_count === undefined
-            ? ''
-            : `${entry.species_count}${extra.length > 0 ? ` (${extra.join(', ')})` : ''}`;
-
-        const timeStr = entry.tour_start ?? entry.tour_end
-            ? `${entry.tour_start ?? ''} – ${entry.tour_end ?? ''}`
-            : '';
-
-        const distanceNum = Number(entry.distance_coast);
-        const distanceStr = entry.distance_coast && Number.isFinite(distanceNum)
-            ? `${distanceNum.toFixed(2)} mi`
-            : entry.distance_coast ?? '';
-
-        // Other species (JSON id map) → comma-separated names.
-        const otherSpeciesNames: string[] = [];
-        try {
-            const otherSpeciesList = JSON.parse(entry.other_species ?? '');
-            if (otherSpeciesList && typeof otherSpeciesList === 'object') {
-                for (const value of Object.values(otherSpeciesList)) {
-                    if (typeof value === 'string' && value.trim() !== '') {
-                        const s = lookups.species.get(parseInt(value, 10));
-                        if (s) {
-                            otherSpeciesNames.push(s.name.split(',')[0]);
-                        }
-                    }
-                }
-            }
-        } catch {
-            // not set / malformed — leave empty
-        }
-
-        // Behaviours (JSON id map) → comma-separated names.
-        const behaviourNames: string[] = [];
-        try {
-            const ebehaviours = JSON.parse(entry.behaviours ?? '');
-            if (ebehaviours && typeof ebehaviours === 'object') {
-                for (const value of Object.values(ebehaviours)) {
-                    if (typeof value === 'string') {
-                        const b = lookups.behaviours.get(parseInt(value, 10));
-                        if (b) {
-                            behaviourNames.push(b.name);
-                        }
-                    }
-                }
-            }
-        } catch {
-            // not set / malformed — leave empty
-        }
-
-        const reactionStr = entry.reaction_id
-            ? lookups.encounterCategories.get(entry.reaction_id)?.name ?? ''
-            : '';
-
-        const rows: [string, string][] = [
-            ['Date', date],
-            ['Sighting', `#${entry.id} · Tour #${entry.tour_id}`],
-            ['Time', timeStr],
-            ['Other species', otherSpeciesNames.join(', ')],
-            ['Group-Size', groupStr],
-            ['Subgroups', entry.subgroups ? UtilSelect.getSelectStr(entry.subgroups) : ''],
-            ['Behaviour', behaviourNames.join(', ')],
-            ['Reaction', reactionStr],
-            ['Vehicle', vehicleName],
-            ['Driver', driverName],
-            ['Organization', orgStr],
-            ['Beaufort', entry.beaufort_wind ?? ''],
-            ['Distance', distanceStr],
-            ['Photos', entry.photo_taken ? UtilSelect.getSelectStr(entry.photo_taken) : ''],
-            ['Note', entry.note ?? '']
-        ];
+        const rows: [string, string][] = SightingPopup.rows(entry, lookups);
 
         const trs = rows
         .filter(([, value]) => value !== '')
