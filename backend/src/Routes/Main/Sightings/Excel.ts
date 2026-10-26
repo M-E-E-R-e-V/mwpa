@@ -345,6 +345,24 @@ const buildPositionColumns = (format: ExcelCoordFormat): {
  * A second sheet "Info" documents the export — generation timestamp, total row count,
  * picked columns, coord format, and a note about the lat/lon swap fix.
  */
+/** The id -> display-name lookup maps the Excel row builder resolves against. */
+type ExcelLookups = {
+    vehiclesById: Map<number, string>;
+    driversById: Map<number, string>;
+    usersById: Map<number, string>;
+    behStatesById: Map<number, string>;
+    enCatsById: Map<number, string>;
+    speciesNamesById: Map<number, string>;
+    orgDescriptionById: Map<number, string>;
+};
+
+/** The selected standard/optional columns plus the coordinate-format block. */
+type ExcelColumnPlan = {
+    standard: string[];
+    optional: string[];
+    position: ReturnType<typeof buildPositionColumns>;
+};
+
 export class Excel {
 
     /**
@@ -387,40 +405,15 @@ export class Excel {
             needsOrganization ? OrganizationRepository.getInstance().findAll() : Promise.resolve([])
         ]);
 
-        const vehiclesById = new Map<number, string>();
-        for (const v of vehicles) {
-            vehiclesById.set(v.id, v.description);
-        }
-
-        const driversById = new Map<number, string>();
-        for (const d of drivers) {
-            driversById.set(d.id, d.user_full_name);
-        }
-
-        const speciesNamesById = new Map<number, string>();
-        for (const s of speciesAll) {
-            speciesNamesById.set(s.id, s.name);
-        }
-
-        const usersById = new Map<number, string>();
-        for (const u of users) {
-            usersById.set(u.id, u.full_name);
-        }
-
-        const behStatesById = new Map<number, string>();
-        for (const b of behStates) {
-            behStatesById.set(b.id, b.name);
-        }
-
-        const enCatsById = new Map<number, string>();
-        for (const c of encounterCategories) {
-            enCatsById.set(c.id, c.name);
-        }
-
-        const orgDescriptionById = new Map<number, string>();
-        for (const o of organizations) {
-            orgDescriptionById.set(o.id, o.description);
-        }
+        const lookups: ExcelLookups = {
+            vehiclesById: Excel._indexBy(vehicles, (v) => v.description),
+            driversById: Excel._indexBy(drivers, (d) => d.user_full_name),
+            speciesNamesById: Excel._indexBy(speciesAll, (speciesEntry) => speciesEntry.name),
+            usersById: Excel._indexBy(users, (u) => u.full_name),
+            behStatesById: Excel._indexBy(behStates, (b) => b.name),
+            enCatsById: Excel._indexBy(encounterCategories, (c) => c.name),
+            orgDescriptionById: Excel._indexBy(organizations, (o) => o.description)
+        };
 
         const filter = opts.filter;
 
@@ -445,76 +438,16 @@ export class Excel {
             }
         }
 
-        const positionCols = buildPositionColumns(coordFormat);
+        const plan: ExcelColumnPlan = {
+            standard: standardKeys,
+            optional: optionalKeys,
+            position: buildPositionColumns(coordFormat)
+        };
 
-        // Header --------------------------------------------------------------
-        const header: string[] = [];
+        const data: (string|number)[][] = [Excel._buildHeader(plan)];
 
-        for (const key of standardKeys) {
-            header.push(STANDARD_LABELS[key] ?? key);
-
-            // Position-column block sits between `duration_until` and
-            // `distance_estimation`. Insert it the first time we cross that
-            // boundary; if the user deselected one or both neighbours we
-            // append it after the last column before `distance_estimation`
-            // anyway by keying off the duration_until marker.
-            if (key === 'duration_until') {
-                header.push(...positionCols.headers);
-            }
-        }
-
-        // If duration_until was deselected, position cols were never injected.
-        // Append them at the end of the standard block in that case.
-        if (!standardKeys.includes('duration_until')) {
-            header.push(...positionCols.headers);
-        }
-
-        for (const key of optionalKeys) {
-            header.push(OPTIONAL_LABELS[key] ?? key);
-        }
-
-        const data: (string|number)[][] = [header];
-
-        // Rows ---------------------------------------------------------------
         for (const entry of rows) {
-            const row: (string|number)[] = [];
-            const ext = extendedBySightingId.get(entry.id) ?? null;
-
-            const distance = UtilDistanceCoast.meterToM(parseFloat(entry.distance_coast) || 0.0, true);
-            const date = moment(entry.date);
-            const speciesName = (speciesNamesById.get(entry.species_id) ?? '').split(',')[0];
-            const beaufortWind = entry.beaufort_wind_n !== ''
-                ? entry.beaufort_wind_n
-                : `${entry.beaufort_wind}`;
-
-            for (const key of standardKeys) {
-                row.push(Excel._emitStandard(key, entry, {
-                    vehiclesById,
-                    driversById,
-                    usersById,
-                    behStatesById,
-                    enCatsById,
-                    speciesNamesById,
-                    speciesName,
-                    beaufortWind,
-                    distance,
-                    date
-                }));
-
-                if (key === 'duration_until') {
-                    row.push(...positionCols.emit(entry));
-                }
-            }
-
-            if (!standardKeys.includes('duration_until')) {
-                row.push(...positionCols.emit(entry));
-            }
-
-            for (const key of optionalKeys) {
-                row.push(Excel._emitOptional(key, entry, ext, orgDescriptionById));
-            }
-
-            data.push(row);
+            data.push(Excel._buildDataRow(entry, extendedBySightingId.get(entry.id) ?? null, plan, lookups));
         }
 
         // Info sheet ---------------------------------------------------------
@@ -532,6 +465,96 @@ export class Excel {
             },
             infoSheet
         ]);
+    }
+
+    /**
+     * Index a list of id-bearing rows by id into a name lookup map.
+     * @private
+     */
+    private static _indexBy<T extends {id: number;}>(items: T[], val: (item: T) => string): Map<number, string> {
+        const map = new Map<number, string>();
+        for (const item of items) {
+            map.set(item.id, val(item));
+        }
+
+        return map;
+    }
+
+    /**
+     * Build the header row — standard labels, the coordinate-format block (after
+     * duration_until, or appended if that column was deselected), then optionals.
+     * @private
+     */
+    private static _buildHeader(plan: ExcelColumnPlan): string[] {
+        const header: string[] = [];
+
+        for (const key of plan.standard) {
+            header.push(STANDARD_LABELS[key] ?? key);
+
+            if (key === 'duration_until') {
+                header.push(...plan.position.headers);
+            }
+        }
+
+        if (!plan.standard.includes('duration_until')) {
+            header.push(...plan.position.headers);
+        }
+
+        for (const key of plan.optional) {
+            header.push(OPTIONAL_LABELS[key] ?? key);
+        }
+
+        return header;
+    }
+
+    /**
+     * Build one data row for a sighting: standard cells + the coordinate block +
+     * optional cells, in the same order as {@link _buildHeader}.
+     * @private
+     */
+    private static _buildDataRow(
+        entry: Sighting,
+        ext: SightingExtended | null,
+        plan: ExcelColumnPlan,
+        lookups: ExcelLookups
+    ): (string|number)[] {
+        const row: (string|number)[] = [];
+        const distance = UtilDistanceCoast.meterToM(parseFloat(entry.distance_coast) || 0.0, true);
+        const date = moment(entry.date);
+        const speciesName = (lookups.speciesNamesById.get(entry.species_id) ?? '').split(',')[0];
+        const beaufortWind = entry.beaufort_wind_n !== ''
+            ? entry.beaufort_wind_n
+            : `${entry.beaufort_wind}`;
+        const ctx = {
+            vehiclesById: lookups.vehiclesById,
+            driversById: lookups.driversById,
+            usersById: lookups.usersById,
+            behStatesById: lookups.behStatesById,
+            enCatsById: lookups.enCatsById,
+            speciesNamesById: lookups.speciesNamesById,
+            speciesName: speciesName,
+            beaufortWind: beaufortWind,
+            distance: distance,
+            date: date
+        };
+
+        for (const key of plan.standard) {
+            row.push(Excel._emitStandard(key, entry, ctx));
+
+            if (key === 'duration_until') {
+                row.push(...plan.position.emit(entry));
+            }
+        }
+
+        if (!plan.standard.includes('duration_until')) {
+            row.push(...plan.position.emit(entry));
+        }
+
+        for (const key of plan.optional) {
+            row.push(Excel._emitOptional(key, entry, ext, lookups.orgDescriptionById));
+        }
+
+        return row;
     }
 
     /**
