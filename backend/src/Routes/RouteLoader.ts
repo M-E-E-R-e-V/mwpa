@@ -1,5 +1,5 @@
 import {HttpRouteLoader, IDefaultRoute, ServiceRoute, SwaggerUIRoute} from '@stefanwerfling/figtree';
-import {Backend} from '../Application/Backend.js';
+import {APP_NAME} from '../Application/AppName.js';
 import {checkMWPAAdminIsLogin} from './AuthCheck.js';
 import {Acl} from './Main/Acl.js';
 import {Ais} from './Main/Ais.js';
@@ -53,7 +53,7 @@ export class RouteLoader extends HttpRouteLoader {
             // — admin-only, lets the Services admin page list every running
             // job, read its cron + last_run + status, and trigger an ad-hoc
             // invoke without waiting for the next tick.
-            new ServiceRoute(Backend.NAME, checkMWPAAdminIsLogin),
+            new ServiceRoute(APP_NAME, checkMWPAAdminIsLogin),
             new Login(),
             new MapCache(),
             new Acl(),
