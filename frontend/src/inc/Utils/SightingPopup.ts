@@ -53,11 +53,11 @@ export class SightingPopup {
             ? `${distanceNum.toFixed(2)} mi`
             : entry.distance_coast ?? '';
 
-        const otherSpeciesNames = SightingPopup._parseIdMapNames(
+        const otherSpeciesNames = SightingPopup.parseIdMapNames(
             entry.other_species ?? '',
             (id): string | undefined => lookups.species.get(id)?.name.split(',')[0]
         );
-        const behaviourNames = SightingPopup._parseIdMapNames(
+        const behaviourNames = SightingPopup.parseIdMapNames(
             entry.behaviours ?? '',
             (id): string | undefined => lookups.behaviours.get(id)?.name
         );
@@ -128,15 +128,14 @@ export class SightingPopup {
     }
 
     /**
-     * _parseIdMapNames — resolve a JSON id-map column (`{"0":"5",...}`) to the
+     * parseIdMapNames — resolve a JSON id-map column (`{"0":"5",...}`) to the
      * list of names the ids map to, skipping unknown ids. Malformed JSON yields
      * an empty list.
      * @param {string} json
      * @param {(id: number) => string | undefined} resolve
      * @returns {string[]}
-     * @private
      */
-    private static _parseIdMapNames(json: string, resolve: (id: number) => string | undefined): string[] {
+    public static parseIdMapNames(json: string, resolve: (id: number) => string | undefined): string[] {
         const names: string[] = [];
         let data: unknown;
 

@@ -21,7 +21,7 @@ const entry = {
 } as unknown as SightingsEntry;
 
 const P = SightingPopup as unknown as {
-    _parseIdMapNames(json: string, resolve: (id: number) => string | undefined): string[];
+    parseIdMapNames(json: string, resolve: (id: number) => string | undefined): string[];
     _groupSizeStr(entry: SightingsEntry): string;
 };
 
@@ -57,14 +57,14 @@ describe('SightingPopup.rows', () => {
 describe('SightingPopup._parseIdMapNames', () => {
 
     it('resolves a JSON id-map to names, skipping unknown ids', () => {
-        const r = P._parseIdMapNames('{"0":"10","1":"99","2":"11"}', (id) => lookups.behaviours.get(id)?.name);
+        const r = SightingPopup.parseIdMapNames('{"0":"10","1":"99","2":"11"}', (id) => lookups.behaviours.get(id)?.name);
         expect(r).toEqual(['Feeding', 'Travelling']);
     });
 
     it('returns [] for malformed or non-object JSON', () => {
-        expect(P._parseIdMapNames('not json', () => 'x')).toEqual([]);
-        expect(P._parseIdMapNames('', () => 'x')).toEqual([]);
-        expect(P._parseIdMapNames('42', () => 'x')).toEqual([]);
+        expect(SightingPopup.parseIdMapNames('not json', () => 'x')).toEqual([]);
+        expect(SightingPopup.parseIdMapNames('', () => 'x')).toEqual([]);
+        expect(SightingPopup.parseIdMapNames('42', () => 'x')).toEqual([]);
     });
 
 });

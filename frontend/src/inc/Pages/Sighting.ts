@@ -1139,29 +1139,10 @@ export class Sighting extends BasePage {
                 value: `${escapeHtml(vehicleName)}<br>${escapeHtml(driverName)}<br>${escapeHtml(orgStr)}`
             }).appendTo(trbody);
 
-            let otherSpecies = '';
-            try {
-                const otherSpeciesList = JSON.parse(entry.other_species ?? '');
-                if (otherSpeciesList) {
-                    for (const key in otherSpeciesList) {
-                        // eslint-disable-next-line prefer-object-has-own
-                        if (Object.prototype.hasOwnProperty.call(otherSpeciesList, key)) {
-                            const v = otherSpeciesList[key];
-                            if (typeof v === 'string' && v.trim() !== '') {
-                                const s = mspecies.get(parseInt(v, 10));
-                                if (s) {
-                                    if (otherSpecies !== '') {
-                                        otherSpecies += ', ';
-                                    }
-                                    otherSpecies += s.name.split(',')[0];
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch {
-                otherSpecies = '';
-            }
+            const otherSpecies = SightingPopup.parseIdMapNames(
+                entry.other_species ?? '',
+                (id) => mspecies.get(id)?.name.split(',')[0]
+            ).join(', ');
 
             const speciesTd = new Td2({value: ''});
             speciesTd.appendTo(trbody);
@@ -1218,25 +1199,13 @@ export class Sighting extends BasePage {
                 value: `<b>${UtilSelect.getSelectStr(entry.photo_taken!)}</b><br>${UtilSelect.getSelectStr(entry.distance_coast_estimation_gps!)}`
             }).appendTo(trbody);
 
-            let behaviourStr = '';
-            try {
-                const ebehaviours = JSON.parse(entry.behaviours ?? '');
-                if (ebehaviours) {
-                    Object.entries(ebehaviours).forEach(([, value]) => {
-                        if (typeof value === 'string') {
-                            const b = mbehaviours.get(parseInt(value, 10));
-                            if (b) {
-                                behaviourStr += `${b.name}<br>`;
-                            }
-                        }
-                    });
-                }
-            } catch {
-                behaviourStr = '';
-            }
-            if (behaviourStr === '') {
-                behaviourStr = 'not set<br>';
-            }
+            const behaviourNames = SightingPopup.parseIdMapNames(
+                entry.behaviours ?? '',
+                (id) => mbehaviours.get(id)?.name
+            );
+            const behaviourStr = behaviourNames.length > 0
+                ? behaviourNames.map((n) => `${n}<br>`).join('')
+                : 'not set<br>';
 
             const tdbehRex = new Td2({value: behaviourStr});
             tdbehRex.appendTo(trbody);
