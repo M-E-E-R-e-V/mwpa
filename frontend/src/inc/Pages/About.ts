@@ -174,12 +174,12 @@ export class About extends BasePage {
         // Hero ---------------------------------------------------------------------------------
         const heroRow = new ContentRow2(fluid);
         new ContentCol2(heroRow, ContentColSize2.col12).getElement().append(
-            '<div class="mwpa-about-hero">' +
-            '<img src="images/whale-ico.png" alt="MWPA">' +
-            '<h1>MWPA</h1>' +
-            '<div class="lead">Mammal Watching · Processing · Analysing</div>' +
-            '<div class="sep"></div>' +
-            '</div>'
+            '<div class="mwpa-about-hero">'
+            + '<img src="images/whale-ico.png" alt="MWPA">'
+            + '<h1>MWPA</h1>'
+            + `<div class="lead">${Lang.i().l('Mammal Watching · Processing · Analysing')}</div>`
+            + '<div class="sep"></div>'
+            + '</div>'
         );
 
         const row = new ContentRow2(fluid);
@@ -190,12 +190,12 @@ export class About extends BasePage {
         cardProject.appendTo(col.getElement());
         cardProject.setTitle(new LangTextV2({text: 'The project'}));
         cardProject.getBodyElement().append(
-            '<p class="mb-2"><i class="fas fa-water text-primary me-2"></i>' +
-            'A platform to record, process and analyse marine-mammal sightings around the Canary Islands.</p>' +
-            '<p class="mb-2"><i class="fas fa-people-group text-primary me-2"></i>' +
-            'A project of the <a href="https://m-e-e-r.de/" target="_blank" rel="noopener">M.e.e.r e.V.</a> association.</p>' +
-            '<p class="mb-0"><i class="fab fa-github text-primary me-2"></i>' +
-            'Open source on <a href="https://github.com/stefanwerfling/mwpa" target="_blank" rel="noopener">GitHub</a>.</p>'
+            `<p class="mb-2"><i class="fas fa-water text-primary me-2"></i>${
+                Lang.i().l('A platform to record, process and analyse marine-mammal sightings around the Canary Islands.')}</p>`
+            + `<p class="mb-2"><i class="fas fa-people-group text-primary me-2"></i>${
+                Lang.i().l('A project of the association:')} <a href="https://m-e-e-r.de/" target="_blank" rel="noopener">M.e.e.r e.V.</a></p>`
+            + `<p class="mb-0"><i class="fab fa-github text-primary me-2"></i>${
+                Lang.i().l('Open source on')} <a href="https://github.com/stefanwerfling/mwpa" target="_blank" rel="noopener">GitHub</a>.</p>`
         );
 
         // Data sources -------------------------------------------------------------------------
@@ -206,7 +206,7 @@ export class About extends BasePage {
         const groups = About._SOURCES.map((g) =>
             `<div class="src-group"><h6><i class="fas ${g.icon} me-2 text-primary"></i>${Lang.i().l(g.title)}</h6><ul>${
                 g.items.map((it) =>
-                    `<li><a href="${it.url}" target="_blank" rel="noopener">${it.name}</a> <span class="desc">— ${it.desc}</span></li>`).join('')
+                    `<li><a href="${it.url}" target="_blank" rel="noopener">${it.name}</a> <span class="desc">— ${Lang.i().l(it.desc)}</span></li>`).join('')
             }</ul></div>`).join('');
         cardSources.getBodyElement().append(`<div class="mwpa-sources">${groups}</div>`);
 
@@ -227,17 +227,18 @@ export class About extends BasePage {
         cardCredits.appendTo(col.getElement());
         cardCredits.setTitle(new LangTextV2({text: 'Credits & licenses'}));
         cardCredits.getBodyElement().append(
-            '<p><i class="fas fa-paintbrush text-primary me-2"></i>' +
-            'The species silhouettes above (shown on the map and in sighting popovers) are from ' +
-            '<a href="https://www.phylopic.org/" target="_blank" rel="noopener">PhyloPic</a> &mdash; ' +
-            '&copy; the respective authors (mostly ' +
-            '<a href="https://www.phylopic.org/contributors" target="_blank" rel="noopener">T.&nbsp;Michael&nbsp;Keesey</a>), ' +
-            'licensed under ' +
-            '<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;3.0</a>, ' +
-            'CC0 and Public Domain. The full per-file list is in <code>images/species/ATTRIBUTION.md</code>.</p>' +
-            '<hr>' +
-            '<p class="text-muted mb-0"><small>Built with AdminLTE&nbsp;4, Bootstrap&nbsp;5, OpenLayers, D3/dc.js and the ' +
-            '<a href="https://github.com/stefanwerfling/bambooo" target="_blank" rel="noopener">bambooo</a> widget library.</small></p>'
+            `<p><i class="fas fa-paintbrush text-primary me-2"></i>${
+                Lang.i().l('The species silhouettes above (shown on the map and in sighting popovers) are from')} `
+            + '<a href="https://www.phylopic.org/" target="_blank" rel="noopener">PhyloPic</a> &mdash; '
+            + `${Lang.i().l('© the respective authors (mostly')} `
+            + '<a href="https://www.phylopic.org/contributors" target="_blank" rel="noopener">T.&nbsp;Michael&nbsp;Keesey</a>'
+            + `${Lang.i().l('), licensed under')} `
+            + '<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;3.0</a>'
+            + `${Lang.i().l(', CC0 and Public Domain. The full per-file list is in')} <code>images/species/ATTRIBUTION.md</code>.</p>`
+            + '<hr>'
+            + `<p class="text-muted mb-0"><small>${Lang.i().l('Built with AdminLTE 4, Bootstrap 5, OpenLayers, D3/dc.js and the')} `
+            + '<a href="https://github.com/stefanwerfling/bambooo" target="_blank" rel="noopener">bambooo</a>'
+            + `${Lang.i().l(' widget library.')}</small></p>`
         );
     }
 
