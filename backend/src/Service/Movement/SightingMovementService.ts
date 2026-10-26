@@ -14,6 +14,22 @@ const EARTH_RADIUS_M = 6_371_000;
 const DEG = Math.PI / 180;
 const RAD = 180 / Math.PI;
 
+/** One movement segment between two consecutive fixes (see _buildSegments). */
+type MovementSegment = {
+    start_lat: number;
+    start_lon: number;
+    end_lat: number;
+    end_lon: number;
+    start_dt: number;
+    end_dt: number;
+    distance_m: number;
+    duration_s: number;
+    speed_mps: number | null;
+    heading_deg: number | null;
+    turning_angle_deg: number | null;
+    quality: 'good' | 'bad';
+};
+
 type LatLon = {lat: number; lon: number};
 
 /**
@@ -652,7 +668,7 @@ export class SightingMovementService {
      * jump to silently lower the trip's total either).
      */
     private static _buildAggregates(
-        segments: ReturnType<typeof SightingMovementService._buildSegments>
+        segments: MovementSegment[]
     ): {
         total_distance_m: number;
         total_duration_s: number;
@@ -672,15 +688,6 @@ export class SightingMovementService {
         let maxSpeed: number | null = null;
         let firstDt = 0;
         let lastDt = 0;
-        let minLat: number | null = null;
-        let minLon: number | null = null;
-        let maxLat: number | null = null;
-        let maxLon: number | null = null;
-
-        let sumSin = 0;
-        let sumCos = 0;
-        let headingCount = 0;
-        const headings: number[] = [];
 
         for (const seg of segments) {
             totalDistance += seg.distance_m;
@@ -689,73 +696,137 @@ export class SightingMovementService {
             if (firstDt === 0 || (seg.start_dt > 0 && seg.start_dt < firstDt)) {
                 firstDt = seg.start_dt;
             }
+
             if (seg.end_dt > lastDt) {
                 lastDt = seg.end_dt;
             }
 
-            for (const [lat, lon] of [[seg.start_lat, seg.start_lon], [seg.end_lat, seg.end_lon]]) {
-                if (minLat === null || lat < minLat) minLat = lat;
-                if (maxLat === null || lat > maxLat) maxLat = lat;
-                if (minLon === null || lon < minLon) minLon = lon;
-                if (maxLon === null || lon > maxLon) maxLon = lon;
-            }
-
-            if (seg.quality === 'bad') {
-                continue;
-            }
-
-            if (seg.speed_mps !== null) {
-                if (maxSpeed === null || seg.speed_mps > maxSpeed) {
-                    maxSpeed = seg.speed_mps;
-                }
-            }
-
-            if (seg.heading_deg !== null) {
-                const rad = seg.heading_deg * DEG;
-                sumSin += Math.sin(rad);
-                sumCos += Math.cos(rad);
-                headingCount += 1;
-                headings.push(seg.heading_deg);
+            // Speed is only meaningful on non-outlier segments.
+            if (seg.quality !== 'bad' && seg.speed_mps !== null && (maxSpeed === null || seg.speed_mps > maxSpeed)) {
+                maxSpeed = seg.speed_mps;
             }
         }
 
         const avgSpeed = totalDuration > 0 ? totalDistance / totalDuration : null;
-
-        let dominantHeading: number | null = null;
-        let headingVariance: number | null = null;
-
-        if (headingCount > 0) {
-            // Circular mean — sum of unit vectors, then atan2 back to degrees in 0..360.
-            const meanRad = Math.atan2(sumSin / headingCount, sumCos / headingCount);
-            dominantHeading = ((meanRad * RAD) + 360) % 360;
-
-            if (headingCount > 1) {
-                // Approximate variance via the minimum angular distance to
-                // the circular mean — enough for the "straight vs erratic"
-                // proxy we use it for.
-                let varSum = 0;
-                for (const h of headings) {
-                    const d = SightingMovementService._normaliseAngle(h - dominantHeading);
-                    varSum += d * d;
-                }
-                headingVariance = varSum / headingCount;
-            }
-        }
+        const bbox = SightingMovementService._boundingBox(segments);
+        const heading = SightingMovementService._headingStats(segments);
 
         return {
             total_distance_m: totalDistance,
             total_duration_s: totalDuration,
             avg_speed_mps: avgSpeed,
             max_speed_mps: maxSpeed,
-            dominant_heading_deg: dominantHeading,
-            heading_variance_deg: headingVariance,
-            bbox_min_lat: minLat,
-            bbox_min_lon: minLon,
-            bbox_max_lat: maxLat,
-            bbox_max_lon: maxLon,
+            dominant_heading_deg: heading.dominant,
+            heading_variance_deg: heading.variance,
+            bbox_min_lat: bbox.min_lat,
+            bbox_min_lon: bbox.min_lon,
+            bbox_max_lat: bbox.max_lat,
+            bbox_max_lon: bbox.max_lon,
             first_dt: firstDt,
             last_dt: lastDt
         };
+    }
+
+    /**
+     * Axis-aligned bounding box over every segment endpoint (start + end),
+     * spanning all segments regardless of quality. Bounds are null when the
+     * segment list is empty.
+     * @private
+     */
+    private static _boundingBox(segments: MovementSegment[]): {
+        min_lat: number | null;
+        min_lon: number | null;
+        max_lat: number | null;
+        max_lon: number | null;
+    } {
+        const lats: number[] = [];
+        const lons: number[] = [];
+
+        for (const seg of segments) {
+            lats.push(seg.start_lat, seg.end_lat);
+            lons.push(seg.start_lon, seg.end_lon);
+        }
+
+        const lat = SightingMovementService._minMax(lats);
+        const lon = SightingMovementService._minMax(lons);
+
+        return {min_lat: lat.min, min_lon: lon.min, max_lat: lat.max, max_lon: lon.max};
+    }
+
+    /**
+     * Min and max of a number list in a single pass (null/null when empty).
+     * Avoids `Math.min(...xs)` so it is safe for long tracks.
+     * @private
+     */
+    private static _minMax(xs: number[]): {min: number | null; max: number | null;} {
+        if (xs.length === 0) {
+            return {min: null, max: null};
+        }
+
+        let min = xs[0];
+        let max = xs[0];
+
+        for (const x of xs) {
+            if (x < min) {
+                min = x;
+            }
+
+            if (x > max) {
+                max = x;
+            }
+        }
+
+        return {min: min, max: max};
+    }
+
+    /**
+     * Circular mean heading (0..360) and its angular variance over the good
+     * segments that carry a heading. `dominant` is null when none carry one;
+     * `variance` additionally needs at least two headings.
+     * @private
+     */
+    private static _headingStats(segments: MovementSegment[]): {
+        dominant: number | null;
+        variance: number | null;
+    } {
+        let sumSin = 0;
+        let sumCos = 0;
+        let count = 0;
+        const headings: number[] = [];
+
+        for (const seg of segments) {
+            if (seg.quality !== 'bad' && seg.heading_deg !== null) {
+                const rad = seg.heading_deg * DEG;
+                sumSin += Math.sin(rad);
+                sumCos += Math.cos(rad);
+                count += 1;
+                headings.push(seg.heading_deg);
+            }
+        }
+
+        if (count === 0) {
+            return {dominant: null, variance: null};
+        }
+
+        // Circular mean — sum of unit vectors, then atan2 back to 0..360.
+        const meanRad = Math.atan2(sumSin / count, sumCos / count);
+        const dominant = ((meanRad * RAD) + 360) % 360;
+
+        if (count < 2) {
+            return {dominant: dominant, variance: null};
+        }
+
+        /*
+         * Approximate variance via the minimum angular distance to the circular
+         * mean — enough for the "straight vs erratic" proxy we use it for.
+         */
+        let varSum = 0;
+        for (const h of headings) {
+            const d = SightingMovementService._normaliseAngle(h - dominant);
+            varSum += d * d;
+        }
+
+        return {dominant: dominant, variance: varSum / count};
     }
 
     /**
