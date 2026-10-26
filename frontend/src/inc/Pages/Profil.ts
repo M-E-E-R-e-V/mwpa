@@ -53,7 +53,7 @@ export class Profil extends BasePage {
         const row1 = new ContentRow2(content.getContentFluidElement(), ContentRowClass2.mb2);
 
         const colHead = new ContentCol2(row1, ContentColSize2.colSm12);
-        colHead.getElement().append('<h1>Profile</h1>');
+        colHead.getElement().append(`<h1>${Lang.i().l('Profile')}</h1>`);
 
         const row2 = new ContentRow2(content.getContentFluidElement());
 
@@ -97,7 +97,7 @@ export class Profil extends BasePage {
             ptext.addValue(`${currentuser!.user!.username}`);
 
             const ulElement = jQuery('<ul class="list-group list-group-unbordered mb-3"></ul>').appendTo(mProfileElement);
-            jQuery(`<li class="list-group-item"><b>Main-Group</b> <a class="float-right">${currentuser!.group!.name}</a></li>`).appendTo(ulElement);
+            jQuery(`<li class="list-group-item"><b>${Lang.i().l('Main group')}</b> <a class="float-right">${currentuser!.group!.name}</a></li>`).appendTo(ulElement);
             jQuery(`<li class="list-group-item"><b>Organization</b> <a class="float-right">${currentuser!.organization!.name}</a></li>`).appendTo(ulElement);
 
             // form
