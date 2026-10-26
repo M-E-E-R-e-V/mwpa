@@ -76,7 +76,7 @@ export class Group extends BasePage {
 
                     this._toast.fire({
                         icon: 'success',
-                        title: 'Group save success.'
+                        title: Lang.i().l('Group save success.')
                     });
                 }
             } catch (message) {
@@ -94,7 +94,7 @@ export class Group extends BasePage {
     public override async loadContent(): Promise<void> {
         this.addNavbarButton('Add Group', 'fas fa-plus', async() => {
             this._groupModal.resetValues();
-            this._groupModal.setTitle('Add new Group');
+            this._groupModal.setTitle(Lang.i().l('Add new Group'));
 
             const [orgs, roles] = await Promise.all([
                 OrganizationAPI.getOrganizations(),
@@ -172,7 +172,7 @@ export class Group extends BasePage {
                         'Edit',
                         async(): Promise<void> => {
                             this._groupModal.resetValues();
-                            this._groupModal.setTitle('Edit Group');
+                            this._groupModal.setTitle(Lang.i().l('Edit Group'));
                             this._groupModal.setGroupId(group.id);
                             this._groupModal.setName(group.description);
                             this._groupModal.setRole(group.role);

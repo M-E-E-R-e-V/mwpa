@@ -107,7 +107,7 @@ export class Profil extends BasePage {
                 cardLine: CardLine2.outline
             });
             detailsCard.appendTo(colForm.getElement());
-            detailsCard.setTitle('Details');
+            detailsCard.setTitle(Lang.i().l('Details'));
 
             const groupEMail = new FormGroup2({label: new LangTextV2({text: 'EMail'})});
             groupEMail.appendTo(detailsCard.getBodyElement());
@@ -123,7 +123,7 @@ export class Profil extends BasePage {
                 cardLine: CardLine2.outline
             });
             passwordCard.appendTo(colForm.getElement());
-            passwordCard.setTitle('Change password');
+            passwordCard.setTitle(Lang.i().l('Change password'));
 
             const groupNewPassword = new FormGroup2({label: new LangTextV2({text: 'New password'})});
             groupNewPassword.appendTo(passwordCard.getBodyElement());
@@ -146,7 +146,7 @@ export class Profil extends BasePage {
                     })) {
                         this._toast.fire({
                             icon: 'success',
-                            title: 'New password is save.'
+                            title: Lang.i().l('New password is save.')
                         });
 
                         newpasswordInput.setValue('');
@@ -168,7 +168,7 @@ export class Profil extends BasePage {
                 cardLine: CardLine2.outline
             });
             mobilePinCard.appendTo(colForm.getElement());
-            mobilePinCard.setTitle('Change mobile app pin');
+            mobilePinCard.setTitle(Lang.i().l('Change mobile app pin'));
 
             const groupNewPin = new FormGroup2({label: new LangTextV2({text: 'New pin'})});
             groupNewPin.appendTo(mobilePinCard.getBodyElement());
@@ -191,7 +191,7 @@ export class Profil extends BasePage {
                     })) {
                         this._toast.fire({
                             icon: 'success',
-                            title: 'New pin is save.'
+                            title: Lang.i().l('New pin is save.')
                         });
 
                         newPinInput.setValue('');

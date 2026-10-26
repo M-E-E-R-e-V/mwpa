@@ -132,7 +132,7 @@ export class Sighting extends BasePage {
              * needed for an INSERT, so the backend save endpoint is update-only.
              */
             if (sid === null) {
-                this._toast.fire({icon: 'error', title: 'Creating new sightings via this dialog is not supported yet.'});
+                this._toast.fire({icon: 'error', title: Lang.i().l('Creating new sightings via this dialog is not supported yet.')});
                 return;
             }
 
@@ -161,10 +161,10 @@ export class Sighting extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Sighting saved.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Sighting saved.')});
                     this._sightingDialog.hide();
                 } else {
-                    this._toast.fire({icon: 'error', title: 'Sighting save failed.'});
+                    this._toast.fire({icon: 'error', title: Lang.i().l('Sighting save failed.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -175,7 +175,7 @@ export class Sighting extends BasePage {
             const tid = this._sightingDeletedDialog.getSightingId();
 
             if (tid === null) {
-                this._toast.fire({icon: 'error', title: 'ID is not set!'});
+                this._toast.fire({icon: 'error', title: Lang.i().l('ID is not set!')});
                 this._sightingDeletedDialog.hide();
                 return;
             }
@@ -189,7 +189,7 @@ export class Sighting extends BasePage {
                         this._onLoadTable();
                     }
 
-                    this._toast.fire({icon: 'success', title: 'Sighting delete success.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Sighting delete success.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -1281,7 +1281,7 @@ export class Sighting extends BasePage {
             abtnMenu.addMenuItem('Edit', () => {
                 const distanceCoast = parseFloat(entry.distance_coast!) || 0;
 
-                this._sightingDialog.setTitle('Edit Sighting');
+                this._sightingDialog.setTitle(Lang.i().l('Edit Sighting'));
                 this._sightingDialog.resetValues();
                 this._sightingDialog.setSightingId(entry.id);
                 this._sightingDialog.setTourId(entry.tour_id);
@@ -1355,7 +1355,7 @@ export class Sighting extends BasePage {
             abtnMenu.addDivider();
 
             abtnMenu.addMenuItem('Delete', () => {
-                this._sightingDeletedDialog.setTitle('Delete a sighting');
+                this._sightingDeletedDialog.setTitle(Lang.i().l('Delete a sighting'));
                 this._sightingDeletedDialog.resetValues();
                 this._sightingDeletedDialog.setSightingId(entry.id);
                 this._sightingDeletedDialog.show();

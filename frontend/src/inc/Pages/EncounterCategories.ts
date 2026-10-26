@@ -75,7 +75,7 @@ export class EncounterCategories extends BasePage {
             const name = this._dialog.getName();
 
             if (name === '') {
-                this._toast.fire({icon: 'error', title: 'Name is required.'});
+                this._toast.fire({icon: 'error', title: Lang.i().l('Name is required.')});
                 return;
             }
 
@@ -92,7 +92,7 @@ export class EncounterCategories extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Encounter saved.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Encounter saved.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -218,7 +218,7 @@ export class EncounterCategories extends BasePage {
                     async(_, dialog) => {
                         try {
                             if (await EncounterCategoriesAPI.delete({id: entry.id})) {
-                                this._toast.fire({icon: 'success', title: 'Encounter deleted.'});
+                                this._toast.fire({icon: 'success', title: Lang.i().l('Encounter deleted.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});

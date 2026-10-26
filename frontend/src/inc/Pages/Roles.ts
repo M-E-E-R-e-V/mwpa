@@ -44,9 +44,9 @@ export class Roles extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Role saved.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Role saved.')});
                 } else {
-                    this._toast.fire({icon: 'error', title: 'Role save failed.'});
+                    this._toast.fire({icon: 'error', title: Lang.i().l('Role save failed.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -71,9 +71,9 @@ export class Roles extends BasePage {
                 if (await AclAPI.saveRoleRights(dialog.getRoleId(), dialog.getRoleRights())) {
                     dialog.hide();
                     dialog.destroy();
-                    this._toast.fire({icon: 'success', title: 'Rights saved.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Rights saved.')});
                 } else {
-                    this._toast.fire({icon: 'error', title: 'Rights save failed.'});
+                    this._toast.fire({icon: 'error', title: Lang.i().l('Rights save failed.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -156,12 +156,12 @@ export class Roles extends BasePage {
                         }
                         try {
                             if (await AclAPI.deleteRole(role.id)) {
-                                this._toast.fire({icon: 'success', title: 'Role deleted.'});
+                                this._toast.fire({icon: 'success', title: Lang.i().l('Role deleted.')});
                                 if (this._onLoadTable) {
                                     await this._onLoadTable();
                                 }
                             } else {
-                                this._toast.fire({icon: 'error', title: 'Role delete failed.'});
+                                this._toast.fire({icon: 'error', title: Lang.i().l('Role delete failed.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});

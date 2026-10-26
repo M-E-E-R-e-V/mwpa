@@ -59,13 +59,13 @@ export class ExternalTourSource extends BasePage {
             const orgId = this._dialog.getOrganization();
 
             if (orgId === 0) {
-                this._toast.fire({icon: 'error', title: 'Please select an organisation.'});
+                this._toast.fire({icon: 'error', title: Lang.i().l('Please select an organisation.')});
                 return;
             }
 
             const shortname = this._dialog.getCompanyShortname();
             if (shortname === '') {
-                this._toast.fire({icon: 'error', title: 'Company shortname is required.'});
+                this._toast.fire({icon: 'error', title: Lang.i().l('Company shortname is required.')});
                 return;
             }
 
@@ -85,7 +85,7 @@ export class ExternalTourSource extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Source saved.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Source saved.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -200,7 +200,7 @@ export class ExternalTourSource extends BasePage {
                     async(_, dialog) => {
                         try {
                             if (await ExternalTourSourceAPI.delete({id: entry.id})) {
-                                this._toast.fire({icon: 'success', title: 'Source deleted.'});
+                                this._toast.fire({icon: 'success', title: Lang.i().l('Source deleted.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});

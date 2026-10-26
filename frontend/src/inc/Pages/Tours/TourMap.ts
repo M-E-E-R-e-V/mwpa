@@ -26,6 +26,7 @@ import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
 import {UtilDistanceCoast} from '../../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../../Utils/UtilLocation';
 import {BasePage} from '../BasePage';
+import {Lang} from '../../Lang';
 import {Tours} from '../Tours';
 import {TrackingChart} from './TrackingChart';
 import {TransferModal} from './TransferModal';
@@ -177,7 +178,7 @@ export class ToursMap extends BasePage {
         const chartCol = new ContentCol2(rowChart, ContentColSize2.col12);
         const chartCard = new Card2({});
         chartCard.appendTo(chartCol.getElement());
-        chartCard.setTitle('Tracking points · time / count / speed');
+        chartCard.setTitle(Lang.i().l('Tracking points · time / count / speed'));
 
         const chartTools = chartCard.getToolsElement();
 

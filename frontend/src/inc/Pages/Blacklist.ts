@@ -106,9 +106,9 @@ export class Blacklist extends BasePage {
                     async(_, dialog) => {
                         try {
                             if (await BlacklistAPI.unblock(entry.ip)) {
-                                this._toast.fire({icon: 'success', title: 'IP unblocked.'});
+                                this._toast.fire({icon: 'success', title: Lang.i().l('IP unblocked.')});
                             } else {
-                                this._toast.fire({icon: 'info', title: 'IP was no longer blocked.'});
+                                this._toast.fire({icon: 'info', title: Lang.i().l('IP was no longer blocked.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});
@@ -222,9 +222,9 @@ export class Blacklist extends BasePage {
                         async(_, dialog) => {
                             try {
                                 if (await BlacklistAPI.unblockLockout(entry.key)) {
-                                    this._toast.fire({icon: 'success', title: 'Login unlocked.'});
+                                    this._toast.fire({icon: 'success', title: Lang.i().l('Login unlocked.')});
                                 } else {
-                                    this._toast.fire({icon: 'info', title: 'Lockout was no longer active.'});
+                                    this._toast.fire({icon: 'info', title: Lang.i().l('Lockout was no longer active.')});
                                 }
                             } catch (message) {
                                 this._toast.fire({icon: 'error', title: message});

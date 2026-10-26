@@ -81,7 +81,7 @@ export class Organization extends BasePage {
 
                     this._toast.fire({
                         icon: 'success',
-                        title: 'Area save success.'
+                        title: Lang.i().l('Area save success.')
                     });
                 }
             } catch (message) {
@@ -127,7 +127,7 @@ export class Organization extends BasePage {
 
                     this._toast.fire({
                         icon: 'success',
-                        title: 'Area save success.'
+                        title: Lang.i().l('Area save success.')
                     });
                 }
             } catch (message) {

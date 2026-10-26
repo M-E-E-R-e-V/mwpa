@@ -121,7 +121,7 @@ export class Species extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Specie merge success.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Specie merge success.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -293,7 +293,7 @@ export class Species extends BasePage {
                     async(_, dialog) => {
                         try {
                             if (await SpeciesAPI.delete({id: specie.id})) {
-                                this._toast.fire({icon: 'success', title: 'Specie delete success.'});
+                                this._toast.fire({icon: 'success', title: Lang.i().l('Specie delete success.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});

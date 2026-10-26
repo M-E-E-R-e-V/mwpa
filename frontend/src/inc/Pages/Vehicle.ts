@@ -120,7 +120,7 @@ export class Vehicle extends BasePage {
             if (orgId === 0) {
                 this._toast.fire({
                     icon: 'error',
-                    title: 'Please select an organization.'
+                    title: Lang.i().l('Please select an organization.')
                 });
                 return;
             }
@@ -130,7 +130,7 @@ export class Vehicle extends BasePage {
             if (name === '') {
                 this._toast.fire({
                     icon: 'error',
-                    title: 'Please enter a vehicle name.'
+                    title: Lang.i().l('Please enter a vehicle name.')
                 });
                 return;
             }
