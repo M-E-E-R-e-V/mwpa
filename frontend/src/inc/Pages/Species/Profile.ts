@@ -38,7 +38,7 @@ import {SpatialGridLayer, SpatialGridMode} from '../../Map/Layers/SpatialGridLay
 import {SightingMapObjectType} from '../../Map/Styles/SightingStyles';
 import {UtilBootstrap} from '../../Utils/UtilBootstrap';
 import {BasePage} from '../BasePage';
-import {Species} from '../Species';
+import {SPECIES_PAGE_NAME} from '../PageNames';
 
 /*
  * Same pattern as MetricCharts.ts / TrackingChart.ts — cast d3 to `any`
@@ -147,7 +147,7 @@ export class SpeciesProfile extends BasePage {
 
     public override async loadContent(): Promise<void> {
         const lang = Lang.i();
-        const menuItem = this._wrapper.getMainSidebar()?.getSidebar().getMenu()?.getMenuItem(Species.NAME) ?? null;
+        const menuItem = this._wrapper.getMainSidebar()?.getSidebar().getMenu()?.getMenuItem(SPECIES_PAGE_NAME) ?? null;
         const titleKey = 'Species Profile';
         const titleSuffix = ` #${this._speciesId}`;
 

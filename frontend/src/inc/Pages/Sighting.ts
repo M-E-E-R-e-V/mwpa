@@ -37,7 +37,7 @@ import {User as UserAPI} from '../Api/User';
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {Lang} from '../Lang';
-import {PageLoader} from '../PageLoader';
+import {Nav} from '../Nav';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../Utils/UtilLocation';
 import {UtilSelect} from '../Utils/UtilSelect';
@@ -1175,7 +1175,7 @@ export class Sighting extends BasePage {
             speciesTd.appendTo(trbody);
             // eslint-disable-next-line no-new
             new SpeciesDisplay(speciesTd.getElement(), entry, mspecies, (speciesId) => {
-                PageLoader.getInstance().load(new SpeciesProfilePage(speciesId)).then();
+                Nav.load(new SpeciesProfilePage(speciesId)).then();
             });
             speciesTd.append(`<br>${escapeHtml(otherSpecies)}`);
 
@@ -1198,7 +1198,7 @@ export class Sighting extends BasePage {
             tdLocation.appendTo(trbody);
             // eslint-disable-next-line no-new
             new LocationDisplay(tdLocation.getElement(), entry.location_begin!, () => {
-                PageLoader.getInstance().load(new ToursMap(entry.tour_id)).then();
+                Nav.load(new ToursMap(entry.tour_id)).then();
             });
 
             /*

@@ -25,12 +25,13 @@ import {
 import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species';
 import {SpeciesGroup as SpeciesGroupAPI} from '../Api/SpeciesGroup';
 import {Lang} from '../Lang';
-import {PageLoader} from '../PageLoader';
+import {Nav} from '../Nav';
 import {UtilOttLink} from '../Utils/UtilOttLink';
 import {UtilWormsLink} from '../Utils/UtilWormsLink';
 import {SpeciesGroupDisplay} from '../Widget/SpeciesGroupDisplay';
 import {BasePage} from './BasePage';
 import {SpeciesProfile as SpeciesProfilePage} from './Species/Profile';
+import {SPECIES_PAGE_NAME} from './PageNames';
 import {SpeciesEditModal} from './Species/SpeciesEditModal';
 import {SpeciesMergeModal} from './Species/SpeciesMergeModal';
 
@@ -67,7 +68,7 @@ const highlight = (text: string, term: string): string => {
  */
 export class Species extends BasePage {
 
-    public static NAME: string = 'admin-species';
+    public static NAME: string = SPECIES_PAGE_NAME;
 
     protected override _name: string = Species.NAME;
 
@@ -249,7 +250,7 @@ export class Species extends BasePage {
             btnMenu.appendTo(actionTd);
 
             btnMenu.addMenuItem(lang.l('Profile'), (): void => {
-                PageLoader.getInstance().load(new SpeciesProfilePage(specie.id)).then();
+                Nav.load(new SpeciesProfilePage(specie.id)).then();
             }, 'fas fa-chart-bar');
 
             btnMenu.addMenuItem(Lang.i().l('Edit'), async(): Promise<void> => {

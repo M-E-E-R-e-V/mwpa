@@ -25,11 +25,12 @@ import {TourEntry, Tours as ToursAPI, ToursCreater, ToursDevice, ToursFilter} fr
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {Lang} from '../Lang';
-import {PageLoader} from '../PageLoader';
+import {Nav} from '../Nav';
 import {BasePage} from './BasePage';
 import {TourEditModal} from './Tours/TourEditModal';
 import {TourFilter, TourFilterValues} from './Tours/TourFilter';
 import {ToursMap} from './Tours/TourMap';
+import {TOURS_PAGE_NAME} from './PageNames';
 
 const PAGE_SIZE = 50;
 
@@ -64,7 +65,7 @@ const highlight = (text: string, term: string): string => {
  */
 export class Tours extends BasePage {
 
-    public static NAME: string = 'tours';
+    public static NAME: string = TOURS_PAGE_NAME;
 
     protected override _name: string = Tours.NAME;
 
@@ -327,7 +328,7 @@ export class Tours extends BasePage {
                 const badgeTracking = new Badge2({text: `${entry.count_trackings}`, type: BadgeType2.info});
                 badgeTracking.appendTo(tdTrackingCount);
                 badgeTracking.getElement().on('click', () => {
-                    PageLoader.getInstance().load(new ToursMap(entry.id)).then();
+                    Nav.load(new ToursMap(entry.id)).then();
                 });
                 badgeTracking.getElement().css({cursor: 'pointer'});
             } else {
@@ -366,7 +367,7 @@ export class Tours extends BasePage {
             abtnMenu.appendTo(tdAction);
 
             abtnMenu.addMenuItem(Lang.i().l('Show Map'), () => {
-                PageLoader.getInstance().load(new ToursMap(entry.id)).then();
+                Nav.load(new ToursMap(entry.id)).then();
             }, IconFa.hockeypuck);
 
             abtnMenu.addMenuItem(Lang.i().l('Delete'), () => {

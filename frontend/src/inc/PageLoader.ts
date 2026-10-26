@@ -13,6 +13,7 @@ import {Login as LoginApi} from './Api/Login';
 import {User as UserApi} from './Api/User';
 import {PageSideMenuEntry} from './Base/PageSideMenuEntry';
 import {Lang} from './Lang';
+import {Nav} from './Nav';
 import {Session} from './Session';
 import {About as AboutPage} from './Pages/About';
 import {Admin as AdminPage} from './Pages/Admin';
@@ -321,6 +322,12 @@ export class PageLoader {
             menu: this._buildMenu(this._sideMenuList),
             access: (right?: string): boolean => Session.hasRight(right)
         });
+
+        /*
+         * Wire the navigation mediator so pages can navigate without importing
+         * this loader (which would re-create the PageLoader ↔ Pages cycle).
+         */
+        Nav.register((page: BasePage): Promise<boolean> => this.load(page));
     }
 
     /**

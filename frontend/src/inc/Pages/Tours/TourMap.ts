@@ -27,7 +27,7 @@ import {UtilDistanceCoast} from '../../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../../Utils/UtilLocation';
 import {BasePage} from '../BasePage';
 import {Lang} from '../../Lang';
-import {Tours} from '../Tours';
+import {TOURS_PAGE_NAME} from '../PageNames';
 import {TrackingChart} from './TrackingChart';
 import {TransferModal} from './TransferModal';
 
@@ -155,7 +155,7 @@ export class ToursMap extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
-        const menuItem = this._wrapper.getMainSidebar()?.getSidebar().getMenu()?.getMenuItem(Tours.NAME) ?? null;
+        const menuItem = this._wrapper.getMainSidebar()?.getSidebar().getMenu()?.getMenuItem(TOURS_PAGE_NAME) ?? null;
         let menuTree: SidebarMenuTree2 | null = null;
 
         const title = `Tour #${this._tourId}`;
