@@ -134,7 +134,8 @@ export class BasePage extends BasePage2 implements IBasePage {
         const a = jQuery(`<a class="nav-link" href="#"><i class="${iconClass} me-1"></i> </a>`).appendTo(li);
 
         if (typeof label === 'string') {
-            a.append(document.createTextNode(label));
+            // Wrap in a LangTextV2 so the button label is translatable too.
+            new LangTextV2({text: label}).appendTo(a);
         } else {
             label.appendTo(a);
         }

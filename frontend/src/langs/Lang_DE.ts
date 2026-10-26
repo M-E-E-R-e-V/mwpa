@@ -10,6 +10,11 @@ export class Lang_DE implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        'Add Encounter': 'Begegnung hinzufügen',
+        'Add Group': 'Gruppe hinzufügen',
+        'Add role': 'Rolle hinzufügen',
+        'Add source': 'Quelle hinzufügen',
+        'Add tour': 'Tour hinzufügen',
         'About': 'Über',
         'access': 'Zugriff',
         'active': 'aktiv',

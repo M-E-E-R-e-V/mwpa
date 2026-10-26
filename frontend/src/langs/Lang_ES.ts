@@ -10,6 +10,11 @@ export class Lang_ES implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        'Add Encounter': 'Añadir encuentro',
+        'Add Group': 'Añadir grupo',
+        'Add role': 'Añadir rol',
+        'Add source': 'Añadir fuente',
+        'Add tour': 'Añadir tour',
         'About': 'Acerca de',
         'access': 'Acceso',
         'active': 'activo',
