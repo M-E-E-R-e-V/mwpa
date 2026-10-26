@@ -56,11 +56,23 @@ export class MWPAMariaDBService extends MariaDBService {
                 );
             }
 
-            // Mirror figtree 1.1.0 MariaDBService.start(): when a baseline is
-            // configured, defer the migration run so runMigrations() can stamp
-            // the baseline row first (auto-baseline of a pre-existing schema).
+            /*
+             * Mirror figtree 1.1.0 MariaDBService.start(): when a baseline is
+             * configured, defer the migration run so runMigrations() can stamp
+             * the baseline row first (auto-baseline of a pre-existing schema).
+             */
             const migrationsRun = this._options.migrationsRun ?? true;
             const baseline = this._options.baseline;
+            const synchronize = this._options.synchronize ?? true;
+
+            /*
+             * Configure a SINGLE schema manager. Enabling TypeORM `synchronize`
+             * AND running migrations is contradictory — both mutate the schema
+             * on boot. MWPA defaults to synchronize (dev convenience; prod
+             * entities are kept schema-equivalent). The migration path is used
+             * only when synchronize is explicitly disabled in the config.
+             */
+            MWPAMariaDBService._warnIfSynchronize(synchronize);
 
             await DBHelper.init({
                 type: 'mysql',
@@ -75,12 +87,16 @@ export class MWPAMariaDBService extends MariaDBService {
                 // connection handshake.
                 charset: 'utf8mb4_unicode_ci',
                 entities: await this._loader.loadEntities(),
-                migrations: this._loader.loadMigrations(),
-                migrationsRun: baseline ? false : migrationsRun,
-                synchronize: this._options.synchronize ?? true
+                ...synchronize
+                    ? {synchronize: true}
+                    : {
+                        synchronize: false,
+                        migrations: this._loader.loadMigrations(),
+                        migrationsRun: baseline ? false : migrationsRun
+                    }
             });
 
-            if (baseline && migrationsRun) {
+            if (!synchronize && baseline && migrationsRun) {
                 await DBHelper.runMigrations(undefined, baseline);
             }
 
@@ -96,6 +112,24 @@ export class MWPAMariaDBService extends MariaDBService {
         this._statusMsg = '';
         this._status = ServiceStatus.Success;
         this._inProcess = false;
+    }
+
+    /**
+     * Log a loud warning when TypeORM `synchronize` is active, so the auto
+     * schema-mutation on boot is visible in the service log.
+     * @param {boolean} synchronize
+     * @protected
+     */
+    protected static _warnIfSynchronize(synchronize: boolean): void {
+        if (!synchronize) {
+            return;
+        }
+
+        Logger.getLogger().warn(
+            'MWPAMariaDBService: synchronize=true — the DB schema is auto-mutated on boot. '
+            + 'Narrowing or removing a column can drop production data; disable synchronize '
+            + 'and add an explicit migration for such changes.'
+        );
     }
 
 }
