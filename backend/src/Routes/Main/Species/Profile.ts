@@ -71,6 +71,43 @@ export type SightingProfileRow = {
     fishing_hours_day_25km: number | null;
 };
 
+/** Per-row counts, temporal buckets and positions collected in one pass. */
+type ProfileCounts = {
+    monthly: Map<string, number>;
+    hourly: number[];
+    monthlySightings: Map<string, number>;
+    yearlyCounts: Map<string, number>;
+    uniqueTours: Set<string>;
+    groupSizes: number[];
+    totalCount: number;
+    withJuv: number;
+    withCalves: number;
+    withNewborns: number;
+    dataMinDate: string;
+    dataMaxDate: string;
+    spatialPoints: SpatialPoint[];
+    heatmap: SpeciesProfileHeatmapPoint[];
+};
+
+/** Per-sighting environmental series, each filtered to finite values. */
+type ProfileEnvSeries = {
+    distanceCoast: number[];
+    depth: number[];
+    sst: number[];
+    chl: number[];
+    salinity: number[];
+    sla: number[];
+    currentSpeed: number[];
+    currentRegionSpeed: number[];
+    currentCoastal: number[];
+    waveHeight: number[];
+    uvIndex: number[];
+    windSpeed: number[];
+    beaufort: number[];
+    otherBoats: number[];
+    fishingHours: number[];
+};
+
 /**
  * Profile
  *
@@ -553,230 +590,22 @@ export class Profile {
         background: EnvBackgroundRow[],
         climate: ClimateRow[]
     ): SpeciesProfileData {
-        const monthly = new Map<string, number>();
-        const hourly = new Array<number>(24).fill(0);
-        const groupSizes: number[] = [];
-        let totalCount = 0;
-        let withJuv = 0;
-        let withCalves = 0;
-        let withNewborns = 0;
-
-        const distanceCoast: number[] = [];
-        const depth: number[] = [];
-        const sst: number[] = [];
-        const chl: number[] = [];
-
-        // Phase 3 — extra env + pressure
-        const salinity: number[] = [];
-        const sla: number[] = [];
-        const currentSpeed: number[] = [];
-        const currentRegionSpeed: number[] = [];
-        const currentCoastal: number[] = [];
-        const waveHeight: number[] = [];
-        const uvIndex: number[] = [];
-        const windSpeed: number[] = [];
-        const beaufort: number[] = [];
-        const otherBoats: number[] = [];
-        const fishingHours: number[] = [];
-
-        // Phase 3 — per-month sightings + per-year sightings
-        const monthlySightings = new Map<string, number>();
-        const yearlyCounts = new Map<string, number>();
-
-        const behaviourCounts = new Map<string, number>();
-        const behCooc = new Map<string, Map<string, number>>();
-        const reactionCounts = new Map<string, number>();
-
-        const avgSpeed: number[] = [];
-        const maxSpeed: number[] = [];
-        const totalDist: number[] = [];
-        let nWithMovement = 0;
-        const headingRose = Profile._emptyHeadingRose();
-
-        const heatmap: SpeciesProfileHeatmapPoint[] = [];
-        // All positioned sightings (uncapped) for the spatial KDE/Gi* analysis.
-        const spatialPoints: SpatialPoint[] = [];
-
-        let dataMinDate = '';
-        let dataMaxDate = '';
-
-        // Pseudo-replication: the tour is the cluster unit. Count distinct
-        // non-empty tour_fids so the UI can show how many independent surveys
-        // the n_sightings actually came from.
-        const uniqueTours = new Set<string>();
-
-        for (const r of rows) {
-            if (r.tour_fid && r.tour_fid.trim() !== '') {
-                uniqueTours.add(r.tour_fid);
-            }
-            // Monthly bucket — date is YYYY-MM-DD.
-            const ym = (r.date ?? '').substring(0, 7);
-            if (ym.length === 7) {
-                monthly.set(ym, (monthly.get(ym) ?? 0) + 1);
-                monthlySightings.set(ym, (monthlySightings.get(ym) ?? 0) + 1);
-            }
-            const yr = (r.date ?? '').substring(0, 4);
-            if (yr.length === 4) {
-                yearlyCounts.set(yr, (yearlyCounts.get(yr) ?? 0) + 1);
-            }
-
-            // Hourly bucket — tour_start is HH:mm[:ss].
-            const hm = (r.tour_start ?? '').match(/^(\d{1,2}):/u);
-            if (hm) {
-                const h = parseInt(hm[1], 10);
-                if (h >= 0 && h < 24) {
-                    hourly[h]++;
-                }
-            }
-
-            const c = Number(r.species_count) || 0;
-            groupSizes.push(c);
-            totalCount += c;
-
-            if ((Number(r.juveniles) || 0) > 0) {
-                withJuv++;
-            }
-            if ((Number(r.calves) || 0) > 0) {
-                withCalves++;
-            }
-            if ((Number(r.newborns) || 0) > 0) {
-                withNewborns++;
-            }
-
-            const distMeters = parseFloat(r.distance_coast ?? '');
-            if (Number.isFinite(distMeters) && distMeters >= 0) {
-                distanceCoast.push(distMeters);
-            }
-
-            if (r.depth_m !== null && r.depth_m !== undefined && Number.isFinite(r.depth_m)) {
-                depth.push(Math.abs(r.depth_m));
-            }
-            if (r.sst_c_day !== null && r.sst_c_day !== undefined && Number.isFinite(r.sst_c_day)) {
-                sst.push(r.sst_c_day);
-            }
-            if (r.chl_a_mg_m3_day !== null && r.chl_a_mg_m3_day !== undefined && Number.isFinite(r.chl_a_mg_m3_day)) {
-                chl.push(r.chl_a_mg_m3_day);
-            }
-
-            if (r.salinity_psu_day !== null && r.salinity_psu_day !== undefined && Number.isFinite(r.salinity_psu_day)) {
-                salinity.push(r.salinity_psu_day);
-            }
-            if (r.sla_cm_day !== null && r.sla_cm_day !== undefined && Number.isFinite(r.sla_cm_day)) {
-                sla.push(r.sla_cm_day);
-            }
-            if (r.current_speed_m_s_day !== null && r.current_speed_m_s_day !== undefined && Number.isFinite(r.current_speed_m_s_day)) {
-                currentSpeed.push(r.current_speed_m_s_day);
-            }
-            if (r.current_region_mean_speed_m_s_day !== null && r.current_region_mean_speed_m_s_day !== undefined && Number.isFinite(r.current_region_mean_speed_m_s_day)) {
-                currentRegionSpeed.push(r.current_region_mean_speed_m_s_day);
-            }
-            if (r.current_coastal_component_m_s_day !== null && r.current_coastal_component_m_s_day !== undefined && Number.isFinite(r.current_coastal_component_m_s_day)) {
-                currentCoastal.push(r.current_coastal_component_m_s_day);
-            }
-            if (r.wave_height_m_day !== null && r.wave_height_m_day !== undefined && Number.isFinite(r.wave_height_m_day)) {
-                waveHeight.push(r.wave_height_m_day);
-            }
-            if (r.uv_index_day !== null && r.uv_index_day !== undefined && Number.isFinite(r.uv_index_day)) {
-                uvIndex.push(r.uv_index_day);
-            }
-            if (r.wind_speed_m_s_day !== null && r.wind_speed_m_s_day !== undefined && Number.isFinite(r.wind_speed_m_s_day)) {
-                windSpeed.push(r.wind_speed_m_s_day);
-            }
-
-            // Pressure
-            if (Number.isFinite(r.beaufort_wind) && r.beaufort_wind >= 0) {
-                beaufort.push(r.beaufort_wind);
-            }
-            otherBoats.push(Profile._parseOtherBoats(r.other_vehicle ?? ''));
-            if (r.fishing_hours_day_25km !== null && r.fishing_hours_day_25km !== undefined && Number.isFinite(r.fishing_hours_day_25km)) {
-                fishingHours.push(Number(r.fishing_hours_day_25km));
-            }
-
-            // Behaviour mix — multi-value column (JSON map of stringified ids).
-            // Dedupe within a sighting (a behaviour listed twice is one obs),
-            // feed the solo counts, then accumulate which pairs co-occur.
-            const behLabels = [...new Set(Profile._parseBehaviourLabels(r.behaviours, behById))]
-                .sort((p, q) => (p < q ? -1 : 1));
-            for (const label of behLabels) {
-                behaviourCounts.set(label, (behaviourCounts.get(label) ?? 0) + 1);
-            }
-            for (let bi = 0; bi < behLabels.length; bi++) {
-                for (let bj = bi + 1; bj < behLabels.length; bj++) {
-                    const inner = behCooc.get(behLabels[bi]) ?? new Map<string, number>();
-                    inner.set(behLabels[bj], (inner.get(behLabels[bj]) ?? 0) + 1);
-                    behCooc.set(behLabels[bi], inner);
-                }
-            }
-
-            // Reaction — single foreign key into EncounterCategories.
-            if (r.reaction_id > 0) {
-                const rname = reactionById.get(r.reaction_id);
-                if (rname) {
-                    reactionCounts.set(rname, (reactionCounts.get(rname) ?? 0) + 1);
-                }
-            }
-
-            // Movement — only present when a SightingMovement row was derived.
-            if (r.avg_speed_mps !== null && r.avg_speed_mps !== undefined && Number.isFinite(r.avg_speed_mps)) {
-                avgSpeed.push(r.avg_speed_mps * 1.9438);
-                nWithMovement++;
-            }
-            if (r.max_speed_mps !== null && r.max_speed_mps !== undefined && Number.isFinite(r.max_speed_mps)) {
-                maxSpeed.push(r.max_speed_mps * 1.9438);
-            }
-            if (r.total_distance_m !== null && r.total_distance_m !== undefined && Number.isFinite(r.total_distance_m)) {
-                totalDist.push(r.total_distance_m);
-            }
-            if (r.dominant_heading_deg !== null && r.dominant_heading_deg !== undefined && Number.isFinite(r.dominant_heading_deg)) {
-                const idx = Profile._headingBinIndex(r.dominant_heading_deg);
-                if (idx >= 0 && idx < headingRose.length) {
-                    headingRose[idx].count++;
-                }
-            }
-
-            // Position feeds both the spatial analysis (uncapped) and the
-            // heatmap overlay (capped to keep the payload small).
-            const pos = Profile._parsePositionLonLat(r.location_begin);
-            if (pos) {
-                spatialPoints.push({lon: pos.lon, lat: pos.lat, weight: c});
-                if (heatmap.length < Profile.HEATMAP_MAX_POINTS) {
-                    heatmap.push({lon: pos.lon, lat: pos.lat, count: c});
-                }
-            }
-
-            if (r.date && (dataMinDate === '' || r.date < dataMinDate)) {
-                dataMinDate = r.date;
-            }
-            if (r.date && r.date > dataMaxDate) {
-                dataMaxDate = r.date;
-            }
-        }
+        const counts = Profile._collectCounts(rows);
+        const env = Profile._collectEnvSeries(rows);
+        const beh = Profile._collectBehaviour(rows, behById, reactionById);
+        const mv = Profile._collectMovement(rows);
+        const seis = Profile._collectSeismic(seismicRows);
+        const bg = Profile._collectBackground(background);
 
         const movement: SpeciesProfileMovement = {
-            n_with_movement: nWithMovement,
-            median_avg_speed_kt: Profile._percentile(avgSpeed, 50),
-            median_max_speed_kt: Profile._percentile(maxSpeed, 50),
-            median_total_distance_m: Profile._percentile(totalDist, 50),
-            heading_rose: headingRose
+            n_with_movement: mv.nWithMovement,
+            median_avg_speed_kt: Profile._percentile(mv.avgSpeed, 50),
+            median_max_speed_kt: Profile._percentile(mv.maxSpeed, 50),
+            median_total_distance_m: Profile._percentile(mv.totalDist, 50),
+            heading_rose: mv.headingRose
         };
 
-        // SPUE — join monthly tour-hours with sightings, drop months with
-        // 0 hours of effort (no surveys → SPUE is undefined, not zero).
-        const monthlyEffort: SpeciesProfileMonthlyEffort[] = [];
-        const ymKeys = new Set<string>([...tourHours.keys(), ...monthlySightings.keys()]);
-        const ymSorted = [...ymKeys].sort((a, b) => a.localeCompare(b));
-        for (const ym of ymSorted) {
-            const hours = tourHours.get(ym) ?? 0;
-            const sightings = monthlySightings.get(ym) ?? 0;
-            monthlyEffort.push({
-                ym: ym,
-                tour_hours: Math.round(hours * 10) / 10,
-                sightings: sightings,
-                spue: hours > 0 ? sightings / hours : 0
-            });
-        }
-
-        const yearly = [...yearlyCounts.entries()]
+        const yearly = [...counts.yearlyCounts.entries()]
             .sort(([a], [b]) => a.localeCompare(b))
             .map(([y, count]) => ({y: y, count: count}));
 
@@ -785,113 +614,467 @@ export class Profile {
             count: c.tour_count
         }));
 
-        const seismicSightings = new Set<number>();
-        const seismicMagnitudes: number[] = [];
-        const seismicDistances: number[] = [];
-        const seismicOffsets: number[] = [];
-        let seismicMaxMag = 0;
-        for (const r of seismicRows) {
-            seismicSightings.add(r.sighting_id);
-            seismicMagnitudes.push(r.magnitude);
-            seismicDistances.push(r.distance_km);
-            seismicOffsets.push(r.hours_offset);
-            if (r.magnitude > seismicMaxMag) {
-                seismicMaxMag = r.magnitude;
-            }
-        }
-
         // Target-group response curves — the species' share of all sightings
         // per environment bin (background = where surveying happened).
-        const bgSst: number[] = [];
-        const bgChl: number[] = [];
-        const bgDepth: number[] = [];
-        const bgDist: number[] = [];
-        for (const b of background) {
-            if (b.sst_c_day !== null && Number.isFinite(b.sst_c_day)) {
-                bgSst.push(b.sst_c_day);
-            }
-            if (b.chl_a_mg_m3_day !== null && Number.isFinite(b.chl_a_mg_m3_day)) {
-                bgChl.push(b.chl_a_mg_m3_day);
-            }
-            if (b.depth_m !== null && Number.isFinite(b.depth_m)) {
-                bgDepth.push(Math.abs(b.depth_m));
-            }
-            const bd = parseFloat(b.distance_coast ?? '');
-            if (Number.isFinite(bd) && bd >= 0) {
-                bgDist.push(bd);
-            }
-        }
         const response = background.length === 0 ? undefined : {
-            sst_c: ResponseCurves.build(sst, bgSst, Profile.SST_EDGES_C),
-            chl_a: ResponseCurves.build(chl, bgChl, Profile.CHL_EDGES_MG_M3),
-            depth_m: ResponseCurves.build(depth, bgDepth, Profile.DEPTH_EDGES_M),
-            distance_coast_m: ResponseCurves.build(distanceCoast, bgDist, Profile.DISTANCE_COAST_EDGES_M)
+            sst_c: ResponseCurves.build(env.sst, bg.sst, Profile.SST_EDGES_C),
+            chl_a: ResponseCurves.build(env.chl, bg.chl, Profile.CHL_EDGES_MG_M3),
+            depth_m: ResponseCurves.build(env.depth, bg.depth, Profile.DEPTH_EDGES_M),
+            distance_coast_m: ResponseCurves.build(env.distanceCoast, bg.dist, Profile.DISTANCE_COAST_EDGES_M)
         };
 
         return {
             species_id: speciesId,
             species_name: speciesName,
-            period_from: request.period_from ?? dataMinDate,
-            period_to: request.period_to ?? dataMaxDate,
+            period_from: request.period_from ?? counts.dataMinDate,
+            period_to: request.period_to ?? counts.dataMaxDate,
             n_sightings: rows.length,
-            n_unique_tours: uniqueTours.size,
-            group_size_total: totalCount,
-            group_size_p50: Profile._percentile(groupSizes, 50),
-            group_size_p95: Profile._percentile(groupSizes, 95),
-            monthly: [...monthly.entries()]
+            n_unique_tours: counts.uniqueTours.size,
+            group_size_total: counts.totalCount,
+            group_size_p50: Profile._percentile(counts.groupSizes, 50),
+            group_size_p95: Profile._percentile(counts.groupSizes, 95),
+            monthly: [...counts.monthly.entries()]
                 .sort(([a], [b]) => a.localeCompare(b))
                 .map(([ym, count]) => ({ym, count})),
-            hourly: hourly.map((count, hour) => ({hour, count})),
-            group_size: Profile._bucketize(groupSizes, Profile.GROUP_SIZE_EDGES),
+            hourly: counts.hourly.map((count, hour) => ({hour, count})),
+            group_size: Profile._bucketize(counts.groupSizes, Profile.GROUP_SIZE_EDGES),
             group_ratios: {
-                with_juveniles: withJuv,
-                with_calves: withCalves,
-                with_newborns: withNewborns,
+                with_juveniles: counts.withJuv,
+                with_calves: counts.withCalves,
+                with_newborns: counts.withNewborns,
                 total: rows.length
             },
             env: {
-                distance_coast_m: Profile._bucketize(distanceCoast, Profile.DISTANCE_COAST_EDGES_M),
-                depth_m: Profile._bucketize(depth, Profile.DEPTH_EDGES_M),
-                sst_c: Profile._bucketize(sst, Profile.SST_EDGES_C),
-                chl_a_mg_m3: Profile._bucketize(chl, Profile.CHL_EDGES_MG_M3)
+                distance_coast_m: Profile._bucketize(env.distanceCoast, Profile.DISTANCE_COAST_EDGES_M),
+                depth_m: Profile._bucketize(env.depth, Profile.DEPTH_EDGES_M),
+                sst_c: Profile._bucketize(env.sst, Profile.SST_EDGES_C),
+                chl_a_mg_m3: Profile._bucketize(env.chl, Profile.CHL_EDGES_MG_M3)
             },
-            behaviour_mix: Profile._topShares(behaviourCounts),
-            reaction_mix: Profile._topShares(reactionCounts),
+            behaviour_mix: Profile._topShares(beh.behaviourCounts),
+            reaction_mix: Profile._topShares(beh.reactionCounts),
             movement: movement,
-            heatmap: heatmap,
-            monthly_effort: monthlyEffort,
+            heatmap: counts.heatmap,
+            monthly_effort: Profile._monthlyEffort(tourHours, counts.monthlySightings),
             yearly: yearly,
             env_extra: {
-                salinity_psu: Profile._bucketize(salinity, Profile.SALINITY_EDGES_PSU),
-                sla_cm: Profile._bucketize(sla, Profile.SLA_EDGES_CM),
-                current_speed_m_s: Profile._bucketize(currentSpeed, Profile.CURRENT_EDGES_M_S),
-                current_region_speed_m_s: Profile._bucketize(currentRegionSpeed, Profile.CURRENT_REGION_EDGES_M_S),
-                current_coastal_component_m_s: Profile._bucketize(currentCoastal, Profile.CURRENT_COASTAL_EDGES_M_S),
-                wave_height_m: Profile._bucketize(waveHeight, Profile.WAVE_EDGES_M),
-                uv_index: Profile._bucketize(uvIndex, Profile.UV_EDGES),
-                wind_speed_m_s: Profile._bucketize(windSpeed, Profile.WIND_EDGES_M_S)
+                salinity_psu: Profile._bucketize(env.salinity, Profile.SALINITY_EDGES_PSU),
+                sla_cm: Profile._bucketize(env.sla, Profile.SLA_EDGES_CM),
+                current_speed_m_s: Profile._bucketize(env.currentSpeed, Profile.CURRENT_EDGES_M_S),
+                current_region_speed_m_s: Profile._bucketize(env.currentRegionSpeed, Profile.CURRENT_REGION_EDGES_M_S),
+                current_coastal_component_m_s: Profile._bucketize(env.currentCoastal, Profile.CURRENT_COASTAL_EDGES_M_S),
+                wave_height_m: Profile._bucketize(env.waveHeight, Profile.WAVE_EDGES_M),
+                uv_index: Profile._bucketize(env.uvIndex, Profile.UV_EDGES),
+                wind_speed_m_s: Profile._bucketize(env.windSpeed, Profile.WIND_EDGES_M_S)
             },
             pressure: {
-                beaufort: Profile._bucketize(beaufort, Profile.BEAUFORT_EDGES),
-                other_boats: Profile._bucketize(otherBoats, Profile.OTHER_BOATS_EDGES),
-                fishing_hours_25km: Profile._bucketize(fishingHours, Profile.FISHING_HOURS_EDGES)
+                beaufort: Profile._bucketize(env.beaufort, Profile.BEAUFORT_EDGES),
+                other_boats: Profile._bucketize(env.otherBoats, Profile.OTHER_BOATS_EDGES),
+                fishing_hours_25km: Profile._bucketize(env.fishingHours, Profile.FISHING_HOURS_EDGES)
             },
             cooccurrence: cooccurrence,
             seismic: {
-                n_sightings_with_event: seismicSightings.size,
+                n_sightings_with_event: seis.sightings.size,
                 n_correlations: seismicRows.length,
-                max_magnitude: seismicMaxMag,
-                median_distance_km: Profile._percentile(seismicDistances, 50),
-                magnitude: Profile._bucketize(seismicMagnitudes, Profile.SEISMIC_MAG_EDGES),
-                distance_km: Profile._bucketize(seismicDistances, Profile.SEISMIC_DIST_EDGES_KM),
-                hours_offset: Profile._bucketize(seismicOffsets, Profile.SEISMIC_OFFSET_EDGES_H)
+                max_magnitude: seis.maxMag,
+                median_distance_km: Profile._percentile(seis.distances, 50),
+                magnitude: Profile._bucketize(seis.magnitudes, Profile.SEISMIC_MAG_EDGES),
+                distance_km: Profile._bucketize(seis.distances, Profile.SEISMIC_DIST_EDGES_KM),
+                hours_offset: Profile._bucketize(seis.offsets, Profile.SEISMIC_OFFSET_EDGES_H)
             },
             icc: Profile._tourIcc(rows),
-            spatial: SpatialStats.compute(spatialPoints) ?? undefined,
+            spatial: SpatialStats.compute(counts.spatialPoints) ?? undefined,
             response: response,
-            phenology: Phenology.build(monthlySightings, yearlyCounts, tourHours, climate),
-            behaviour_cooccurrence: Profile._buildBehaviourCooc(behaviourCounts, behCooc)
+            phenology: Phenology.build(counts.monthlySightings, counts.yearlyCounts, tourHours, climate),
+            behaviour_cooccurrence: Profile._buildBehaviourCooc(beh.behaviourCounts, beh.behCooc)
         };
+    }
+
+    /**
+     * Finite per-sighting env series mapped onto {@link ProfileEnvSeries} keys.
+     * @private
+     */
+    private static readonly _ENV_FINITE: {key: keyof ProfileEnvSeries; get: (r: SightingProfileRow) => number | null; abs?: boolean;}[] = [
+        {key: 'depth', get: (r): number | null => r.depth_m, abs: true},
+        {key: 'sst', get: (r): number | null => r.sst_c_day},
+        {key: 'chl', get: (r): number | null => r.chl_a_mg_m3_day},
+        {key: 'salinity', get: (r): number | null => r.salinity_psu_day},
+        {key: 'sla', get: (r): number | null => r.sla_cm_day},
+        {key: 'currentSpeed', get: (r): number | null => r.current_speed_m_s_day},
+        {key: 'currentRegionSpeed', get: (r): number | null => r.current_region_mean_speed_m_s_day},
+        {key: 'currentCoastal', get: (r): number | null => r.current_coastal_component_m_s_day},
+        {key: 'waveHeight', get: (r): number | null => r.wave_height_m_day},
+        {key: 'uvIndex', get: (r): number | null => r.uv_index_day},
+        {key: 'windSpeed', get: (r): number | null => r.wind_speed_m_s_day}
+    ];
+
+    /**
+     * Collect per-row counts, temporal buckets, demographics and positions.
+     * @private
+     */
+    private static _collectCounts(rows: SightingProfileRow[]): ProfileCounts {
+        const c: ProfileCounts = {
+            monthly: new Map<string, number>(),
+            hourly: new Array<number>(24).fill(0),
+            monthlySightings: new Map<string, number>(),
+            yearlyCounts: new Map<string, number>(),
+            uniqueTours: new Set<string>(),
+            groupSizes: [],
+            totalCount: 0,
+            withJuv: 0,
+            withCalves: 0,
+            withNewborns: 0,
+            dataMinDate: '',
+            dataMaxDate: '',
+            spatialPoints: [],
+            heatmap: []
+        };
+
+        for (const r of rows) {
+            Profile._collectTemporal(c, r);
+            Profile._collectDemographics(c, r);
+            Profile._collectPosition(c, r);
+        }
+
+        return c;
+    }
+
+    /**
+     * Fold one row's tour id and month/year/hour buckets into the counts.
+     * @private
+     */
+    private static _collectTemporal(c: ProfileCounts, r: SightingProfileRow): void {
+        if (r.tour_fid && r.tour_fid.trim() !== '') {
+            c.uniqueTours.add(r.tour_fid);
+        }
+
+        const ym = (r.date ?? '').substring(0, 7);
+        if (ym.length === 7) {
+            c.monthly.set(ym, (c.monthly.get(ym) ?? 0) + 1);
+            c.monthlySightings.set(ym, (c.monthlySightings.get(ym) ?? 0) + 1);
+        }
+
+        const yr = (r.date ?? '').substring(0, 4);
+        if (yr.length === 4) {
+            c.yearlyCounts.set(yr, (c.yearlyCounts.get(yr) ?? 0) + 1);
+        }
+
+        const hm = (r.tour_start ?? '').match(/^(\d{1,2}):/u);
+        if (hm && Number(hm[1]) >= 0 && Number(hm[1]) < 24) {
+            c.hourly[parseInt(hm[1], 10)]++;
+        }
+
+        Profile._updateDateRange(c, r.date ?? '');
+    }
+
+    /**
+     * Widen the observed [dataMinDate, dataMaxDate] range with one date.
+     * @private
+     */
+    private static _updateDateRange(c: ProfileCounts, date: string): void {
+        if (date !== '' && (c.dataMinDate === '' || date < c.dataMinDate)) {
+            c.dataMinDate = date;
+        }
+
+        if (date !== '' && date > c.dataMaxDate) {
+            c.dataMaxDate = date;
+        }
+    }
+
+    /**
+     * Fold one row's group size and juvenile/calf/newborn flags into counts.
+     * @private
+     */
+    private static _collectDemographics(c: ProfileCounts, r: SightingProfileRow): void {
+        const n = Number(r.species_count) || 0;
+        c.groupSizes.push(n);
+        c.totalCount += n;
+
+        if ((Number(r.juveniles) || 0) > 0) {
+            c.withJuv++;
+        }
+
+        if ((Number(r.calves) || 0) > 0) {
+            c.withCalves++;
+        }
+
+        if ((Number(r.newborns) || 0) > 0) {
+            c.withNewborns++;
+        }
+    }
+
+    /**
+     * Fold one row's position into the spatial points (uncapped) and the
+     * heatmap overlay (capped to keep the payload small).
+     * @private
+     */
+    private static _collectPosition(c: ProfileCounts, r: SightingProfileRow): void {
+        const pos = Profile._parsePositionLonLat(r.location_begin);
+        if (pos === null) {
+            return;
+        }
+
+        const weight = Number(r.species_count) || 0;
+        c.spatialPoints.push({lon: pos.lon, lat: pos.lat, weight: weight});
+
+        if (c.heatmap.length < Profile.HEATMAP_MAX_POINTS) {
+            c.heatmap.push({lon: pos.lon, lat: pos.lat, count: weight});
+        }
+    }
+
+    /**
+     * Collect the finite per-sighting environmental series.
+     * @private
+     */
+    private static _collectEnvSeries(rows: SightingProfileRow[]): ProfileEnvSeries {
+        const env: ProfileEnvSeries = {
+            distanceCoast: [],
+            depth: [],
+            sst: [],
+            chl: [],
+            salinity: [],
+            sla: [],
+            currentSpeed: [],
+            currentRegionSpeed: [],
+            currentCoastal: [],
+            waveHeight: [],
+            uvIndex: [],
+            windSpeed: [],
+            beaufort: [],
+            otherBoats: [],
+            fishingHours: []
+        };
+
+        for (const r of rows) {
+            Profile._collectEnvRow(env, r);
+        }
+
+        return env;
+    }
+
+    /**
+     * Fold one row's finite environmental values into the series.
+     * @private
+     */
+    private static _collectEnvRow(env: ProfileEnvSeries, r: SightingProfileRow): void {
+        for (const m of Profile._ENV_FINITE) {
+            const v = m.get(r);
+            if (v !== null && Number.isFinite(v)) {
+                env[m.key].push(m.abs === true ? Math.abs(v) : v);
+            }
+        }
+
+        Profile._collectEnvSpecials(env, r);
+    }
+
+    /**
+     * Fold the non-uniform env fields (parsed distance, beaufort, other boats,
+     * fishing hours) that don't fit the finite-series table.
+     * @private
+     */
+    private static _collectEnvSpecials(env: ProfileEnvSeries, r: SightingProfileRow): void {
+        const dist = parseFloat(r.distance_coast ?? '');
+        if (Number.isFinite(dist) && dist >= 0) {
+            env.distanceCoast.push(dist);
+        }
+
+        if (Number.isFinite(r.beaufort_wind) && r.beaufort_wind >= 0) {
+            env.beaufort.push(r.beaufort_wind);
+        }
+
+        env.otherBoats.push(Profile._parseOtherBoats(r.other_vehicle ?? ''));
+
+        const fish = r.fishing_hours_day_25km;
+        if (fish !== null && Number.isFinite(fish)) {
+            env.fishingHours.push(Number(fish));
+        }
+    }
+
+    /**
+     * Collect behaviour solo counts, behaviour co-occurrence pairs and
+     * reaction counts. Behaviours are deduped within a sighting.
+     * @private
+     */
+    private static _collectBehaviour(
+        rows: SightingProfileRow[],
+        behById: Map<number, string>,
+        reactionById: Map<number, string>
+    ): {behaviourCounts: Map<string, number>; behCooc: Map<string, Map<string, number>>; reactionCounts: Map<string, number>;} {
+        const behaviourCounts = new Map<string, number>();
+        const behCooc = new Map<string, Map<string, number>>();
+        const reactionCounts = new Map<string, number>();
+
+        for (const r of rows) {
+            const behLabels = [...new Set(Profile._parseBehaviourLabels(r.behaviours, behById))]
+                .sort((p, q) => (p < q ? -1 : 1));
+
+            for (const label of behLabels) {
+                behaviourCounts.set(label, (behaviourCounts.get(label) ?? 0) + 1);
+            }
+
+            Profile._accumulateCooc(behCooc, behLabels);
+
+            if (r.reaction_id > 0) {
+                const rname = reactionById.get(r.reaction_id);
+                if (rname) {
+                    reactionCounts.set(rname, (reactionCounts.get(rname) ?? 0) + 1);
+                }
+            }
+        }
+
+        return {behaviourCounts: behaviourCounts, behCooc: behCooc, reactionCounts: reactionCounts};
+    }
+
+    /**
+     * Accumulate every unordered behaviour pair in one sighting's labels.
+     * @private
+     */
+    private static _accumulateCooc(behCooc: Map<string, Map<string, number>>, labels: string[]): void {
+        for (let bi = 0; bi < labels.length; bi++) {
+            for (let bj = bi + 1; bj < labels.length; bj++) {
+                const inner = behCooc.get(labels[bi]) ?? new Map<string, number>();
+                inner.set(labels[bj], (inner.get(labels[bj]) ?? 0) + 1);
+                behCooc.set(labels[bi], inner);
+            }
+        }
+    }
+
+    /**
+     * Collect movement speeds (converted to knots), distances and the heading
+     * rose. Only rows carrying a derived SightingMovement contribute.
+     * @private
+     */
+    private static _collectMovement(rows: SightingProfileRow[]): {
+        avgSpeed: number[];
+        maxSpeed: number[];
+        totalDist: number[];
+        nWithMovement: number;
+        headingRose: ReturnType<typeof Profile._emptyHeadingRose>;
+    } {
+        const avgSpeed: number[] = [];
+        const maxSpeed: number[] = [];
+        const totalDist: number[] = [];
+        let nWithMovement = 0;
+        const headingRose = Profile._emptyHeadingRose();
+
+        for (const r of rows) {
+            if (r.avg_speed_mps !== null && Number.isFinite(r.avg_speed_mps)) {
+                avgSpeed.push(r.avg_speed_mps * 1.9438);
+                nWithMovement++;
+            }
+
+            if (r.max_speed_mps !== null && Number.isFinite(r.max_speed_mps)) {
+                maxSpeed.push(r.max_speed_mps * 1.9438);
+            }
+
+            if (r.total_distance_m !== null && Number.isFinite(r.total_distance_m)) {
+                totalDist.push(r.total_distance_m);
+            }
+
+            if (r.dominant_heading_deg !== null && Number.isFinite(r.dominant_heading_deg)) {
+                Profile._accumulateHeading(headingRose, r.dominant_heading_deg);
+            }
+        }
+
+        return {avgSpeed: avgSpeed, maxSpeed: maxSpeed, totalDist: totalDist, nWithMovement: nWithMovement, headingRose: headingRose};
+    }
+
+    /**
+     * Bump the heading-rose bin the degree falls into, if any.
+     * @private
+     */
+    private static _accumulateHeading(rose: ReturnType<typeof Profile._emptyHeadingRose>, deg: number): void {
+        const idx = Profile._headingBinIndex(deg);
+        if (idx >= 0 && idx < rose.length) {
+            rose[idx].count++;
+        }
+    }
+
+    /**
+     * SPUE table — join monthly tour-hours with sightings, sorted by month.
+     * Months with 0 effort get spue 0 (no surveys → undefined, shown as 0).
+     * @private
+     */
+    private static _monthlyEffort(
+        tourHours: Map<string, number>,
+        monthlySightings: Map<string, number>
+    ): SpeciesProfileMonthlyEffort[] {
+        const out: SpeciesProfileMonthlyEffort[] = [];
+        const ymKeys = new Set<string>([...tourHours.keys(), ...monthlySightings.keys()]);
+        const ymSorted = [...ymKeys].sort((a, b) => a.localeCompare(b));
+
+        for (const ym of ymSorted) {
+            const hours = tourHours.get(ym) ?? 0;
+            const sightings = monthlySightings.get(ym) ?? 0;
+            out.push({
+                ym: ym,
+                tour_hours: Math.round(hours * 10) / 10,
+                sightings: sightings,
+                spue: hours > 0 ? sightings / hours : 0
+            });
+        }
+
+        return out;
+    }
+
+    /**
+     * Collect the seismic correlation aggregates (per sighting that had an
+     * event within the configured window).
+     * @private
+     */
+    private static _collectSeismic(
+        seismicRows: {sighting_id: number; distance_km: number; hours_offset: number; magnitude: number;}[]
+    ): {sightings: Set<number>; magnitudes: number[]; distances: number[]; offsets: number[]; maxMag: number;} {
+        const sightings = new Set<number>();
+        const magnitudes: number[] = [];
+        const distances: number[] = [];
+        const offsets: number[] = [];
+        let maxMag = 0;
+
+        for (const r of seismicRows) {
+            sightings.add(r.sighting_id);
+            magnitudes.push(r.magnitude);
+            distances.push(r.distance_km);
+            offsets.push(r.hours_offset);
+
+            if (r.magnitude > maxMag) {
+                maxMag = r.magnitude;
+            }
+        }
+
+        return {sightings: sightings, magnitudes: magnitudes, distances: distances, offsets: offsets, maxMag: maxMag};
+    }
+
+    /**
+     * Collect the finite background environmental series (where surveying
+     * happened), used as the denominator for the response curves.
+     * @private
+     */
+    private static _collectBackground(background: EnvBackgroundRow[]): {sst: number[]; chl: number[]; depth: number[]; dist: number[];} {
+        const sst: number[] = [];
+        const chl: number[] = [];
+        const depth: number[] = [];
+        const dist: number[] = [];
+
+        for (const b of background) {
+            if (b.sst_c_day !== null && Number.isFinite(b.sst_c_day)) {
+                sst.push(b.sst_c_day);
+            }
+
+            if (b.chl_a_mg_m3_day !== null && Number.isFinite(b.chl_a_mg_m3_day)) {
+                chl.push(b.chl_a_mg_m3_day);
+            }
+
+            if (b.depth_m !== null && Number.isFinite(b.depth_m)) {
+                depth.push(Math.abs(b.depth_m));
+            }
+
+            const bd = parseFloat(b.distance_coast ?? '');
+            if (Number.isFinite(bd) && bd >= 0) {
+                dist.push(bd);
+            }
+        }
+
+        return {sst: sst, chl: chl, depth: depth, dist: dist};
     }
 
 }
