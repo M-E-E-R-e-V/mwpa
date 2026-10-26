@@ -43,82 +43,6 @@ type ArocRowContext = {
 };
 
 /**
- * Read the AROC `ListaEspecies` sheet at export time and build the lookup
- * map that drives column N (Nombre común).
- *
- * Why this exists: column P (Nombre científico) is filled by the template via
- * `IFERROR(VLOOKUP(N, ListaEspecies!$B$3:$D$45, 3, FALSE), "")` — N must match
- * one of `ListaEspecies!B3:B48` exactly or P stays blank, which AROC interprets
- * as a data-entry error. Our DB stores `species_extern_link.externname` per
- * receiver but it's hand-curated and drifted out of sync with the template, so
- * we treat the template itself as the source of truth and join on
- * `species_extern_link.externid`, which is meant to hold the AROC Taxon-ID
- * (column C in ListaEspecies). The lowercased-name map is a defensive fallback
- * for entries where externid hasn't been filled in.
- */
-async function loadArocSpeciesIndex(zip: JSZip): Promise<ArocSpeciesIndex> {
-    const empty: ArocSpeciesIndex = {byExternId: new Map(), byNombreLower: new Map()};
-    const sheetFile = zip.file(SHEET_LISTA_ESPECIES_PATH);
-    const ssFile = zip.file(SHEET_SHARED_STRINGS_PATH);
-    if (!sheetFile || !ssFile) {
-        Logger.getLogger().warn('OfficeReport::loadArocSpeciesIndex: ListaEspecies or sharedStrings missing in template');
-        return empty;
-    }
-
-    const sheetXml = await sheetFile.async('string');
-    const ssXml = await ssFile.async('string');
-
-    // Build the sharedStrings table — keep insertion order, since cells reference by index.
-    const sharedStrings: string[] = [];
-    const siRe = /<si>([\s\S]*?)<\/si>/g;
-    let mSi: RegExpExecArray | null;
-    while ((mSi = siRe.exec(ssXml)) !== null) {
-        const texts = Array.from(mSi[1].matchAll(/<t[^>]*>([^<]*)<\/t>/g)).map((x) => x[1]);
-        sharedStrings.push(texts.join(''));
-    }
-
-    // Walk every cell once, decode its value, keep only B/C of rows we care about.
-    const cells = new Map<string, string>();
-    const cellRe = /<c r="([A-Z]+\d+)"([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g;
-    let m: RegExpExecArray | null;
-    while ((m = cellRe.exec(sheetXml)) !== null) {
-        const ref = m[1];
-        const attrs = m[2];
-        const inner = m[3] ?? '';
-        if (inner === '') continue;
-
-        const isShared = / t="s"/.test(attrs);
-        const isInline = / t="inlineStr"/.test(attrs);
-        const isStr = / t="str"/.test(attrs);
-
-        const vMatch = inner.match(/<v>([^<]*)<\/v>/);
-        const tMatch = inner.match(/<t[^>]*>([^<]*)<\/t>/);
-
-        let value: string | undefined;
-        if (isShared && vMatch) {
-            value = sharedStrings[parseInt(vMatch[1], 10)];
-        } else if (isInline && tMatch) {
-            value = tMatch[1];
-        } else if ((isStr || !isShared) && vMatch) {
-            value = vMatch[1];
-        }
-        if (value !== undefined) cells.set(ref, value);
-    }
-
-    const idx: ArocSpeciesIndex = {byExternId: new Map(), byNombreLower: new Map()};
-    for (let row = 3; row <= 48; row++) {
-        const nombre = cells.get(`B${row}`);
-        const externid = cells.get(`C${row}`);
-        if (!nombre || nombre === '') continue;
-        idx.byNombreLower.set(nombre.toLowerCase(), nombre);
-        if (externid && externid !== '' && externid !== 'sin Taxon ID' && externid !== 'no está en la Lista Patrón') {
-            idx.byExternId.set(externid, nombre);
-        }
-    }
-    return idx;
-}
-
-/**
  * MEER behavioural-state name → AROC `Actividad` (column AM) label.
  * Returns '' for unknown / unmapped names (e.g. DIVE, MIXED).
  *
@@ -592,7 +516,7 @@ export class CreateExport {
         let dataXml = await dataSheetFile.async('string');
         let generalXml = await generalSheetFile.async('string');
 
-        const arocSpeciesIndex = await loadArocSpeciesIndex(zip);
+        const arocSpeciesIndex = await CreateExport._loadArocSpeciesIndex(zip);
 
         // --- Fill `datos GENERALES` ------------------------------------------------------
         if (organization) {
@@ -806,6 +730,123 @@ export class CreateExport {
         cells.AC = latDms.minutes;
         cells.AD = latDms.seconds;
         cells.AE = pos.lat;
+    }
+
+    /**
+     * Read the AROC `ListaEspecies` sheet from the template and build the
+     * Nombre-común lookup (N must match ListaEspecies!B3:B48 exactly or the
+     * template's VLOOKUP leaves P blank). Joins on externid (AROC Taxon-ID,
+     * column C) with a lowercased-name fallback.
+     * @private
+     */
+    private static async _loadArocSpeciesIndex(zip: JSZip): Promise<ArocSpeciesIndex> {
+        const empty: ArocSpeciesIndex = {byExternId: new Map(), byNombreLower: new Map()};
+        const sheetFile = zip.file(SHEET_LISTA_ESPECIES_PATH);
+        const ssFile = zip.file(SHEET_SHARED_STRINGS_PATH);
+        if (!sheetFile || !ssFile) {
+            Logger.getLogger().warn('OfficeReport::loadArocSpeciesIndex: ListaEspecies or sharedStrings missing in template');
+
+            return empty;
+        }
+
+        const sharedStrings = CreateExport._parseSharedStrings(await ssFile.async('string'));
+        const cells = CreateExport._parseSheetCells(await sheetFile.async('string'), sharedStrings);
+
+        return CreateExport._buildSpeciesIndex(cells);
+    }
+
+    /**
+     * Parse an XLSX `sharedStrings.xml` into the ordered string table that
+     * `t="s"` cells index into.
+     * @private
+     */
+    private static _parseSharedStrings(ssXml: string): string[] {
+        const sharedStrings: string[] = [];
+        const siRe = /<si>([\s\S]*?)<\/si>/g;
+        let mSi: RegExpExecArray | null;
+
+        while ((mSi = siRe.exec(ssXml)) !== null) {
+            const texts = Array.from(mSi[1].matchAll(/<t[^>]*>([^<]*)<\/t>/g)).map((x) => x[1]);
+            sharedStrings.push(texts.join(''));
+        }
+
+        return sharedStrings;
+    }
+
+    /**
+     * Decode every `<c r="...">` cell of a sheet into a ref -> value map,
+     * resolving shared-string / inline / literal value kinds.
+     * @private
+     */
+    private static _parseSheetCells(sheetXml: string, sharedStrings: string[]): Map<string, string> {
+        const cells = new Map<string, string>();
+        const cellRe = /<c r="([A-Z]+\d+)"([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g;
+        let m: RegExpExecArray | null;
+
+        while ((m = cellRe.exec(sheetXml)) !== null) {
+            const inner = m[3] ?? '';
+            if (inner === '') {
+                continue;
+            }
+
+            const value = CreateExport._decodeCell(m[2], inner, sharedStrings);
+            if (value !== undefined) {
+                cells.set(m[1], value);
+            }
+        }
+
+        return cells;
+    }
+
+    /**
+     * Decode one cell's value given its attributes + inner XML: shared-string
+     * index (`t="s"`), inline string (`t="inlineStr"`), or a literal `<v>`.
+     * @private
+     */
+    private static _decodeCell(attrs: string, inner: string, sharedStrings: string[]): string | undefined {
+        const isShared = / t="s"/.test(attrs);
+        const vMatch = inner.match(/<v>([^<]*)<\/v>/);
+        const tMatch = inner.match(/<t[^>]*>([^<]*)<\/t>/);
+
+        if (isShared && vMatch) {
+            return sharedStrings[parseInt(vMatch[1], 10)];
+        }
+
+        if (/ t="inlineStr"/.test(attrs) && tMatch) {
+            return tMatch[1];
+        }
+
+        if ((/ t="str"/.test(attrs) || !isShared) && vMatch) {
+            return vMatch[1];
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Build the Nombre-común index from the decoded ListaEspecies cells
+     * (rows 3..48: B = Nombre común, C = AROC Taxon-ID). Placeholder externids
+     * ("sin Taxon ID", "no está en la Lista Patrón") are ignored.
+     * @private
+     */
+    private static _buildSpeciesIndex(cells: Map<string, string>): ArocSpeciesIndex {
+        const idx: ArocSpeciesIndex = {byExternId: new Map(), byNombreLower: new Map()};
+
+        for (let row = 3; row <= 48; row++) {
+            const nombre = cells.get(`B${row}`);
+            const externid = cells.get(`C${row}`);
+            if (!nombre || nombre === '') {
+                continue;
+            }
+
+            idx.byNombreLower.set(nombre.toLowerCase(), nombre);
+
+            if (externid && externid !== '' && externid !== 'sin Taxon ID' && externid !== 'no está en la Lista Patrón') {
+                idx.byExternId.set(externid, nombre);
+            }
+        }
+
+        return idx;
     }
 
     /**

@@ -13,6 +13,9 @@ type Link = {externid: string; externname: string;} | null;
 const E = CreateExport as unknown as {
     _buildArocRowCells(entry: unknown, link: Link, ctx: unknown): Record<string, string | number>;
     _resolveNombreComun(link: Link, speciesId: number, ctx: unknown): string;
+    _parseSharedStrings(ssXml: string): string[];
+    _parseSheetCells(sheetXml: string, sharedStrings: string[]): Map<string, string>;
+    _buildSpeciesIndex(cells: Map<string, string>): {byExternId: Map<string, string>; byNombreLower: Map<string, string>;};
 };
 
 const ctx = (): unknown => ({
@@ -83,6 +86,34 @@ describe('CreateExport._resolveNombreComun', () => {
         assert.equal(E._resolveNombreComun({externid: 'nope', externname: 'Bottlenose'}, 20, ctx()), 'Delfín mular (name)');
         assert.equal(E._resolveNombreComun({externid: 'nope', externname: 'unknown'}, 20, ctx()), '');
         assert.equal(E._resolveNombreComun(null, 20, ctx()), '');
+    });
+
+});
+describe('CreateExport AROC ListaEspecies parsing', () => {
+
+    it('_parseSharedStrings reads the ordered <si> table', () => {
+        assert.deepEqual(E._parseSharedStrings('<sst><si><t>Delfín mular</t></si><si><t>20068</t></si></sst>'), ['Delfín mular', '20068']);
+    });
+
+    it('_parseSheetCells decodes shared-string + literal cells by ref', () => {
+        const cells = E._parseSheetCells(
+            '<c r="B3" t="s"><v>0</v></c><c r="C3" t="s"><v>1</v></c><c r="D3"><v>9</v></c>',
+            ['Delfín mular', '20068']
+        );
+        assert.equal(cells.get('B3'), 'Delfín mular');
+        assert.equal(cells.get('C3'), '20068');
+        assert.equal(cells.get('D3'), '9');
+    });
+
+    it('_buildSpeciesIndex maps externid->name + lowercased name, skipping placeholders', () => {
+        const idx = E._buildSpeciesIndex(new Map([
+            ['B3', 'Delfín mular'], ['C3', '20068'],
+            ['B4', 'Calderón'], ['C4', 'sin Taxon ID']
+        ]));
+        assert.equal(idx.byExternId.get('20068'), 'Delfín mular');
+        assert.equal(idx.byExternId.has('sin Taxon ID'), false);
+        assert.equal(idx.byNombreLower.get('delfín mular'), 'Delfín mular');
+        assert.equal(idx.byNombreLower.get('calderón'), 'Calderón');
     });
 
 });
