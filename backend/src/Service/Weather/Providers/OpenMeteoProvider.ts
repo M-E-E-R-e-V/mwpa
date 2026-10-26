@@ -28,6 +28,25 @@ type OpenMeteoForecastResponse = {
     hourly?: OpenMeteoForecastHourly;
 };
 
+/** How a metric's hourly series is reduced to the day value. */
+type MetricReduce = 'mean' | 'max' | 'dir';
+
+/** Rounding applied to a metric value: fractional digits, or 'int'. */
+type MetricRound = number | 'int';
+
+/**
+ * Declarative mapping of one Open-Meteo hourly series onto a WeatherSample
+ * field. `get` picks the series from the hourly block `H` (type-safe, no
+ * casts), `reduce` is used for the day summary (the hour sample always picks the
+ * exact index) and `round` is applied to the resulting value.
+ */
+type WeatherMetric<H> = {
+    get: (hourly: H) => (number | null)[] | undefined;
+    field: keyof WeatherSample;
+    reduce: MetricReduce;
+    round: MetricRound;
+};
+
 /**
  * Open-Meteo provider — global wave + SST + air-temperature coverage,
  * backed by ERA5 reanalysis (historical) and forecast models.
@@ -75,6 +94,30 @@ export class OpenMeteoProvider implements WeatherProvider {
     private static readonly ARCHIVE_CUTOFF_DAYS = 6;
 
     /**
+     * Marine hourly series → WeatherSample fields (waves + SST).
+     * @private
+     */
+    private static readonly _MARINE_METRICS: WeatherMetric<OpenMeteoMarineHourly>[] = [
+        {get: (h): (number | null)[] | undefined => h.sea_surface_temperature, field: 'sst_c', reduce: 'mean', round: 1},
+        {get: (h): (number | null)[] | undefined => h.wave_height, field: 'wave_height_m', reduce: 'mean', round: 2},
+        {get: (h): (number | null)[] | undefined => h.wave_period, field: 'wave_period_s', reduce: 'mean', round: 1},
+        {get: (h): (number | null)[] | undefined => h.wave_direction, field: 'wave_direction_deg', reduce: 'dir', round: 'int'}
+    ];
+
+    /**
+     * Forecast/archive hourly series → WeatherSample fields (air temp, UV, wind).
+     * UV and gusts use the day MAX (peak), everything else the mean.
+     * @private
+     */
+    private static readonly _AIR_METRICS: WeatherMetric<OpenMeteoForecastHourly>[] = [
+        {get: (h): (number | null)[] | undefined => h.temperature_2m, field: 'air_temperature_c', reduce: 'mean', round: 1},
+        {get: (h): (number | null)[] | undefined => h.uv_index, field: 'uv_index', reduce: 'max', round: 1},
+        {get: (h): (number | null)[] | undefined => h.wind_speed_10m, field: 'wind_speed_m_s', reduce: 'mean', round: 2},
+        {get: (h): (number | null)[] | undefined => h.wind_direction_10m, field: 'wind_direction_deg', reduce: 'dir', round: 'int'},
+        {get: (h): (number | null)[] | undefined => h.wind_gusts_10m, field: 'wind_gusts_m_s', reduce: 'max', round: 2}
+    ];
+
+    /**
      * Shared limiter for both endpoints — Open-Meteo's quota is
      * cross-endpoint, so we pace all calls together. 1.2 s min interval
      * → ~50 req/min total.
@@ -109,127 +152,23 @@ export class OpenMeteoProvider implements WeatherProvider {
 
         if (marineHourly !== null) {
             times = marineHourly.time;
-            const sst = OpenMeteoProvider._mean(marineHourly.sea_surface_temperature);
-
-            if (sst !== null) {
-                day.sst_c = OpenMeteoProvider._round(sst, 1);
-            }
-
-            const height = OpenMeteoProvider._mean(marineHourly.wave_height);
-
-            if (height !== null) {
-                day.wave_height_m = OpenMeteoProvider._round(height, 2);
-            }
-
-            const period = OpenMeteoProvider._mean(marineHourly.wave_period);
-
-            if (period !== null) {
-                day.wave_period_s = OpenMeteoProvider._round(period, 1);
-            }
-
-            const direction = OpenMeteoProvider._meanDirection(marineHourly.wave_direction);
-
-            if (direction !== null) {
-                day.wave_direction_deg = Math.round(direction);
-            }
+            OpenMeteoProvider._applyDay(day, marineHourly, OpenMeteoProvider._MARINE_METRICS);
         }
 
         if (airTemp !== null) {
             times ??= airTemp.time;
-            const air = OpenMeteoProvider._mean(airTemp.temperature_2m);
-
-            if (air !== null) {
-                day.air_temperature_c = OpenMeteoProvider._round(air, 1);
-            }
-
-            // UV is 0 at night — the day MAX (peak around solar noon) is
-            // the meaningful summary, not the mean.
-            const uvMax = OpenMeteoProvider._max(airTemp.uv_index);
-
-            if (uvMax !== null) {
-                day.uv_index = OpenMeteoProvider._round(uvMax, 1);
-            }
-
-            const windSpeed = OpenMeteoProvider._mean(airTemp.wind_speed_10m);
-
-            if (windSpeed !== null) {
-                day.wind_speed_m_s = OpenMeteoProvider._round(windSpeed, 2);
-            }
-
-            const windDir = OpenMeteoProvider._meanDirection(airTemp.wind_direction_10m);
-
-            if (windDir !== null) {
-                day.wind_direction_deg = Math.round(windDir);
-            }
-
-            // Gusts are a peak quantity — the day MAX is the meaningful
-            // summary (stress indicator), not the mean.
-            const gustMax = OpenMeteoProvider._max(airTemp.wind_gusts_10m);
-
-            if (gustMax !== null) {
-                day.wind_gusts_m_s = OpenMeteoProvider._round(gustMax, 2);
-            }
+            OpenMeteoProvider._applyDay(day, airTemp, OpenMeteoProvider._AIR_METRICS);
         }
 
         const idx = OpenMeteoProvider._findHourIndex(times, hour);
 
         if (idx !== null) {
             if (marineHourly !== null) {
-                const sst = OpenMeteoProvider._at(marineHourly.sea_surface_temperature, idx);
-
-                if (sst !== null) {
-                    hourSample.sst_c = OpenMeteoProvider._round(sst, 1);
-                }
-
-                const height = OpenMeteoProvider._at(marineHourly.wave_height, idx);
-
-                if (height !== null) {
-                    hourSample.wave_height_m = OpenMeteoProvider._round(height, 2);
-                }
-
-                const period = OpenMeteoProvider._at(marineHourly.wave_period, idx);
-
-                if (period !== null) {
-                    hourSample.wave_period_s = OpenMeteoProvider._round(period, 1);
-                }
-
-                const direction = OpenMeteoProvider._at(marineHourly.wave_direction, idx);
-
-                if (direction !== null) {
-                    hourSample.wave_direction_deg = Math.round(direction);
-                }
+                OpenMeteoProvider._applyHour(hourSample, marineHourly, idx, OpenMeteoProvider._MARINE_METRICS);
             }
 
             if (airTemp !== null) {
-                const air = OpenMeteoProvider._at(airTemp.temperature_2m, idx);
-
-                if (air !== null) {
-                    hourSample.air_temperature_c = OpenMeteoProvider._round(air, 1);
-                }
-
-                const uv = OpenMeteoProvider._at(airTemp.uv_index, idx);
-
-                if (uv !== null) {
-                    hourSample.uv_index = OpenMeteoProvider._round(uv, 1);
-                }
-
-                const windSpeed = OpenMeteoProvider._at(airTemp.wind_speed_10m, idx);
-
-                if (windSpeed !== null) {
-                    hourSample.wind_speed_m_s = OpenMeteoProvider._round(windSpeed, 2);
-                }
-
-                const windDir = OpenMeteoProvider._at(airTemp.wind_direction_10m, idx);
-
-                if (windDir !== null) {
-                    hourSample.wind_direction_deg = Math.round(windDir);
-                }
-
-                const gust = OpenMeteoProvider._at(airTemp.wind_gusts_10m, idx);
-
-                if (gust !== null) {
-                    hourSample.wind_gusts_m_s = OpenMeteoProvider._round(gust, 2);
-                }
+                OpenMeteoProvider._applyHour(hourSample, airTemp, idx, OpenMeteoProvider._AIR_METRICS);
             }
         }
 
@@ -481,6 +420,54 @@ export class OpenMeteoProvider implements WeatherProvider {
     private static _round(x: number, digits: number): number {
         const factor = 10 ** digits;
         return Math.round(x * factor) / factor;
+    }
+
+    /**
+     * Reduce an hourly series to its day value per the metric's reducer.
+     * @private
+     */
+    private static _reduce(xs: (number | null)[] | undefined, kind: MetricReduce): number | null {
+        if (kind === 'max') {
+            return OpenMeteoProvider._max(xs);
+        }
+
+        if (kind === 'dir') {
+            return OpenMeteoProvider._meanDirection(xs);
+        }
+
+        return OpenMeteoProvider._mean(xs);
+    }
+
+    /**
+     * Assign `raw` (rounded per the metric) to `sample[field]`, skipping null.
+     * @private
+     */
+    private static _assign(sample: WeatherSample, field: keyof WeatherSample, raw: number | null, round: MetricRound): void {
+        if (raw === null) {
+            return;
+        }
+
+        sample[field] = round === 'int' ? Math.round(raw) : OpenMeteoProvider._round(raw, round);
+    }
+
+    /**
+     * Fill `sample` with the DAY summary of each metric (reduced series).
+     * @private
+     */
+    private static _applyDay<H>(sample: WeatherSample, hourly: H, metrics: WeatherMetric<H>[]): void {
+        for (const m of metrics) {
+            OpenMeteoProvider._assign(sample, m.field, OpenMeteoProvider._reduce(m.get(hourly), m.reduce), m.round);
+        }
+    }
+
+    /**
+     * Fill `sample` with each metric's value at hourly index `idx`.
+     * @private
+     */
+    private static _applyHour<H>(sample: WeatherSample, hourly: H, idx: number, metrics: WeatherMetric<H>[]): void {
+        for (const m of metrics) {
+            OpenMeteoProvider._assign(sample, m.field, OpenMeteoProvider._at(m.get(hourly), idx), m.round);
+        }
     }
 
 }
