@@ -25,6 +25,7 @@ const E = Excel as unknown as {
     _indexBy<T extends {id: number;}>(items: T[], val: (item: T) => string): Map<number, string>;
     _buildHeader(plan: Plan): string[];
     _emitStandard(key: string, entry: unknown, ctx: Ctx): string | number;
+    _emitOptional(key: string, entry: unknown, ext: unknown, orgDescriptionById: Map<number, string>): string | number;
 };
 
 const ctx = (): Ctx => ({
@@ -100,6 +101,23 @@ describe('Excel._emitStandard', () => {
         const c = ctx();
         assert.equal(E._emitStandard('boat', entry, c), '');
         assert.equal(E._emitStandard('reaction', entry, c), '');
+    });
+
+});
+
+describe('Excel._emitOptional', () => {
+
+    it('maps optional columns and ext env fields (undefined ext == blank)', () => {
+        const entry = {unid: 'u-1', organization_id: 4, tour_fid: 'T9'};
+        const org = new Map([[4, 'Org1']]);
+        assert.equal(E._emitOptional('unid', entry, null, org), 'u-1');
+        assert.equal(E._emitOptional('tour_fid', entry, null, org), 'T9');
+        assert.equal(E._emitOptional('organization', entry, null, org), 'Org1');
+        assert.equal(E._emitOptional('depth_m', entry, {depth_m: 123.4}, org), '123.4');
+        // no ext row → the env column is blank (formatNumeric(undefined) === '')
+        assert.equal(E._emitOptional('depth_m', entry, null, org), '');
+        assert.equal(E._emitOptional('sst_c_day', entry, {sst_c_day: null}, org), '');
+        assert.equal(E._emitOptional('nope', entry, null, org), '');
     });
 
 });

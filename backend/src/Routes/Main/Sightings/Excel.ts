@@ -708,20 +708,20 @@ export class Excel {
             case 'create_datetime': return formatTimestamp(entry.create_datetime);
             case 'update_datetime': return formatTimestamp(entry.update_datetime);
             case 'tour_fid': return entry.tour_fid;
-            case 'depth_m': return formatNumeric(ext?.depth_m ?? null);
+            case 'depth_m': return formatNumeric(ext?.depth_m);
             case 'depth_provider': return ext?.provenance?.depth_m ?? '';
-            case 'sst_c_day': return formatNumeric(ext?.sst_c_day ?? null);
-            case 'air_temperature_c_day': return formatNumeric(ext?.air_temperature_c_day ?? null);
-            case 'uv_index_day': return formatNumeric(ext?.uv_index_day ?? null);
-            case 'wave_height_m_day': return formatNumeric(ext?.wave_height_m_day ?? null);
-            case 'wave_period_s_day': return formatNumeric(ext?.wave_period_s_day ?? null);
-            case 'wave_direction_deg_day': return formatNumeric(ext?.wave_direction_deg_day ?? null);
-            case 'sst_c_hour': return formatNumeric(ext?.sst_c_hour ?? null);
-            case 'air_temperature_c_hour': return formatNumeric(ext?.air_temperature_c_hour ?? null);
-            case 'uv_index_hour': return formatNumeric(ext?.uv_index_hour ?? null);
-            case 'wave_height_m_hour': return formatNumeric(ext?.wave_height_m_hour ?? null);
-            case 'wave_period_s_hour': return formatNumeric(ext?.wave_period_s_hour ?? null);
-            case 'wave_direction_deg_hour': return formatNumeric(ext?.wave_direction_deg_hour ?? null);
+            case 'sst_c_day': return formatNumeric(ext?.sst_c_day);
+            case 'air_temperature_c_day': return formatNumeric(ext?.air_temperature_c_day);
+            case 'uv_index_day': return formatNumeric(ext?.uv_index_day);
+            case 'wave_height_m_day': return formatNumeric(ext?.wave_height_m_day);
+            case 'wave_period_s_day': return formatNumeric(ext?.wave_period_s_day);
+            case 'wave_direction_deg_day': return formatNumeric(ext?.wave_direction_deg_day);
+            case 'sst_c_hour': return formatNumeric(ext?.sst_c_hour);
+            case 'air_temperature_c_hour': return formatNumeric(ext?.air_temperature_c_hour);
+            case 'uv_index_hour': return formatNumeric(ext?.uv_index_hour);
+            case 'wave_height_m_hour': return formatNumeric(ext?.wave_height_m_hour);
+            case 'wave_period_s_hour': return formatNumeric(ext?.wave_period_s_hour);
+            case 'wave_direction_deg_hour': return formatNumeric(ext?.wave_direction_deg_hour);
             default: return '';
         }
     }
