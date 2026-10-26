@@ -26,6 +26,7 @@ const E = Excel as unknown as {
     _buildHeader(plan: Plan): string[];
     _emitStandard(key: string, entry: unknown, ctx: Ctx): string | number;
     _emitOptional(key: string, entry: unknown, ext: unknown, orgDescriptionById: Map<number, string>): string | number;
+    _filterInfoRows(filter: unknown): (string | number)[][];
 };
 
 const ctx = (): Ctx => ({
@@ -118,6 +119,19 @@ describe('Excel._emitOptional', () => {
         assert.equal(E._emitOptional('depth_m', entry, null, org), '');
         assert.equal(E._emitOptional('sst_c_day', entry, {sst_c_day: null}, org), '');
         assert.equal(E._emitOptional('nope', entry, null, org), '');
+    });
+
+});
+describe('Excel._filterInfoRows', () => {
+
+    it('lists only the set filter fields, in order', () => {
+        const rows = E._filterInfoRows({period_from: '2024-01-01', species_id: 7, search: 'orca'});
+        assert.deepEqual(rows, [['period_from', '2024-01-01'], ['species_id', 7], ['search', 'orca']]);
+    });
+
+    it('is empty for no filter', () => {
+        assert.deepEqual(E._filterInfoRows(undefined), []);
+        assert.deepEqual(E._filterInfoRows({}), []);
     });
 
 });

@@ -726,6 +726,32 @@ export class Excel {
         }
     }
 
+    /**
+     * The active-filter criteria as [label, value] info rows (only the fields
+     * that are set). Empty when no filter is applied.
+     * @private
+     */
+    private static _filterInfoRows(filter: SightingFilterCriteria | undefined): (string|number)[][] {
+        if (!filter) {
+            return [];
+        }
+
+        const keys: (keyof SightingFilterCriteria)[] = [
+            'period_from', 'period_to', 'species_id', 'organization_id',
+            'vehicle_id', 'vehicle_driver_id', 'search'
+        ];
+        const rows: (string|number)[][] = [];
+
+        for (const key of keys) {
+            const value = filter[key];
+            if (value !== undefined) {
+                rows.push([key, value]);
+            }
+        }
+
+        return rows;
+    }
+
     private static _buildInfoData(
         rowCount: number,
         standardKeys: string[],
@@ -746,30 +772,7 @@ export class Excel {
             []
         ];
 
-        const filterRows: (string|number)[][] = [];
-        if (filter) {
-            if (filter.period_from !== undefined) {
-                filterRows.push(['period_from', filter.period_from]);
-            }
-            if (filter.period_to !== undefined) {
-                filterRows.push(['period_to', filter.period_to]);
-            }
-            if (filter.species_id !== undefined) {
-                filterRows.push(['species_id', filter.species_id]);
-            }
-            if (filter.organization_id !== undefined) {
-                filterRows.push(['organization_id', filter.organization_id]);
-            }
-            if (filter.vehicle_id !== undefined) {
-                filterRows.push(['vehicle_id', filter.vehicle_id]);
-            }
-            if (filter.vehicle_driver_id !== undefined) {
-                filterRows.push(['vehicle_driver_id', filter.vehicle_driver_id]);
-            }
-            if (filter.search !== undefined) {
-                filterRows.push(['search', filter.search]);
-            }
-        }
+        const filterRows = Excel._filterInfoRows(filter);
 
         info.push(['Active filter']);
         if (filterRows.length === 0) {
