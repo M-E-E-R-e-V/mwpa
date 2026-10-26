@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     ButtonClass2,
     ButtonDefault2,
@@ -94,17 +95,17 @@ export class SightingFilter extends Card2 {
         groupSearch.appendTo(row.createCol(2));
         this._inputSearch = new Input2({type: InputType2.text});
         this._inputSearch.appendTo(groupSearch);
-        this._inputSearch.setPlaceholder('note / recognizable …');
+        this._inputSearch.setPlaceholder(Lang.i().l('note / recognizable …'));
 
         /* "Show old data" toggle — mixes the hand-maintained historical sightings (sighting_old) into the list. */
         const oldWrap = jQuery('<div class="pt-1"/>').appendTo(body);
         jQuery('<input type="checkbox" id="mwpa-filter-include-old">').appendTo(oldWrap);
-        jQuery('<label for="mwpa-filter-include-old" class="ml-1 mb-0"/>').text('Alte Daten (manuell erfasst) einblenden').appendTo(oldWrap);
+        jQuery('<label for="mwpa-filter-include-old" class="ml-1 mb-0"/>').text(Lang.i().l('Alte Daten (manuell erfasst) einblenden')).appendTo(oldWrap);
 
         // Buttons row, right-aligned, no separate footer to keep the card flat.
         const actions = jQuery('<div class="text-right pt-1"/>').appendTo(body);
 
-        const btnReset = new ButtonDefault2({title: 'Reset', icon: 'fa fa-undo'});
+        const btnReset = new ButtonDefault2({title: Lang.i().l('Reset'), icon: 'fa fa-undo'});
         btnReset.appendTo(actions);
         btnReset.setOnClickFn(() => {
             this.resetValues();
@@ -116,7 +117,7 @@ export class SightingFilter extends Card2 {
 
         actions.append(' ');
 
-        const btnApply = new ButtonDefault2({title: 'Apply', icon: 'fa fa-check', btnClass: ButtonClass2.primary});
+        const btnApply = new ButtonDefault2({title: Lang.i().l('Apply'), icon: 'fa fa-check', btnClass: ButtonClass2.primary});
         btnApply.appendTo(actions);
         btnApply.setOnClickFn(() => {
             if (this._onApply) {

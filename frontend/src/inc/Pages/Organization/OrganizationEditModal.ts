@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     FormGroup2,
     FormRow2,
@@ -198,8 +199,8 @@ export class OrganizationEditModal extends ModalDialog2 {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     /**

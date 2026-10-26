@@ -189,7 +189,7 @@ export class OrphanTracks extends BasePage {
             tdAction.appendTo(trbody);
             const abtnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             abtnMenu.appendTo(tdAction);
-            abtnMenu.addMenuItem('Assign to tour', () => {
+            abtnMenu.addMenuItem(Lang.i().l('Assign to tour'), () => {
                 this._modal.setTitle(new LangTextV2({text: 'Assign orphan tracks'}));
                 this._modal.setSource(
                     entry.tour_fid,

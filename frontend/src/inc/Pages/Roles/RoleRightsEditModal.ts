@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     Input2,
     InputType2,
@@ -35,7 +36,7 @@ export class RoleRightsEditModal extends ModalDialog2 {
         const searchWrapper = jQuery('<div class="mb-3"/>').appendTo(bodyCard);
         this._searchInput = new Input2({type: InputType2.text});
         this._searchInput.appendTo(searchWrapper);
-        this._searchInput.setPlaceholder('Filter rights …');
+        this._searchInput.setPlaceholder(Lang.i().l('Filter rights …'));
 
         let searchTimer: ReturnType<typeof setTimeout> | null = null;
         this._searchInput.getElement().on('keyup', () => {
@@ -54,8 +55,8 @@ export class RoleRightsEditModal extends ModalDialog2 {
 
         this._roleRightList = new RoleRightListWidget(listWrapper);
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     /**

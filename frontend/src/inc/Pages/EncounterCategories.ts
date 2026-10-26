@@ -194,7 +194,7 @@ export class EncounterCategories extends BasePage {
             const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             btnMenu.appendTo(actionTd);
 
-            btnMenu.addMenuItem('Edit', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Edit'), (): void => {
                 this._dialog.resetValues();
                 this._dialog.setTitle(new LangTextV2({text: 'Edit Encounter Category'}));
                 this._dialog.setEntryId(entry.id);
@@ -206,15 +206,12 @@ export class EncounterCategories extends BasePage {
 
             btnMenu.addDivider();
 
-            btnMenu.addMenuItem('Delete', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Delete'), (): void => {
                 DialogConfirm2.confirm(
                     'dcDeleteEncounter',
                     ModalDialogType2.large,
-                    'Delete Encounter Category',
-                    'Soft-delete this encounter category?'
-                    + ' Historical sightings that reference it keep the link;'
-                    + ' it disappears from the picker for new sightings.'
-                    + ' Revive it later from the Edit dialog.',
+                    Lang.i().l('Delete Encounter Category'),
+                    `${Lang.i().l('Soft-delete this encounter category?')} ${Lang.i().l('Historical sightings that reference it keep the link; it disappears from the picker for new sightings. Revive it later from the Edit dialog.')}`,
                     async(_, dialog) => {
                         try {
                             if (await EncounterCategoriesAPI.delete({id: entry.id})) {

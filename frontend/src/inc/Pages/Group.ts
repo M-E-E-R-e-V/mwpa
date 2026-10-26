@@ -158,7 +158,7 @@ export class Group extends BasePage {
                     if (org) {
                         new Td2({value: `${org.name}`}).appendTo(trbody);
                     } else {
-                        new Td2({value: 'not set'}).appendTo(trbody);
+                        new Td2({value: Lang.i().l('not set')}).appendTo(trbody);
                     }
 
                     // action

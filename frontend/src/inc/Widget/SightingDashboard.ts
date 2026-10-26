@@ -1,4 +1,5 @@
 /* global JQuery */
+import {Lang} from '../Lang';
 import {ComponentType, Widget2} from 'bambooo';
 import crossfilter from 'crossfilter2';
 import * as d3 from 'd3';
@@ -128,7 +129,7 @@ export class SightingDashboard extends Widget2 {
         this.clear();
 
         if (sightings.length === 0) {
-            this._statusEl.text('No sightings under current filter.');
+            this._statusEl.text(Lang.i().l('No sightings under current filter.'));
             this._resetBtn.prop('disabled', true);
             return;
         }

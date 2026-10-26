@@ -166,7 +166,7 @@ export class ExternalTourSource extends BasePage {
                 const when = moment(entry.last_full_pull_at * 1000);
                 tdLast.append(`<b>${when.format('YYYY-MM-DD HH:mm:ss')}</b><br><small class="text-muted">${when.fromNow()}</small>`);
             } else {
-                tdLast.append('<span class="text-muted">never</span>');
+                tdLast.append(`<span class="text-muted">${Lang.i().l('never')}</span>`);
             }
 
             const tdAction = new Td2({value: ''});
@@ -174,7 +174,7 @@ export class ExternalTourSource extends BasePage {
             const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             btnMenu.appendTo(tdAction);
 
-            btnMenu.addMenuItem('Edit', async(): Promise<void> => {
+            btnMenu.addMenuItem(Lang.i().l('Edit'), async(): Promise<void> => {
                 this._dialog.resetValues();
                 this._dialog.setTitle(new LangTextV2({text: 'Edit external tour source'}));
                 this._dialog.setSourceId(entry.id);
@@ -190,13 +190,12 @@ export class ExternalTourSource extends BasePage {
 
             btnMenu.addDivider();
 
-            btnMenu.addMenuItem('Delete', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Delete'), (): void => {
                 DialogConfirm2.confirm(
                     'dcDeleteExternalTourSource',
                     ModalDialogType2.large,
-                    'Delete external tour source',
-                    'Delete this source config?'
-                    + ' Pulled external_tour rows remain in the database as a historical record.',
+                    Lang.i().l('Delete external tour source'),
+                    `${Lang.i().l('Delete this source config?')} ${Lang.i().l('Pulled external_tour rows remain in the database as a historical record.')}`,
                     async(_, dialog) => {
                         try {
                             if (await ExternalTourSourceAPI.delete({id: entry.id})) {

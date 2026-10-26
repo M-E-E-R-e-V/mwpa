@@ -97,11 +97,11 @@ export class Blacklist extends BasePage {
             const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             btnMenu.appendTo(actionTd);
 
-            btnMenu.addMenuItem('Unblock', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Unblock'), (): void => {
                 DialogConfirm2.confirm(
                     'dcUnblockIp',
                     ModalDialogType2.large,
-                    'Unblock IP',
+                    Lang.i().l('Unblock IP'),
                     `Unblock ${entry.ip}? This resets the rate limiter for this IP immediately.`,
                     async(_, dialog) => {
                         try {
@@ -213,11 +213,11 @@ export class Blacklist extends BasePage {
                 const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
                 btnMenu.appendTo(actionTd);
 
-                btnMenu.addMenuItem('Unlock', (): void => {
+                btnMenu.addMenuItem(Lang.i().l('Unlock'), (): void => {
                     DialogConfirm2.confirm(
                         'dcUnlockLogin',
                         ModalDialogType2.large,
-                        'Unlock login',
+                        Lang.i().l('Unlock login'),
                         `Unlock ${entry.email} on this device? They can log in again immediately.`,
                         async(_, dialog) => {
                             try {

@@ -1,4 +1,5 @@
 /* global JQuery */
+import {Lang} from '../../Lang';
 import {
     FormGroup2,
     Input2,
@@ -59,18 +60,18 @@ export class SpeciesEditModal extends ModalDialog2 {
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupName = new FormGroup2({label: 'Specie-Name'});
+        const groupName = new FormGroup2({label: Lang.i().l('Specie-Name')});
         groupName.appendTo(bodyCard);
         this._inputName = new Input2({});
         this._inputName.appendTo(groupName);
-        this._inputName.setPlaceholder('Name of specie');
+        this._inputName.setPlaceholder(Lang.i().l('Name of specie'));
 
-        const groupOttId = new FormGroup2({label: 'Ott-Id'});
+        const groupOttId = new FormGroup2({label: Lang.i().l('Ott-Id')});
         groupOttId.appendTo(bodyCard);
         this._ottId = new Input2({type: InputType2.number});
         this._ottId.appendTo(groupOttId);
 
-        const groupAphiaId = new FormGroup2({label: 'WoRMS aphia-ID'});
+        const groupAphiaId = new FormGroup2({label: Lang.i().l('WoRMS aphia-ID')});
         groupAphiaId.appendTo(bodyCard);
         this._aphiaId = new Input2({type: InputType2.number});
         this._aphiaId.appendTo(groupAphiaId);
@@ -81,15 +82,15 @@ export class SpeciesEditModal extends ModalDialog2 {
             this._updateAphiaLink();
         });
 
-        const groupSpeciesGroup = new FormGroup2({label: 'Specie-Group'});
+        const groupSpeciesGroup = new FormGroup2({label: Lang.i().l('Specie-Group')});
         groupSpeciesGroup.appendTo(bodyCard);
         this._selectSpeciesGroup = new Select2({});
         this._selectSpeciesGroup.appendTo(groupSpeciesGroup);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     /**

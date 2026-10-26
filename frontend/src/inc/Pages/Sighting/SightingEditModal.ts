@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import moment from 'moment';
 import {EncounterCategorieEntry} from '../../Api/EncounterCategories';
 import {SpeciesEntry} from '../../Api/Species';
@@ -283,8 +284,8 @@ export class SightingEditModal extends ModalDialog2 {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     /**

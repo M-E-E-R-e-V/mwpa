@@ -102,7 +102,7 @@ export class Species extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Specie save success.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Specie save success.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -252,7 +252,7 @@ export class Species extends BasePage {
                 PageLoader.getInstance().load(new SpeciesProfilePage(specie.id)).then();
             }, 'fas fa-chart-bar');
 
-            btnMenu.addMenuItem('Edit', async(): Promise<void> => {
+            btnMenu.addMenuItem(Lang.i().l('Edit'), async(): Promise<void> => {
                 this._speciesDialog.resetValues();
                 this._speciesDialog.setTitle(new LangTextV2({text: 'Edit Species'}));
                 this._speciesDialog.setSpecieId(specie.id);
@@ -269,7 +269,7 @@ export class Species extends BasePage {
                 this._speciesDialog.show();
             }, IconFa.edit);
 
-            btnMenu.addMenuItem('Merge', async(): Promise<void> => {
+            btnMenu.addMenuItem(Lang.i().l('Merge'), async(): Promise<void> => {
                 this._mergeDialog.resetValues();
                 this._mergeDialog.setTitle(new LangTextV2({text: 'Merge Species'}));
 
@@ -284,12 +284,12 @@ export class Species extends BasePage {
 
             btnMenu.addDivider();
 
-            btnMenu.addMenuItem('Delete', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Delete'), (): void => {
                 DialogConfirm2.confirm(
                     'dcDeleteSpecie',
                     ModalDialogType2.large,
-                    'Delete Specie',
-                    'Are you sure you want to delete the specie?',
+                    Lang.i().l('Delete Specie'),
+                    Lang.i().l('Are you sure you want to delete the specie?'),
                     async(_, dialog) => {
                         try {
                             if (await SpeciesAPI.delete({id: specie.id})) {

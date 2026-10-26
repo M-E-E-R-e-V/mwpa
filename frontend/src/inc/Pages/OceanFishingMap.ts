@@ -1,3 +1,4 @@
+import {Lang} from '../Lang';
 import {Card2, ContentCol2, ContentColSize2, ContentRow2, LangTextV2, Select2} from 'bambooo';
 import {Coordinate} from 'ol/coordinate';
 import {fromLonLat} from 'ol/proj';
@@ -281,12 +282,12 @@ export class OceanFishingMap extends BasePage {
         // Side panel: provenance legend -------------------------------------------------------
         this._legend = new ProvenanceLegend(sideWrap);
         this._legend.setStaticEntries([
-            {label: 'OSM tiles', source: 'OpenStreetMap (local cache)', url: 'https://www.openstreetmap.org/'},
-            {label: 'Bathymetry', source: 'EMODnet Bathymetry (local cache)', url: 'https://emodnet.ec.europa.eu/en/bathymetry'},
-            {label: 'Relief (ES)', source: 'IDEE / IGN España (local cache)', url: 'https://www.idee.es/'},
-            {label: 'Weather + waves', source: 'Open-Meteo marine + forecast API', url: 'https://open-meteo.com/'},
-            {label: 'Sea depth', source: 'EMODnet Bathymetry point lookup', url: 'https://emodnet.ec.europa.eu/en/bathymetry'},
-            {label: 'Ocean currents', source: 'CMEMS Global Analysis-Forecast 1/12° (WMTS)', url: 'https://data.marine.copernicus.eu/product/GLOBAL_ANALYSISFORECAST_PHY_001_024/description'}
+            {label: Lang.i().l('OSM tiles'), source: 'OpenStreetMap (local cache)', url: 'https://www.openstreetmap.org/'},
+            {label: Lang.i().l('Bathymetry'), source: 'EMODnet Bathymetry (local cache)', url: 'https://emodnet.ec.europa.eu/en/bathymetry'},
+            {label: Lang.i().l('Relief (ES)'), source: 'IDEE / IGN España (local cache)', url: 'https://www.idee.es/'},
+            {label: Lang.i().l('Weather + waves'), source: 'Open-Meteo marine + forecast API', url: 'https://open-meteo.com/'},
+            {label: Lang.i().l('Sea depth'), source: 'EMODnet Bathymetry point lookup', url: 'https://emodnet.ec.europa.eu/en/bathymetry'},
+            {label: Lang.i().l('Ocean currents'), source: 'CMEMS Global Analysis-Forecast 1/12° (WMTS)', url: 'https://data.marine.copernicus.eu/product/GLOBAL_ANALYSISFORECAST_PHY_001_024/description'}
         ]);
         this._legend.setMetricLayers(this._metricLayers.map(({layer}) => layer));
 

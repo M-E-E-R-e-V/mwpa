@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {FormGroup2, FormRow2, LangTextV2, ModalDialog2, ModalDialogType2, Textarea2} from 'bambooo';
 
 /**
@@ -36,8 +37,8 @@ export class SightingDeletedModal extends ModalDialog2 {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     /**

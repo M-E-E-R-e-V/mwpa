@@ -1,3 +1,4 @@
+import {Lang} from '../Lang';
 import {
     Card2,
     CardBodyType2,
@@ -203,7 +204,7 @@ export class About extends BasePage {
         cardSources.setTitle(new LangTextV2({text: 'Data sources'}));
 
         const groups = About._SOURCES.map((g) =>
-            `<div class="src-group"><h6><i class="fas ${g.icon} me-2 text-primary"></i>${g.title}</h6><ul>${
+            `<div class="src-group"><h6><i class="fas ${g.icon} me-2 text-primary"></i>${Lang.i().l(g.title)}</h6><ul>${
                 g.items.map((it) =>
                     `<li><a href="${it.url}" target="_blank" rel="noopener">${it.name}</a> <span class="desc">— ${it.desc}</span></li>`).join('')
             }</ul></div>`).join('');
@@ -216,8 +217,8 @@ export class About extends BasePage {
 
         const cells = About._GALLERY.map((s) =>
             '<div class="mwpa-species-cell">' +
-            `<img src="images/species/${s.slug}.svg" alt="${s.label}" loading="lazy">` +
-            `<div class="cap">${s.label}</div>` +
+            `<img src="images/species/${s.slug}.svg" alt="${Lang.i().l(s.label)}" loading="lazy">` +
+            `<div class="cap">${Lang.i().l(s.label)}</div>` +
             '</div>').join('');
         cardSpecies.getBodyElement().append(`<div class="mwpa-species-grid">${cells}</div>`);
 

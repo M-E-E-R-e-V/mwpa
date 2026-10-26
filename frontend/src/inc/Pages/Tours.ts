@@ -222,7 +222,7 @@ export class Tours extends BasePage {
 
         const searchInput = new Input2({type: InputType2.text});
         searchInput.appendTo(searchSlot);
-        searchInput.setPlaceholder('search persons / tour-fid …');
+        searchInput.setPlaceholder(Lang.i().l('search persons / tour-fid …'));
 
         // Table ---------------------------------------------------------------------------------
         const tableWrapper = new TableWrapper2<TourEntry>({tableOptions: {head_fixed: true}});
@@ -365,11 +365,11 @@ export class Tours extends BasePage {
             const abtnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             abtnMenu.appendTo(tdAction);
 
-            abtnMenu.addMenuItem('Show Map', () => {
+            abtnMenu.addMenuItem(Lang.i().l('Show Map'), () => {
                 PageLoader.getInstance().load(new ToursMap(entry.id)).then();
             }, IconFa.hockeypuck);
 
-            abtnMenu.addMenuItem('Delete', () => {
+            abtnMenu.addMenuItem(Lang.i().l('Delete'), () => {
                 // eslint-disable-next-line no-alert
                 window.alert('Delete todo');
             }, IconFa.trash);

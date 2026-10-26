@@ -168,7 +168,7 @@ export class Services extends BasePage {
                     const when = moment(sched.lastRun);
                     schedTd.append(`<br><small class="text-muted">last: ${when.format('HH:mm:ss')} (${when.fromNow()})</small>`);
                 } else {
-                    schedTd.append('<br><small class="text-muted">never run</small>');
+                    schedTd.append(`<br><small class="text-muted">${Lang.i().l('never run')}</small>`);
                 }
             } else {
                 schedTd.append('<span class="text-muted">—</span>');
@@ -193,7 +193,7 @@ export class Services extends BasePage {
              * (HttpService, MariaDB) doesn't expose a useful invoke.
              */
             if (entry.type === '1') {
-                btnMenu.addMenuItem('Invoke now', async(): Promise<void> => {
+                btnMenu.addMenuItem(Lang.i().l('Invoke now'), async(): Promise<void> => {
                     try {
                         if (await ServiceAPI.invoke(entry.name)) {
                             this._toast.fire({icon: 'success', title: `${entry.name} invoked.`});
@@ -209,7 +209,7 @@ export class Services extends BasePage {
                 btnMenu.addDivider();
             }
 
-            btnMenu.addMenuItem('Start', async(): Promise<void> => {
+            btnMenu.addMenuItem(Lang.i().l('Start'), async(): Promise<void> => {
                 try {
                     if (await ServiceAPI.start(entry.name)) {
                         this._toast.fire({icon: 'success', title: `${entry.name} started.`});
@@ -222,7 +222,7 @@ export class Services extends BasePage {
                 }
             }, 'fa fa-power-off');
 
-            btnMenu.addMenuItem('Stop', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Stop'), (): void => {
                 /*
                  * Critical / important services get an extra confirmation
                  * step — stopping MariaDBService while the cron is mid-tick
@@ -247,8 +247,7 @@ export class Services extends BasePage {
                         'dcStopService',
                         ModalDialogType2.large,
                         `Stop ${entry.name}`,
-                        `Stop the ${imp.text} service "${entry.name}"?`
-                        + ' Dependent services will be stopped too. This affects the live backend.',
+                        `Stop the ${imp.text} service "${entry.name}"?${Lang.i().l(' Dependent services will be stopped too. This affects the live backend.')}`,
                         async(_, dialog) => {
                             await performStop();
                             dialog.hide();

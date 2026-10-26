@@ -161,7 +161,7 @@ export class Devices extends BasePage {
             activityTd.append('<br>');
             new Badge2({text: label, type: BadgeType2.info, color: recency}).appendTo(activityTd);
         } else {
-            activityTd.append('<br><span class="text-muted small">no sightings yet</span>');
+            activityTd.append(`<br><span class="text-muted small">${Lang.i().l('no sightings yet')}</span>`);
         }
 
         new Td2({value: formatTs(d.create_datetime)}).appendTo(trbody);

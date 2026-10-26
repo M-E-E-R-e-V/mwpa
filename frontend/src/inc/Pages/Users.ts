@@ -114,7 +114,7 @@ export class Users extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'User save success.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('User save success.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -218,7 +218,7 @@ export class Users extends BasePage {
         // Disabled column: header doubles as "show disabled" filter switch.
         const thDisabled = new Th2({value: makeSortColumn('Disabled', 'status')});
         thDisabled.appendTo(trhead);
-        const filterDisabled = new Switch2({label: 'Show all'});
+        const filterDisabled = new Switch2({label: Lang.i().l('Show all')});
         filterDisabled.appendTo(thDisabled);
         if (filter.filter && filter.filter.show_disabled !== undefined) {
             filterDisabled.setEnable(filter.filter.show_disabled);
@@ -285,7 +285,7 @@ export class Users extends BasePage {
             const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             btnMenu.appendTo(actionTd);
 
-            btnMenu.addMenuItem('Edit', async(): Promise<void> => {
+            btnMenu.addMenuItem(Lang.i().l('Edit'), async(): Promise<void> => {
                 const groups = await GroupAPI.getGroupList();
 
                 this._usersDialog.resetValues();

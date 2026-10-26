@@ -126,14 +126,14 @@ export class Roles extends BasePage {
                 const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
                 btnMenu.appendTo(actionTd);
 
-                btnMenu.addMenuItem('Edit', (): void => {
+                btnMenu.addMenuItem(Lang.i().l('Edit'), (): void => {
                     const dialog = this._openRoleDialog(`Edit role: ${role.name}`);
                     dialog.setRoleId(role.id);
                     dialog.setName(role.name);
                     dialog.show();
                 }, IconFa.edit);
 
-                btnMenu.addMenuItem('Set rights', async(): Promise<void> => {
+                btnMenu.addMenuItem(Lang.i().l('Set rights'), async(): Promise<void> => {
                     const dialog = this._openRoleRightsDialog(role.name);
                     dialog.setRoleId(role.id);
 
@@ -149,7 +149,7 @@ export class Roles extends BasePage {
 
                 // System roles (root, user) are seeded from code and must stay.
                 if (role.name !== 'root' && role.name !== 'user') {
-                    btnMenu.addMenuItem('Delete', async(): Promise<void> => {
+                    btnMenu.addMenuItem(Lang.i().l('Delete'), async(): Promise<void> => {
                         // eslint-disable-next-line no-alert
                         if (!window.confirm(`Delete role "${role.name}"? Its rights and group assignments are removed.`)) {
                             return;

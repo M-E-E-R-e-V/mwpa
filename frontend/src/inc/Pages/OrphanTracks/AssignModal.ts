@@ -173,8 +173,8 @@ export class AssignModal extends ModalDialog2 {
         this._inputDate.getElement().on('change', fire);
         this._inputStart.getElement().on('change', fire);
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Assign tracks', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Assign tracks'), true);
         this._updateSaveEnabled();
     }
 
@@ -333,7 +333,7 @@ export class AssignModal extends ModalDialog2 {
         this._matchBody.empty();
 
         if (candidates.length === 0) {
-            this._matchBody.append('<tr><td colspan="8" class="text-center text-muted">No matching tours — relax a picker.</td></tr>');
+            this._matchBody.append(`<tr><td colspan="8" class="text-center text-muted">${Lang.i().l('No matching tours — relax a picker.')}</td></tr>`);
             this._selectedTargetId = 0;
             this._updateSaveEnabled();
             return;

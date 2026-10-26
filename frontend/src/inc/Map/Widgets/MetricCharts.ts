@@ -1,4 +1,5 @@
 /* global JQuery */
+import {Lang} from '../../Lang';
 import {Widget2} from 'bambooo';
 import * as d3raw from 'd3';
 import {SightingEnvironmentEntry} from '../../Api/SightingEnvironment';
@@ -301,7 +302,7 @@ export class MetricCharts extends Widget2 {
         }
 
         if (rows.length === 0) {
-            this._statusEl.text('No sightings under current filter.');
+            this._statusEl.text(Lang.i().l('No sightings under current filter.'));
             return;
         }
 
@@ -344,11 +345,11 @@ export class MetricCharts extends Widget2 {
         const card = jQuery('<div style="background:#fff;border:1px solid #dee2e6;border-radius:4px;padding:6px;"/>').appendTo(grid);
 
         const head = jQuery('<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;gap:6px;"/>').appendTo(card);
-        jQuery(`<span style="font-weight:600;font-size:0.85rem;">${escapeHtml(spec.title)}</span>`).appendTo(head);
+        jQuery(`<span style="font-weight:600;font-size:0.85rem;">${escapeHtml(Lang.i().l(spec.title))}</span>`).appendTo(head);
         const infoBtn = jQuery(
             '<button type="button" class="btn btn-link btn-sm metric-chart-info" '
             + 'style="padding:0 4px;color:#2c7fb8;text-decoration:none;line-height:1;" '
-            + 'title="Click for details">'
+            + `title="${escapeHtml(Lang.i().l('Click for details'))}">`
             + '<i class="fa fa-info-circle"/></button>'
         ).appendTo(head);
 
@@ -363,7 +364,7 @@ export class MetricCharts extends Widget2 {
             trigger: 'click',
             placement: 'top',
             container: 'body',
-            title: spec.title,
+            title: Lang.i().l(spec.title),
             content: `<div style="font-size:0.8rem;line-height:1.4;max-width:340px;">${spec.description}</div>`
         }, '.metric-chart-info', 'metric-chart-info');
 

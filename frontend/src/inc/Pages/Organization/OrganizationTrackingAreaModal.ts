@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {ButtonDefault2, ModalDialog2, ModalDialogType2} from 'bambooo';
 import {Map as OlMap, View} from 'ol';
 import {GeoJSON} from 'ol/format';
@@ -127,13 +128,13 @@ export class OrganizationTrackingAreaModal extends ModalDialog2 {
 
         this._createDraw();
 
-        const btnPlay = new ButtonDefault2({title: 'Start Editing', icon: 'fa-play'});
+        const btnPlay = new ButtonDefault2({title: Lang.i().l('Start Editing'), icon: 'fa-play'});
         btnPlay.appendTo(bodyCard);
 
-        const btnStop = new ButtonDefault2({title: 'Stop Editing', icon: 'fa-stop'});
+        const btnStop = new ButtonDefault2({title: Lang.i().l('Stop Editing'), icon: 'fa-stop'});
         btnStop.appendTo(bodyCard);
 
-        const btnClear = new ButtonDefault2({title: 'Clear Points', icon: 'fa-trash'});
+        const btnClear = new ButtonDefault2({title: Lang.i().l('Clear Points'), icon: 'fa-trash'});
         btnClear.appendTo(bodyCard);
         btnStop.hide();
 
@@ -157,8 +158,8 @@ export class OrganizationTrackingAreaModal extends ModalDialog2 {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     private _startDraw(): void {

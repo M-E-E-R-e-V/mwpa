@@ -127,7 +127,7 @@ export class SightingAnalytics extends Widget2 {
         type Slice = {label: string; value: number;};
 
         const data: Slice[] = top.map((x) => {
-            let label = '(no species)';
+            let label = Lang.i().l('(no species)');
             if (x.id !== 0) {
                 label = this._lookups.species.get(x.id)?.name.split(',')[0] ?? `#${x.id}`;
             }
@@ -135,7 +135,7 @@ export class SightingAnalytics extends Widget2 {
         });
 
         if (rest > 0) {
-            data.push({label: 'Other', value: rest});
+            data.push({label: Lang.i().l('Other'), value: rest});
         }
 
         const width = this._donutEl.width() || 320;

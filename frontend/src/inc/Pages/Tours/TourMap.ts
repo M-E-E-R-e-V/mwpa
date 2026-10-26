@@ -314,7 +314,7 @@ export class ToursMap extends BasePage {
         const btnDelete = bar.find('button.btn-outline-danger') as unknown as JQuery<HTMLButtonElement>;
         const btnTransfer = bar.find('button.btn-outline-primary') as unknown as JQuery<HTMLButtonElement>;
 
-        info.text('Brush a range on the chart to enable actions.');
+        info.text(Lang.i().l('Brush a range on the chart to enable actions.'));
 
         btnDelete.on('click', () => {
             this._handleDelete();
@@ -381,7 +381,7 @@ export class ToursMap extends BasePage {
         }
         const count = this._selectedCount();
         if (count === 0 || !this._brushRange) {
-            this._actionBar.info.text('Brush a range on the chart to enable actions.');
+            this._actionBar.info.text(Lang.i().l('Brush a range on the chart to enable actions.'));
             this._actionBar.btnDelete.attr('disabled', 'disabled');
             this._actionBar.btnTransfer.attr('disabled', 'disabled');
             return;

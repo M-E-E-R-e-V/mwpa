@@ -10,10 +10,17 @@ export class Lang_EN implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
-        title: 'MWPA',
-        login_title: '<b>MWPA</b>',
-        copyrightname: '<strong>Mammal watching. Processing. Analysing. - Project MWPA 2022 <a href="https://github.com/stefanwerfling/mwpa" target="_blank">on Github</a>.</strong> &nbsp; A project of the  <a href="https://m-e-e-r.de/" target="_blank">M.e.e.r e.V.</a> association',
-        version: '<b>Version</b> 1.0.39'
+        'Load all': 'Load all',
+        'sightings under the current filter?': 'sightings under the current filter?',
+        'never': 'never',
+        'never run': 'never run',
+        'no sightings yet': 'no sightings yet',
+        'No matching tours — relax a picker.': 'No matching tours — relax a picker.',
+        'Alte Daten (manuell erfasst) einblenden': 'Show legacy data (manually recorded)',
+        'title': 'MWPA',
+        'login_title': '<b>MWPA</b>',
+        'copyrightname': '<strong>Mammal watching. Processing. Analysing. - Project MWPA 2022 <a href="https://github.com/stefanwerfling/mwpa" target="_blank">on Github</a>.</strong> &nbsp; A project of the  <a href="https://m-e-e-r.de/" target="_blank">M.e.e.r e.V.</a> association',
+        'version': '<b>Version</b> 1.0.39'
     };
 
     /**

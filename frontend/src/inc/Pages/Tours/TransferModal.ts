@@ -1,4 +1,5 @@
 /* global JQuery */
+import {Lang} from '../../Lang';
 import {
     ButtonClass2,
     ButtonDefault2,
@@ -60,19 +61,19 @@ export class TransferModal extends ModalDialog2 {
         this._radioPrev = jQuery<HTMLInputElement>(
             `<input class="form-check-input" type="radio" name="${escape(radioName)}" value="prev" disabled>`
         ).appendTo(prevWrap);
-        jQuery('<label class="form-check-label"/>').text('Previous tour (no candidate)').appendTo(prevWrap);
+        jQuery('<label class="form-check-label"/>').text(Lang.i().l('Previous tour (no candidate)')).appendTo(prevWrap);
 
         const nextWrap = jQuery('<div class="form-check"/>').appendTo(body);
         this._radioNext = jQuery<HTMLInputElement>(
             `<input class="form-check-input" type="radio" name="${escape(radioName)}" value="next" disabled>`
         ).appendTo(nextWrap);
-        jQuery('<label class="form-check-label"/>').text('Next tour (no candidate)').appendTo(nextWrap);
+        jQuery('<label class="form-check-label"/>').text(Lang.i().l('Next tour (no candidate)')).appendTo(nextWrap);
 
         const manualWrap = jQuery('<div class="form-check"/>').appendTo(body);
         this._radioManual = jQuery<HTMLInputElement>(
             `<input class="form-check-input" type="radio" name="${escape(radioName)}" value="manual">`
         ).appendTo(manualWrap);
-        jQuery('<label class="form-check-label"/>').text('Other tour by ID').appendTo(manualWrap);
+        jQuery('<label class="form-check-label"/>').text(Lang.i().l('Other tour by ID')).appendTo(manualWrap);
 
         const row = new FormRow2({});
         row.appendTo(body);
@@ -82,9 +83,9 @@ export class TransferModal extends ModalDialog2 {
         this._inputManual.appendTo(groupManual);
         this._inputManual.setPlaceholder('e.g. 12345');
 
-        this.addButtonClose('Close');
+        this.addButtonClose(Lang.i().l('Close'));
         this._btnConfirm = new ButtonDefault2({
-            title: 'Transfer',
+            title: Lang.i().l('Transfer'),
             icon: 'fas fa-exchange-alt',
             btnClass: ButtonClass2.primary
         });

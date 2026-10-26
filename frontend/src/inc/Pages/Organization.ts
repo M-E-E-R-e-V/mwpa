@@ -174,7 +174,7 @@ export class Organization extends BasePage {
             new Th2({value: new LangTextV2({text: 'Location'})}).appendTo(trhead);
             new Th2({value: new LangTextV2({text: 'Lon'})}).appendTo(trhead);
             new Th2({value: new LangTextV2({text: 'Lat'})}).appendTo(trhead);
-            new Th2({value: 'Action'}).appendTo(trhead);
+            new Th2({value: Lang.i().l('Action')}).appendTo(trhead);
 
             if (orgs) {
                 for (const org of orgs) {
@@ -194,7 +194,7 @@ export class Organization extends BasePage {
                     const btnRMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
                     btnRMenu.appendTo(tdAction);
 
-                    btnRMenu.addMenuItem('Edit', async(): Promise<void> => {
+                    btnRMenu.addMenuItem(Lang.i().l('Edit'), async(): Promise<void> => {
                         this._orgModal.resetValues();
                         this._orgModal.setTitle(new LangTextV2({text: 'Edit Organization'}));
                         this._orgModal.setOrganizationId(org.id);

@@ -224,8 +224,8 @@ export class LocationPickerModal extends ModalDialog2 {
         this._noTrackInfo = jQuery<HTMLDivElement>(`<div class="small text-muted mt-2" style="display:none;">${escapeHtml(lang.l('No tracking points'))}</div>`).appendTo(colRight);
 
         // Footer buttons.
-        this.addButtonClose('Close');
-        this.addButtonSave('Use this position');
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Use this position'));
 
         this._wireInputs();
         this._wireFreePick();

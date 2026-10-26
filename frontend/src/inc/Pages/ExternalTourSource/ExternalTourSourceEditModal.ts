@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     FormGroup2,
     Input2,
@@ -74,8 +75,8 @@ export class ExternalTourSourceEditModal extends ModalDialog2 {
         this._switchEnabled.appendTo(groupEnabled);
         this._switchEnabled.setEnable(true);
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save'), true);
     }
 
     public getSourceId(): number|null {

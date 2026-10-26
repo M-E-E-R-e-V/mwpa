@@ -488,7 +488,7 @@ export class Sighting extends BasePage {
 
         const searchInput = new Input2({type: InputType2.text});
         searchInput.appendTo(searchSlot);
-        searchInput.setPlaceholder('search note / recognizable …');
+        searchInput.setPlaceholder(Lang.i().l('search note / recognizable …'));
 
         /*
          * Map tab on top of the table — the existing layout has both views side-by-side via NavTab,
@@ -700,8 +700,8 @@ export class Sighting extends BasePage {
             DialogConfirm2.confirm(
                 'loadallsightings',
                 ModalDialogType2.xlarge,
-                'Load all ...',
-                `Load all ${totalCount} sightings under the current filter?`,
+                Lang.i().l('Load all ...'),
+                `${Lang.i().l('Load all')} ${totalCount} ${Lang.i().l('sightings under the current filter?')}`,
                 async(_, modal) => {
                     const remaining = totalCount - loadedCount;
                     const more = await SightingsAPI.getList(buildApiFilter(loadedCount, remaining));
@@ -1278,7 +1278,7 @@ export class Sighting extends BasePage {
             const abtnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             abtnMenu.appendTo(tdAction);
 
-            abtnMenu.addMenuItem('Edit', () => {
+            abtnMenu.addMenuItem(Lang.i().l('Edit'), () => {
                 const distanceCoast = parseFloat(entry.distance_coast!) || 0;
 
                 this._sightingDialog.setTitle(Lang.i().l('Edit Sighting'));
@@ -1314,7 +1314,7 @@ export class Sighting extends BasePage {
              * vessels for this sighting" placeholder so the user can
              * tell "no activity" from "endpoint failed".
              */
-            abtnMenu.addMenuItem('Fishing vessels', async() => {
+            abtnMenu.addMenuItem(Lang.i().l('Fishing vessels'), async() => {
                 let vessels: SightingFishingVesselEntry[] = [];
                 try {
                     vessels = await SightingFishingVesselAPI.getList([entry.id]);
@@ -1354,7 +1354,7 @@ export class Sighting extends BasePage {
 
             abtnMenu.addDivider();
 
-            abtnMenu.addMenuItem('Delete', () => {
+            abtnMenu.addMenuItem(Lang.i().l('Delete'), () => {
                 this._sightingDeletedDialog.setTitle(Lang.i().l('Delete a sighting'));
                 this._sightingDeletedDialog.resetValues();
                 this._sightingDeletedDialog.setSightingId(entry.id);
