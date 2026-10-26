@@ -22,10 +22,13 @@ type Seg = {
     quality: 'good' | 'bad';
 };
 
+type RawPoint = {lat: number; lon: number; dt: number;};
+
 const S = SightingMovementService as unknown as {
     _minMax(xs: number[]): {min: number | null; max: number | null;};
     _boundingBox(segs: Seg[]): {min_lat: number | null; min_lon: number | null; max_lat: number | null; max_lon: number | null;};
     _headingStats(segs: Seg[]): {dominant: number | null; variance: number | null;};
+    _buildSegments(points: RawPoint[], outlierSpeedKmh: number): Seg[];
     _buildAggregates(segs: Seg[]): {
         total_distance_m: number;
         total_duration_s: number;
@@ -105,6 +108,33 @@ describe('SightingMovementService._headingStats', () => {
 
     it('is null/null when no segment carries a heading', () => {
         assert.deepEqual(S._headingStats([seg({}), seg({})]), {dominant: null, variance: null});
+    });
+
+});
+
+describe('SightingMovementService._buildSegments', () => {
+
+    it('builds a segment per consecutive pair with distance/bearing/speed', () => {
+        // ~0.001° longitude at the equator over 100 s; both timestamps must be > 0
+        const segs = S._buildSegments([{lat: 0, lon: 0, dt: 1000}, {lat: 0, lon: 0.001, dt: 1100}], 20);
+        assert.equal(segs.length, 1);
+        assert.ok(Math.abs(segs[0].distance_m - 111.2) < 1);
+        // due east -> bearing ~90°
+        assert.ok(Math.abs((segs[0].heading_deg ?? NaN) - 90) < 0.1);
+        assert.ok(Math.abs((segs[0].speed_mps ?? NaN) - 1.112) < 0.01);
+        assert.equal(segs[0].quality, 'good');
+    });
+
+    it('flags an over-fast segment as bad', () => {
+        // ~111 m in 1 s is far over the 20 km/h outlier cap
+        const segs = S._buildSegments([{lat: 0, lon: 0, dt: 1000}, {lat: 0, lon: 0.001, dt: 1001}], 20);
+        assert.equal(segs[0].quality, 'bad');
+    });
+
+    it('leaves heading null for coincident points', () => {
+        const segs = S._buildSegments([{lat: 0, lon: 0, dt: 1000}, {lat: 0, lon: 0, dt: 1100}], 20);
+        assert.equal(segs[0].distance_m, 0);
+        assert.equal(segs[0].heading_deg, null);
     });
 
 });

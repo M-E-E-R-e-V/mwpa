@@ -601,64 +601,58 @@ export class SightingMovementService {
      * pair, mark too-fast segments as bad. Headings + turning angles
      * fall out as a side-effect of the walk.
      */
-    private static _buildSegments(
-        points: RawPoint[],
-        outlierSpeedKmh: number
-    ): {
-        start_lat: number;
-        start_lon: number;
-        end_lat: number;
-        end_lon: number;
-        start_dt: number;
-        end_dt: number;
-        distance_m: number;
-        duration_s: number;
-        speed_mps: number | null;
-        heading_deg: number | null;
-        turning_angle_deg: number | null;
-        quality: 'good' | 'bad';
-    }[] {
-        const outlierMps = outlierSpeedKmh * 1000 / 3600;
-        const segments: ReturnType<typeof SightingMovementService._buildSegments> = [];
-
+    private static _buildSegments(points: RawPoint[], outlierSpeedKmh: number): MovementSegment[] {
+        const outlierMps = (outlierSpeedKmh * 1000) / 3600;
+        const segments: MovementSegment[] = [];
         let prevHeading: number | null = null;
 
         for (let i = 1; i < points.length; i += 1) {
-            const a = points[i - 1];
-            const b = points[i];
+            const seg = SightingMovementService._buildSegment(points[i - 1], points[i], prevHeading, outlierMps);
+            segments.push(seg);
 
-            const distance = SightingMovementService._haversine(a, b);
-            const duration = b.dt > 0 && a.dt > 0 ? Math.max(0, b.dt - a.dt) : 0;
-            const heading = distance > 0 ? SightingMovementService._bearing(a, b) : null;
-            const speed = duration > 0 ? distance / duration : null;
-
-            const turning = (heading !== null && prevHeading !== null)
-                ? SightingMovementService._normaliseAngle(heading - prevHeading)
-                : null;
-
-            const quality: 'good' | 'bad' = speed !== null && speed > outlierMps ? 'bad' : 'good';
-
-            segments.push({
-                start_lat: a.lat,
-                start_lon: a.lon,
-                end_lat: b.lat,
-                end_lon: b.lon,
-                start_dt: a.dt,
-                end_dt: b.dt,
-                distance_m: distance,
-                duration_s: duration,
-                speed_mps: speed,
-                heading_deg: heading,
-                turning_angle_deg: turning,
-                quality
-            });
-
-            if (heading !== null) {
-                prevHeading = heading;
+            if (seg.heading_deg !== null) {
+                prevHeading = seg.heading_deg;
             }
         }
 
         return segments;
+    }
+
+    /**
+     * Build one segment for a consecutive point pair: haversine distance,
+     * duration, bearing (null when the points coincide), speed, turning angle
+     * (vs the previous heading) and the outlier `quality` flag.
+     * @private
+     */
+    private static _buildSegment(
+        a: RawPoint,
+        b: RawPoint,
+        prevHeading: number | null,
+        outlierMps: number
+    ): MovementSegment {
+        const distance = SightingMovementService._haversine(a, b);
+        const duration = b.dt > 0 && a.dt > 0 ? Math.max(0, b.dt - a.dt) : 0;
+        const heading = distance > 0 ? SightingMovementService._bearing(a, b) : null;
+        const speed = duration > 0 ? distance / duration : null;
+        const turning = heading !== null && prevHeading !== null
+            ? SightingMovementService._normaliseAngle(heading - prevHeading)
+            : null;
+        const quality: 'good' | 'bad' = speed !== null && speed > outlierMps ? 'bad' : 'good';
+
+        return {
+            start_lat: a.lat,
+            start_lon: a.lon,
+            end_lat: b.lat,
+            end_lon: b.lon,
+            start_dt: a.dt,
+            end_dt: b.dt,
+            distance_m: distance,
+            duration_s: duration,
+            speed_mps: speed,
+            heading_deg: heading,
+            turning_angle_deg: turning,
+            quality: quality
+        };
     }
 
     /**
