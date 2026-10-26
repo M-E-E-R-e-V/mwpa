@@ -8,6 +8,8 @@ import ImageCanvasSource from 'ol/source/ImageCanvas';
 import VectorSource from 'ol/source/Vector';
 import {Circle, Fill, Stroke, Style} from 'ol/style';
 import {MapLayer} from '../MapLayer';
+import {IdwField, IdwPoint} from './IdwField';
+import {IdwBlock, IdwRaster} from './IdwRaster';
 import {MetricColorScale} from '../Styles/MetricColorScale';
 
 /**
@@ -376,7 +378,7 @@ export abstract class MetricLayer extends MapLayer {
          * paint. Drop null/NaN values — they have no contribution to
          * the weighted average.
          */
-        const projected: {x: number; y: number; v: number;}[] = [];
+        const projected: IdwPoint[] = [];
         for (const p of this._points) {
             if (p.value !== null && Number.isFinite(p.value)) {
                 const [x, y] = fromLonLat([p.lon, p.lat]);
@@ -398,17 +400,9 @@ export abstract class MetricLayer extends MapLayer {
         const ySpan = yMax - extent[1];
 
         const radiusSq = MetricLayer._IDW_RADIUS_M * MetricLayer._IDW_RADIUS_M;
-        const k = MetricLayer._IDW_NEIGHBOURS;
         const step = MetricLayer._IDW_SAMPLE_STEP;
-
-        /*
-         * Pre-allocated buffer for the K-nearest search — push/sort
-         * is GC-heavy at this loop count. We keep a simple bounded
-         * max-heap as a sorted array (length ≤ k+1, kept sorted by
-         * d²) and drop the largest if it would overflow.
-         */
-        const nearD2 = new Array<number>(k + 1).fill(Number.POSITIVE_INFINITY);
-        const nearV = new Array<number>(k + 1).fill(0);
+        const field = new IdwField(projected, radiusSq, MetricLayer._IDW_NEIGHBOURS);
+        const block: IdwBlock = {w, h, px: 0, py: 0, step};
 
         for (let py = 0; py < h; py += step) {
             // EPSG:3857 north is +y, canvas down is +py.
@@ -416,78 +410,12 @@ export abstract class MetricLayer extends MapLayer {
 
             for (let px = 0; px < w; px += step) {
                 const wx = xMin + (((px + 0.5) / w) * xSpan);
+                const value = field.valueAt(wx, wy);
 
-                let filled = 0;
-                let worstD2 = Number.POSITIVE_INFINITY;
-                let worstIdx = 0;
-
-                for (const p of projected) {
-                    const dx = p.x - wx;
-                    const dy = p.y - wy;
-                    const d2 = (dx * dx) + (dy * dy);
-
-                    if (d2 <= radiusSq) {
-                        if (filled < k) {
-                            nearD2[filled] = d2;
-                            nearV[filled] = p.v;
-                            filled++;
-                            if (filled === k) {
-                                worstD2 = nearD2[0];
-                                worstIdx = 0;
-                                for (let j = 1; j < k; j++) {
-                                    if (nearD2[j] > worstD2) {
-                                        worstD2 = nearD2[j];
-                                        worstIdx = j;
-                                    }
-                                }
-                            }
-                        } else if (d2 < worstD2) {
-                            nearD2[worstIdx] = d2;
-                            nearV[worstIdx] = p.v;
-                            worstD2 = nearD2[0];
-                            worstIdx = 0;
-                            for (let j = 1; j < k; j++) {
-                                if (nearD2[j] > worstD2) {
-                                    worstD2 = nearD2[j];
-                                    worstIdx = j;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (filled > 0) {
-                    let num = 0;
-                    let den = 0;
-                    let exactHit = false;
-                    let exactV = 0;
-                    for (let j = 0; j < filled; j++) {
-                        if (nearD2[j] === 0) {
-                            exactHit = true;
-                            exactV = nearV[j];
-                            break;
-                        }
-                        // 1 / d² weight — power=2 IDW.
-                        const wt = 1 / nearD2[j];
-                        num += nearV[j] * wt;
-                        den += wt;
-                    }
-
-                    const value = exactHit ? exactV : num / den;
-                    const [r, g, b, a] = this._scale.colorForRgba(value, 0.7);
-
-                    const blockW = Math.min(step, w - px);
-                    const blockH = Math.min(step, h - py);
-                    for (let dy = 0; dy < blockH; dy++) {
-                        const rowStart = (((py + dy) * w) + px) * 4;
-                        for (let dx = 0; dx < blockW; dx++) {
-                            const idx = rowStart + (dx * 4);
-                            data[idx] = r;
-                            data[idx + 1] = g;
-                            data[idx + 2] = b;
-                            data[idx + 3] = a;
-                        }
-                    }
+                if (value !== null) {
+                    block.px = px;
+                    block.py = py;
+                    IdwRaster.fillBlock(data, block, this._scale.colorForRgba(value, 0.7));
                 }
             }
         }
