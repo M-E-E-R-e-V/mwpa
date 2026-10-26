@@ -33,6 +33,15 @@ type ArocSpeciesIndex = {
     byNombreLower: Map<string, string>;
 };
 
+/** The lookup context the AROC row-cell builder resolves foreign keys against. */
+type ArocRowContext = {
+    arocSpeciesIndex: ArocSpeciesIndex;
+    userNames: Map<number, string>;
+    behStates: Map<number, BehaviouralStatesDB>;
+    enCats: Map<number, EncounterCategoriesDB>;
+    externalReceiverId: number;
+};
+
 /**
  * Read the AROC `ListaEspecies` sheet at export time and build the lookup
  * map that drives column N (Nombre común).
@@ -637,8 +646,6 @@ export class CreateExport {
                 continue;
             }
 
-            const date = moment(entry.date);
-
             const speciesExternLink = await SpeciesExternLinkRepository.getInstance().findByReceiverAndSpecies(
                 externalReceiverId,
                 entry.species_id
@@ -650,103 +657,13 @@ export class CreateExport {
             // ListaEspecies sheet; we join primarily via `externid` (AROC Taxon-ID
             // in ListaEspecies!C) and fall back to a case-insensitive name match
             // for legacy `externname` rows where the externid was never set.
-            let nombreComun = '';
-            if (!speciesExternLink) {
-                Logger.getLogger().info(
-                    `OfficeReport::createExport: extern link not found by species ID: ${entry.species_id}`
-                );
-            } else {
-                const byId = arocSpeciesIndex.byExternId.get(speciesExternLink.externid);
-                if (byId) {
-                    nombreComun = byId;
-                } else {
-                    const byName = arocSpeciesIndex.byNombreLower.get(
-                        speciesExternLink.externname.toLowerCase()
-                    );
-                    if (byName) {
-                        nombreComun = byName;
-                    } else {
-                        Logger.getLogger().warn(
-                            'OfficeReport::createExport: species_extern_link '
-                            + `(receiver=${externalReceiverId}, species_id=${entry.species_id}, `
-                            + `externid="${speciesExternLink.externid}", `
-                            + `externname="${speciesExternLink.externname}") `
-                            + 'does not resolve to any AROC ListaEspecies entry — leaving N blank'
-                        );
-                    }
-                }
-            }
-
-            const observer = userNames.get(entry.creater_id) ?? '';
-
-            const presenciaCrias = entry.calves > 0 ? 'SI' : 'NO';
-            const presenciaNeonatos = entry.newborns > 0 ? 'SI' : 'NO';
-
-            const activity = firstActivityLabel(entry.behaviours, behStates);
-            const reactionCat = enCats.get(entry.reaction_id);
-            const reaction = reactionCat ? mapReaction(reactionCat.name) : '';
-
-            const pos = parsePosition(entry.location_begin);
-            const lonDms = pos ? dmsParts(pos.lon) : null;
-            const latDms = pos ? dmsParts(pos.lat) : null;
-            const utm = pos ? latLonToUtm(pos.lat, pos.lon) : null;
-
-            const otherBoatsMatch = entry.other_vehicle.match(/-?\d+/);
-            const otherBoatsNum = otherBoatsMatch ? parseInt(otherBoatsMatch[0], 10) : NaN;
-
-            const cells: Record<string, string | number> = {
-                J: date.isValid() ? date.format('DD/MM/YYYY') : entry.date,
-                K: entry.tour_start,
-                L: entry.tour_end,
-                M: entry.duration_from,
-                N: nombreComun,
-                Q: observer,
-                R: 'WGS84'
-            };
-
-            if (pos && lonDms && latDms && utm) {
-                // U / V = UTM Easting/Northing (metres). AROC convention (Ayuda D9):
-                // X gets a negative sign for western offsets, so we subtract the
-                // 500 000 m false easting. Y stays as standard UTM Northing.
-                const utmX = Math.round((utm.easting - 500000) * 100) / 100;
-                cells.U = utmX;
-                cells.V = utm.northing;
-
-                // S / T = "Coordenada X/Y DEFINITIVA" — the template formula is
-                // IF(U="",AA,U) / IF(V="",AE,V). We mirror UTM here so the value is
-                // consistent across the report even though we strip the shared
-                // formula (see stripSharedFormulas call below).
-                cells.S = utmX;
-                cells.T = utm.northing;
-
-                cells.W = pos.lon < 0 ? 'O' : 'E';
-                cells.X = lonDms.degrees;
-                cells.Y = lonDms.minutes;
-                cells.Z = lonDms.seconds;
-                cells.AA = pos.lon;
-                cells.AB = latDms.degrees;
-                cells.AC = latDms.minutes;
-                cells.AD = latDms.seconds;
-                cells.AE = pos.lat;
-            }
-
-            if (entry.species_count > 0) {
-                cells.AF = entry.species_count;
-            }
-            cells.AH = presenciaCrias;
-            if (entry.calves > 0) {
-                cells.AI = entry.calves;
-            }
-            cells.AJ = presenciaNeonatos;
-            if (entry.newborns > 0) {
-                cells.AK = entry.newborns;
-            }
-            cells.AL = reaction;
-            cells.AM = activity;
-            if (Number.isFinite(otherBoatsNum) && otherBoatsNum >= 0) {
-                cells.AN = otherBoatsNum;
-            }
-            cells.AO = entry.note;
+            const cells = CreateExport._buildArocRowCells(entry, speciesExternLink, {
+                arocSpeciesIndex: arocSpeciesIndex,
+                userNames: userNames,
+                behStates: behStates,
+                enCats: enCats,
+                externalReceiverId: externalReceiverId
+            });
 
             dataByRow.set(rowNum, cells);
             rowNum++;
@@ -861,6 +778,135 @@ export class CreateExport {
             Logger.getLogger().error('OfficeReport::createExport: zip.generateAsync failed', e as Error);
             return null;
         }
+    }
+
+    /**
+     * Fill the UTM / DMS / decimal position cells (S..AE) for a sighting. AROC
+     * convention (Ayuda D9): column X carries a negative sign for western
+     * offsets, so subtract the 500 000 m false easting; S/T mirror U/V (the
+     * template's IF(U="",AA,U) formula is stripped at export time).
+     * @private
+     */
+    private static _assignPositionCells(cells: Record<string, string | number>, pos: {lat: number; lon: number;}): void {
+        const lonDms = dmsParts(pos.lon);
+        const latDms = dmsParts(pos.lat);
+        const utm = latLonToUtm(pos.lat, pos.lon);
+        const utmX = Math.round((utm.easting - 500000) * 100) / 100;
+
+        cells.U = utmX;
+        cells.V = utm.northing;
+        cells.S = utmX;
+        cells.T = utm.northing;
+        cells.W = pos.lon < 0 ? 'O' : 'E';
+        cells.X = lonDms.degrees;
+        cells.Y = lonDms.minutes;
+        cells.Z = lonDms.seconds;
+        cells.AA = pos.lon;
+        cells.AB = latDms.degrees;
+        cells.AC = latDms.minutes;
+        cells.AD = latDms.seconds;
+        cells.AE = pos.lat;
+    }
+
+    /**
+     * Resolve the AROC "Nombre común" (column N) via the extern link + the
+     * template's ListaEspecies index (externid first, then a name fallback).
+     * Returns '' and logs the reason when it can't be resolved.
+     * @private
+     */
+    private static _resolveNombreComun(
+        speciesExternLink: {externid: string; externname: string;} | null,
+        speciesId: number,
+        ctx: ArocRowContext
+    ): string {
+        if (!speciesExternLink) {
+            Logger.getLogger().info(
+                `OfficeReport::createExport: extern link not found by species ID: ${speciesId}`
+            );
+
+            return '';
+        }
+
+        const byId = ctx.arocSpeciesIndex.byExternId.get(speciesExternLink.externid);
+        if (byId) {
+            return byId;
+        }
+
+        const byName = ctx.arocSpeciesIndex.byNombreLower.get(speciesExternLink.externname.toLowerCase());
+        if (byName) {
+            return byName;
+        }
+
+        Logger.getLogger().warn(
+            'OfficeReport::createExport: species_extern_link '
+            + `(receiver=${ctx.externalReceiverId}, species_id=${speciesId}, `
+            + `externid="${speciesExternLink.externid}", `
+            + `externname="${speciesExternLink.externname}") `
+            + 'does not resolve to any AROC ListaEspecies entry — leaving N blank'
+        );
+
+        return '';
+    }
+
+    /**
+     * Map one sighting (+ its resolved extern link) to the AROC data-sheet cell
+     * values (columns J..AO). Pure apart from the Nombre-común diagnostic logs.
+     * @private
+     */
+    private static _buildArocRowCells(
+        entry: SightingDB,
+        speciesExternLink: {externid: string; externname: string;} | null,
+        ctx: ArocRowContext
+    ): Record<string, string | number> {
+        const date = moment(entry.date);
+        const nombreComun = CreateExport._resolveNombreComun(speciesExternLink, entry.species_id, ctx);
+        const observer = ctx.userNames.get(entry.creater_id) ?? '';
+        const presenciaCrias = entry.calves > 0 ? 'SI' : 'NO';
+        const presenciaNeonatos = entry.newborns > 0 ? 'SI' : 'NO';
+        const activity = firstActivityLabel(entry.behaviours, ctx.behStates);
+        const reactionCat = ctx.enCats.get(entry.reaction_id);
+        const reaction = reactionCat ? mapReaction(reactionCat.name) : '';
+        const pos = parsePosition(entry.location_begin);
+        const otherBoatsMatch = entry.other_vehicle.match(/-?\d+/u);
+        const otherBoatsNum = otherBoatsMatch ? parseInt(otherBoatsMatch[0], 10) : NaN;
+
+        const cells: Record<string, string | number> = {
+            J: date.isValid() ? date.format('DD/MM/YYYY') : entry.date,
+            K: entry.tour_start,
+            L: entry.tour_end,
+            M: entry.duration_from,
+            N: nombreComun,
+            Q: observer,
+            R: 'WGS84'
+        };
+
+        if (pos) {
+            CreateExport._assignPositionCells(cells, pos);
+        }
+
+        if (entry.species_count > 0) {
+            cells.AF = entry.species_count;
+        }
+
+        cells.AH = presenciaCrias;
+        if (entry.calves > 0) {
+            cells.AI = entry.calves;
+        }
+
+        cells.AJ = presenciaNeonatos;
+        if (entry.newborns > 0) {
+            cells.AK = entry.newborns;
+        }
+
+        cells.AL = reaction;
+        cells.AM = activity;
+        if (Number.isFinite(otherBoatsNum) && otherBoatsNum >= 0) {
+            cells.AN = otherBoatsNum;
+        }
+
+        cells.AO = entry.note;
+
+        return cells;
     }
 
 }
