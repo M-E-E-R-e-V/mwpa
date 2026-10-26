@@ -142,3 +142,26 @@ describe('Profile._aggregate (characterisation)', () => {
     });
 
 });
+type Bucket = {bucket_min: number; bucket_max: number; count: number;};
+const bucketize = (
+    Profile as unknown as {_bucketize: (values: number[], edges: number[]) => Bucket[];}
+)._bucketize;
+
+describe('Profile._bucketize', () => {
+
+    it('counts values into half-open buckets with an open-ended tail', () => {
+        const b = bucketize([1, 2, 3, 7], [0, 2, 5]);
+        assert.deepEqual(b.map((x) => x.count), [1, 2, 1]);
+        assert.deepEqual([b[0].bucket_min, b[0].bucket_max], [0, 2]);
+        assert.deepEqual([b[1].bucket_min, b[1].bucket_max], [2, 5]);
+        // the tail bucket widens to ceil(observedMax + 1) = 8
+        assert.equal(b[2].bucket_max, 8);
+    });
+
+    it('skips non-finite values and keeps an empty histogram at zero', () => {
+        const b = bucketize([NaN, Infinity], [0, 2, 5]);
+        assert.deepEqual(b.map((x) => x.count), [0, 0, 0]);
+        assert.equal(b[2].bucket_max, 5);
+    });
+
+});

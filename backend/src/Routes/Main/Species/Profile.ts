@@ -287,17 +287,7 @@ export class Profile {
             if (v > observedMax) {
                 observedMax = v;
             }
-            let placed = false;
-            for (let i = 0; i < buckets.length - 1; i++) {
-                if (v >= buckets[i].bucket_min && v < buckets[i].bucket_max) {
-                    buckets[i].count++;
-                    placed = true;
-                    break;
-                }
-            }
-            if (!placed) {
-                buckets[buckets.length - 1].count++;
-            }
+            Profile._placeValue(buckets, v);
         }
 
         if (observedMax > tailMax) {
@@ -305,6 +295,23 @@ export class Profile {
         }
 
         return buckets;
+    }
+
+    /**
+     * Increment the half-open bucket [min, max) that `v` falls into, or the
+     * open-ended tail bucket when it lands beyond every edge.
+     * @private
+     */
+    private static _placeValue(buckets: SpeciesProfileBucket[], v: number): void {
+        for (let i = 0; i < buckets.length - 1; i++) {
+            if (v >= buckets[i].bucket_min && v < buckets[i].bucket_max) {
+                buckets[i].count++;
+
+                return;
+            }
+        }
+
+        buckets[buckets.length - 1].count++;
     }
 
     /**
