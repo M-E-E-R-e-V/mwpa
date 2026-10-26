@@ -107,6 +107,14 @@ export class PageLoader {
     protected _navbarExtrasBuilt: boolean = false;
 
     /**
+     * The language (country code) currently rendered on the page. Used to
+     * decide whether a navbar language click actually changes the language
+     * (→ reload so the plain-text `l(...)` strings re-render too).
+     * @protected
+     */
+    protected _appliedLang: string|null = null;
+
+    /**
      * cached current user (for the sidebar panel)
      * @protected
      */
@@ -448,6 +456,7 @@ export class PageLoader {
      */
     protected _applyStoredLang(): void {
         const selected = Lang.getStoreLangSelect();
+        this._appliedLang = selected ?? 'us';
 
         if (!selected) {
             return;
@@ -461,6 +470,25 @@ export class PageLoader {
         }
 
         Lang.i().lAll();
+    }
+
+    /**
+     * Reload the page when the navbar language is switched, so the plain-text
+     * `Lang.i().l(...)` strings (built once in loadContent — e.g. the Sighting
+     * tabs) re-render in the new language too, not just the live-translated
+     * `LangTextV2` elements. bambooo's own handler (store + lAll) runs first on
+     * the same click; this fires on bubbling and reloads only on a real change.
+     * Runs once.
+     * @protected
+     */
+    protected _wireLanguageReload(): void {
+        jQuery('body').off('click.mwpalang').on('click.mwpalang', 'a[id^="lang-"]', (ev): void => {
+            const code = (jQuery(ev.currentTarget).attr('id') ?? '').replace('lang-', '');
+
+            if (code !== '' && code !== this._appliedLang) {
+                window.setTimeout(() => window.location.reload(), 30);
+            }
+        });
     }
 
     /**
@@ -495,6 +523,8 @@ export class PageLoader {
             });
             modal.open().then();
         });
+
+        this._wireLanguageReload();
 
         this._navbarExtrasBuilt = true;
     }
