@@ -1,127 +1,61 @@
-import {LangDefine} from 'bambooo';
+import {Lang as BamboooLang, LangDefine} from 'bambooo';
 import {Lang_DE} from '../langs/Lang_DE';
 import {Lang_EN} from '../langs/Lang_EN';
 import {Lang_ES} from '../langs/Lang_ES';
 
 /**
  * Lang
+ *
+ * Thin facade over the bambooo v2 `Lang` so the whole app shares ONE language
+ * state. Previously this was a separate translation system: `LangTextV2` widgets
+ * used bambooo's `Lang` (switched by the navbar flag), while `Lang.i().l(...)`
+ * calls used this class — which the flag never switched, so those strings stayed
+ * in the default language. Delegating here means the navbar language switch (and
+ * the persisted selection applied on load) drives both.
  */
 export class Lang {
 
-    private static _store: {[index: string]: LangDefine;} = {};
-
-    // eslint-disable-next-line no-use-before-define
-    private static _instance: Lang | null = null;
-
-    private _defaultLang: LangDefine;
-    private _lang: LangDefine;
-
     /**
-     * init
+     * init — register the MWPA language packs in the shared bambooo store.
      */
     public static init(): void {
-        Lang.addStore(new Lang_EN());
-        Lang.addStore(new Lang_DE());
-        Lang.addStore(new Lang_ES());
+        BamboooLang.init([new Lang_EN(), new Lang_DE(), new Lang_ES()]);
     }
 
     /**
      * setStoreLangSelect
-     * @param lang
+     * @param {string} lang
      */
     public static setStoreLangSelect(lang: string): void {
-        localStorage.setItem('nwpa_lang', lang);
+        BamboooLang.setStoreLangSelect(lang);
     }
 
     /**
      * getStoreLangSelect
+     * @returns {string|null}
      */
     public static getStoreLangSelect(): string|null {
-        return localStorage.getItem('nwpa_lang');
+        return BamboooLang.getStoreLangSelect();
     }
 
     /**
      * addStore
-     * @param alang
+     * @param {LangDefine} alang
      */
     public static addStore(alang: LangDefine): void {
-        Lang._store[alang.getClassName()] = alang;
+        BamboooLang.addStore(alang);
     }
 
     /**
-     * i
-     * @param langPack
+     * i — return the shared bambooo language instance.
+     * @param {string|null} langPack
+     * @returns {BamboooLang}
      */
-    public static i(langPack: string | null = null): Lang {
-        if (Lang._instance) {
-            return Lang._instance;
-        }
-
-        let lp = langPack;
-
-        if (!lp) {
-            lp = 'Lang_EN';
-        }
-
-        Lang._instance = new Lang(lp);
-
-        return Lang._instance;
-    }
-
-    /**
-     * constructor
-     * @param langPack
-     * @param defaultLangPack
-     */
-    public constructor(langPack: string, defaultLangPack = 'Lang_EN') {
-        this._defaultLang = Lang._store[defaultLangPack];
-        this._lang = Lang._store[langPack];
-    }
-
-    /**
-     * setCurrentLang
-     * @param alang
-     */
-    public setCurrentLang(alang: LangDefine): void {
-        this._lang = alang;
-    }
-
-    /**
-     * l
-     * @param content
-     */
-    public l(content: string): string {
-        let rcontent: string | null = null;
-
-        if (this._lang) {
-            rcontent = this._lang.l(content);
-        }
-
-        if (!rcontent) {
-            rcontent = this._defaultLang.l(content);
-        }
-
-        if (rcontent) {
-            return rcontent;
-        }
-
-        return content;
-    }
-
-    /**
-     * lAll
-     */
-    public lAll(): void {
-        jQuery('body').find('[lang="1"]').each((_index, element) => {
-            const attrLangValue = jQuery(element).attr('lang-value');
-
-            if (attrLangValue) {
-                jQuery(element).empty().append(this.l(attrLangValue));
-            }
-        });
+    public static i(langPack: string|null = null): BamboooLang {
+        return BamboooLang.i(langPack);
     }
 
 }
 
-// init
+// Populate the shared store early (idempotent; the PageLoader also inits it).
 Lang.init();

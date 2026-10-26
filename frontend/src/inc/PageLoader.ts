@@ -412,6 +412,14 @@ export class PageLoader {
             return false;
         }
 
+        /*
+         * Set the persisted language as current BEFORE the page is built, so the
+         * `Lang.i().l(...)` calls inside loadContent (e.g. the Sighting tabs)
+         * render directly in the right language — those produce plain text, not
+         * `lang="1"` elements, so a later lAll() cannot fix them.
+         */
+        this._applyStoredLang();
+
         const result = await this._loader.load(page);
 
         /*
@@ -420,7 +428,39 @@ export class PageLoader {
          */
         this._applyNavbarExtras();
 
+        /*
+         * Apply the persisted language to the freshly-rendered page. The v2
+         * shell marks the stored language active on the flag but does not
+         * reliably re-translate the page content on load — force it here (after
+         * the page is built) so a reload keeps the selected language instead of
+         * falling back to English.
+         */
+        this._applyStoredLang();
+
         return result;
+    }
+
+    /**
+     * Apply the persisted language selection to the whole page: set it as the
+     * current language and re-translate every marked element. No-op when nothing
+     * is stored (first visit → default language).
+     * @protected
+     */
+    protected _applyStoredLang(): void {
+        const selected = Lang.getStoreLangSelect();
+
+        if (!selected) {
+            return;
+        }
+
+        const pack = [new Lang_EN(), new Lang_DE(), new Lang_ES()]
+        .find((p) => p.getCountryCode() === selected);
+
+        if (pack) {
+            Lang.i().setCurrentLang(pack);
+        }
+
+        Lang.i().lAll();
     }
 
     /**
