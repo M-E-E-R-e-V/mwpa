@@ -193,7 +193,8 @@ const yesTo1 = (v) => (/^(yes|ja|1|x|true)$/iu.test(str(v)) ? 1 : 0);
 const C = {
     SIGHTING: 1, DATE: 2, BEGIN: 3, END: 4, BOAT: 5, SKIPPER: 6, SEASTATE: 7, SWELL: 8,
     SPECIES: 9, GROUP: 10, SUBGROUPS: 11, TIME: 12, DURATION: 13,
-    LATDD: 16, LONDD: 17, LATDD2: 20, LONDD2: 21,
+    POSN: 14, POSW: 15, LATDD: 16, LONDD: 17,
+    POSN2: 18, POSW2: 19, LATDD2: 20, LONDD2: 21,
     DIST: 22, DEPTH: 23, JUV_P: 24, CAL_P: 25, NEW_P: 26, BEHAV: 27, TRAVEL: 28,
     ENCOUNTER: 33, EVENTS: 34, INTERACTION: 35, OTHER_SP: 41, NBOATS: 43, NOTES: 44,
     JUV_N: 50, CAL_N: 51, NEW_N: 52, SOURCE: 64
@@ -217,12 +218,84 @@ const buildNote = (row) => {
     return parts.join(' | ');
 };
 
-const locationJson = (latCell, lonCell) => {
-    const lat = numOrNull(latCell);
-    const lon = numOrNull(lonCell);
+const LAT_LIMIT = 90;
+const LON_LIMIT = 180;
+// Dataset region (Canary Is. + the West-African coast). Coordinates outside are
+// kept but flagged for review — geographically possible, just unusually far.
+const REGION = {latMin: 5, latMax: 35, lonMin: -25, lonMax: -5};
+
+// Coordinate diagnostics, printed in the run summary.
+const coordNotes = [];
+
+// Parse a POSITION_N/_W cell to a magnitude in decimal degrees. The source
+// format is `DD.MM.mmm` text (degrees + decimal minutes, e.g. "17.08.52" =
+// 17°08.52'). Some rows lost the dots and are stored as a plain number, e.g.
+// 171493 = 17°14.93' — reconstruct those from a 6/7-digit DDMMmm(m). Returns
+// null when the value can't be read unambiguously.
+const dmToDD = (v) => {
+    if (v == null) {
+        return null;
+    }
+    const s = `${v}`.trim();
+    if (s === '') {
+        return null;
+    }
+    let deg;
+    let minStr;
+    if (/^\d+$/u.test(s)) {
+        if (s.length < 6 || s.length > 7) {
+            return null;
+        }
+        deg = parseInt(s.slice(0, 2), 10);
+        minStr = `${s.slice(2, 4)}.${s.slice(4)}`;
+    } else {
+        const dot = s.indexOf('.');
+        if (dot < 0) {
+            return null;
+        }
+        deg = parseInt(s.slice(0, dot), 10);
+        minStr = s.slice(dot + 1);
+    }
+    const min = parseFloat(minStr);
+    if (!Number.isFinite(deg) || !Number.isFinite(min) || min < 0 || min >= 60) {
+        return null;
+    }
+    return deg + (min / 60);
+};
+
+// Resolve one axis: trust the pre-computed GdM DD value, but when it is
+// physically impossible (a broken DD conversion in the source) recover it from
+// the raw POSITION cell. Returns the signed decimal degrees, or null to drop.
+const resolveAxis = (ddCell, rawCell, limit, sign, label) => {
+    const dd = numOrNull(ddCell);
+    if (dd == null) {
+        return null;
+    }
+    if (Math.abs(dd) <= limit) {
+        return dd;
+    }
+    const mag = dmToDD(rawCell);
+    if (mag != null && mag <= limit) {
+        const fixed = sign * mag;
+        coordNotes.push(`${label}: recovered ${dd} -> ${fixed.toFixed(5)} from raw "${rawCell}"`);
+
+        return fixed;
+    }
+    coordNotes.push(`${label}: DROPPED (impossible ${dd}, raw "${rawCell}" not recoverable)`);
+
+    return null;
+};
+
+const locationJson = (latDD, lonDD, rawLat, rawLon, label) => {
+    const lat = resolveAxis(latDD, rawLat, LAT_LIMIT, 1, `${label} lat`);
+    const lon = resolveAxis(lonDD, rawLon, LON_LIMIT, -1, `${label} lon`);
     if (lat == null || lon == null) {
         return null;
     }
+    if (lat < REGION.latMin || lat > REGION.latMax || lon < REGION.lonMin || lon > REGION.lonMax) {
+        coordNotes.push(`${label}: SUSPECT (kept) lat ${lat} lon ${lon} — far outside the dataset region, verify`);
+    }
+
     return JSON.stringify({latitude: lat, longitude: lon});
 };
 
@@ -338,7 +411,10 @@ const locationJson = (latCell, lonCell) => {
         if (spId === 0 && str(row.getCell(C.SPECIES).value) !== '') {
             unresolvedSpecies++;
         }
-        const loc = locationJson(row.getCell(C.LATDD).value, row.getCell(C.LONDD).value);
+        const loc = locationJson(
+            row.getCell(C.LATDD).value, row.getCell(C.LONDD).value,
+            row.getCell(C.POSN).value, row.getCell(C.POSW).value, `row ${sourceRow} begin`
+        );
         if (loc != null) {
             withCoords++;
         }
@@ -351,7 +427,10 @@ const locationJson = (latCell, lonCell) => {
             date: iso,
             duration_from: toHHmm(row.getCell(C.TIME).value),
             location_begin: loc,
-            location_end: locationJson(row.getCell(C.LATDD2).value, row.getCell(C.LONDD2).value),
+            location_end: locationJson(
+                row.getCell(C.LATDD2).value, row.getCell(C.LONDD2).value,
+                row.getCell(C.POSN2).value, row.getCell(C.POSW2).value, `row ${sourceRow} end`
+            ),
             species_id: spId,
             species_name_raw: str(row.getCell(C.SPECIES).value).slice(0, 128),
             species_count: intOr(row.getCell(C.GROUP).value, 0),
@@ -387,6 +466,10 @@ const locationJson = (latCell, lonCell) => {
         console.log('  unaufgelöste Artnamen:');
         [...resolver.unresolved.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20)
             .forEach(([k, n]) => console.log(`     ${n}x  "${k}"`));
+    }
+    if (coordNotes.length > 0) {
+        console.log(`  Koordinaten-Korrekturen/Hinweise (${coordNotes.length}):`);
+        coordNotes.forEach((n) => console.log(`     - ${n}`));
     }
     if (records.length > 0) {
         console.log('  Beispiel-Record:', JSON.stringify(records[0]).slice(0, 300));
