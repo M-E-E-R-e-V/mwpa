@@ -286,17 +286,90 @@ const resolveAxis = (ddCell, rawCell, limit, sign, label) => {
     return null;
 };
 
-const locationJson = (latDD, lonDD, rawLat, rawLon, label) => {
+const inRegion = (lat, lon) =>
+    lat >= REGION.latMin && lat <= REGION.latMax &&
+    lon >= REGION.lonMin && lon <= REGION.lonMax;
+
+// Parse both axes to signed decimal degrees (recovering / dropping impossible
+// values per resolveAxis). Returns {lat, lon} or null.
+const parseCoord = (latDD, lonDD, rawLat, rawLon, label) => {
     const lat = resolveAxis(latDD, rawLat, LAT_LIMIT, 1, `${label} lat`);
     const lon = resolveAxis(lonDD, rawLon, LON_LIMIT, -1, `${label} lon`);
     if (lat == null || lon == null) {
         return null;
     }
-    if (lat < REGION.latMin || lat > REGION.latMax || lon < REGION.lonMin || lon > REGION.lonMax) {
-        coordNotes.push(`${label}: SUSPECT (kept) lat ${lat} lon ${lon} — far outside the dataset region, verify`);
+
+    return {lat: lat, lon: lon};
+};
+
+// Maximum distance (degrees) a cross-check-recovered endpoint may sit from its
+// anchor; a sighting's begin/end are the same short tour, so a correct value
+// stays close (~0.5° ≈ 55 km is already generous for these coastal trips).
+const CROSS_MAX_DELTA = 0.5;
+
+// Fix a single axis whose integer degree is a data-entry typo (e.g. an end lon
+// "27°21.68" whose degree should be 17, matching the begin) by borrowing the
+// anchor's degree and keeping the suspicious value's own minutes. Returns the
+// corrected signed value, or null when it would not land near the anchor.
+const fixAxisByAnchor = (bad, anchor) => {
+    const minutesFrac = Math.abs(bad) - Math.floor(Math.abs(bad));
+    const cand = Math.sign(anchor) * (Math.floor(Math.abs(anchor)) + minutesFrac);
+    if (Math.abs(cand - anchor) <= CROSS_MAX_DELTA) {
+        return cand;
     }
 
-    return JSON.stringify({latitude: lat, longitude: lon});
+    return null;
+};
+
+// Return a single axis unchanged when it is already within [min, max]; only an
+// out-of-range axis is handed to the anchor-based degree-typo fix.
+const recoverAxis = (value, anchor, min, max) => {
+    if (value >= min && value <= max) {
+        return value;
+    }
+    const fixed = fixAxisByAnchor(value, anchor);
+
+    return fixed == null ? value : fixed;
+};
+
+// Cross-check an out-of-region endpoint against the other (in-region) endpoint
+// of the same sighting and recover an unambiguous degree typo. Deliberately
+// skips the lon==lat copy error (there is no real longitude to recover) and any
+// candidate that would not land both in-region and near the anchor. Returns a
+// possibly-corrected {lat, lon}.
+const crossRecover = (coord, anchor, label) => {
+    if (coord == null || anchor == null) {
+        return coord;
+    }
+    if (inRegion(coord.lat, coord.lon) || !inRegion(anchor.lat, anchor.lon)) {
+        return coord;
+    }
+    // lon was copied from lat (identical magnitudes) — nothing real to rebuild.
+    if (Math.abs(Math.abs(coord.lon) - Math.abs(coord.lat)) < 1e-6) {
+        return coord;
+    }
+    const lon = recoverAxis(coord.lon, anchor.lon, REGION.lonMin, REGION.lonMax);
+    const lat = recoverAxis(coord.lat, anchor.lat, REGION.latMin, REGION.latMax);
+    if ((lat !== coord.lat || lon !== coord.lon) && inRegion(lat, lon)) {
+        coordNotes.push(`${label}: recovered degree typo ${coord.lat.toFixed(5)}/${coord.lon.toFixed(5)} -> ${lat.toFixed(5)}/${lon.toFixed(5)} via the other endpoint`);
+
+        return {lat: lat, lon: lon};
+    }
+
+    return coord;
+};
+
+// Serialize a parsed coordinate, flagging (keeping) anything still outside the
+// dataset region for manual review.
+const finalizeCoord = (coord, label) => {
+    if (coord == null) {
+        return null;
+    }
+    if (!inRegion(coord.lat, coord.lon)) {
+        coordNotes.push(`${label}: SUSPECT (kept) lat ${coord.lat} lon ${coord.lon} — far outside the dataset region, verify`);
+    }
+
+    return JSON.stringify({latitude: coord.lat, longitude: coord.lon});
 };
 
 // --- main ------------------------------------------------------------------
@@ -411,10 +484,17 @@ const locationJson = (latDD, lonDD, rawLat, rawLon, label) => {
         if (spId === 0 && str(row.getCell(C.SPECIES).value) !== '') {
             unresolvedSpecies++;
         }
-        const loc = locationJson(
+        let beginCoord = parseCoord(
             row.getCell(C.LATDD).value, row.getCell(C.LONDD).value,
             row.getCell(C.POSN).value, row.getCell(C.POSW).value, `row ${sourceRow} begin`
         );
+        let endCoord = parseCoord(
+            row.getCell(C.LATDD2).value, row.getCell(C.LONDD2).value,
+            row.getCell(C.POSN2).value, row.getCell(C.POSW2).value, `row ${sourceRow} end`
+        );
+        beginCoord = crossRecover(beginCoord, endCoord, `row ${sourceRow} begin`);
+        endCoord = crossRecover(endCoord, beginCoord, `row ${sourceRow} end`);
+        const loc = finalizeCoord(beginCoord, `row ${sourceRow} begin`);
         if (loc != null) {
             withCoords++;
         }
@@ -427,10 +507,7 @@ const locationJson = (latDD, lonDD, rawLat, rawLon, label) => {
             date: iso,
             duration_from: toHHmm(row.getCell(C.TIME).value),
             location_begin: loc,
-            location_end: locationJson(
-                row.getCell(C.LATDD2).value, row.getCell(C.LONDD2).value,
-                row.getCell(C.POSN2).value, row.getCell(C.POSW2).value, `row ${sourceRow} end`
-            ),
+            location_end: finalizeCoord(endCoord, `row ${sourceRow} end`),
             species_id: spId,
             species_name_raw: str(row.getCell(C.SPECIES).value).slice(0, 128),
             species_count: intOr(row.getCell(C.GROUP).value, 0),
