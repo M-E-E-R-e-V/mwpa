@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {describe, it} from 'node:test';
 import {CoordResolver} from '../src/Scripts/SightingOld/CoordResolver.js';
 import {ImportValue} from '../src/Scripts/SightingOld/ImportValue.js';
+import {SightingOldImporter} from '../src/Scripts/SightingOld/SightingOldImporter.js';
 import {SpeciesResolver} from '../src/Scripts/SightingOld/SpeciesResolver.js';
 
 /**
@@ -74,6 +78,51 @@ describe('SightingOld import', () => {
             assert.equal(r.resolve('Orca'), 0);
             assert.equal(r.unresolved.get('Orca'), 2);
             assert.equal(r.unresolved.size, 2);
+        });
+
+    });
+
+    describe('SightingOldImporter.parseArgs', () => {
+
+        const withConfig = (cfg: unknown): string => {
+            const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'so-cfg-'));
+            fs.writeFileSync(path.join(dir, 'config.json'), JSON.stringify(cfg));
+            return dir;
+        };
+
+        it('reads db.mysql from ./config.json when no DB args are given', () => {
+            const dir = withConfig({db: {mysql: {host: 'mariadb', port: 3306, username: 'mwpa', password: 'pw', database: 'prod'}}});
+            const o = SightingOldImporter.parseArgs(['--excel', 'x.xlsx'], {}, dir);
+            assert.deepEqual(
+                [o.host, o.port, o.user, o.password, o.database, o.excel, o.commit],
+                ['mariadb', 3306, 'mwpa', 'pw', 'prod', 'x.xlsx', false]
+            );
+        });
+
+        it('lets CLI args override config.json', () => {
+            const dir = withConfig({db: {mysql: {host: 'mariadb', port: 3306}}});
+            const o = SightingOldImporter.parseArgs(['--host', 'other', '--commit'], {}, dir);
+            assert.equal(o.host, 'other');
+            assert.equal(o.port, 3306);
+            assert.equal(o.commit, true);
+        });
+
+        it('honours an explicit --config path', () => {
+            const dir = withConfig({db: {mysql: {database: 'fromfile'}}});
+            const o = SightingOldImporter.parseArgs(['--config', path.join(dir, 'config.json')], {}, os.tmpdir());
+            assert.equal(o.database, 'fromfile');
+        });
+
+        it('falls back to DB_MYSQL_* env, then dev defaults', () => {
+            const empty = fs.mkdtempSync(path.join(os.tmpdir(), 'so-none-'));
+            const o = SightingOldImporter.parseArgs([], {DB_MYSQL_HOST: 'envhost', DB_MYSQL_PORT: '3310'}, empty);
+            assert.deepEqual([o.host, o.port, o.user, o.database], ['envhost', 3310, 'root', 'mwpa']);
+        });
+
+        it('ignores a config.json that is not valid JSON', () => {
+            const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'so-bad-'));
+            fs.writeFileSync(path.join(dir, 'config.json'), '{nope');
+            assert.deepEqual(SightingOldImporter.loadDbConfig(path.join(dir, 'config.json')), {});
         });
 
     });

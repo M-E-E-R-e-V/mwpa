@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
 import ExcelJS from 'exceljs';
 import mysql from 'mysql2/promise.js';
@@ -151,22 +152,73 @@ export class SightingOldImporter {
     /**
      * Parse `--name value` / `--flag` style CLI args.
      */
-    public static parseArgs(argv: string[]): SightingOldImportOptions {
-        const arg = (name: string, def: string): string => {
+    public static parseArgs(
+        argv: string[],
+        env: Record<string, string | undefined> = process.env,
+        cwd: string = process.cwd()
+    ): SightingOldImportOptions {
+        const arg = (name: string): string | undefined => {
             const i = argv.indexOf(`--${name}`);
-            return i >= 0 && i + 1 < argv.length ? argv[i + 1] : def;
+            return i >= 0 && i + 1 < argv.length ? argv[i + 1] : undefined;
+        };
+
+        const cfg = SightingOldImporter.loadDbConfig(arg('config') ?? path.join(cwd, 'config.json'));
+
+        // Precedence per value: CLI arg > config.json (db.mysql) > DB_MYSQL_* env > dev default.
+        const pick = (name: string, cfgVal: unknown, envKey: string, def: string): string => {
+            const fromArg = arg(name);
+
+            if (fromArg !== undefined) {
+                return fromArg;
+            }
+
+            if (cfgVal !== undefined && cfgVal !== null && `${cfgVal}` !== '') {
+                return `${cfgVal}`;
+            }
+
+            const fromEnv = env[envKey];
+
+            return fromEnv !== undefined && fromEnv !== '' ? fromEnv : def;
         };
 
         return {
-            excel: arg('excel', ''),
-            host: arg('host', '127.0.0.1'),
-            port: parseInt(arg('port', '3307'), 10),
-            user: arg('user', 'root'),
-            password: arg('password', 'test'),
-            database: arg('database', 'mwpa'),
-            tolerance: parseInt(arg('tolerance', '30'), 10),
+            excel: arg('excel') ?? '',
+            host: pick('host', cfg.host, 'DB_MYSQL_HOST', '127.0.0.1'),
+            port: parseInt(pick('port', cfg.port, 'DB_MYSQL_PORT', '3307'), 10),
+            user: pick('user', cfg.username, 'DB_MYSQL_USERNAME', 'root'),
+            password: pick('password', cfg.password, 'DB_MYSQL_PASSWORD', 'test'),
+            database: pick('database', cfg.database, 'DB_MYSQL_DATABASE', 'mwpa'),
+            tolerance: parseInt(arg('tolerance') ?? '30', 10),
             commit: argv.includes('--commit')
         };
+    }
+
+    /**
+     * Read `db.mysql` from an MWPA config.json. A missing or unreadable file
+     * yields an empty object (the caller then falls back to env / defaults);
+     * an explicitly passed but broken file is the caller's problem to notice
+     * via the connection target printed at startup.
+     */
+    public static loadDbConfig(file: string): Record<string, unknown> {
+        if (!fs.existsSync(file)) {
+            return {};
+        }
+
+        try {
+            const parsed: unknown = JSON.parse(fs.readFileSync(file, 'utf8'));
+
+            if (typeof parsed === 'object' && parsed !== null) {
+                const db = (parsed as {db?: {mysql?: unknown;};}).db?.mysql;
+
+                if (typeof db === 'object' && db !== null) {
+                    return db as Record<string, unknown>;
+                }
+            }
+        } catch (e) {
+            console.error(`WARN: ${file} not readable as JSON (${e instanceof Error ? e.message : String(e)}), ignoring`);
+        }
+
+        return {};
     }
 
     /**
@@ -294,6 +346,8 @@ export class SightingOldImporter {
             console.error('ERR: --excel <path-to-workbook> is required (the source file is not in the repo).');
             return 1;
         }
+
+        console.log(`DB: ${this._opt.user}@${this._opt.host}:${this._opt.port}/${this._opt.database}`);
 
         const db = await mysql.createConnection({
             host: this._opt.host,
