@@ -30,6 +30,7 @@ import {SightingTour} from './Entities/SightingTour.js';
 import {SightingTourTracking} from './Entities/SightingTourTracking.js';
 import {SightingTourTrackingPending} from './Entities/SightingTourTrackingPending.js';
 import {SightingViewFilter} from './Entities/SightingViewFilter.js';
+import {TableFilter} from './Entities/TableFilter.js';
 import {Species} from './Entities/Species.js';
 import {SpeciesExternLink} from './Entities/SpeciesExternLink.js';
 import {SpeciesGroup} from './Entities/SpeciesGroup.js';
@@ -89,6 +90,7 @@ export class MWPADbLoader extends DBLoader {
             Species,
             SpeciesExternLink,
             SpeciesGroup,
+            TableFilter,
             TourAisVessel,
             User,
             UserGroups,

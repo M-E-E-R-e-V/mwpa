@@ -1,0 +1,1426 @@
+{
+  "schemas": [
+    {
+      "unid": "edb2ba66-d77b-4fa1-b0f0-206ae2070e5b",
+      "name": "TableFilterEntry",
+      "description": "A named, private filter preset of a frontend list table. settings is a JSON document owned by the table (e.g. SightingTableFilterSettings).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 300,
+        "y": 20
+      },
+      "fields": [
+        {
+          "unid": "b3de9cd8-47c1-4829-bc06-4bdae95f8509",
+          "name": "unid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Empty on create"
+        },
+        {
+          "unid": "f0b35e67-ce8a-4888-be46-14389aebbf72",
+          "name": "table_name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Frontend table key, see TableFilterTable"
+        },
+        {
+          "unid": "2d22786f-3aa7-44eb-961c-b89c36efe433",
+          "name": "name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "b9f7a33e-7743-445a-ad5c-c6a1f81dae8f",
+          "name": "settings",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "JSON document (sorting + filters), shape owned by the table"
+        },
+        {
+          "unid": "dcbd551a-cdf9-4f91-8486-4bb4265fb1c4",
+          "name": "position",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Menu order"
+        }
+      ]
+    },
+    {
+      "unid": "12879eb0-b9a3-4c78-a000-ba9af9b06fe5",
+      "name": "TableFilterListRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 20
+      },
+      "fields": [
+        {
+          "unid": "0e50db7a-1124-44d2-8aff-e13c4ca1b92f",
+          "name": "table_name",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "e5fa3e9a-7a1c-44b4-9e0f-3fd5c06a1b19",
+      "name": "TableFilterListResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 600,
+        "y": 200
+      },
+      "fields": [
+        {
+          "unid": "f53ac1b4-8a47-4f1c-8a6d-0660c1aa3442",
+          "name": "list",
+          "type": {
+            "type": "edb2ba66-d77b-4fa1-b0f0-206ae2070e5b",
+            "optional": true,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "1a9a4189-ed72-404f-81f9-b26f3cfca032",
+      "name": "TableFilterSaveResponse",
+      "description": "",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 900,
+        "y": 20
+      },
+      "fields": [
+        {
+          "unid": "72462ff5-4014-490f-b464-f1410558f5d2",
+          "name": "unid",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "ceb22c6e-9d0d-4524-a109-fa1d88437f1a",
+      "name": "TableFilterDeleteRequest",
+      "description": "",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 900,
+        "y": 200
+      },
+      "fields": [
+        {
+          "unid": "c9b9c63a-176b-4828-8e92-fa2b821f15a7",
+          "name": "unid",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+      "name": "SightingTableFilterSettings",
+      "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 300,
+        "y": 300
+      },
+      "fields": [
+        {
+          "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+          "name": "sort_key",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+        },
+        {
+          "unid": "3a5f6b35-7c19-4e42-a62f-5e9b2ffec830",
+          "name": "sort_dir",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "ASC | DESC"
+        },
+        {
+          "unid": "450dfa46-346e-42a5-b89a-11f6dd93184a",
+          "name": "period_mode",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "'' (none) | absolute | current_year | last_year | last_30_days | last_90_days | last_365_days — relative modes are resolved at load time"
+        },
+        {
+          "unid": "19ba3dd5-36c6-4097-9000-4baf011d6789",
+          "name": "period_from",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "YYYY-MM-DD, only used with period_mode=absolute"
+        },
+        {
+          "unid": "64a0b6fd-a549-47b3-86a6-d0541df65233",
+          "name": "period_to",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "YYYY-MM-DD, only used with period_mode=absolute"
+        },
+        {
+          "unid": "cf4068e8-169c-4185-acab-c1b0467da8f9",
+          "name": "species_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e8f1212d-ae78-4fe8-85db-80924ff9f8b9",
+          "name": "organization_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "e3ad60c2-16fa-462b-b735-6a763fad2307",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "43aea607-aa56-40d6-a51c-f17daef81052",
+          "name": "vehicle_driver_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "34e510a0-61c8-49bb-8fdd-8239a4a7aa32",
+          "name": "search",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3dc49d78-9d05-4c9f-9fe9-c0f05717409b",
+          "name": "include_old",
+          "type": {
+            "type": "boolean",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [
+    {
+      "unid": "1365979f-7ccb-4680-822a-633d8510b271",
+      "name": "TableFilterTable",
+      "description": "",
+      "pos": {
+        "x": 20,
+        "y": 20
+      },
+      "values": [
+        {
+          "unid": "3aeb0f58-e912-425f-b3f9-0fbaf0f1c25c",
+          "name": "sighting",
+          "value": "sighting"
+        }
+      ]
+    }
+  ],
+  "links": [],
+  "history": {
+    "1365979f-7ccb-4680-822a-633d8510b271": [
+      {
+        "ts": 1793890150577,
+        "kind": "enum",
+        "snapshot": {
+          "unid": "1365979f-7ccb-4680-822a-633d8510b271",
+          "name": "TableFilterTable",
+          "description": "",
+          "pos": {
+            "x": 20,
+            "y": 20
+          },
+          "values": []
+        }
+      }
+    ],
+    "edb2ba66-d77b-4fa1-b0f0-206ae2070e5b": [
+      {
+        "ts": 1793890152657,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "edb2ba66-d77b-4fa1-b0f0-206ae2070e5b",
+          "name": "TableFilterEntry",
+          "description": "A named, private filter preset of a frontend list table. settings is a JSON document owned by the table (e.g. SightingTableFilterSettings).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 20
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1793890154707,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "edb2ba66-d77b-4fa1-b0f0-206ae2070e5b",
+          "name": "TableFilterEntry",
+          "description": "A named, private filter preset of a frontend list table. settings is a JSON document owned by the table (e.g. SightingTableFilterSettings).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 20
+          },
+          "fields": [
+            {
+              "unid": "b3de9cd8-47c1-4829-bc06-4bdae95f8509",
+              "name": "unid",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Empty on create"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890157190,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "edb2ba66-d77b-4fa1-b0f0-206ae2070e5b",
+          "name": "TableFilterEntry",
+          "description": "A named, private filter preset of a frontend list table. settings is a JSON document owned by the table (e.g. SightingTableFilterSettings).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 20
+          },
+          "fields": [
+            {
+              "unid": "b3de9cd8-47c1-4829-bc06-4bdae95f8509",
+              "name": "unid",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Empty on create"
+            },
+            {
+              "unid": "f0b35e67-ce8a-4888-be46-14389aebbf72",
+              "name": "table_name",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Frontend table key, see TableFilterTable"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890159394,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "edb2ba66-d77b-4fa1-b0f0-206ae2070e5b",
+          "name": "TableFilterEntry",
+          "description": "A named, private filter preset of a frontend list table. settings is a JSON document owned by the table (e.g. SightingTableFilterSettings).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 20
+          },
+          "fields": [
+            {
+              "unid": "b3de9cd8-47c1-4829-bc06-4bdae95f8509",
+              "name": "unid",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Empty on create"
+            },
+            {
+              "unid": "f0b35e67-ce8a-4888-be46-14389aebbf72",
+              "name": "table_name",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Frontend table key, see TableFilterTable"
+            },
+            {
+              "unid": "2d22786f-3aa7-44eb-961c-b89c36efe433",
+              "name": "name",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890161891,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "edb2ba66-d77b-4fa1-b0f0-206ae2070e5b",
+          "name": "TableFilterEntry",
+          "description": "A named, private filter preset of a frontend list table. settings is a JSON document owned by the table (e.g. SightingTableFilterSettings).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 20
+          },
+          "fields": [
+            {
+              "unid": "b3de9cd8-47c1-4829-bc06-4bdae95f8509",
+              "name": "unid",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Empty on create"
+            },
+            {
+              "unid": "f0b35e67-ce8a-4888-be46-14389aebbf72",
+              "name": "table_name",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Frontend table key, see TableFilterTable"
+            },
+            {
+              "unid": "2d22786f-3aa7-44eb-961c-b89c36efe433",
+              "name": "name",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "b9f7a33e-7743-445a-ad5c-c6a1f81dae8f",
+              "name": "settings",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON document (sorting + filters), shape owned by the table"
+            }
+          ]
+        }
+      }
+    ],
+    "12879eb0-b9a3-4c78-a000-ba9af9b06fe5": [
+      {
+        "ts": 1793890164110,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "12879eb0-b9a3-4c78-a000-ba9af9b06fe5",
+          "name": "TableFilterListRequest",
+          "description": "",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 600,
+            "y": 20
+          },
+          "fields": []
+        }
+      }
+    ],
+    "e5fa3e9a-7a1c-44b4-9e0f-3fd5c06a1b19": [
+      {
+        "ts": 1793890165969,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "e5fa3e9a-7a1c-44b4-9e0f-3fd5c06a1b19",
+          "name": "TableFilterListResponse",
+          "description": "",
+          "extend": {
+            "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+          },
+          "pos": {
+            "x": 600,
+            "y": 200
+          },
+          "fields": []
+        }
+      }
+    ],
+    "1a9a4189-ed72-404f-81f9-b26f3cfca032": [
+      {
+        "ts": 1793890168002,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "1a9a4189-ed72-404f-81f9-b26f3cfca032",
+          "name": "TableFilterSaveResponse",
+          "description": "",
+          "extend": {
+            "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+          },
+          "pos": {
+            "x": 900,
+            "y": 20
+          },
+          "fields": []
+        }
+      }
+    ],
+    "ceb22c6e-9d0d-4524-a109-fa1d88437f1a": [
+      {
+        "ts": 1793890170107,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ceb22c6e-9d0d-4524-a109-fa1d88437f1a",
+          "name": "TableFilterDeleteRequest",
+          "description": "",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 900,
+            "y": 200
+          },
+          "fields": []
+        }
+      }
+    ],
+    "415a74a3-a3b2-48f2-b567-41093be945d5": [
+      {
+        "ts": 1793890175364,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1793890178063,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+              "name": "sort_key",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890180183,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+              "name": "sort_key",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+            },
+            {
+              "unid": "3a5f6b35-7c19-4e42-a62f-5e9b2ffec830",
+              "name": "sort_dir",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "ASC | DESC"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890181984,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+              "name": "sort_key",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+            },
+            {
+              "unid": "3a5f6b35-7c19-4e42-a62f-5e9b2ffec830",
+              "name": "sort_dir",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "ASC | DESC"
+            },
+            {
+              "unid": "450dfa46-346e-42a5-b89a-11f6dd93184a",
+              "name": "period_mode",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "'' (none) | absolute | current_year | last_year | last_30_days | last_90_days | last_365_days — relative modes are resolved at load time"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890183842,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+              "name": "sort_key",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+            },
+            {
+              "unid": "3a5f6b35-7c19-4e42-a62f-5e9b2ffec830",
+              "name": "sort_dir",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "ASC | DESC"
+            },
+            {
+              "unid": "450dfa46-346e-42a5-b89a-11f6dd93184a",
+              "name": "period_mode",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "'' (none) | absolute | current_year | last_year | last_30_days | last_90_days | last_365_days — relative modes are resolved at load time"
+            },
+            {
+              "unid": "19ba3dd5-36c6-4097-9000-4baf011d6789",
+              "name": "period_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890185675,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+              "name": "sort_key",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+            },
+            {
+              "unid": "3a5f6b35-7c19-4e42-a62f-5e9b2ffec830",
+              "name": "sort_dir",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "ASC | DESC"
+            },
+            {
+              "unid": "450dfa46-346e-42a5-b89a-11f6dd93184a",
+              "name": "period_mode",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "'' (none) | absolute | current_year | last_year | last_30_days | last_90_days | last_365_days — relative modes are resolved at load time"
+            },
+            {
+              "unid": "19ba3dd5-36c6-4097-9000-4baf011d6789",
+              "name": "period_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "64a0b6fd-a549-47b3-86a6-d0541df65233",
+              "name": "period_to",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890188145,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+              "name": "sort_key",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+            },
+            {
+              "unid": "3a5f6b35-7c19-4e42-a62f-5e9b2ffec830",
+              "name": "sort_dir",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "ASC | DESC"
+            },
+            {
+              "unid": "450dfa46-346e-42a5-b89a-11f6dd93184a",
+              "name": "period_mode",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "'' (none) | absolute | current_year | last_year | last_30_days | last_90_days | last_365_days — relative modes are resolved at load time"
+            },
+            {
+              "unid": "19ba3dd5-36c6-4097-9000-4baf011d6789",
+              "name": "period_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "64a0b6fd-a549-47b3-86a6-d0541df65233",
+              "name": "period_to",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "cf4068e8-169c-4185-acab-c1b0467da8f9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890190371,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+              "name": "sort_key",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+            },
+            {
+              "unid": "3a5f6b35-7c19-4e42-a62f-5e9b2ffec830",
+              "name": "sort_dir",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "ASC | DESC"
+            },
+            {
+              "unid": "450dfa46-346e-42a5-b89a-11f6dd93184a",
+              "name": "period_mode",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "'' (none) | absolute | current_year | last_year | last_30_days | last_90_days | last_365_days — relative modes are resolved at load time"
+            },
+            {
+              "unid": "19ba3dd5-36c6-4097-9000-4baf011d6789",
+              "name": "period_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "64a0b6fd-a549-47b3-86a6-d0541df65233",
+              "name": "period_to",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "cf4068e8-169c-4185-acab-c1b0467da8f9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e8f1212d-ae78-4fe8-85db-80924ff9f8b9",
+              "name": "organization_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890192731,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+              "name": "sort_key",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+            },
+            {
+              "unid": "3a5f6b35-7c19-4e42-a62f-5e9b2ffec830",
+              "name": "sort_dir",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "ASC | DESC"
+            },
+            {
+              "unid": "450dfa46-346e-42a5-b89a-11f6dd93184a",
+              "name": "period_mode",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "'' (none) | absolute | current_year | last_year | last_30_days | last_90_days | last_365_days — relative modes are resolved at load time"
+            },
+            {
+              "unid": "19ba3dd5-36c6-4097-9000-4baf011d6789",
+              "name": "period_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "64a0b6fd-a549-47b3-86a6-d0541df65233",
+              "name": "period_to",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "cf4068e8-169c-4185-acab-c1b0467da8f9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e8f1212d-ae78-4fe8-85db-80924ff9f8b9",
+              "name": "organization_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e3ad60c2-16fa-462b-b735-6a763fad2307",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890195473,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+              "name": "sort_key",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+            },
+            {
+              "unid": "3a5f6b35-7c19-4e42-a62f-5e9b2ffec830",
+              "name": "sort_dir",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "ASC | DESC"
+            },
+            {
+              "unid": "450dfa46-346e-42a5-b89a-11f6dd93184a",
+              "name": "period_mode",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "'' (none) | absolute | current_year | last_year | last_30_days | last_90_days | last_365_days — relative modes are resolved at load time"
+            },
+            {
+              "unid": "19ba3dd5-36c6-4097-9000-4baf011d6789",
+              "name": "period_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "64a0b6fd-a549-47b3-86a6-d0541df65233",
+              "name": "period_to",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "cf4068e8-169c-4185-acab-c1b0467da8f9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e8f1212d-ae78-4fe8-85db-80924ff9f8b9",
+              "name": "organization_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e3ad60c2-16fa-462b-b735-6a763fad2307",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "43aea607-aa56-40d6-a51c-f17daef81052",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1793890197232,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "415a74a3-a3b2-48f2-b567-41093be945d5",
+          "name": "SightingTableFilterSettings",
+          "description": "Settings JSON of a sighting list preset. All fields optional; missing = no filter / default.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 300,
+            "y": 300
+          },
+          "fields": [
+            {
+              "unid": "97b79a4a-7ad6-4626-9322-49abb76e62f9",
+              "name": "sort_key",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Sort column: id | tour_id | date | tour_start | create_datetime | update_datetime ('' = default)"
+            },
+            {
+              "unid": "3a5f6b35-7c19-4e42-a62f-5e9b2ffec830",
+              "name": "sort_dir",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "ASC | DESC"
+            },
+            {
+              "unid": "450dfa46-346e-42a5-b89a-11f6dd93184a",
+              "name": "period_mode",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "'' (none) | absolute | current_year | last_year | last_30_days | last_90_days | last_365_days — relative modes are resolved at load time"
+            },
+            {
+              "unid": "19ba3dd5-36c6-4097-9000-4baf011d6789",
+              "name": "period_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "64a0b6fd-a549-47b3-86a6-d0541df65233",
+              "name": "period_to",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "YYYY-MM-DD, only used with period_mode=absolute"
+            },
+            {
+              "unid": "cf4068e8-169c-4185-acab-c1b0467da8f9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e8f1212d-ae78-4fe8-85db-80924ff9f8b9",
+              "name": "organization_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e3ad60c2-16fa-462b-b735-6a763fad2307",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "43aea607-aa56-40d6-a51c-f17daef81052",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "34e510a0-61c8-49bb-8fdd-8239a4a7aa32",
+              "name": "search",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

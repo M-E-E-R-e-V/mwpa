@@ -10,6 +10,7 @@ import {
     UtilShorname
 } from 'bambooo';
 import {Login as LoginApi} from './Api/Login';
+import {TABLE_FILTER_SIGHTING, TableFilter as TableFilterApi, TableFilterEntry} from './Api/TableFilter';
 import {User as UserApi} from './Api/User';
 import {PageSideMenuEntry} from './Base/PageSideMenuEntry';
 import {Lang} from './Lang';
@@ -20,6 +21,7 @@ import {Admin as AdminPage} from './Pages/Admin';
 import {AisLiveMap as AisLiveMapPage} from './Pages/AisLiveMap';
 import {BasePage} from './Pages/BasePage';
 import {Blacklist as BlacklistPage} from './Pages/Blacklist';
+import {Calculations as CalculationsPage} from './Pages/Calculations';
 import {CrossSpeciesAnalytics as CrossSpeciesAnalyticsPage} from './Pages/Species/CrossSpeciesAnalytics';
 import {Devices as DevicesPage} from './Pages/Devices';
 import {Earthquake as EarthquakePage} from './Pages/Earthquake';
@@ -94,6 +96,13 @@ export class PageLoader {
      * @protected
      */
     protected _loader: IPageLoader2;
+
+    /**
+     * Built side menu (the same array bambooo renders on every load, so the
+     * saved-filter entries can be swapped in place).
+     * @protected
+     */
+    protected _menu: PageSideMenuEntry2<new () => IBasePage2>[] = [];
 
     /**
      * Whether the current user + rights were already loaded
@@ -275,6 +284,13 @@ export class PageLoader {
                     aclRight: 'service'
                 },
                 {
+                    title: new LangTextV2({text: 'Calculations'}),
+                    icon: 'fa-solid fa-calculator',
+                    name: 'admin-calculations',
+                    page: CalculationsPage,
+                    aclRight: Session.ADMIN_ONLY
+                },
+                {
                     title: new LangTextV2({text: 'Blacklist'}),
                     icon: 'fa-solid fa-ban',
                     name: 'admin-blacklist',
@@ -298,6 +314,8 @@ export class PageLoader {
         Lang.i('Lang_EN');
         jQuery('#mwpa_page_title').html(Lang.i().l('title'));
 
+        this._menu = this._buildMenu(this._sideMenuList);
+
         this._loader = PageLoader2.getInstance({
             title: this.TITLE,
             logo: this.LOGO,
@@ -319,7 +337,7 @@ export class PageLoader {
                     this._applyUserPanel();
                 }
             },
-            menu: this._buildMenu(this._sideMenuList),
+            menu: this._menu,
             access: (right?: string): boolean => Session.hasRight(right)
         });
 
@@ -328,6 +346,7 @@ export class PageLoader {
          * this loader (which would re-create the PageLoader ↔ Pages cycle).
          */
         Nav.register((page: BasePage): Promise<boolean> => this.load(page));
+        Nav.registerMenuRefresh((): Promise<void> => this.refreshTableFilterMenu());
     }
 
     /**
@@ -346,6 +365,55 @@ export class PageLoader {
             ref: entry.page as (new () => IBasePage2)|undefined,
             items: entry.items ? this._buildMenu(entry.items) : undefined
         }));
+    }
+
+    /**
+     * Saved sighting filters as side menu entries: with presets, "Sighting"
+     * becomes a group with "All sightings" + one leaf per preset (only leaf
+     * entries navigate); without presets it stays the plain entry.
+     */
+    public async refreshTableFilterMenu(): Promise<void> {
+        const entry = this._menu.find((item) => item.name === SightingPage.MENU_NAME || item.name === SightingPage.MENU_GROUP_NAME);
+
+        if (!entry) {
+            return;
+        }
+
+        let filters: TableFilterEntry[] = [];
+
+        if (Session.hasRight('sightings_read')) {
+            try {
+                filters = await TableFilterApi.getList(TABLE_FILTER_SIGHTING);
+            } catch {
+                // presets are optional — keep the plain menu entry
+            }
+        }
+
+        if (filters.length === 0) {
+            entry.name = SightingPage.MENU_NAME;
+            entry.ref = SightingPage as new () => IBasePage2;
+            entry.items = undefined;
+            return;
+        }
+
+        entry.name = SightingPage.MENU_GROUP_NAME;
+        entry.ref = undefined;
+        entry.items = [
+            {
+                name: SightingPage.MENU_NAME,
+                title: new LangTextV2({text: 'All sightings'}),
+                icon: 'fa-solid fa-list',
+                aclRight: 'sightings_read',
+                ref: SightingPage as new () => IBasePage2
+            },
+            ...filters.map((filter): PageSideMenuEntry2<new () => IBasePage2> => ({
+                name: SightingPage.presetPageName(filter.unid),
+                title: jQuery('<span/>').text(filter.name),
+                icon: 'fa-solid fa-filter',
+                aclRight: 'sightings_read',
+                ref: SightingPage.presetPage(filter.unid) as new () => IBasePage2
+            }))
+        ];
     }
 
     /**
@@ -368,6 +436,8 @@ export class PageLoader {
         const currentuser = await UserApi.getUserInfo();
 
         Session.setUser(currentuser?.user);
+
+        await this.refreshTableFilterMenu();
 
         if (currentuser?.user) {
             this._currentFullname = currentuser.user.fullname;

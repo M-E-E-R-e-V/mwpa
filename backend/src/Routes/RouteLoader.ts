@@ -18,6 +18,7 @@ import {SightingMovement} from './Main/SightingMovement.js';
 import {Sightings} from './Main/Sightings.js';
 import {Species} from './Main/Species.js';
 import {SpeciesGroup} from './Main/SpeciesGroup.js';
+import {TableFilter} from './Main/TableFilter.js';
 import {Tours} from './Main/Tours.js';
 import {User} from './Main/User.js';
 import {Vehicle} from './Main/Vehicle.js';
@@ -72,6 +73,7 @@ export class RouteLoader extends HttpRouteLoader {
             new SightingMovement(),
             new Species(),
             new SpeciesGroup(),
+            new TableFilter(),
             new Tours(),
             new User(),
             new Vehicle(),

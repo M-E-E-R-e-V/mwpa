@@ -351,6 +351,16 @@
                     "enums": [],
                     "istoggle": true,
                     "links": []
+                  },
+                  {
+                    "unid": "34eab0c3-d48d-4409-9814-a37c5fa78a1f",
+                    "name": "TableFilter",
+                    "type": "file",
+                    "entrys": [],
+                    "schemas": [],
+                    "enums": [],
+                    "istoggle": true,
+                    "links": []
                   }
                 ],
                 "schemas": [],

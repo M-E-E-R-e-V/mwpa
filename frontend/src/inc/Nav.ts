@@ -18,6 +18,12 @@ export class Nav {
     private static _load: ((page: BasePage) => Promise<boolean>)|null = null;
 
     /**
+     * The registered side-menu refresh callback (saved list filters).
+     * @private
+     */
+    private static _refreshMenu: (() => Promise<void>)|null = null;
+
+    /**
      * register — wire the concrete page loader. Called once by PageLoader.
      * @param {(page: BasePage) => Promise<boolean>} fn
      */
@@ -37,6 +43,24 @@ export class Nav {
         }
 
         return Nav._load(page);
+    }
+
+    /**
+     * registerMenuRefresh — wire the side-menu refresh. Called once by PageLoader.
+     * @param {() => Promise<void>} fn
+     */
+    public static registerMenuRefresh(fn: () => Promise<void>): void {
+        Nav._refreshMenu = fn;
+    }
+
+    /**
+     * refreshMenu — rebuild the dynamic side-menu parts (saved list filters).
+     * No-op until a loader has been registered.
+     */
+    public static async refreshMenu(): Promise<void> {
+        if (Nav._refreshMenu !== null) {
+            await Nav._refreshMenu();
+        }
     }
 
 }

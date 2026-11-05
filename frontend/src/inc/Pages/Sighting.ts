@@ -1,12 +1,19 @@
 /* global JQuery */
+/*
+ * presetPage() returns an anonymous subclass per saved filter (the side menu
+ * instantiates its entries without arguments) — a second class by design.
+ */
+/* eslint-disable max-classes-per-file */
 import {
     Badge2,
     BadgeType2,
+    ButtonClass2,
     ButtonMenu2,
     Card2,
     ContentCol2,
     ContentColSize2,
     ContentRow2,
+    ContextMenu2,
     DialogConfirm2,
     DialogInfo2,
     IconFa,
@@ -14,6 +21,7 @@ import {
     InputType2,
     LangTextV2,
     ModalDialogType2,
+    SelectOption2,
     SortingColumn2,
     SortOrder2,
     Table2,
@@ -24,12 +32,14 @@ import {
     Tr2
 } from 'bambooo';
 import moment from 'moment';
+import {SightingTableFilterSettings} from 'mwpa_schemas';
 import {Coordinate} from 'ol/coordinate';
 import {fromLonLat} from 'ol/proj';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
 import {SightingMovement as SightingMovementAPI} from '../Api/SightingMovement';
+import {TABLE_FILTER_SIGHTING, TableFilter as TableFilterAPI, TableFilterEntry} from '../Api/TableFilter';
 import {SightingFishingVessel as SightingFishingVesselAPI, SightingFishingVesselEntry} from '../Api/SightingFishingVessel';
 import {Sightings as SightingsAPI, SightingsEntry, SightingsFilter} from '../Api/Sightings';
 import {Species as SpeciesAPI, SpeciesEntry} from '../Api/Species';
@@ -40,6 +50,7 @@ import {Lang} from '../Lang';
 import {Nav} from '../Nav';
 import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../Utils/UtilLocation';
+import {TableFilterModal, TableFilterModalConfig, TableFilterModalValues} from '../Widget/TableFilter/TableFilterModal';
 import {UtilSelect} from '../Utils/UtilSelect';
 import {SightingPopup, SightingPopupLookups} from '../Utils/SightingPopup';
 import {UtilSpeciesSilhouette} from '../Utils/UtilSpeciesSilhouette';
@@ -52,16 +63,15 @@ import {SightingMap, SightingMapObjectType} from '../Widget/SightingMap';
 import {SightingYearCompare} from '../Widget/SightingYearCompare';
 import {SpeciesDisplay} from '../Widget/SpeciesDisplay';
 import {BasePage} from './BasePage';
-import {MovementSettingsModal} from './Sighting/MovementSettingsModal';
 import {SpeciesProfile as SpeciesProfilePage} from './Species/Profile';
 import {SightingDeletedModal} from './Sighting/SightingDeletedModal';
 import {SightingEditModal} from './Sighting/SightingEditModal';
-import {SightingFilter, SightingFilterValues} from './Sighting/SightingFilter';
+import {SightingFilterValues, SightingSortKey, SightingTableFilter} from './Sighting/SightingTableFilter';
 import {ToursMap} from './Tours/TourMap';
 
 const PAGE_SIZE = 30;
 
-type SortKey = 'id' | 'tour_id' | 'date' | 'tour_start' | 'create_datetime' | 'update_datetime';
+type SortKey = SightingSortKey;
 
 type SortState = Record<SortKey, SortOrder2>;
 
@@ -100,21 +110,54 @@ const highlight = (text: string, term: string): string => {
  */
 export class Sighting extends BasePage {
 
-    protected override _name: string = 'sighting';
+    /**
+     * Side menu name of the plain list
+     */
+    public static readonly MENU_NAME = 'sighting';
+
+    /**
+     * Side menu name of the group (plain list + saved filters)
+     */
+    public static readonly MENU_GROUP_NAME = 'sighting-group';
+
+    /**
+     * Shared preset context menu (one DOM node for all page instances)
+     * @protected
+     */
+    protected static _filterMenu: ContextMenu2|null = null;
+
+    /**
+     * Shared filter dialog
+     * @protected
+     */
+    protected static _filterModal: TableFilterModal|null = null;
+
+    protected override _name: string = Sighting.MENU_NAME;
+
+    /**
+     * Saved preset shown by this page instance, empty = plain list
+     * @protected
+     */
+    protected _presetUnid: string = '';
 
     protected _sightingDialog: SightingEditModal;
     protected _sightingDeletedDialog: SightingDeletedModal;
-    protected _movementSettingsDialog: MovementSettingsModal;
     protected _map: SightingMap|null = null;
 
-    public constructor() {
+    /**
+     * @param {string} [presetUnid] saved list filter to apply
+     */
+    public constructor(presetUnid?: string) {
         super();
+
+        if (presetUnid !== undefined && presetUnid !== '') {
+            this._presetUnid = presetUnid;
+            this._name = Sighting.presetPageName(presetUnid);
+        }
 
         this._sightingDialog = new SightingEditModal();
 
         this._sightingDeletedDialog = new SightingDeletedModal();
-
-        this._movementSettingsDialog = new MovementSettingsModal();
 
         this._sightingDialog.setOnSave(async(): Promise<void> => {
             const sid = this._sightingDialog.getSightingId();
@@ -192,6 +235,31 @@ export class Sighting extends BasePage {
     }
 
     /**
+     * Side menu / page name of a saved preset
+     * @param {string} presetUnid
+     * @returns {string}
+     */
+    public static presetPageName(presetUnid: string): string {
+        return `sighting-filter-${presetUnid}`;
+    }
+
+    /**
+     * Page class opening the list with a saved preset — the side menu
+     * instantiates its entries without arguments.
+     * @param {string} presetUnid
+     * @returns {Function}
+     */
+    public static presetPage(presetUnid: string): new () => Sighting {
+        return class extends Sighting {
+
+            public constructor() {
+                super(presetUnid);
+            }
+
+        };
+    }
+
+    /**
      * loadContent
      */
     public override async loadContent(): Promise<void> {
@@ -211,16 +279,13 @@ export class Sighting extends BasePage {
             update_datetime: SortOrder2.NONE
         };
 
-        const filterValues: SightingFilterValues = {
-            period_from: '',
-            period_to: '',
-            species_id: 0,
-            organization_id: 0,
-            vehicle_id: 0,
-            vehicle_driver_id: 0,
-            search: '',
-            include_old: false
-        };
+        const filterValues: SightingFilterValues = SightingTableFilter.emptyValues();
+
+        /*
+         * Period mode of the active filter (relative modes stay relative when
+         * the filter is saved again) — the resolved dates live in filterValues.
+         */
+        let periodMode = '';
 
         let inHeaderSearch = '';
         let totalCount = 0;
@@ -287,11 +352,13 @@ export class Sighting extends BasePage {
             return apiFilter;
         };
 
-        // Filter card ---------------------------------------------------------------------------
         const content = this._wrapper.getContentWrapper().getContent();
-        const rowFilter = new ContentRow2(content.getContentFluidElement());
-        const filter = new SightingFilter();
-        filter.appendTo(new ContentCol2(rowFilter, ContentColSize2.col12).getElement());
+
+        // Options of the filter dialog (filled by the lookup loads below)
+        const speciesOptions: SelectOption2[] = [];
+        const organizationOptions: SelectOption2[] = [];
+        const vehicleOptions: SelectOption2[] = [];
+        const driverOptions: SelectOption2[] = [];
 
         // Lookup maps + initial loads -----------------------------------------------------------
         const mspecies = new Map<number, SpeciesEntry>();
@@ -336,7 +403,7 @@ export class Sighting extends BasePage {
                 mspecies.set(s.id, s);
             }
             this._sightingDialog.setSpeciesList(species);
-            filter.setSpeciesList(species);
+            speciesOptions.push(...species.map((e) => ({key: `${e.id}`, value: e.name})));
         }
 
         if (vehicles) {
@@ -351,7 +418,7 @@ export class Sighting extends BasePage {
              */
             const activeVehicles = vehicles.filter((v) => v.in_use && !v.isdeleted);
             this._sightingDialog.setVehicleList(activeVehicles);
-            filter.setVehicleList(activeVehicles);
+            vehicleOptions.push(...activeVehicles.map((e) => ({key: `${e.id}`, value: e.name})));
         }
 
         if (drivers) {
@@ -359,7 +426,7 @@ export class Sighting extends BasePage {
                 mdrivers.set(d.id, d);
             }
             this._sightingDialog.setVehicleDriverList(drivers);
-            filter.setDriverList(drivers);
+            driverOptions.push(...drivers.map((e) => ({key: `${e.id}`, value: e.user.name})));
         }
 
         if (behaviours) {
@@ -379,98 +446,82 @@ export class Sighting extends BasePage {
             for (const o of organizations) {
                 morganizations.set(o.id, o);
             }
-            filter.setOrganizationList(organizations);
+            organizationOptions.push(...organizations.map((e) => ({key: `${e.id}`, value: e.description})));
         }
+
+        // Saved preset (side menu entry) overrides the defaults -------------------------------
+        let preset: TableFilterEntry|null = null;
+
+        if (this._presetUnid !== '') {
+            try {
+                const presets = await TableFilterAPI.getList(TABLE_FILTER_SIGHTING);
+                preset = presets.find((entry) => entry.unid === this._presetUnid) ?? null;
+            } catch (err) {
+                this._toast.fire({icon: 'error', title: (err as Error).message});
+            }
+        }
+
+        if (preset !== null) {
+            const settings = SightingTableFilter.parse(preset.settings);
+
+            if (settings !== null) {
+                Object.assign(filterValues, SightingTableFilter.toFilterValues(settings, new Date()));
+                periodMode = settings.period_mode ?? '';
+
+                if (settings.sort_key) {
+                    for (const key of SightingTableFilter.SORT_KEYS) {
+                        sort[key] = SortOrder2.NONE;
+                    }
+
+                    sort[settings.sort_key as SortKey] = settings.sort_dir === 'asc' ? SortOrder2.ASC : SortOrder2.DESC;
+                }
+            }
+        }
+
+        /*
+         * The filter dialog / preset menu are wired at the end of loadContent
+         * (they need the table + sort headers); the early UI calls them via
+         * these hooks.
+         */
+        let openFilterDialog = (): void => undefined;
+        let openFilterMenu: (event: JQuery.ClickEvent) => void = (): void => undefined;
 
         // List card -----------------------------------------------------------------------------
         const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
-        card.setTitle(new LangTextV2({text: 'Sighting'}));
+
+        // Active filters are not visible in the table — name them next to the title.
+        const filterHint = jQuery('<span class="ms-2 small text-muted fw-normal"/>');
+
+        /*
+         * Title = "Sighting[: <preset>] (<count>)" + active-filter hint. The
+         * loader re-renders it with the count on every page fetch, so the hint
+         * span is re-attached each time.
+         */
+        const renderTitle = (count?: number): void => {
+            let title = Lang.i().l('Sighting') ?? 'Sighting';
+
+            if (preset !== null) {
+                title += `: ${preset.name}`;
+            }
+
+            if (count !== undefined) {
+                title += ` (${count})`;
+            }
+
+            card.setTitle(jQuery('<span/>').text(title));
+            filterHint.appendTo(card.getTitleElement());
+        };
+
+        renderTitle();
 
         const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
         btnMenu.appendTo(card.getToolsElement());
 
         btnMenu.addMenuItem(new LangTextV2({text: 'Filter'}), () => {
-            filter.show();
+            openFilterDialog();
         }, 'fa fa-filter');
-
-        /*
-         * Admin-only: trigger a full rebuild of derived movement data
-         * (sighting_movement + sighting_movement_track). Synchronous on the
-         * server side, so the button stays in a "running" state until the
-         * server returns counts. Filter for admin happens after the
-         * currentuser lookup further down — see below.
-         */
-        const rebuildMovementsLabel = new LangTextV2({text: 'Rebuild movements'});
-        const triggerRebuildMovements = async(): Promise<void> => {
-            const confirmed = window.confirm(
-                Lang.i().l('Rebuild every sighting\'s movement track now? This may take a while.')
-                ?? 'Rebuild every sighting\'s movement track now? This may take a while.'
-            );
-            if (!confirmed) {
-                return;
-            }
-
-            this._toast.fire({
-                icon: 'info',
-                title: Lang.i().l('Rebuilding movements…') ?? 'Rebuilding movements…'
-            });
-
-            try {
-                const msg = await SightingMovementAPI.rebuildAll();
-                this._toast.fire({
-                    icon: 'success',
-                    title: `${Lang.i().l('Rebuild done') ?? 'Rebuild done'} (${msg})`
-                });
-
-                // Refresh the page so the new tracks show up on the map.
-                if (this._onLoadTable) {
-                    await this._onLoadTable();
-                }
-            } catch (err) {
-                this._toast.fire({
-                    icon: 'error',
-                    title: `${Lang.i().l('Rebuild failed') ?? 'Rebuild failed'}: ${(err as Error).message}`
-                });
-            }
-        };
-
-        /*
-         * Admin-only: edit the persisted MovementConfig (lead/trail/outlier/tz).
-         * Fetched fresh on each open so a hand-edit to the settings row from
-         * another path (admin SQL, another browser tab) doesn't get clobbered.
-         */
-        const movementSettingsLabel = new LangTextV2({text: 'Movement settings'});
-        const openMovementSettings = async(): Promise<void> => {
-            try {
-                const cfg = await SightingMovementAPI.getConfig();
-                this._movementSettingsDialog.setTitle(new LangTextV2({text: 'Movement settings'}));
-                this._movementSettingsDialog.setConfig(cfg);
-                this._movementSettingsDialog.show();
-            } catch (err) {
-                this._toast.fire({
-                    icon: 'error',
-                    title: `${Lang.i().l('Load failed') ?? 'Load failed'}: ${(err as Error).message}`
-                });
-            }
-        };
-
-        this._movementSettingsDialog.setOnSave(async(): Promise<void> => {
-            try {
-                await SightingMovementAPI.saveConfig(this._movementSettingsDialog.getConfig());
-                this._toast.fire({
-                    icon: 'success',
-                    title: Lang.i().l('Settings saved') ?? 'Settings saved'
-                });
-                this._movementSettingsDialog.hide();
-            } catch (err) {
-                this._toast.fire({
-                    icon: 'error',
-                    title: `${Lang.i().l('Save failed') ?? 'Save failed'}: ${(err as Error).message}`
-                });
-            }
-        });
 
         /*
          * In-header quick-search — sibling of .card-title in the card-header so AdminLTE's
@@ -733,19 +784,6 @@ export class Sighting extends BasePage {
                 parseFloat(currentuser.organization.lon),
                 parseFloat(currentuser.organization.lat)
             ]);
-        }
-
-        /*
-         * Admin-only menu entry. We add it here (after the user-info lookup)
-         * rather than at card-build time so non-admins don't see a no-op item.
-         */
-        if (currentuser?.user?.isAdmin) {
-            btnMenu.addMenuItem(rebuildMovementsLabel, () => {
-                triggerRebuildMovements().catch(() => undefined);
-            }, 'fa fa-route');
-            btnMenu.addMenuItem(movementSettingsLabel, () => {
-                openMovementSettings().catch(() => undefined);
-            }, 'fa fa-cog');
         }
 
         this._map = new SightingMap(mapContainer);
@@ -1108,7 +1146,14 @@ export class Sighting extends BasePage {
         thCreated.addComponent(makeSortColumn('Updated', 'update_datetime'));
         thCreated.appendTo(trhead);
 
-        new Th2({value: ''}).appendTo(trhead);
+        const thAction = new Th2({value: ''});
+        thAction.appendTo(trhead);
+
+        // Gear: filter dialog + saved filter presets (new / edit / delete)
+        jQuery('<a href="#" class="text-secondary"><i class="fas fa-cog"></i></a>')
+        .attr('title', Lang.i().l('Filter') ?? 'Filter')
+        .on('click', (event: JQuery.ClickEvent) => openFilterMenu(event))
+        .appendTo(thAction.getElement());
 
         // Renderer ------------------------------------------------------------------------------
         const renderRow = (_table: Table2, entry: SightingsEntry): void => {
@@ -1392,7 +1437,7 @@ export class Sighting extends BasePage {
 
                     totalCount = response.count;
                     loadedCount += response.list.length;
-                    card.setTitle(`${Lang.i().l('Sighting')} (${response.count})`);
+                    renderTitle(response.count);
 
                     return response.list;
                 } finally {
@@ -1426,19 +1471,278 @@ export class Sighting extends BasePage {
             }, 300);
         });
 
-        // Wire filter Apply / Reset -------------------------------------------------------------
-        filter.setOnApply((values) => {
-            filterValues.period_from = values.period_from;
-            filterValues.period_to = values.period_to;
-            filterValues.species_id = values.species_id;
-            filterValues.organization_id = values.organization_id;
-            filterValues.vehicle_id = values.vehicle_id;
-            filterValues.vehicle_driver_id = values.vehicle_driver_id;
-            filterValues.search = values.search;
-            filterValues.include_old = values.include_old;
+        // Filter dialog + saved presets --------------------------------------------------------
+        const tr = (key: string): string => Lang.i().l(key) ?? key;
+        const optionLabel = (options: SelectOption2[], id: number): string => options.find((o) => o.key === `${id}`)?.value ?? `${id}`;
+        const all: SelectOption2 = {key: '', value: tr('— all —')};
 
+        const filterConfig: TableFilterModalConfig = {
+            sortColumns: [
+                {key: 'id', label: tr('Id')},
+                {key: 'tour_id', label: tr('TourId')},
+                {key: 'date', label: tr('Date')},
+                {key: 'tour_start', label: tr('Time begin-end')},
+                {key: 'create_datetime', label: tr('Created')},
+                {key: 'update_datetime', label: tr('Updated')}
+            ],
+            toggles: [{key: 'include_old', label: tr('Alte Daten (manuell erfasst) einblenden')}],
+            selects: [
+                {key: 'species', label: tr('Species'), options: [all, ...speciesOptions]},
+                {key: 'organization', label: tr('Organization'), options: [all, ...organizationOptions]},
+                {key: 'vehicle', label: tr('Vehicle'), options: [all, ...vehicleOptions]},
+                {key: 'driver', label: tr('Driver'), options: [all, ...driverOptions]}
+            ],
+            search: true,
+            periodModes: [
+                {key: '', value: tr('— all —')},
+                {key: 'absolute', value: tr('Fixed dates')},
+                {key: 'current_year', value: tr('Current year')},
+                {key: 'last_year', value: tr('Last year')},
+                {key: 'last_30_days', value: tr('Last 30 days')},
+                {key: 'last_90_days', value: tr('Last 90 days')},
+                {key: 'last_365_days', value: tr('Last 365 days')}
+            ]
+        };
+
+        const isDefaultSort = (): boolean => SightingTableFilter.SORT_KEYS.every((key) => 
+            key === 'date' || key === 'tour_start' ? sort[key] === SortOrder2.DESC : sort[key] === SortOrder2.NONE);
+
+        // current list state -> dialog values
+        const currentValues = (name: string): TableFilterModalValues => {
+            const sortKey = isDefaultSort()
+                ? ''
+                : SightingTableFilter.SORT_KEYS.find((key) => sort[key] !== SortOrder2.NONE) ?? '';
+
+            return {
+                name,
+                sortKey,
+                sortDir: sortKey !== '' && sort[sortKey as SortKey] === SortOrder2.ASC ? 'asc' : 'desc',
+                toggles: {include_old: filterValues.include_old},
+                selects: {
+                    species: filterValues.species_id > 0 ? `${filterValues.species_id}` : '',
+                    organization: filterValues.organization_id > 0 ? `${filterValues.organization_id}` : '',
+                    vehicle: filterValues.vehicle_id > 0 ? `${filterValues.vehicle_id}` : '',
+                    driver: filterValues.vehicle_driver_id > 0 ? `${filterValues.vehicle_driver_id}` : ''
+                },
+                search: filterValues.search,
+                periodMode,
+                periodFrom: periodMode === 'absolute' ? filterValues.period_from : '',
+                periodTo: periodMode === 'absolute' ? filterValues.period_to : ''
+            };
+        };
+
+        // dialog values -> stored settings
+        const toSettings = (values: TableFilterModalValues): SightingTableFilterSettings => {
+            const id = (key: string): number => {
+                const n = parseInt(values.selects[key] ?? '', 10);
+                return Number.isFinite(n) && n > 0 ? n : 0;
+            };
+
+            return {
+                sort_key: values.sortKey,
+                sort_dir: values.sortDir,
+                period_mode: values.periodMode,
+                period_from: values.periodFrom,
+                period_to: values.periodTo,
+                species_id: id('species'),
+                organization_id: id('organization'),
+                vehicle_id: id('vehicle'),
+                vehicle_driver_id: id('driver'),
+                search: values.search,
+                include_old: values.toggles.include_old ?? false
+            };
+        };
+
+        const updateFilterHint = (): void => {
+            const hints: string[] = [];
+
+            if (filterValues.period_from !== '' || filterValues.period_to !== '') {
+                hints.push(`${filterValues.period_from || '…'} – ${filterValues.period_to || '…'}`);
+            }
+
+            if (filterValues.species_id > 0) {
+                hints.push(optionLabel(speciesOptions, filterValues.species_id));
+            }
+
+            if (filterValues.organization_id > 0) {
+                hints.push(optionLabel(organizationOptions, filterValues.organization_id));
+            }
+
+            if (filterValues.vehicle_id > 0) {
+                hints.push(optionLabel(vehicleOptions, filterValues.vehicle_id));
+            }
+
+            if (filterValues.vehicle_driver_id > 0) {
+                hints.push(optionLabel(driverOptions, filterValues.vehicle_driver_id));
+            }
+
+            if (filterValues.search !== '') {
+                hints.push(`„${filterValues.search}“`);
+            }
+
+            if (filterValues.include_old) {
+                hints.push(tr('incl. old data'));
+            }
+
+            filterHint.text(hints.length > 0 ? `· ${hints.join(' · ')}` : '');
+        };
+
+        // apply dialog values to the list (ad hoc, nothing stored)
+        const applyValues = (values: TableFilterModalValues): void => {
+            Object.assign(filterValues, SightingTableFilter.toFilterValues(toSettings(values), new Date()));
+            periodMode = values.periodMode;
+
+            for (const key of SightingTableFilter.SORT_KEYS) {
+                sort[key] = SortOrder2.NONE;
+            }
+
+            if (values.sortKey === '') {
+                sort.date = SortOrder2.DESC;
+                sort.tour_start = SortOrder2.DESC;
+            } else {
+                sort[values.sortKey as SortKey] = values.sortDir === 'asc' ? SortOrder2.ASC : SortOrder2.DESC;
+            }
+
+            for (const entry of sortRegistry) {
+                SortingColumn2.initSort(entry.column, sort[entry.key]);
+            }
+
+            updateFilterHint();
             tableWrapper.reset();
-        });
+        };
+
+        const savePreset = async(unid: string, values: TableFilterModalValues): Promise<void> => {
+            try {
+                const savedUnid = await TableFilterAPI.save({
+                    unid,
+                    table_name: TABLE_FILTER_SIGHTING,
+                    name: values.name,
+                    settings: JSON.stringify(toSettings(values)),
+                    position: 0
+                });
+
+                this._toast.fire({icon: 'success', title: tr('Filter saved')});
+
+                await Nav.refreshMenu();
+                await Nav.load(new (Sighting.presetPage(savedUnid))());
+            } catch (err) {
+                this._toast.fire({icon: 'error', title: `${tr('Save failed')}: ${(err as Error).message}`});
+            }
+        };
+
+        const getModal = (): TableFilterModal => {
+            if (Sighting._filterModal === null) {
+                Sighting._filterModal = new TableFilterModal();
+            }
+
+            return Sighting._filterModal;
+        };
+
+        /*
+         * Open the dialog prefilled with the current list state. "Apply" filters
+         * ad hoc; "Save" stores a new preset — or updates `current` when given.
+         */
+        const askFilter = async(title: string, name: string, current: TableFilterEntry|null): Promise<void> => {
+            const result = await getModal().ask(title, filterConfig, currentValues(name));
+
+            if (result === null) {
+                return;
+            }
+
+            if (result.action === 'apply') {
+                applyValues(result.values);
+                return;
+            }
+
+            await savePreset(current?.unid ?? '', result.values);
+        };
+
+        openFilterDialog = (): void => {
+            askFilter(tr('Filter'), '', null).catch(() => undefined);
+        };
+
+        openFilterMenu = (event: JQuery.ClickEvent): void => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (Sighting._filterMenu === null) {
+                Sighting._filterMenu = new ContextMenu2();
+            }
+
+            const menu = Sighting._filterMenu;
+
+            menu.clear();
+            menu.addItem({
+                label: tr('Filter …'),
+                icon: 'fas fa-filter',
+                onClick: (): void => openFilterDialog()
+            });
+
+            menu.addItem({
+                label: tr('New saved filter'),
+                icon: 'fas fa-plus',
+                onClick: (): void => {
+                    askFilter(tr('New saved filter'), '', null).catch(() => undefined);
+                }
+            });
+
+            if (SightingTableFilter.isActive(filterValues) || !isDefaultSort()) {
+                menu.addItem({
+                    label: tr('Reset filter'),
+                    icon: 'fas fa-undo',
+                    onClick: (): void => {
+                        Nav.load(new Sighting(this._presetUnid)).catch(() => undefined);
+                    }
+                });
+            }
+
+            if (preset !== null) {
+                const current = preset;
+                const presetName = escapeHtml(current.name);
+
+                menu.addItem({divider: true});
+
+                menu.addItem({
+                    label: `${escapeHtml(tr('Edit'))} „${presetName}“`,
+                    icon: 'fas fa-pen',
+                    onClick: (): void => {
+                        askFilter(tr('Edit saved filter'), current.name, current).catch(() => undefined);
+                    }
+                });
+
+                menu.addItem({
+                    label: `${escapeHtml(tr('Delete'))} „${presetName}“`,
+                    icon: 'fas fa-trash text-danger',
+                    onClick: (): void => {
+                        DialogConfirm2.confirm(
+                            'dcTableFilterDelete',
+                            ModalDialogType2.small,
+                            tr('Delete filter'),
+                            jQuery('<span/>').text(`${tr('Delete saved filter?')} „${current.name}“`),
+                            async(_, dialog): Promise<void> => {
+                                dialog.hide();
+
+                                try {
+                                    await TableFilterAPI.delete(current.unid);
+                                    this._toast.fire({icon: 'success', title: tr('Filter deleted')});
+                                    await Nav.refreshMenu();
+                                    await Nav.load(new Sighting());
+                                } catch (err) {
+                                    this._toast.fire({icon: 'error', title: (err as Error).message});
+                                }
+                            },
+                            undefined,
+                            tr('Delete'),
+                            ButtonClass2.danger
+                        );
+                    }
+                });
+            }
+
+            menu.showAt(event.clientX, event.clientY);
+        };
+
+        updateFilterHint();
     }
 
     /**

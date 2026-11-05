@@ -222,6 +222,21 @@ export {
     UserSavePinRequest,
 } from './Routes/Main/User/User.js';
 export {
+    SchemaTableFilterEntry,
+    TableFilterEntry,
+    SchemaTableFilterListRequest,
+    TableFilterListRequest,
+    SchemaTableFilterListResponse,
+    TableFilterListResponse,
+    SchemaTableFilterSaveResponse,
+    TableFilterSaveResponse,
+    SchemaTableFilterDeleteRequest,
+    TableFilterDeleteRequest,
+    SchemaSightingTableFilterSettings,
+    SightingTableFilterSettings,
+    TableFilterTable,
+} from './Routes/Main/User/TableFilter.js';
+export {
     SchemaToursFilterOrder,
     ToursFilterOrder,
     SchemaToursFilter,
