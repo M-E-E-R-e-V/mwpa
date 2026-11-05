@@ -64,6 +64,20 @@
     .app-sidebar .user-panel .info { padding-left: 0.6rem; }
     .app-sidebar .user-panel .info a { color: #c2c7d0; }
     .sidebar-brand .brand-image { max-height: 33px; width: auto; }
+    /* Card loading overlay (bambooo Card.showLoading): AdminLTE 3 laid the
+       spinner absolutely over the card; AdminLTE 4 dropped that rule, so the
+       div sat in the normal flow, pushed the table down on every reload and
+       caused a second scrollbar. Restore the overlay on top of the card. */
+    .card > .overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(var(--bs-body-bg-rgb), 0.6);
+        border-radius: inherit;
+    }
   </style>
 
   <!-- jQuery (bambooo + select2 + summernote + daterangepicker rely on it) -->
