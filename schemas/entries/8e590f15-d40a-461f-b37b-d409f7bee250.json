@@ -46,6 +46,114 @@
           "description": ""
         }
       ]
+    },
+    {
+      "unid": "d4083c91-2f72-49a2-baa5-6c60b214bfb2",
+      "name": "MobileQuickConnectResponse",
+      "description": "Response of POST /mobile/quickconnect. Extends LoginResponse with an optional device token: a long-lived secret for this device that replaces the password for later logins via /mobile/login/token (servers before this field send no token).",
+      "extend": {
+        "type": "ae910201-4ede-4a9a-ac6a-6ea71e424af2"
+      },
+      "pos": {
+        "x": 100,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "19e2a2bd-11d0-4a75-ac8f-721f2d381e4b",
+          "name": "device_token",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Device token (plaintext, only sent once); the server stores its sha256 hash."
+        }
+      ]
+    },
+    {
+      "unid": "1d048666-953f-4019-88aa-1a466fdaf25b",
+      "name": "MobileTokenLoginRequest",
+      "description": "Body of POST /mobile/login/token. Logs a device in with the device token it received from /mobile/quickconnect (password replacement for Quick Connect devices). The token is bound to the device identity.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 100
+      },
+      "fields": [
+        {
+          "unid": "a47539dc-6d5a-4a5f-9701-72aa25fb82e0",
+          "name": "token",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Device token from /mobile/quickconnect."
+        },
+        {
+          "unid": "0d222184-8533-4736-8298-b8d571605d2a",
+          "name": "deviceIdentity",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d11825a8-179b-47cb-9e88-3b9be214c338",
+          "name": "deviceDescription",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "31dd7082-e257-43a5-a4fd-3aa1acee0ecb",
+      "name": "MobileTokenLogoutRequest",
+      "description": "Body of POST /mobile/logout/token. Revokes the device token of this device (app logout).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 400
+      },
+      "fields": [
+        {
+          "unid": "cc165028-692f-4d3f-a5ad-74da5fcd7737",
+          "name": "token",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Device token to revoke."
+        },
+        {
+          "unid": "5642ff1f-3d19-4848-90cf-6d016d0e2ea6",
+          "name": "deviceIdentity",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
     }
   ],
   "enums": [],

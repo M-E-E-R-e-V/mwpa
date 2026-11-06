@@ -1,18 +1,18 @@
 import * as crypto from 'crypto';
 import {Logger} from '@stefanwerfling/figtree';
 import {Vts} from 'vts';
-import {LoginResponse, MobileQuickConnectRequest} from 'mwpa_schemas';
-import {Devices as DevicesDB} from '../../../Db/MariaDb/Entities/Devices.js';
-import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesRepository.js';
-import {GroupRepository} from '../../../Db/MariaDb/Repositories/GroupRepository.js';
-import {UserGroupsRepository} from '../../../Db/MariaDb/Repositories/UserGroupsRepository.js';
+import {MobileQuickConnectRequest, MobileQuickConnectResponse} from 'mwpa_schemas';
+import {DeviceTokenPolicy} from '../../../Application/DeviceTokenPolicy.js';
+import {UserDeviceToken} from '../../../Db/MariaDb/Entities/UserDeviceToken.js';
+import {UserDeviceTokenRepository} from '../../../Db/MariaDb/Repositories/UserDeviceTokenRepository.js';
 import {UserQuickConnectTokenRepository} from '../../../Db/MariaDb/Repositories/UserQuickConnectTokenRepository.js';
 import {UserRepository} from '../../../Db/MariaDb/Repositories/UserRepository.js';
 import {MobileLoginSession} from '../Login/MobileLogin.js';
-import {resolveSessionRolesAndRights} from '../../SessionRights.js';
+import {MobileSessionStart} from '../Login/MobileSessionStart.js';
 
 /**
- * MobileQuickConnect — exchange a Quick Connect OTP for a mobile session.
+ * MobileQuickConnect — exchange a Quick Connect OTP for a mobile session and
+ * a device token (password replacement for /mobile/login/token).
  *
  * Mirrors {@link MobileLogin#login}: same session shape, same Devices upsert,
  * same role/rights resolution. The only difference is that the user is
@@ -24,7 +24,7 @@ export class MobileQuickConnect {
     public static async exchange(
         body: MobileQuickConnectRequest | undefined,
         session: MobileLoginSession
-    ): Promise<LoginResponse> {
+    ): Promise<MobileQuickConnectResponse> {
         if (Vts.isUndefined(body)) {
             return {success: false, error: 'Request incomplete'};
         }
@@ -38,19 +38,7 @@ export class MobileQuickConnect {
         }
 
         // reset to logged-out state up-front, identical to MobileLogin.login
-        session.user = {
-            userid: 0,
-            isLogin: false,
-            isAdmin: false,
-            isMobileLogin: true,
-            deviceIdentity: '',
-            main_group_id: 0,
-            main_organization_id: 0,
-            groups: [],
-            organizations: [],
-            role: '',
-            rights: []
-        };
+        MobileSessionStart.reset(session);
 
         const nowSec = Math.floor(Date.now() / 1000);
         const tokenHash = crypto.createHash('sha256').update(body.otp).digest('hex');
@@ -75,66 +63,29 @@ export class MobileQuickConnect {
             return {success: false, error: 'User not found or disabled.'};
         }
 
-        const groups: number[] = [];
-        const organizations: number[] = [];
-        let mainOrganizationId = 0;
+        await MobileSessionStart.start(user, body.deviceIdentity, body.deviceDescription, session, nowSec);
 
-        const mainGroup = await GroupRepository.getInstance().findOne(user.main_groupid);
-        if (mainGroup) {
-            groups.push(mainGroup.id);
-            organizations.push(mainGroup.organization_id);
-            mainOrganizationId = mainGroup.organization_id;
-        }
+        // device token: replaces the password for later logins of this
+        // device (/mobile/login/token); one valid token per user + device
+        const tokens = UserDeviceTokenRepository.getInstance();
+        const {token: deviceToken, hash} = DeviceTokenPolicy.generate();
 
-        const userGroups = await UserGroupsRepository.getInstance().findAllBy(user.id);
-        for (const userGroup of userGroups) {
-            if (groups.indexOf(userGroup.group_id) === -1) {
-                const subGroup = await GroupRepository.getInstance().findOne(userGroup.group_id);
-                if (subGroup) {
-                    groups.push(subGroup.id);
-                    organizations.push(subGroup.organization_id);
-                }
-            }
-        }
+        await tokens.revokeForDevice(user.id, body.deviceIdentity, nowSec);
+        await tokens.deleteStale(nowSec - DeviceTokenPolicy.IDLE_TTL_SEC);
 
-        const {role, rights} = await resolveSessionRolesAndRights(groups, user.isAdmin);
+        const row = new UserDeviceToken();
+        row.user_id = user.id;
+        row.device_identity = body.deviceIdentity;
+        row.token_hash = hash;
+        row.create_datetime = nowSec;
+        row.last_used_datetime = nowSec;
+        row.revoked_datetime = 0;
 
-        session.user = {
-            userid: user.id,
-            isLogin: true,
-            isAdmin: user.isAdmin,
-            isMobileLogin: true,
-            deviceIdentity: body.deviceIdentity,
-            main_group_id: user.main_groupid,
-            main_organization_id: mainOrganizationId,
-            groups: groups,
-            organizations: organizations,
-            role: role,
-            rights: rights
-        };
-
-        // Devices upsert — same as MobileLogin so subsequent PIN-on-known-device
-        // logins keep working from the same handset.
-        let device = await DevicesRepository.getInstance().findByIdentityAndUser(body.deviceIdentity, user.id);
-
-        if (device === null) {
-            device = new DevicesDB();
-            device.identity = body.deviceIdentity;
-            device.create_datetime = nowSec;
-            device.user_id = user.id;
-            device.description = '';
-        }
-
-        device.update_datetime = nowSec;
-        if (device.description === '') {
-            device.description = body.deviceDescription;
-        }
-
-        await DevicesRepository.getInstance().save(device);
+        await tokens.save(row);
 
         Logger.getLogger().info(`QuickConnect exchange: user ${user.id} logged in via OTP`);
 
-        return {success: true, error: ''};
+        return {success: true, error: '', device_token: deviceToken};
     }
 
 }

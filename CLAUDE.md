@@ -192,6 +192,8 @@ Each top-level resource has a `Routes/Main/<Resource>.ts` class extending `Defau
 
 Mobile routes live in `Routes/Mobile/*` and respond with `{statusCode: number}` (numeric, MobileV1 envelope), while `/json/*` responses keep figtree's string-enum statusCode (e.g. `"200"`). The helper `Routes/Mobile/MobileV1.ts` exposes `MobileV1StatusCode` constants and a `toV1(res)` adapter for reusing Main handlers under `/mobile/*` (see `Routes/Mobile/Reuse.ts`).
 
+Mobile logins: `/mobile/login` (password/PIN, `Login/MobileLogin.ts`) is independent of Quick Connect. `/mobile/quickconnect` exchanges a single-use QR OTP for a session and additionally returns a `device_token` (password replacement for that device; table `user_device_token`, only the sha256 is stored). `/mobile/login/token` logs in with it (bound to the `deviceIdentity` it was issued to, valid until unused for 180 days — `Application/DeviceTokenPolicy.ts`, failures counted by `LoginLockoutRegistry` per device), `/mobile/logout/token` revokes it; a new Quick Connect of the same device revokes the old token. Session setup for both is shared in `Login/MobileSessionStart.ts`. The response field is optional, so older apps ignore it and the API version stays unchanged.
+
 When adding endpoints: define request/response shapes in `schemas/schema.json` first (via `mcp__vtseditor__vts_*`), let the auto-generator update `schemas/src/`, export from `schemas/src/index.ts`, then import in the route. Do not bypass the schema validation by typing `data.body` loosely.
 
 ### Auth and session helpers (figtree gotcha)

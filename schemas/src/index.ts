@@ -553,6 +553,12 @@ export {
 export {
     SchemaMobileQuickConnectRequest,
     MobileQuickConnectRequest,
+    SchemaMobileQuickConnectResponse,
+    MobileQuickConnectResponse,
+    SchemaMobileTokenLoginRequest,
+    MobileTokenLoginRequest,
+    SchemaMobileTokenLogoutRequest,
+    MobileTokenLogoutRequest,
 } from './Routes/Mobile/QuickConnect/MobileQuickConnect.js';
 export {
     SchemaOfficeReportFilter,

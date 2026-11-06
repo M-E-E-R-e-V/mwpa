@@ -35,6 +35,7 @@ import {Species} from './Entities/Species.js';
 import {SpeciesExternLink} from './Entities/SpeciesExternLink.js';
 import {SpeciesGroup} from './Entities/SpeciesGroup.js';
 import {User} from './Entities/User.js';
+import {UserDeviceToken} from './Entities/UserDeviceToken.js';
 import {UserGroups} from './Entities/UserGroups.js';
 import {UserQuickConnectToken} from './Entities/UserQuickConnectToken.js';
 import {UsersRights} from './Entities/UsersRights.js';
@@ -95,6 +96,7 @@ export class MWPADbLoader extends DBLoader {
             User,
             UserGroups,
             UserQuickConnectToken,
+            UserDeviceToken,
             UsersRights,
             UsersRoleRights,
             UsersRoles,
