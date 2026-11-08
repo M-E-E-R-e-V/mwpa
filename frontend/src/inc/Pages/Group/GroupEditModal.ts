@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     FormGroup2,
     Input2,
@@ -53,12 +54,12 @@ export class GroupEditModal extends ModalDialog2 {
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupName = new FormGroup2({label: 'Name'});
+        const groupName = new FormGroup2({label: Lang.i().l('Name')});
         groupName.appendTo(bodyCard);
         this._inputName = new Input2({});
         this._inputName.appendTo(groupName);
 
-        const groupRole = new FormGroup2({label: 'Role'});
+        const groupRole = new FormGroup2({label: Lang.i().l('Role')});
         groupRole.appendTo(bodyCard);
         this._selectRole = new Select2({});
         this._selectRole.appendTo(groupRole);
@@ -70,25 +71,25 @@ export class GroupEditModal extends ModalDialog2 {
             });
         }
 
-        const groupOrg = new FormGroup2({label: 'Organization'});
+        const groupOrg = new FormGroup2({label: Lang.i().l('Organization')});
         groupOrg.appendTo(bodyCard);
         this._selectOrganization = new Select2({});
         this._selectOrganization.appendTo(groupOrg);
 
         this._selectOrganization.addValue({
             key: '0',
-            value: 'None set'
+            value: Lang.i().l('None set')
         });
 
-        const groupAclRoles = new FormGroup2({label: 'Access roles'});
+        const groupAclRoles = new FormGroup2({label: Lang.i().l('Access roles')});
         groupAclRoles.appendTo(bodyCard);
         this._selectAclRoles = new Multiple2({});
         this._selectAclRoles.appendTo(groupAclRoles);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     /**
@@ -157,7 +158,7 @@ export class GroupEditModal extends ModalDialog2 {
     public setOrganizations(orgs: OrganizationFullEntry[]): void {
         this._selectOrganization.addValue({
             key: '0',
-            value: 'None set'
+            value: Lang.i().l('None set')
         });
 
         for (const org of orgs) {

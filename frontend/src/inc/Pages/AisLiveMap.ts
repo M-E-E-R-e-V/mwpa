@@ -121,7 +121,7 @@ export class AisLiveMap extends BasePage {
         const lang = Lang_i();  // simple helper for the title only
         void lang;
 
-        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Live AIS Map'}));
@@ -220,7 +220,7 @@ export class AisLiveMap extends BasePage {
         }, REFRESH_INTERVAL_MS);
     }
 
-    public override unloadContent(): void {
+    public override async unloadContent(): Promise<void> {
         if (this._refreshTimer !== null) {
             clearInterval(this._refreshTimer);
             this._refreshTimer = null;

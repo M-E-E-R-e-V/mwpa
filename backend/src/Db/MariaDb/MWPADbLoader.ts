@@ -3,6 +3,7 @@ import {EntitySchema, MixedList} from 'typeorm';
 import {AisVessel} from './Entities/AisVessel.js';
 import {BehaviouralStates} from './Entities/BehaviouralStates.js';
 import {ClimateIndex} from './Entities/ClimateIndex.js';
+import {CoastlineCache} from './Entities/CoastlineCache.js';
 import {Devices} from './Entities/Devices.js';
 import {Earthquake} from './Entities/Earthquake.js';
 import {LiveAisTrack} from './Entities/LiveAisTrack.js';
@@ -30,10 +31,12 @@ import {SightingTour} from './Entities/SightingTour.js';
 import {SightingTourTracking} from './Entities/SightingTourTracking.js';
 import {SightingTourTrackingPending} from './Entities/SightingTourTrackingPending.js';
 import {SightingViewFilter} from './Entities/SightingViewFilter.js';
+import {TableFilter} from './Entities/TableFilter.js';
 import {Species} from './Entities/Species.js';
 import {SpeciesExternLink} from './Entities/SpeciesExternLink.js';
 import {SpeciesGroup} from './Entities/SpeciesGroup.js';
 import {User} from './Entities/User.js';
+import {UserDeviceToken} from './Entities/UserDeviceToken.js';
 import {UserGroups} from './Entities/UserGroups.js';
 import {UserQuickConnectToken} from './Entities/UserQuickConnectToken.js';
 import {UsersRights} from './Entities/UsersRights.js';
@@ -60,6 +63,7 @@ export class MWPADbLoader extends DBLoader {
             AisVessel,
             BehaviouralStates,
             ClimateIndex,
+            CoastlineCache,
             Devices,
             Earthquake,
             EncounterCategories,
@@ -89,10 +93,12 @@ export class MWPADbLoader extends DBLoader {
             Species,
             SpeciesExternLink,
             SpeciesGroup,
+            TableFilter,
             TourAisVessel,
             User,
             UserGroups,
             UserQuickConnectToken,
+            UserDeviceToken,
             UsersRights,
             UsersRoleRights,
             UsersRoles,

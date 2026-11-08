@@ -27,7 +27,7 @@ export class ReactionDisplay extends Widget2 {
 
         const tooltpSpecStr = 'Click for more Information';
 
-        this._element.attr('data-toggle', 'tooltip');
+        this._element.attr('data-bs-toggle', 'tooltip');
         this._element.attr('data-html', 'true');
         this._element.attr('data-original-title', tooltpSpecStr);
         this._element.css({

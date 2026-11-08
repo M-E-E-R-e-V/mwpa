@@ -10,7 +10,6 @@ import {
     Input2,
     InputType2,
     LangTextV2,
-    LeftNavbarLink,
     SortingColumn2,
     SortOrder2,
     Table2,
@@ -26,10 +25,12 @@ import {TourEntry, Tours as ToursAPI, ToursCreater, ToursDevice, ToursFilter} fr
 import {Vehicle as VehicleAPI, VehicleEntry} from '../Api/Vehicle';
 import {VehicleDriver as VehicleDriverAPI, VehicleDriverEntry} from '../Api/VehicleDriver';
 import {Lang} from '../Lang';
+import {Nav} from '../Nav';
 import {BasePage} from './BasePage';
 import {TourEditModal} from './Tours/TourEditModal';
 import {TourFilter, TourFilterValues} from './Tours/TourFilter';
 import {ToursMap} from './Tours/TourMap';
+import {TOURS_PAGE_NAME} from './PageNames';
 
 const PAGE_SIZE = 50;
 
@@ -64,7 +65,7 @@ const highlight = (text: string, term: string): string => {
  */
 export class Tours extends BasePage {
 
-    public static NAME: string = 'tours';
+    public static NAME: string = TOURS_PAGE_NAME;
 
     protected override _name: string = Tours.NAME;
 
@@ -74,19 +75,17 @@ export class Tours extends BasePage {
         super();
 
         this._tourDialog = new TourEditModal();
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add tour', () => {
-            this._tourDialog.setTitle(new LangTextV2({text: 'Add new tour'}));
-            this._tourDialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
     }
 
     /**
      * loadContent
      */
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add tour', 'fas fa-plus', () => {
+            this._tourDialog.setTitle(new LangTextV2({text: 'Add new tour'}));
+            this._tourDialog.show();
+        });
+
         // shared mutable state across loaders / renderers ----------------------------------------
         const sort: SortState = {
             id: SortOrder2.NONE,
@@ -167,7 +166,7 @@ export class Tours extends BasePage {
 
         // Filter card ---------------------------------------------------------------------------
         const content = this._wrapper.getContentWrapper().getContent();
-        const rowFilter = new ContentRow2(content.getElement());
+        const rowFilter = new ContentRow2(content.getContentFluidElement());
         const filter = new TourFilter();
         filter.appendTo(new ContentCol2(rowFilter, ContentColSize2.col12).getElement());
 
@@ -205,7 +204,7 @@ export class Tours extends BasePage {
         }
 
         // List card -----------------------------------------------------------------------------
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Tours'}));
@@ -224,7 +223,7 @@ export class Tours extends BasePage {
 
         const searchInput = new Input2({type: InputType2.text});
         searchInput.appendTo(searchSlot);
-        searchInput.setPlaceholder('search persons / tour-fid …');
+        searchInput.setPlaceholder(Lang.i().l('search persons / tour-fid …'));
 
         // Table ---------------------------------------------------------------------------------
         const tableWrapper = new TableWrapper2<TourEntry>({tableOptions: {head_fixed: true}});
@@ -329,9 +328,7 @@ export class Tours extends BasePage {
                 const badgeTracking = new Badge2({text: `${entry.count_trackings}`, type: BadgeType2.info});
                 badgeTracking.appendTo(tdTrackingCount);
                 badgeTracking.getElement().on('click', () => {
-                    if (this._loadPageFn) {
-                        this._loadPageFn(new ToursMap(entry.id));
-                    }
+                    Nav.load(new ToursMap(entry.id)).then();
                 });
                 badgeTracking.getElement().css({cursor: 'pointer'});
             } else {
@@ -369,13 +366,11 @@ export class Tours extends BasePage {
             const abtnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             abtnMenu.appendTo(tdAction);
 
-            abtnMenu.addMenuItem('Show Map', () => {
-                if (this._loadPageFn) {
-                    this._loadPageFn(new ToursMap(entry.id));
-                }
+            abtnMenu.addMenuItem(Lang.i().l('Show Map'), () => {
+                Nav.load(new ToursMap(entry.id)).then();
             }, IconFa.hockeypuck);
 
-            abtnMenu.addMenuItem('Delete', () => {
+            abtnMenu.addMenuItem(Lang.i().l('Delete'), () => {
                 // eslint-disable-next-line no-alert
                 window.alert('Delete todo');
             }, IconFa.trash);
@@ -410,7 +405,7 @@ export class Tours extends BasePage {
                     }
 
                     const count = response.count ?? 0;
-                    card.setTitle(`Tours (${count})`);
+                    card.setTitle(`${Lang.i().l('Tours')} (${count})`);
 
                     return response.list;
                 } finally {

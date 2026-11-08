@@ -12,7 +12,6 @@ import {
     Input2,
     InputType2,
     LangTextV2,
-    LeftNavbarLink,
     ModalDialogType2,
     SortingColumn2,
     SortOrder2,
@@ -26,11 +25,13 @@ import {
 import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species';
 import {SpeciesGroup as SpeciesGroupAPI} from '../Api/SpeciesGroup';
 import {Lang} from '../Lang';
+import {Nav} from '../Nav';
 import {UtilOttLink} from '../Utils/UtilOttLink';
 import {UtilWormsLink} from '../Utils/UtilWormsLink';
 import {SpeciesGroupDisplay} from '../Widget/SpeciesGroupDisplay';
 import {BasePage} from './BasePage';
 import {SpeciesProfile as SpeciesProfilePage} from './Species/Profile';
+import {SPECIES_PAGE_NAME} from './PageNames';
 import {SpeciesEditModal} from './Species/SpeciesEditModal';
 import {SpeciesMergeModal} from './Species/SpeciesMergeModal';
 
@@ -67,7 +68,7 @@ const highlight = (text: string, term: string): string => {
  */
 export class Species extends BasePage {
 
-    public static NAME: string = 'admin-species';
+    public static NAME: string = SPECIES_PAGE_NAME;
 
     protected override _name: string = Species.NAME;
 
@@ -81,20 +82,6 @@ export class Species extends BasePage {
         this._speciesDialog = new SpeciesEditModal();
 
         this._mergeDialog = new SpeciesMergeModal();
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Specie', async() => {
-            this._speciesDialog.resetValues();
-            this._speciesDialog.setTitle(new LangTextV2({text: 'Add Specie'}));
-
-            const groups = await SpeciesGroupAPI.getList();
-            if (groups) {
-                this._speciesDialog.setSpeciesGroupList(groups);
-            }
-
-            this._speciesDialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
 
         this._speciesDialog.setOnSave(async(): Promise<void> => {
             let tid = this._speciesDialog.getSpecieId();
@@ -116,7 +103,7 @@ export class Species extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Specie save success.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Specie save success.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -135,7 +122,7 @@ export class Species extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Specie merge success.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Specie merge success.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -144,9 +131,21 @@ export class Species extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add Specie', 'fas fa-plus', async() => {
+            this._speciesDialog.resetValues();
+            this._speciesDialog.setTitle(new LangTextV2({text: 'Add Specie'}));
+
+            const groups = await SpeciesGroupAPI.getList();
+            if (groups) {
+                this._speciesDialog.setSpeciesGroupList(groups);
+            }
+
+            this._speciesDialog.show();
+        });
+
         const lang = Lang.i();
 
-        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const col = new ContentCol2(row1, ContentColSize2.col12);
         const card = new Card2({});
         card.appendTo(col.getElement());
@@ -251,12 +250,10 @@ export class Species extends BasePage {
             btnMenu.appendTo(actionTd);
 
             btnMenu.addMenuItem(lang.l('Profile'), (): void => {
-                if (this._loadPageFn) {
-                    this._loadPageFn(new SpeciesProfilePage(specie.id));
-                }
+                Nav.load(new SpeciesProfilePage(specie.id)).then();
             }, 'fas fa-chart-bar');
 
-            btnMenu.addMenuItem('Edit', async(): Promise<void> => {
+            btnMenu.addMenuItem(Lang.i().l('Edit'), async(): Promise<void> => {
                 this._speciesDialog.resetValues();
                 this._speciesDialog.setTitle(new LangTextV2({text: 'Edit Species'}));
                 this._speciesDialog.setSpecieId(specie.id);
@@ -273,7 +270,7 @@ export class Species extends BasePage {
                 this._speciesDialog.show();
             }, IconFa.edit);
 
-            btnMenu.addMenuItem('Merge', async(): Promise<void> => {
+            btnMenu.addMenuItem(Lang.i().l('Merge'), async(): Promise<void> => {
                 this._mergeDialog.resetValues();
                 this._mergeDialog.setTitle(new LangTextV2({text: 'Merge Species'}));
 
@@ -288,16 +285,16 @@ export class Species extends BasePage {
 
             btnMenu.addDivider();
 
-            btnMenu.addMenuItem('Delete', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Delete'), (): void => {
                 DialogConfirm2.confirm(
                     'dcDeleteSpecie',
                     ModalDialogType2.large,
-                    'Delete Specie',
-                    'Are you sure you want to delete the specie?',
+                    Lang.i().l('Delete Specie'),
+                    Lang.i().l('Are you sure you want to delete the specie?'),
                     async(_, dialog) => {
                         try {
                             if (await SpeciesAPI.delete({id: specie.id})) {
-                                this._toast.fire({icon: 'success', title: 'Specie delete success.'});
+                                this._toast.fire({icon: 'success', title: Lang.i().l('Specie delete success.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});
@@ -383,7 +380,7 @@ export class Species extends BasePage {
             try {
                 const species = await SpeciesAPI.getList();
                 allSpecies = species ?? [];
-                card.setTitle(`Species (${allSpecies.length})`);
+                card.setTitle(`${Lang.i().l('Species')} (${allSpecies.length})`);
                 await tableWrapper.reset();
             } finally {
                 card.hideLoading();

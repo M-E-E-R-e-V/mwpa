@@ -12,7 +12,6 @@ import {
     Input2,
     InputType2,
     LangTextV2,
-    LeftNavbarLink,
     ModalDialogType2,
     SortingColumn2,
     SortOrder2,
@@ -71,20 +70,12 @@ export class EncounterCategories extends BasePage {
 
         this._dialog = new EncounterCategoriesEditModal();
 
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Encounter', () => {
-            this._dialog.resetValues();
-            this._dialog.setTitle(new LangTextV2({text: 'Add Encounter Category'}));
-            this._dialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
-
         this._dialog.setOnSave(async(): Promise<void> => {
             const id = this._dialog.getEntryId();
             const name = this._dialog.getName();
 
             if (name === '') {
-                this._toast.fire({icon: 'error', title: 'Name is required.'});
+                this._toast.fire({icon: 'error', title: Lang.i().l('Name is required.')});
                 return;
             }
 
@@ -101,7 +92,7 @@ export class EncounterCategories extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Encounter saved.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Encounter saved.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -110,9 +101,15 @@ export class EncounterCategories extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add Encounter', 'fas fa-plus', () => {
+            this._dialog.resetValues();
+            this._dialog.setTitle(new LangTextV2({text: 'Add Encounter Category'}));
+            this._dialog.show();
+        });
+
         const lang = Lang.i();
 
-        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const col = new ContentCol2(row1, ContentColSize2.col12);
         const card = new Card2({});
         card.appendTo(col.getElement());
@@ -197,7 +194,7 @@ export class EncounterCategories extends BasePage {
             const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             btnMenu.appendTo(actionTd);
 
-            btnMenu.addMenuItem('Edit', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Edit'), (): void => {
                 this._dialog.resetValues();
                 this._dialog.setTitle(new LangTextV2({text: 'Edit Encounter Category'}));
                 this._dialog.setEntryId(entry.id);
@@ -209,19 +206,16 @@ export class EncounterCategories extends BasePage {
 
             btnMenu.addDivider();
 
-            btnMenu.addMenuItem('Delete', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Delete'), (): void => {
                 DialogConfirm2.confirm(
                     'dcDeleteEncounter',
                     ModalDialogType2.large,
-                    'Delete Encounter Category',
-                    'Soft-delete this encounter category?'
-                    + ' Historical sightings that reference it keep the link;'
-                    + ' it disappears from the picker for new sightings.'
-                    + ' Revive it later from the Edit dialog.',
+                    Lang.i().l('Delete Encounter Category'),
+                    `${Lang.i().l('Soft-delete this encounter category?')} ${Lang.i().l('Historical sightings that reference it keep the link; it disappears from the picker for new sightings. Revive it later from the Edit dialog.')}`,
                     async(_, dialog) => {
                         try {
                             if (await EncounterCategoriesAPI.delete({id: entry.id})) {
-                                this._toast.fire({icon: 'success', title: 'Encounter deleted.'});
+                                this._toast.fire({icon: 'success', title: Lang.i().l('Encounter deleted.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});
@@ -292,7 +286,7 @@ export class EncounterCategories extends BasePage {
             card.showLoading();
             try {
                 allEntries = await EncounterCategoriesAPI.getList();
-                card.setTitle(`Encounter Categories (${allEntries.length})`);
+                card.setTitle(`${Lang.i().l('Encounter Categories')} (${allEntries.length})`);
                 await tableWrapper.reset();
             } finally {
                 card.hideLoading();

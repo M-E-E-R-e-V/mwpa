@@ -15,6 +15,7 @@ import {
     SpeciesRegressionSeries
 } from '../../Api/Species';
 import {Lang} from '../../Lang';
+import {UtilBootstrap} from '../../Utils/UtilBootstrap';
 import {BasePage} from '../BasePage';
 
 /*
@@ -78,7 +79,7 @@ export class CrossSpeciesAnalytics extends BasePage {
 
         // Header card — short explainer ------------------------------------------------------------------------------
 
-        const rowHead = new ContentRow2(contentWrapper.getElement());
+        const rowHead = new ContentRow2(contentWrapper.getContentFluidElement());
         const headCard = new Card2({});
         headCard.appendTo(new ContentCol2(rowHead, ContentColSize2.col12).getElement());
         headCard.setTitle(new LangTextV2({text: title}));
@@ -126,7 +127,7 @@ export class CrossSpeciesAnalytics extends BasePage {
         ];
 
         for (const spec of cardSpecs) {
-            const row = new ContentRow2(contentWrapper.getElement());
+            const row = new ContentRow2(contentWrapper.getContentFluidElement());
             const card = new Card2({});
             card.appendTo(new ContentCol2(row, ContentColSize2.col12).getElement());
             card.setTitle(new LangTextV2({text: spec.titleKey}));
@@ -426,8 +427,7 @@ export class CrossSpeciesAnalytics extends BasePage {
         );
         tools.append(btn);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (btn as unknown as {popover: (opts: any) => void;}).popover({
+        UtilBootstrap.attachInfoPopover(btn, {
             html: true,
             sanitize: false,
             trigger: 'click',
@@ -435,15 +435,7 @@ export class CrossSpeciesAnalytics extends BasePage {
             container: 'body',
             title: escape(lang.l(titleKey)),
             content: `<div style="font-size:0.85rem;line-height:1.45;max-width:380px;">${escape(lang.l(descKey))}</div>`
-        });
-
-        btn.on('shown.bs.popover', () => {
-            jQuery(document).one('click.cross-species-info', (ev) => {
-                if (!jQuery(ev.target).closest('.popover, .cross-species-info').length) {
-                    (btn as unknown as {popover: (action: string) => void;}).popover('hide');
-                }
-            });
-        });
+        }, '.cross-species-info', 'cross-species-info');
     }
 
 }

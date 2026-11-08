@@ -16,11 +16,12 @@
 
   <!-- jQuery -->
   <script src="assets/plugins/jquery/jquery.min.js"></script>
-  <!-- Bootstrap 4 -->
+  <!-- Bootstrap 5 bundle (incl. Popper) -->
   <script src="assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 
   <script src="dist/login.js" defer></script>
-<body class="hold-transition login-page">
+</head>
+<body class="login-page bg-body-secondary">
 
 <div style="z-index: 10;bottom: 0;left: 0;position: fixed;right: 0;">
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Calque_1" x="0px"
@@ -91,26 +92,22 @@
       <form method="post">
         <div class="input-group mb-3">
           <input type="email" class="form-control" placeholder="Email" id="input_email">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
-            </div>
+          <div class="input-group-text">
+            <span class="fas fa-envelope"></span>
           </div>
         </div>
         <div class="input-group mb-3">
           <input type="password" class="form-control" placeholder="Password" id="input_password">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
+          <div class="input-group-text">
+            <span class="fas fa-lock"></span>
           </div>
         </div>
         <div class="row">
           <div class="col-8">
           </div>
           <!-- /.col -->
-          <div class="col-4">
-            <button type="button" class="btn btn-primary btn-block" id="btnsignin">Sign In</button>
+          <div class="col-4 d-grid">
+            <button type="button" class="btn btn-primary" id="btnsignin">Sign In</button>
           </div>
           <!-- /.col -->
         </div>
@@ -126,7 +123,7 @@
 <footer class="main-footer" style="margin-left:0;">
   <strong>Mammal watching. Processing. Analysing. - Project MWPA 2022 <a href="https://github.com/stefanwerfling/mwpa" target="_blank">on Github</a>.</strong>
   &nbsp; A project of the  <a href="https://m-e-e-r.de/" target="_blank">M.e.e.r e.V.</a> association
-  <div class="float-right d-none d-sm-inline-block">
+  <div class="float-end d-none d-sm-inline-block">
     <b>Version</b> 1.0.39
   </div>
 </footer>

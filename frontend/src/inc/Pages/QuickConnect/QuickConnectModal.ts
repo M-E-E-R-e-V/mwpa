@@ -1,4 +1,5 @@
 /* global JQuery */
+import {Lang} from '../../Lang';
 import {
     LangTextV2,
     ModalDialog2,
@@ -46,7 +47,7 @@ export class QuickConnectModal extends ModalDialog2 {
         const body = jQuery<HTMLDivElement>('<div class="text-center" />').appendTo(this.getBody());
 
         jQuery<HTMLParagraphElement>('<p class="text-muted" />')
-        .text('Scan this code with the MWPA mobile app to sign in.')
+        .text(Lang.i().l('Scan this code with the MWPA mobile app to sign in.'))
         .appendTo(body);
 
         const qrWrap = jQuery<HTMLDivElement>('<div class="my-3" />').appendTo(body);
@@ -60,7 +61,7 @@ export class QuickConnectModal extends ModalDialog2 {
 
         this._errorBox = jQuery<HTMLDivElement>('<div class="alert alert-danger mt-3" style="display:none;" />').appendTo(body);
 
-        const btnRefresh = this.addButtonSave('Refresh', true);
+        const btnRefresh = this.addButtonSave(Lang.i().l('Refresh'), true);
         btnRefresh.setOnClickFn(async() => {
             await this._loadAndRender();
         });
@@ -68,7 +69,7 @@ export class QuickConnectModal extends ModalDialog2 {
             await this._loadAndRender();
         });
 
-        this.addButtonClose('Close');
+        this.addButtonClose(Lang.i().l('Close'));
 
         /*
          * Bind directly to the bootstrap event so we don't steal the public
@@ -125,7 +126,7 @@ export class QuickConnectModal extends ModalDialog2 {
         const remaining = Math.max(0, Math.floor((this._currentExpiresAt - Date.now()) / 1000));
 
         if (remaining === 0) {
-            this._infoCountdown.text('Code expired - click Refresh to generate a new one.');
+            this._infoCountdown.text(Lang.i().l('Code expired - click Refresh to generate a new one.'));
             this._stopCountdown();
             return;
         }

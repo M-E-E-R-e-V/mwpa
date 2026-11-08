@@ -2,6 +2,7 @@
 import {ComponentType, Tooltip2, Widget2} from 'bambooo';
 import moment from 'moment';
 import {GeolocationCoordinates} from '../Types/GeolocationCoordinates';
+import {UtilBootstrap} from '../Utils/UtilBootstrap';
 import {UtilLocation} from '../Utils/UtilLocation';
 
 export type LocationDisplayButtonClickFn = () => void;
@@ -87,7 +88,7 @@ export class LocationDisplay extends Widget2 {
 
         if (onClick) {
             this._element.on('click', (event: any): void => {
-                jQuery('[data-bs-toggle="tooltip"]').tooltip('hide');
+                UtilBootstrap.hideAllTooltips();
                 onClick();
                 event.preventDefault();
             });

@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     FormGroup2,
     Input2,
@@ -79,8 +80,8 @@ export class MovementSettingsModal extends ModalDialog2 {
         this._inputLocalTz.appendTo(groupTz);
         this._inputLocalTz.setPlaceholder('Atlantic/Canary');
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     /**

@@ -6,7 +6,6 @@ import {
     ContentRow2,
     IconFa,
     LangTextV2,
-    LeftNavbarLink,
     Table2,
     Td2,
     Th2,
@@ -56,16 +55,6 @@ export class Organization extends BasePage {
 
         this._orgTrackingAreaModal = new OrganizationTrackingAreaModal();
 
-        // Navbar Left -------------------------------------------------------------------------------------------------
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Organization', () => {
-            this._orgModal.resetValues();
-            this._orgModal.setTitle(new LangTextV2({text: 'Add new Organization'}));
-            this._orgModal.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
-
         // save --------------------------------------------------------------------------------------------------------
 
         this._orgTrackingAreaModal.setOnSave(async(): Promise<void> => {
@@ -92,7 +81,7 @@ export class Organization extends BasePage {
 
                     this._toast.fire({
                         icon: 'success',
-                        title: 'Area save success.'
+                        title: Lang.i().l('Area save success.')
                     });
                 }
             } catch (message) {
@@ -138,7 +127,7 @@ export class Organization extends BasePage {
 
                     this._toast.fire({
                         icon: 'success',
-                        title: 'Area save success.'
+                        title: Lang.i().l('Area save success.')
                     });
                 }
             } catch (message) {
@@ -154,11 +143,17 @@ export class Organization extends BasePage {
      * loadContent
      */
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add Organization', 'fas fa-plus', () => {
+            this._orgModal.resetValues();
+            this._orgModal.setTitle(new LangTextV2({text: 'Add new Organization'}));
+            this._orgModal.show();
+        });
+
         this._onLoadTable = async(): Promise<void> => {
             const content = this._wrapper.getContentWrapper().getContent();
             content.empty();
 
-            const row1 = new ContentRow2(content.getElement());
+            const row1 = new ContentRow2(content.getContentFluidElement());
             const card = new Card2({});
             card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
 
@@ -179,7 +174,7 @@ export class Organization extends BasePage {
             new Th2({value: new LangTextV2({text: 'Location'})}).appendTo(trhead);
             new Th2({value: new LangTextV2({text: 'Lon'})}).appendTo(trhead);
             new Th2({value: new LangTextV2({text: 'Lat'})}).appendTo(trhead);
-            new Th2({value: 'Action'}).appendTo(trhead);
+            new Th2({value: Lang.i().l('Action')}).appendTo(trhead);
 
             if (orgs) {
                 for (const org of orgs) {
@@ -199,7 +194,7 @@ export class Organization extends BasePage {
                     const btnRMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
                     btnRMenu.appendTo(tdAction);
 
-                    btnRMenu.addMenuItem('Edit', async(): Promise<void> => {
+                    btnRMenu.addMenuItem(Lang.i().l('Edit'), async(): Promise<void> => {
                         this._orgModal.resetValues();
                         this._orgModal.setTitle(new LangTextV2({text: 'Edit Organization'}));
                         this._orgModal.setOrganizationId(org.id);

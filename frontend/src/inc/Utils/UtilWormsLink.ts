@@ -18,7 +18,7 @@ export class UtilWormsLink {
     public static setDialog(element: any, _titleName: string, aphiaId: string|number): void {
         const tooltipStr = 'Open on marinespecies.org (WoRMS)';
 
-        element.attr('data-toggle', 'tooltip');
+        element.attr('data-bs-toggle', 'tooltip');
         element.attr('data-html', 'true');
         element.attr('data-original-title', tooltipStr);
         element.css({

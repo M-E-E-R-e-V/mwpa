@@ -222,6 +222,21 @@ export {
     UserSavePinRequest,
 } from './Routes/Main/User/User.js';
 export {
+    SchemaTableFilterEntry,
+    TableFilterEntry,
+    SchemaTableFilterListRequest,
+    TableFilterListRequest,
+    SchemaTableFilterListResponse,
+    TableFilterListResponse,
+    SchemaTableFilterSaveResponse,
+    TableFilterSaveResponse,
+    SchemaTableFilterDeleteRequest,
+    TableFilterDeleteRequest,
+    SchemaSightingTableFilterSettings,
+    SightingTableFilterSettings,
+    TableFilterTable,
+} from './Routes/Main/User/TableFilter.js';
+export {
     SchemaToursFilterOrder,
     ToursFilterOrder,
     SchemaToursFilter,
@@ -506,6 +521,12 @@ export {
     TrackingAreaHomeData,
     SchemaTrackingAreaHomeResponse,
     TrackingAreaHomeResponse,
+    SchemaMobileCoastlineRequest,
+    MobileCoastlineRequest,
+    SchemaMobileCoastlineData,
+    MobileCoastlineData,
+    SchemaMobileCoastlineResponse,
+    MobileCoastlineResponse,
 } from './Routes/Mobile/TrackingArea/MobileTrackingArea.js';
 export {
     SchemaSightingTourTrackingEntry,
@@ -538,6 +559,12 @@ export {
 export {
     SchemaMobileQuickConnectRequest,
     MobileQuickConnectRequest,
+    SchemaMobileQuickConnectResponse,
+    MobileQuickConnectResponse,
+    SchemaMobileTokenLoginRequest,
+    MobileTokenLoginRequest,
+    SchemaMobileTokenLogoutRequest,
+    MobileTokenLogoutRequest,
 } from './Routes/Mobile/QuickConnect/MobileQuickConnect.js';
 export {
     SchemaOfficeReportFilter,

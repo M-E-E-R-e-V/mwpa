@@ -1,3 +1,4 @@
+import {Logger} from '@stefanwerfling/figtree';
 import {RateLimiter} from '../../Common/RateLimiter.js';
 import {httpGetWithRetry} from '../../Common/HttpGet.js';
 import {Enricher, EnricherResult, EnrichmentContext} from '../Types.js';
@@ -139,7 +140,8 @@ export class MeteoExtraEnricher implements Enricher {
         try {
             const body = JSON.parse(response.body) as OpenMeteoExtraResponse;
             return body.hourly ?? null;
-        } catch {
+        } catch (e) {
+            Logger.getLogger().warn(`MeteoExtraEnricher: failed to parse response — ${(e as Error).message}`);
             return null;
         }
     }

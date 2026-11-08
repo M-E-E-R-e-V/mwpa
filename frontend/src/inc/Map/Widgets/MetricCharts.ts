@@ -1,7 +1,9 @@
 /* global JQuery */
+import {Lang} from '../../Lang';
 import {Widget2} from 'bambooo';
 import * as d3raw from 'd3';
 import {SightingEnvironmentEntry} from '../../Api/SightingEnvironment';
+import {UtilBootstrap} from '../../Utils/UtilBootstrap';
 
 /*
  * d3 ships its own typings via `@types/d3` packages — not installed in
@@ -300,7 +302,7 @@ export class MetricCharts extends Widget2 {
         }
 
         if (rows.length === 0) {
-            this._statusEl.text('No sightings under current filter.');
+            this._statusEl.text(Lang.i().l('No sightings under current filter.'));
             return;
         }
 
@@ -343,35 +345,28 @@ export class MetricCharts extends Widget2 {
         const card = jQuery('<div style="background:#fff;border:1px solid #dee2e6;border-radius:4px;padding:6px;"/>').appendTo(grid);
 
         const head = jQuery('<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;gap:6px;"/>').appendTo(card);
-        jQuery(`<span style="font-weight:600;font-size:0.85rem;">${escapeHtml(spec.title)}</span>`).appendTo(head);
+        jQuery(`<span style="font-weight:600;font-size:0.85rem;">${escapeHtml(Lang.i().l(spec.title))}</span>`).appendTo(head);
         const infoBtn = jQuery(
             '<button type="button" class="btn btn-link btn-sm metric-chart-info" '
             + 'style="padding:0 4px;color:#2c7fb8;text-decoration:none;line-height:1;" '
-            + 'title="Click for details">'
+            + `title="${escapeHtml(Lang.i().l('Click for details'))}">`
             + '<i class="fa fa-info-circle"/></button>'
         ).appendTo(head);
 
-        // Bootstrap 4 popover. `sanitize:false` because we deliberately
-        // feed HTML strings we control; titles still go through escapeHtml.
-        infoBtn.popover({
+        /*
+         * Bootstrap 5 info popover (auto-dismiss on outside click).
+         * `sanitize:false` because we deliberately feed HTML strings we control;
+         * titles still go through escapeHtml.
+         */
+        UtilBootstrap.attachInfoPopover(infoBtn, {
             html: true,
             sanitize: false,
             trigger: 'click',
             placement: 'top',
             container: 'body',
-            title: spec.title,
+            title: Lang.i().l(spec.title),
             content: `<div style="font-size:0.8rem;line-height:1.4;max-width:340px;">${spec.description}</div>`
-        });
-
-        // Auto-dismiss any open popover when the user clicks anywhere
-        // outside it (default Bootstrap behaviour is to keep them open).
-        infoBtn.on('shown.bs.popover', () => {
-            jQuery(document).one('click.metric-chart-info', (ev) => {
-                if (!jQuery(ev.target).closest('.popover, .metric-chart-info').length) {
-                    infoBtn.popover('hide');
-                }
-            });
-        });
+        }, '.metric-chart-info', 'metric-chart-info');
 
         const target = jQuery('<div style="height:200px;"/>').appendTo(card);
         return {target, xLabel: spec.xLabel, yLabel: spec.yLabel};
@@ -432,8 +427,8 @@ export class MetricCharts extends Widget2 {
             return;
         }
 
-        const containerWidth = handle.target.width() ?? 280;
-        const containerHeight = handle.target.height() ?? 200;
+        const containerWidth = handle.target.width() || 280;
+        const containerHeight = handle.target.height() || 200;
         const margin = {top: 6, right: 10, bottom: 42, left: 52};
         const width = containerWidth - margin.left - margin.right;
         const height = containerHeight - margin.top - margin.bottom;
@@ -487,8 +482,8 @@ export class MetricCharts extends Widget2 {
             return;
         }
 
-        const containerWidth = handle.target.width() ?? 280;
-        const containerHeight = handle.target.height() ?? 200;
+        const containerWidth = handle.target.width() || 280;
+        const containerHeight = handle.target.height() || 200;
         const margin = {top: 6, right: 10, bottom: 42, left: 52};
         const width = containerWidth - margin.left - margin.right;
         const height = containerHeight - margin.top - margin.bottom;
@@ -575,8 +570,8 @@ export class MetricCharts extends Widget2 {
         }))
         .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-        const containerWidth = handle.target.width() ?? 280;
-        const containerHeight = handle.target.height() ?? 200;
+        const containerWidth = handle.target.width() || 280;
+        const containerHeight = handle.target.height() || 200;
         const margin = {top: 6, right: 10, bottom: 42, left: 52};
         const width = containerWidth - margin.left - margin.right;
         const height = containerHeight - margin.top - margin.bottom;
@@ -655,8 +650,8 @@ export class MetricCharts extends Widget2 {
         .slice(0, 8)
         .map(([label, count]) => ({label, count}));
 
-        const containerWidth = handle.target.width() ?? 280;
-        const containerHeight = handle.target.height() ?? 200;
+        const containerWidth = handle.target.width() || 280;
+        const containerHeight = handle.target.height() || 200;
         const margin = {top: 6, right: 24, bottom: 38, left: 110};
         const width = containerWidth - margin.left - margin.right;
         const height = containerHeight - margin.top - margin.bottom;

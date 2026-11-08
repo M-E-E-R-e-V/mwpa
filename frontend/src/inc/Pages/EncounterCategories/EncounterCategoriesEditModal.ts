@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     FormGroup2,
     Input2,
@@ -44,8 +45,8 @@ export class EncounterCategoriesEditModal extends ModalDialog2 {
         this._switchDeleted = new Switch2({});
         this._switchDeleted.appendTo(groupDeleted);
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save'), true);
     }
 
     public getEntryId(): number|null {

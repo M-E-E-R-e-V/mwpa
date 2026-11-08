@@ -150,7 +150,7 @@ export class SightingYearCompare extends Widget2 {
 
         series.sort((a, b) => a.year - b.year);
 
-        const width = this._chartEl.width() ?? 900;
+        const width = this._chartEl.width() || 900;
         const height = 380;
         const margin = {top: 20, right: 130, bottom: 35, left: 50};
         const innerW = width - margin.left - margin.right;

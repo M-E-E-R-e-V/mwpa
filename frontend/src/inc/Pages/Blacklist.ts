@@ -58,7 +58,7 @@ export class Blacklist extends BasePage {
 
         const content = this._wrapper.getContentWrapper().getContent();
 
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Blacklist (blocked IPs)'}));
@@ -97,18 +97,18 @@ export class Blacklist extends BasePage {
             const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             btnMenu.appendTo(actionTd);
 
-            btnMenu.addMenuItem('Unblock', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Unblock'), (): void => {
                 DialogConfirm2.confirm(
                     'dcUnblockIp',
                     ModalDialogType2.large,
-                    'Unblock IP',
+                    Lang.i().l('Unblock IP'),
                     `Unblock ${entry.ip}? This resets the rate limiter for this IP immediately.`,
                     async(_, dialog) => {
                         try {
                             if (await BlacklistAPI.unblock(entry.ip)) {
-                                this._toast.fire({icon: 'success', title: 'IP unblocked.'});
+                                this._toast.fire({icon: 'success', title: Lang.i().l('IP unblocked.')});
                             } else {
-                                this._toast.fire({icon: 'info', title: 'IP was no longer blocked.'});
+                                this._toast.fire({icon: 'info', title: Lang.i().l('IP was no longer blocked.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});
@@ -161,7 +161,7 @@ export class Blacklist extends BasePage {
          * LoginLockoutRegistry; entries expire when the lock elapses.
          */
 
-        const row2 = new ContentRow2(content.getElement());
+        const row2 = new ContentRow2(content.getContentFluidElement());
         const lockCard = new Card2({});
         lockCard.appendTo(new ContentCol2(row2, ContentColSize2.col12).getElement());
         lockCard.setTitle(new LangTextV2({text: 'Login lockouts'}));
@@ -213,18 +213,18 @@ export class Blacklist extends BasePage {
                 const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
                 btnMenu.appendTo(actionTd);
 
-                btnMenu.addMenuItem('Unlock', (): void => {
+                btnMenu.addMenuItem(Lang.i().l('Unlock'), (): void => {
                     DialogConfirm2.confirm(
                         'dcUnlockLogin',
                         ModalDialogType2.large,
-                        'Unlock login',
+                        Lang.i().l('Unlock login'),
                         `Unlock ${entry.email} on this device? They can log in again immediately.`,
                         async(_, dialog) => {
                             try {
                                 if (await BlacklistAPI.unblockLockout(entry.key)) {
-                                    this._toast.fire({icon: 'success', title: 'Login unlocked.'});
+                                    this._toast.fire({icon: 'success', title: Lang.i().l('Login unlocked.')});
                                 } else {
-                                    this._toast.fire({icon: 'info', title: 'Lockout was no longer active.'});
+                                    this._toast.fire({icon: 'info', title: Lang.i().l('Lockout was no longer active.')});
                                 }
                             } catch (message) {
                                 this._toast.fire({icon: 'error', title: message});

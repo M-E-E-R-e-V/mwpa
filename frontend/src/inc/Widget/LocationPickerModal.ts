@@ -182,8 +182,8 @@ export class LocationPickerModal extends ModalDialog2 {
         const decTabId = `loc-dec-${Date.now()}`;
         const dmTabId = `loc-dm-${Date.now()}`;
 
-        tabNav.append(`<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#${decTabId}">${escapeHtml(lang.l('Lat / Lon (decimal)'))}</a></li>`);
-        tabNav.append(`<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#${dmTabId}">${escapeHtml(lang.l('Deg / Min (N/S/E/W)'))}</a></li>`);
+        tabNav.append(`<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#${decTabId}">${escapeHtml(lang.l('Lat / Lon (decimal)'))}</a></li>`);
+        tabNav.append(`<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#${dmTabId}">${escapeHtml(lang.l('Deg / Min (N/S/E/W)'))}</a></li>`);
 
         // Decimal pane.
         const decPane = jQuery(`<div class="tab-pane fade show active pt-2" id="${decTabId}"/>`).appendTo(tabContent);
@@ -224,8 +224,8 @@ export class LocationPickerModal extends ModalDialog2 {
         this._noTrackInfo = jQuery<HTMLDivElement>(`<div class="small text-muted mt-2" style="display:none;">${escapeHtml(lang.l('No tracking points'))}</div>`).appendTo(colRight);
 
         // Footer buttons.
-        this.addButtonClose('Close');
-        this.addButtonSave('Use this position');
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Use this position'));
 
         this._wireInputs();
         this._wireFreePick();

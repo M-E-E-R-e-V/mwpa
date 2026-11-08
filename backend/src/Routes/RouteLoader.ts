@@ -1,5 +1,5 @@
 import {HttpRouteLoader, IDefaultRoute, ServiceRoute, SwaggerUIRoute} from '@stefanwerfling/figtree';
-import {Backend} from '../Application/Backend.js';
+import {APP_NAME} from '../Application/AppName.js';
 import {checkMWPAAdminIsLogin} from './AuthCheck.js';
 import {Acl} from './Main/Acl.js';
 import {Ais} from './Main/Ais.js';
@@ -18,6 +18,7 @@ import {SightingMovement} from './Main/SightingMovement.js';
 import {Sightings} from './Main/Sightings.js';
 import {Species} from './Main/Species.js';
 import {SpeciesGroup} from './Main/SpeciesGroup.js';
+import {TableFilter} from './Main/TableFilter.js';
 import {Tours} from './Main/Tours.js';
 import {User} from './Main/User.js';
 import {Vehicle} from './Main/Vehicle.js';
@@ -53,7 +54,7 @@ export class RouteLoader extends HttpRouteLoader {
             // — admin-only, lets the Services admin page list every running
             // job, read its cron + last_run + status, and trigger an ad-hoc
             // invoke without waiting for the next tick.
-            new ServiceRoute(Backend.NAME, checkMWPAAdminIsLogin),
+            new ServiceRoute(APP_NAME, checkMWPAAdminIsLogin),
             new Login(),
             new MapCache(),
             new Acl(),
@@ -72,6 +73,7 @@ export class RouteLoader extends HttpRouteLoader {
             new SightingMovement(),
             new Species(),
             new SpeciesGroup(),
+            new TableFilter(),
             new Tours(),
             new User(),
             new Vehicle(),

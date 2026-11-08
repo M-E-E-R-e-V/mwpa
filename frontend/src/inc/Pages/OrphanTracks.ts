@@ -144,7 +144,7 @@ export class OrphanTracks extends BasePage {
         });
 
         // List card -----------------------------------------------------------------------------
-        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Orphan Tracks'}));
@@ -189,7 +189,7 @@ export class OrphanTracks extends BasePage {
             tdAction.appendTo(trbody);
             const abtnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             abtnMenu.appendTo(tdAction);
-            abtnMenu.addMenuItem('Assign to tour', () => {
+            abtnMenu.addMenuItem(Lang.i().l('Assign to tour'), () => {
                 this._modal.setTitle(new LangTextV2({text: 'Assign orphan tracks'}));
                 this._modal.setSource(
                     entry.tour_fid,
@@ -231,7 +231,7 @@ export class OrphanTracks extends BasePage {
                     }
 
                     const count = response.count ?? 0;
-                    card.setTitle(`Orphan Tracks (${count})`);
+                    card.setTitle(`${Lang.i().l('Orphan Tracks')} (${count})`);
 
                     return response.list;
                 } finally {

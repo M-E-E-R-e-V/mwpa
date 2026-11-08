@@ -153,7 +153,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 |---|---|
 | [`schemas/`](schemas/) | Runtime types &amp; validators (using `vts`), generated from `schemas/schema.json` via [vtseditor](https://github.com/stefanwerfling/vtseditor). Shared by backend &amp; frontend. |
 | [`backend/`](backend/) | Node.js Express app on the [`figtree`](https://github.com/stefanwerfling/figtree) framework — services, repositories, REST routes. |
-| [`frontend/`](frontend/) | Browser SPA — webpack bundle, AdminLTE 3 + jQuery + Bootstrap 4 + the in-house [`bambooo`](https://github.com/stefanwerfling/bambooo) widget library. |
+| [`frontend/`](frontend/) | Browser SPA — webpack bundle, AdminLTE 4 + jQuery + Bootstrap 5 + the in-house [`bambooo`](https://github.com/stefanwerfling/bambooo) v2 widget library. |
 
 ## Features
 
@@ -178,7 +178,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 - Encounter categories, behavioural states, external receivers (AROC)
 - **Orphan tracks** admin page — buckets of pending GPS points whose parent tour never landed (typical when crew/boat is corrected after the fact). Includes a map preview of the actual points so the admin can decide *assign-vs-delete* before re-pointing them at a different `SightingTour`.
 - Bulk re-derivation of analytics (e.g. movement tracks, sighting × earthquake correlations)
-- **Historical data import** — a one-time importer (`backend/scripts/import-sighting-old.cjs`) loads the hand-maintained pre-app records (a legacy spreadsheet export kept under the gitignored `data/` dir, ~14.5k sightings back to 1995) into a separate read-only `sighting_old` table. It runs in two phases: a **conflict gate** first aborts the whole run (importing nothing) if any Excel row collides with an existing app sighting on *date + species + time (±30 min)*, then a dry-run-by-default import maps every column, resolves species names to the app's species list, and bulk-inserts. See [doc/sighting-old-import-mapping.md](doc/sighting-old-import-mapping.md) for the full column mapping and species synonym table.
+- **Historical data import** — a one-time importer (`backend/src/Scripts/ImportSightingOld.ts`, run as `node backend/dist/Scripts/ImportSightingOld.js --excel <file> [--commit]` after compiling) loads the hand-maintained pre-app records (a legacy spreadsheet export kept under the gitignored `data/` dir, ~14.5k sightings back to 1995) into a separate read-only `sighting_old` table. It runs in two phases: a **conflict gate** first aborts the whole run (importing nothing) if any Excel row collides with an existing app sighting on *date + species + time (±30 min)*, then a dry-run-by-default import maps every column, resolves species names to the app's species list, and bulk-inserts. See [doc/sighting-old-import-mapping.md](doc/sighting-old-import-mapping.md) for the full column mapping and species synonym table.
 
 ### For researchers
 
@@ -201,7 +201,7 @@ The repo is an **npm workspaces monorepo** with three packages that build in ord
 | ORM | TypeORM on MariaDB |
 | Schema validation | [vts](https://github.com/stefanwerfling/vts) generated from JSON via [vtseditor](https://github.com/stefanwerfling/vtseditor) |
 | Auth | Express session + custom RBAC (`mwpa_schemas` rights) |
-| Frontend UI | AdminLTE 3, jQuery, Bootstrap 4, [bambooo](https://github.com/stefanwerfling/bambooo) widgets |
+| Frontend UI | AdminLTE 4, jQuery, Bootstrap 5, [bambooo](https://github.com/stefanwerfling/bambooo) v2 widgets |
 | Maps | OpenLayers + `ol-layerswitcher`, OSM tile cache |
 | Analytics | d3 + dc.js (crossfilter), in-page charts and dashboards |
 | Office exports | `node-xlsx` (sightings list), `JSZip` direct-XML patch (AROC template) |
@@ -242,7 +242,7 @@ Topics covered:
 ## Project status
 
 - **Active** — under continuous development. See [issues](https://github.com/stefanwerfling/mwpa/issues) for the current backlog.
-- **Backend migration** — the backend is being ported from `old-backend/` (legacy routing-controllers) to `backend/` (figtree framework). Most main and mobile resources are ported; see `old-backend/` only for unported logic that needs to move over.
+- **Backend migration** — completed: the backend runs entirely on the figtree framework (`backend/`); the legacy routing-controllers code has been removed.
 - **Test suite** — *not yet*. Contributions welcome.
 
 The mobile app (Flutter) is in production with M.E.E.R. e.V., so any change touching `/mobile/*` REST endpoints must keep the wire format backward-compatible.

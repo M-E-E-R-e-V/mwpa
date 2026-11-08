@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     FormGroup2,
     FormRow2,
@@ -94,13 +95,13 @@ export class UsersEditModal extends ModalDialog2 {
         groupUsername.appendTo(bodyCard);
         this._inputUsername = new Input2({});
         this._inputUsername.appendTo(groupUsername);
-        this._inputUsername.setPlaceholder('Name of user');
+        this._inputUsername.setPlaceholder(Lang.i().l('Name of user'));
 
         const groupFullname = new FormGroup2({label: new LangTextV2({text: 'Fullname'})});
         groupFullname.appendTo(bodyCard);
         this._inputFullname = new Input2({});
         this._inputFullname.appendTo(groupFullname);
-        this._inputFullname.setPlaceholder('Fullname of user');
+        this._inputFullname.setPlaceholder(Lang.i().l('Fullname of user'));
 
         const groupPassword = new FormGroup2({label: new LangTextV2({text: 'Password'})});
         groupPassword.appendTo(bodyCard);
@@ -152,8 +153,8 @@ export class UsersEditModal extends ModalDialog2 {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     /**

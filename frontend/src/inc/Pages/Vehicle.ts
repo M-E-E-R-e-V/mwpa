@@ -12,7 +12,6 @@ import {
     Input2,
     InputType2,
     LangTextV2,
-    LeftNavbarLink,
     ModalDialogType2,
     SortingColumn2,
     SortOrder2,
@@ -107,20 +106,6 @@ export class Vehicle extends BasePage {
 
         this._vehicleDialog = new VehicleEditModal();
 
-        // Navbar Left -------------------------------------------------------------------------------------------------
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add Vehicle', async() => {
-            this._vehicleDialog.resetValues();
-            this._vehicleDialog.setTitle(new LangTextV2({text: 'Add Vehicle'}));
-
-            await this._refreshOrganizationList();
-            this._vehicleDialog.setInUse(true);
-            this._vehicleDialog.setIsDeleted(false);
-            this._vehicleDialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
-
         // save --------------------------------------------------------------------------------------------------------
 
         this._vehicleDialog.setOnSave(async(): Promise<void> => {
@@ -135,7 +120,7 @@ export class Vehicle extends BasePage {
             if (orgId === 0) {
                 this._toast.fire({
                     icon: 'error',
-                    title: 'Please select an organization.'
+                    title: Lang.i().l('Please select an organization.')
                 });
                 return;
             }
@@ -145,7 +130,7 @@ export class Vehicle extends BasePage {
             if (name === '') {
                 this._toast.fire({
                     icon: 'error',
-                    title: 'Please enter a vehicle name.'
+                    title: Lang.i().l('Please enter a vehicle name.')
                 });
                 return;
             }
@@ -168,7 +153,7 @@ export class Vehicle extends BasePage {
 
                     this._toast.fire({
                         icon: 'success',
-                        title: 'Vehicle save success.'
+                        title: Lang.i().l('Vehicle save success.')
                     });
                 }
             } catch (message) {
@@ -194,10 +179,20 @@ export class Vehicle extends BasePage {
      * loadContent
      */
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add Vehicle', 'fas fa-plus', async() => {
+            this._vehicleDialog.resetValues();
+            this._vehicleDialog.setTitle(new LangTextV2({text: 'Add Vehicle'}));
+
+            await this._refreshOrganizationList();
+            this._vehicleDialog.setInUse(true);
+            this._vehicleDialog.setIsDeleted(false);
+            this._vehicleDialog.show();
+        });
+
         const lang = Lang.i();
 
         const content = this._wrapper.getContentWrapper().getContent();
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
 
@@ -295,7 +290,7 @@ export class Vehicle extends BasePage {
             const btnRMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             btnRMenu.appendTo(tdAction);
 
-            btnRMenu.addMenuItem('Edit', async(): Promise<void> => {
+            btnRMenu.addMenuItem(Lang.i().l('Edit'), async(): Promise<void> => {
                 this._vehicleDialog.resetValues();
                 this._vehicleDialog.setTitle(new LangTextV2({text: 'Edit Vehicle'}));
                 this._vehicleDialog.setVehicleId(vehicle.id);
@@ -317,15 +312,14 @@ export class Vehicle extends BasePage {
                     DialogConfirm2.confirm(
                         'dcDeleteVehicle',
                         ModalDialogType2.large,
-                        'Delete Vehicle',
-                        'Are you sure you want to delete the vehicle?'
-                        + ' Historical sightings keep their reference, but the vehicle disappears from operational pickers.',
+                        Lang.i().l('Delete Vehicle'),
+                        `${Lang.i().l('Are you sure you want to delete the vehicle?')} ${Lang.i().l('Historical sightings keep their reference, but the vehicle disappears from operational pickers.')}`,
                         async(_, dialog) => {
                             try {
                                 if (await VehicleAPI.delete({id: vehicle.id})) {
                                     this._toast.fire({
                                         icon: 'success',
-                                        title: 'Vehicle delete success.'
+                                        title: Lang.i().l('Vehicle delete success.')
                                     });
                                 }
                             } catch (message) {

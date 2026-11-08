@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     ButtonClass2,
     ButtonDefault2,
@@ -90,7 +91,7 @@ export class TourFilter extends Card2 {
         groupSearch.appendTo(row.createCol(3));
         this._inputSearch = new Input2({type: InputType2.text});
         this._inputSearch.appendTo(groupSearch);
-        this._inputSearch.setPlaceholder('persons / tour-fid …');
+        this._inputSearch.setPlaceholder(Lang.i().l('persons / tour-fid …'));
 
         const groupOnlyWithoutTracks = new FormGroup2({label: new LangTextV2({text: 'Without tracks'})});
         groupOnlyWithoutTracks.appendTo(row.createCol(1));
@@ -99,7 +100,7 @@ export class TourFilter extends Card2 {
 
         const actions = jQuery('<div class="text-right pt-1"/>').appendTo(body);
 
-        const btnReset = new ButtonDefault2({title: 'Reset', icon: 'fa fa-undo'});
+        const btnReset = new ButtonDefault2({title: Lang.i().l('Reset'), icon: 'fa fa-undo'});
         btnReset.appendTo(actions);
         btnReset.setOnClickFn(() => {
             this.resetValues();
@@ -111,7 +112,7 @@ export class TourFilter extends Card2 {
 
         actions.append(' ');
 
-        const btnApply = new ButtonDefault2({title: 'Apply', icon: 'fa fa-check', btnClass: ButtonClass2.primary});
+        const btnApply = new ButtonDefault2({title: Lang.i().l('Apply'), icon: 'fa fa-check', btnClass: ButtonClass2.primary});
         btnApply.appendTo(actions);
         btnApply.setOnClickFn(() => {
             if (this._onApply) {

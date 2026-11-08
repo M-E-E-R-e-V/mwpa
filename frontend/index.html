@@ -21,27 +21,19 @@
   <link rel="stylesheet" href="assets/ionicons-css/icon.css">
   <!-- Tempusdominus Bootstrap 4 -->
   <link rel="stylesheet" href="assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <!-- iCheck -->
-  <link rel="stylesheet" href="assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- JQVMap -->
-  <link rel="stylesheet" href="assets/plugins/jqvmap/jqvmap.min.css">
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
-  <!-- Toastr -->
-  <link rel="stylesheet" href="assets/plugins/toastr/toastr.min.css">
-  <!-- flags -->
+  <!-- flags (language selector) -->
   <link rel="stylesheet" href="assets/plugins/flag-icon-css/css/flag-icons.min.css">
-  <!-- Theme style -->
+  <!-- AdminLTE 4 theme style -->
   <link rel="stylesheet" href="assets/css/adminlte.css">
-  <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
   <!-- Daterange picker -->
   <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css">
   <!-- select2 -->
   <link rel="stylesheet" href="assets/plugins/select2/css/select2.min.css">
   <link rel="stylesheet" href="assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
-  <!-- DataTables -->
-  <link rel="stylesheet" href="assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <!-- BS Stepper (bambooo stepper widget) -->
+  <link rel="stylesheet" href="assets/plugins/bs-stepper/css/bs-stepper.min.css">
   <!-- summernote -->
   <link rel="stylesheet" href="assets/plugins/summernote/summernote-bs4.min.css">
   <!-- ol -->
@@ -53,25 +45,51 @@
   <!-- mwpa css -->
   <link rel="stylesheet" href="mwpa.css">
 
-  <!-- jQuery -->
+  <!-- AdminLTE 4 app-level polish (Bootstrap 5 dropped some AdminLTE 3 defaults) -->
+  <style>
+    /* Drop the per-page title header (AdminLTE 4 `.app-content-header`) app-wide
+       — the content moves up and reclaims the vertical space. */
+    .app-content-header { display: none; }
+    /* Small breathing room now that the header gap is gone. */
+    .app-content { padding-top: 1rem; }
+    /* Restore AdminLTE 3's per-card bottom margin (Bootstrap 5 `.card` has none,
+       so stacked cards stuck together after the migration). */
+    .card { margin-bottom: 1rem; }
+    /* select2 dropdown must render above Bootstrap 5 modals (z-index 1055). */
+    .select2-container--open { z-index: 1060; }
+    /* AdminLTE 4 sidebar: constrain the user-panel avatar + brand logo
+       (AdminLTE 3 sized these via its own CSS which AdminLTE 4 dropped). */
+    .app-sidebar .user-panel { align-items: center; }
+    .app-sidebar .user-panel .image img { width: 2.1rem; height: 2.1rem; object-fit: cover; }
+    .app-sidebar .user-panel .info { padding-left: 0.6rem; }
+    .app-sidebar .user-panel .info a { color: #c2c7d0; }
+    .sidebar-brand .brand-image { max-height: 33px; width: auto; }
+    /* Card loading overlay (bambooo Card.showLoading): AdminLTE 3 laid the
+       spinner absolutely over the card; AdminLTE 4 dropped that rule, so the
+       div sat in the normal flow, pushed the table down on every reload and
+       caused a second scrollbar. Restore the overlay on top of the card. */
+    .card > .overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(var(--bs-body-bg-rgb), 0.6);
+        border-radius: inherit;
+    }
+  </style>
+
+  <!-- jQuery (bambooo + select2 + summernote + daterangepicker rely on it) -->
   <script src="assets/plugins/jquery/jquery.min.js"></script>
-  <!-- jQuery UI 1.11.4 -->
+  <!-- jQuery UI -->
   <script src="assets/plugins/jquery-ui/jquery-ui.min.js"></script>
-  <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+  <!-- Resolve conflict in jQuery UI tooltip/button with Bootstrap -->
   <script>
       $.widget.bridge('uibutton', $.ui.button)
   </script>
-  <!-- Bootstrap 4 -->
+  <!-- Bootstrap 5 bundle (incl. Popper) -->
   <script src="assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <!-- ChartJS -->
-  <script src="assets/plugins/chart.js/Chart.min.js"></script>
-  <!-- Sparkline -->
-  <script src="assets/plugins/sparklines/sparkline.js"></script>
-  <!-- JQVMap -->
-  <script src="assets/plugins/jqvmap/jquery.vmap.min.js"></script>
-  <script src="assets/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
-  <!-- jQuery Knob Chart -->
-  <script src="assets/plugins/jquery-knob/jquery.knob.min.js"></script>
   <!-- Moment -->
   <script src="assets/plugins/moment/moment.min.js"></script>
   <!-- daterangepicker -->
@@ -82,18 +100,15 @@
   <script src="assets/plugins/summernote/summernote-bs4.min.js"></script>
   <!-- SweetAlert2 -->
   <script src="assets/plugins/sweetalert2/sweetalert2.min.js"></script>
-  <!-- Toastr -->
-  <script src="assets/plugins/toastr/toastr.min.js"></script>
   <!-- select2 -->
   <script src="assets/plugins/select2/js/select2.full.min.js"></script>
-  <!-- overlayScrollbars -->
-  <script src="assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-  <script src="assets/adminlte.js"></script>
-  <script src="dist/index.js" defer></script>
 </head>
-<body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
+<body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+<div class="app-wrapper">
 </div>
-<!-- ./wrapper -->
+<!-- ./app-wrapper -->
+<!-- AdminLTE 4 (vanilla; wires data-lte-toggle interactions via delegation) -->
+<script src="assets/adminlte.js"></script>
+<script src="dist/index.js" defer></script>
 </body>
 </html>

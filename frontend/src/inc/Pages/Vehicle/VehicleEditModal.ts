@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     FormGroup2,
     Input2,
@@ -67,7 +68,7 @@ export class VehicleEditModal extends ModalDialog2 {
         groupName.appendTo(bodyCard);
         this._inputName = new Input2({});
         this._inputName.appendTo(groupName);
-        this._inputName.setPlaceholder('Name of vehicle');
+        this._inputName.setPlaceholder(Lang.i().l('Name of vehicle'));
 
         const groupOrganization = new FormGroup2({label: new LangTextV2({text: 'Organization'})});
         groupOrganization.appendTo(bodyCard);
@@ -90,8 +91,8 @@ export class VehicleEditModal extends ModalDialog2 {
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     /**

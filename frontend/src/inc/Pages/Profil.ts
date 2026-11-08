@@ -50,12 +50,12 @@ export class Profil extends BasePage {
     public override async loadContent(): Promise<void> {
         const content = this._wrapper.getContentWrapper().getContent();
 
-        const row1 = new ContentRow2(content.getElement(), ContentRowClass2.mb2);
+        const row1 = new ContentRow2(content.getContentFluidElement(), ContentRowClass2.mb2);
 
         const colHead = new ContentCol2(row1, ContentColSize2.colSm12);
-        colHead.getElement().append('<h1>Profile</h1>');
+        colHead.getElement().append(`<h1>${Lang.i().l('Profile')}</h1>`);
 
-        const row2 = new ContentRow2(content.getElement());
+        const row2 = new ContentRow2(content.getContentFluidElement());
 
         const colProfile = new ContentCol2(row2, ContentColSize2.colMd3);
         const colForm = new ContentCol2(row2, ContentColSize2.colMd9);
@@ -97,7 +97,7 @@ export class Profil extends BasePage {
             ptext.addValue(`${currentuser!.user!.username}`);
 
             const ulElement = jQuery('<ul class="list-group list-group-unbordered mb-3"></ul>').appendTo(mProfileElement);
-            jQuery(`<li class="list-group-item"><b>Main-Group</b> <a class="float-right">${currentuser!.group!.name}</a></li>`).appendTo(ulElement);
+            jQuery(`<li class="list-group-item"><b>${Lang.i().l('Main group')}</b> <a class="float-right">${currentuser!.group!.name}</a></li>`).appendTo(ulElement);
             jQuery(`<li class="list-group-item"><b>Organization</b> <a class="float-right">${currentuser!.organization!.name}</a></li>`).appendTo(ulElement);
 
             // form
@@ -107,7 +107,7 @@ export class Profil extends BasePage {
                 cardLine: CardLine2.outline
             });
             detailsCard.appendTo(colForm.getElement());
-            detailsCard.setTitle('Details');
+            detailsCard.setTitle(Lang.i().l('Details'));
 
             const groupEMail = new FormGroup2({label: new LangTextV2({text: 'EMail'})});
             groupEMail.appendTo(detailsCard.getBodyElement());
@@ -123,7 +123,7 @@ export class Profil extends BasePage {
                 cardLine: CardLine2.outline
             });
             passwordCard.appendTo(colForm.getElement());
-            passwordCard.setTitle('Change password');
+            passwordCard.setTitle(Lang.i().l('Change password'));
 
             const groupNewPassword = new FormGroup2({label: new LangTextV2({text: 'New password'})});
             groupNewPassword.appendTo(passwordCard.getBodyElement());
@@ -146,7 +146,7 @@ export class Profil extends BasePage {
                     })) {
                         this._toast.fire({
                             icon: 'success',
-                            title: 'New password is save.'
+                            title: Lang.i().l('New password is save.')
                         });
 
                         newpasswordInput.setValue('');
@@ -168,7 +168,7 @@ export class Profil extends BasePage {
                 cardLine: CardLine2.outline
             });
             mobilePinCard.appendTo(colForm.getElement());
-            mobilePinCard.setTitle('Change mobile app pin');
+            mobilePinCard.setTitle(Lang.i().l('Change mobile app pin'));
 
             const groupNewPin = new FormGroup2({label: new LangTextV2({text: 'New pin'})});
             groupNewPin.appendTo(mobilePinCard.getBodyElement());
@@ -191,7 +191,7 @@ export class Profil extends BasePage {
                     })) {
                         this._toast.fire({
                             icon: 'success',
-                            title: 'New pin is save.'
+                            title: Lang.i().l('New pin is save.')
                         });
 
                         newPinInput.setValue('');

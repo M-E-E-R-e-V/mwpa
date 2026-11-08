@@ -33,81 +33,14 @@ type ArocSpeciesIndex = {
     byNombreLower: Map<string, string>;
 };
 
-/**
- * Read the AROC `ListaEspecies` sheet at export time and build the lookup
- * map that drives column N (Nombre común).
- *
- * Why this exists: column P (Nombre científico) is filled by the template via
- * `IFERROR(VLOOKUP(N, ListaEspecies!$B$3:$D$45, 3, FALSE), "")` — N must match
- * one of `ListaEspecies!B3:B48` exactly or P stays blank, which AROC interprets
- * as a data-entry error. Our DB stores `species_extern_link.externname` per
- * receiver but it's hand-curated and drifted out of sync with the template, so
- * we treat the template itself as the source of truth and join on
- * `species_extern_link.externid`, which is meant to hold the AROC Taxon-ID
- * (column C in ListaEspecies). The lowercased-name map is a defensive fallback
- * for entries where externid hasn't been filled in.
- */
-async function loadArocSpeciesIndex(zip: JSZip): Promise<ArocSpeciesIndex> {
-    const empty: ArocSpeciesIndex = {byExternId: new Map(), byNombreLower: new Map()};
-    const sheetFile = zip.file(SHEET_LISTA_ESPECIES_PATH);
-    const ssFile = zip.file(SHEET_SHARED_STRINGS_PATH);
-    if (!sheetFile || !ssFile) {
-        Logger.getLogger().warn('OfficeReport::loadArocSpeciesIndex: ListaEspecies or sharedStrings missing in template');
-        return empty;
-    }
-
-    const sheetXml = await sheetFile.async('string');
-    const ssXml = await ssFile.async('string');
-
-    // Build the sharedStrings table — keep insertion order, since cells reference by index.
-    const sharedStrings: string[] = [];
-    const siRe = /<si>([\s\S]*?)<\/si>/g;
-    let mSi: RegExpExecArray | null;
-    while ((mSi = siRe.exec(ssXml)) !== null) {
-        const texts = Array.from(mSi[1].matchAll(/<t[^>]*>([^<]*)<\/t>/g)).map((x) => x[1]);
-        sharedStrings.push(texts.join(''));
-    }
-
-    // Walk every cell once, decode its value, keep only B/C of rows we care about.
-    const cells = new Map<string, string>();
-    const cellRe = /<c r="([A-Z]+\d+)"([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g;
-    let m: RegExpExecArray | null;
-    while ((m = cellRe.exec(sheetXml)) !== null) {
-        const ref = m[1];
-        const attrs = m[2];
-        const inner = m[3] ?? '';
-        if (inner === '') continue;
-
-        const isShared = / t="s"/.test(attrs);
-        const isInline = / t="inlineStr"/.test(attrs);
-        const isStr = / t="str"/.test(attrs);
-
-        const vMatch = inner.match(/<v>([^<]*)<\/v>/);
-        const tMatch = inner.match(/<t[^>]*>([^<]*)<\/t>/);
-
-        let value: string | undefined;
-        if (isShared && vMatch) {
-            value = sharedStrings[parseInt(vMatch[1], 10)];
-        } else if (isInline && tMatch) {
-            value = tMatch[1];
-        } else if ((isStr || !isShared) && vMatch) {
-            value = vMatch[1];
-        }
-        if (value !== undefined) cells.set(ref, value);
-    }
-
-    const idx: ArocSpeciesIndex = {byExternId: new Map(), byNombreLower: new Map()};
-    for (let row = 3; row <= 48; row++) {
-        const nombre = cells.get(`B${row}`);
-        const externid = cells.get(`C${row}`);
-        if (!nombre || nombre === '') continue;
-        idx.byNombreLower.set(nombre.toLowerCase(), nombre);
-        if (externid && externid !== '' && externid !== 'sin Taxon ID' && externid !== 'no está en la Lista Patrón') {
-            idx.byExternId.set(externid, nombre);
-        }
-    }
-    return idx;
-}
+/** The lookup context the AROC row-cell builder resolves foreign keys against. */
+type ArocRowContext = {
+    arocSpeciesIndex: ArocSpeciesIndex;
+    userNames: Map<number, string>;
+    behStates: Map<number, BehaviouralStatesDB>;
+    enCats: Map<number, EncounterCategoriesDB>;
+    externalReceiverId: number;
+};
 
 /**
  * MEER behavioural-state name → AROC `Actividad` (column AM) label.
@@ -583,7 +516,7 @@ export class CreateExport {
         let dataXml = await dataSheetFile.async('string');
         let generalXml = await generalSheetFile.async('string');
 
-        const arocSpeciesIndex = await loadArocSpeciesIndex(zip);
+        const arocSpeciesIndex = await CreateExport._loadArocSpeciesIndex(zip);
 
         // --- Fill `datos GENERALES` ------------------------------------------------------
         if (organization) {
@@ -637,8 +570,6 @@ export class CreateExport {
                 continue;
             }
 
-            const date = moment(entry.date);
-
             const speciesExternLink = await SpeciesExternLinkRepository.getInstance().findByReceiverAndSpecies(
                 externalReceiverId,
                 entry.species_id
@@ -650,103 +581,13 @@ export class CreateExport {
             // ListaEspecies sheet; we join primarily via `externid` (AROC Taxon-ID
             // in ListaEspecies!C) and fall back to a case-insensitive name match
             // for legacy `externname` rows where the externid was never set.
-            let nombreComun = '';
-            if (!speciesExternLink) {
-                Logger.getLogger().info(
-                    `OfficeReport::createExport: extern link not found by species ID: ${entry.species_id}`
-                );
-            } else {
-                const byId = arocSpeciesIndex.byExternId.get(speciesExternLink.externid);
-                if (byId) {
-                    nombreComun = byId;
-                } else {
-                    const byName = arocSpeciesIndex.byNombreLower.get(
-                        speciesExternLink.externname.toLowerCase()
-                    );
-                    if (byName) {
-                        nombreComun = byName;
-                    } else {
-                        Logger.getLogger().warn(
-                            'OfficeReport::createExport: species_extern_link '
-                            + `(receiver=${externalReceiverId}, species_id=${entry.species_id}, `
-                            + `externid="${speciesExternLink.externid}", `
-                            + `externname="${speciesExternLink.externname}") `
-                            + 'does not resolve to any AROC ListaEspecies entry — leaving N blank'
-                        );
-                    }
-                }
-            }
-
-            const observer = userNames.get(entry.creater_id) ?? '';
-
-            const presenciaCrias = entry.calves > 0 ? 'SI' : 'NO';
-            const presenciaNeonatos = entry.newborns > 0 ? 'SI' : 'NO';
-
-            const activity = firstActivityLabel(entry.behaviours, behStates);
-            const reactionCat = enCats.get(entry.reaction_id);
-            const reaction = reactionCat ? mapReaction(reactionCat.name) : '';
-
-            const pos = parsePosition(entry.location_begin);
-            const lonDms = pos ? dmsParts(pos.lon) : null;
-            const latDms = pos ? dmsParts(pos.lat) : null;
-            const utm = pos ? latLonToUtm(pos.lat, pos.lon) : null;
-
-            const otherBoatsMatch = entry.other_vehicle.match(/-?\d+/);
-            const otherBoatsNum = otherBoatsMatch ? parseInt(otherBoatsMatch[0], 10) : NaN;
-
-            const cells: Record<string, string | number> = {
-                J: date.isValid() ? date.format('DD/MM/YYYY') : entry.date,
-                K: entry.tour_start,
-                L: entry.tour_end,
-                M: entry.duration_from,
-                N: nombreComun,
-                Q: observer,
-                R: 'WGS84'
-            };
-
-            if (pos && lonDms && latDms && utm) {
-                // U / V = UTM Easting/Northing (metres). AROC convention (Ayuda D9):
-                // X gets a negative sign for western offsets, so we subtract the
-                // 500 000 m false easting. Y stays as standard UTM Northing.
-                const utmX = Math.round((utm.easting - 500000) * 100) / 100;
-                cells.U = utmX;
-                cells.V = utm.northing;
-
-                // S / T = "Coordenada X/Y DEFINITIVA" — the template formula is
-                // IF(U="",AA,U) / IF(V="",AE,V). We mirror UTM here so the value is
-                // consistent across the report even though we strip the shared
-                // formula (see stripSharedFormulas call below).
-                cells.S = utmX;
-                cells.T = utm.northing;
-
-                cells.W = pos.lon < 0 ? 'O' : 'E';
-                cells.X = lonDms.degrees;
-                cells.Y = lonDms.minutes;
-                cells.Z = lonDms.seconds;
-                cells.AA = pos.lon;
-                cells.AB = latDms.degrees;
-                cells.AC = latDms.minutes;
-                cells.AD = latDms.seconds;
-                cells.AE = pos.lat;
-            }
-
-            if (entry.species_count > 0) {
-                cells.AF = entry.species_count;
-            }
-            cells.AH = presenciaCrias;
-            if (entry.calves > 0) {
-                cells.AI = entry.calves;
-            }
-            cells.AJ = presenciaNeonatos;
-            if (entry.newborns > 0) {
-                cells.AK = entry.newborns;
-            }
-            cells.AL = reaction;
-            cells.AM = activity;
-            if (Number.isFinite(otherBoatsNum) && otherBoatsNum >= 0) {
-                cells.AN = otherBoatsNum;
-            }
-            cells.AO = entry.note;
+            const cells = CreateExport._buildArocRowCells(entry, speciesExternLink, {
+                arocSpeciesIndex: arocSpeciesIndex,
+                userNames: userNames,
+                behStates: behStates,
+                enCats: enCats,
+                externalReceiverId: externalReceiverId
+            });
 
             dataByRow.set(rowNum, cells);
             rowNum++;
@@ -861,6 +702,252 @@ export class CreateExport {
             Logger.getLogger().error('OfficeReport::createExport: zip.generateAsync failed', e as Error);
             return null;
         }
+    }
+
+    /**
+     * Fill the UTM / DMS / decimal position cells (S..AE) for a sighting. AROC
+     * convention (Ayuda D9): column X carries a negative sign for western
+     * offsets, so subtract the 500 000 m false easting; S/T mirror U/V (the
+     * template's IF(U="",AA,U) formula is stripped at export time).
+     * @private
+     */
+    private static _assignPositionCells(cells: Record<string, string | number>, pos: {lat: number; lon: number;}): void {
+        const lonDms = dmsParts(pos.lon);
+        const latDms = dmsParts(pos.lat);
+        const utm = latLonToUtm(pos.lat, pos.lon);
+        const utmX = Math.round((utm.easting - 500000) * 100) / 100;
+
+        cells.U = utmX;
+        cells.V = utm.northing;
+        cells.S = utmX;
+        cells.T = utm.northing;
+        cells.W = pos.lon < 0 ? 'O' : 'E';
+        cells.X = lonDms.degrees;
+        cells.Y = lonDms.minutes;
+        cells.Z = lonDms.seconds;
+        cells.AA = pos.lon;
+        cells.AB = latDms.degrees;
+        cells.AC = latDms.minutes;
+        cells.AD = latDms.seconds;
+        cells.AE = pos.lat;
+    }
+
+    /**
+     * Read the AROC `ListaEspecies` sheet from the template and build the
+     * Nombre-común lookup (N must match ListaEspecies!B3:B48 exactly or the
+     * template's VLOOKUP leaves P blank). Joins on externid (AROC Taxon-ID,
+     * column C) with a lowercased-name fallback.
+     * @private
+     */
+    private static async _loadArocSpeciesIndex(zip: JSZip): Promise<ArocSpeciesIndex> {
+        const empty: ArocSpeciesIndex = {byExternId: new Map(), byNombreLower: new Map()};
+        const sheetFile = zip.file(SHEET_LISTA_ESPECIES_PATH);
+        const ssFile = zip.file(SHEET_SHARED_STRINGS_PATH);
+        if (!sheetFile || !ssFile) {
+            Logger.getLogger().warn('OfficeReport::loadArocSpeciesIndex: ListaEspecies or sharedStrings missing in template');
+
+            return empty;
+        }
+
+        const sharedStrings = CreateExport._parseSharedStrings(await ssFile.async('string'));
+        const cells = CreateExport._parseSheetCells(await sheetFile.async('string'), sharedStrings);
+
+        return CreateExport._buildSpeciesIndex(cells);
+    }
+
+    /**
+     * Parse an XLSX `sharedStrings.xml` into the ordered string table that
+     * `t="s"` cells index into.
+     * @private
+     */
+    private static _parseSharedStrings(ssXml: string): string[] {
+        const sharedStrings: string[] = [];
+        const siRe = /<si>([\s\S]*?)<\/si>/g;
+        let mSi: RegExpExecArray | null;
+
+        while ((mSi = siRe.exec(ssXml)) !== null) {
+            const texts = Array.from(mSi[1].matchAll(/<t[^>]*>([^<]*)<\/t>/g)).map((x) => x[1]);
+            sharedStrings.push(texts.join(''));
+        }
+
+        return sharedStrings;
+    }
+
+    /**
+     * Decode every `<c r="...">` cell of a sheet into a ref -> value map,
+     * resolving shared-string / inline / literal value kinds.
+     * @private
+     */
+    private static _parseSheetCells(sheetXml: string, sharedStrings: string[]): Map<string, string> {
+        const cells = new Map<string, string>();
+        const cellRe = /<c r="([A-Z]+\d+)"([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g;
+        let m: RegExpExecArray | null;
+
+        while ((m = cellRe.exec(sheetXml)) !== null) {
+            const inner = m[3] ?? '';
+            if (inner === '') {
+                continue;
+            }
+
+            const value = CreateExport._decodeCell(m[2], inner, sharedStrings);
+            if (value !== undefined) {
+                cells.set(m[1], value);
+            }
+        }
+
+        return cells;
+    }
+
+    /**
+     * Decode one cell's value given its attributes + inner XML: shared-string
+     * index (`t="s"`), inline string (`t="inlineStr"`), or a literal `<v>`.
+     * @private
+     */
+    private static _decodeCell(attrs: string, inner: string, sharedStrings: string[]): string | undefined {
+        const isShared = / t="s"/.test(attrs);
+        const vMatch = inner.match(/<v>([^<]*)<\/v>/);
+        const tMatch = inner.match(/<t[^>]*>([^<]*)<\/t>/);
+
+        if (isShared && vMatch) {
+            return sharedStrings[parseInt(vMatch[1], 10)];
+        }
+
+        if (/ t="inlineStr"/.test(attrs) && tMatch) {
+            return tMatch[1];
+        }
+
+        if ((/ t="str"/.test(attrs) || !isShared) && vMatch) {
+            return vMatch[1];
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Build the Nombre-común index from the decoded ListaEspecies cells
+     * (rows 3..48: B = Nombre común, C = AROC Taxon-ID). Placeholder externids
+     * ("sin Taxon ID", "no está en la Lista Patrón") are ignored.
+     * @private
+     */
+    private static _buildSpeciesIndex(cells: Map<string, string>): ArocSpeciesIndex {
+        const idx: ArocSpeciesIndex = {byExternId: new Map(), byNombreLower: new Map()};
+
+        for (let row = 3; row <= 48; row++) {
+            const nombre = cells.get(`B${row}`);
+            const externid = cells.get(`C${row}`);
+            if (!nombre || nombre === '') {
+                continue;
+            }
+
+            idx.byNombreLower.set(nombre.toLowerCase(), nombre);
+
+            if (externid && externid !== '' && externid !== 'sin Taxon ID' && externid !== 'no está en la Lista Patrón') {
+                idx.byExternId.set(externid, nombre);
+            }
+        }
+
+        return idx;
+    }
+
+    /**
+     * Resolve the AROC "Nombre común" (column N) via the extern link + the
+     * template's ListaEspecies index (externid first, then a name fallback).
+     * Returns '' and logs the reason when it can't be resolved.
+     * @private
+     */
+    private static _resolveNombreComun(
+        speciesExternLink: {externid: string; externname: string;} | null,
+        speciesId: number,
+        ctx: ArocRowContext
+    ): string {
+        if (!speciesExternLink) {
+            Logger.getLogger().info(
+                `OfficeReport::createExport: extern link not found by species ID: ${speciesId}`
+            );
+
+            return '';
+        }
+
+        const byId = ctx.arocSpeciesIndex.byExternId.get(speciesExternLink.externid);
+        if (byId) {
+            return byId;
+        }
+
+        const byName = ctx.arocSpeciesIndex.byNombreLower.get(speciesExternLink.externname.toLowerCase());
+        if (byName) {
+            return byName;
+        }
+
+        Logger.getLogger().warn(
+            'OfficeReport::createExport: species_extern_link '
+            + `(receiver=${ctx.externalReceiverId}, species_id=${speciesId}, `
+            + `externid="${speciesExternLink.externid}", `
+            + `externname="${speciesExternLink.externname}") `
+            + 'does not resolve to any AROC ListaEspecies entry — leaving N blank'
+        );
+
+        return '';
+    }
+
+    /**
+     * Map one sighting (+ its resolved extern link) to the AROC data-sheet cell
+     * values (columns J..AO). Pure apart from the Nombre-común diagnostic logs.
+     * @private
+     */
+    private static _buildArocRowCells(
+        entry: SightingDB,
+        speciesExternLink: {externid: string; externname: string;} | null,
+        ctx: ArocRowContext
+    ): Record<string, string | number> {
+        const date = moment(entry.date);
+        const nombreComun = CreateExport._resolveNombreComun(speciesExternLink, entry.species_id, ctx);
+        const observer = ctx.userNames.get(entry.creater_id) ?? '';
+        const presenciaCrias = entry.calves > 0 ? 'SI' : 'NO';
+        const presenciaNeonatos = entry.newborns > 0 ? 'SI' : 'NO';
+        const activity = firstActivityLabel(entry.behaviours, ctx.behStates);
+        const reactionCat = ctx.enCats.get(entry.reaction_id);
+        const reaction = reactionCat ? mapReaction(reactionCat.name) : '';
+        const pos = parsePosition(entry.location_begin);
+        const otherBoatsMatch = entry.other_vehicle.match(/-?\d+/u);
+        const otherBoatsNum = otherBoatsMatch ? parseInt(otherBoatsMatch[0], 10) : NaN;
+
+        const cells: Record<string, string | number> = {
+            J: date.isValid() ? date.format('DD/MM/YYYY') : entry.date,
+            K: entry.tour_start,
+            L: entry.tour_end,
+            M: entry.duration_from,
+            N: nombreComun,
+            Q: observer,
+            R: 'WGS84'
+        };
+
+        if (pos) {
+            CreateExport._assignPositionCells(cells, pos);
+        }
+
+        if (entry.species_count > 0) {
+            cells.AF = entry.species_count;
+        }
+
+        cells.AH = presenciaCrias;
+        if (entry.calves > 0) {
+            cells.AI = entry.calves;
+        }
+
+        cells.AJ = presenciaNeonatos;
+        if (entry.newborns > 0) {
+            cells.AK = entry.newborns;
+        }
+
+        cells.AL = reaction;
+        cells.AM = activity;
+        if (Number.isFinite(otherBoatsNum) && otherBoatsNum >= 0) {
+            cells.AN = otherBoatsNum;
+        }
+
+        cells.AO = entry.note;
+
+        return cells;
     }
 
 }

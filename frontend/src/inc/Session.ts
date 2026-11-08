@@ -13,6 +13,12 @@ import {UserInfoData} from 'mwpa_schemas';
  */
 export class Session {
 
+    /**
+     * Pseudo right for admin-only UI (menu entries / pages): no role ever
+     * carries it, so only admins (isAdmin) pass `hasRight(Session.ADMIN_ONLY)`.
+     */
+    public static readonly ADMIN_ONLY: string = '__admin_only__';
+
     protected static _isAdmin: boolean = false;
 
     protected static _rights: Set<string> = new Set<string>();
@@ -34,6 +40,10 @@ export class Session {
      * @return {boolean}
      */
     public static hasRight(right?: string): boolean {
+        if (right === Session.ADMIN_ONLY) {
+            return Session._isAdmin;
+        }
+
         return right === undefined || Session._isAdmin || Session._rights.has(right);
     }
 

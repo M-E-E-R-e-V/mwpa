@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import * as d3raw from 'd3';
 import moment from 'moment';
 import {ToursTrackingSightingData} from '../../Api/Tours';
@@ -401,13 +402,13 @@ export class TrackingChart {
             .attr('x', -innerHeight / 2)
             .attr('text-anchor', 'middle')
             .attr('font-size', '11px')
-            .text('points / bucket');
+            .text(Lang.i().l('points / bucket'));
 
         g.append('text')
             .attr('transform', `translate(${innerWidth + margin.right - 6},${innerHeight / 2}) rotate(90)`)
             .attr('text-anchor', 'middle')
             .attr('font-size', '11px')
-            .text('speed (kt)');
+            .text(Lang.i().l('speed (kt)'));
 
         // Brush — emits range to caller.
         const brush = d3.brushX()

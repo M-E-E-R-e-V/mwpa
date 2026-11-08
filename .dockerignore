@@ -27,7 +27,6 @@ frontend/vitest.config.ts
 .cache
 data
 imports
-old-backend
 mwpa_*.tar
 *.log
 # schemas/src and tsbuildinfo aren't needed at runtime (dist is enough)

@@ -6,7 +6,6 @@ import {
     ContentRow2,
     IconFa,
     LangTextV2,
-    LeftNavbarLink,
     Table2,
     Td2,
     Th2,
@@ -45,9 +44,9 @@ export class Roles extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Role saved.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Role saved.')});
                 } else {
-                    this._toast.fire({icon: 'error', title: 'Role save failed.'});
+                    this._toast.fire({icon: 'error', title: Lang.i().l('Role save failed.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -72,9 +71,9 @@ export class Roles extends BasePage {
                 if (await AclAPI.saveRoleRights(dialog.getRoleId(), dialog.getRoleRights())) {
                     dialog.hide();
                     dialog.destroy();
-                    this._toast.fire({icon: 'success', title: 'Rights saved.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Rights saved.')});
                 } else {
-                    this._toast.fire({icon: 'error', title: 'Rights save failed.'});
+                    this._toast.fire({icon: 'error', title: Lang.i().l('Rights save failed.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -88,17 +87,16 @@ export class Roles extends BasePage {
      * loadContent
      */
     public override async loadContent(): Promise<void> {
-        const content = this._wrapper.getContentWrapper().getContent();
-
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add role', async(): Promise<void> => {
+        this.addNavbarButton('Add role', 'fas fa-plus', async(): Promise<void> => {
             this._openRoleDialog('Add new role').show();
         });
+
+        const content = this._wrapper.getContentWrapper().getContent();
 
         this._onLoadTable = async(): Promise<void> => {
             content.empty();
 
-            const row = new ContentRow2(content.getElement());
+            const row = new ContentRow2(content.getContentFluidElement());
             const card = new Card2({});
             card.appendTo(new ContentCol2(row, ContentColSize2.col12).getElement());
             card.setTitle(new LangTextV2({text: 'Roles'}));
@@ -128,14 +126,14 @@ export class Roles extends BasePage {
                 const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
                 btnMenu.appendTo(actionTd);
 
-                btnMenu.addMenuItem('Edit', (): void => {
+                btnMenu.addMenuItem(Lang.i().l('Edit'), (): void => {
                     const dialog = this._openRoleDialog(`Edit role: ${role.name}`);
                     dialog.setRoleId(role.id);
                     dialog.setName(role.name);
                     dialog.show();
                 }, IconFa.edit);
 
-                btnMenu.addMenuItem('Set rights', async(): Promise<void> => {
+                btnMenu.addMenuItem(Lang.i().l('Set rights'), async(): Promise<void> => {
                     const dialog = this._openRoleRightsDialog(role.name);
                     dialog.setRoleId(role.id);
 
@@ -151,19 +149,19 @@ export class Roles extends BasePage {
 
                 // System roles (root, user) are seeded from code and must stay.
                 if (role.name !== 'root' && role.name !== 'user') {
-                    btnMenu.addMenuItem('Delete', async(): Promise<void> => {
+                    btnMenu.addMenuItem(Lang.i().l('Delete'), async(): Promise<void> => {
                         // eslint-disable-next-line no-alert
                         if (!window.confirm(`Delete role "${role.name}"? Its rights and group assignments are removed.`)) {
                             return;
                         }
                         try {
                             if (await AclAPI.deleteRole(role.id)) {
-                                this._toast.fire({icon: 'success', title: 'Role deleted.'});
+                                this._toast.fire({icon: 'success', title: Lang.i().l('Role deleted.')});
                                 if (this._onLoadTable) {
                                     await this._onLoadTable();
                                 }
                             } else {
-                                this._toast.fire({icon: 'error', title: 'Role delete failed.'});
+                                this._toast.fire({icon: 'error', title: Lang.i().l('Role delete failed.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});

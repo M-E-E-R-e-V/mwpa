@@ -1,3 +1,4 @@
+import {Lang} from '../Lang';
 import {Card2, ContentCol2, ContentColSize2, ContentRow2, LangTextV2, Select2} from 'bambooo';
 import {Coordinate} from 'ol/coordinate';
 import {fromLonLat} from 'ol/proj';
@@ -130,7 +131,7 @@ export class OceanFishingMap extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
-        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getElement());
+        const row1 = new ContentRow2(this._wrapper.getContentWrapper().getContent().getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Ocean & Fishing'}));
@@ -187,7 +188,12 @@ export class OceanFishingMap extends BasePage {
         if (wHeight) {
             // "Big": map gets almost the whole viewport — charts scroll below the fold.
             // "Small": chart grid fits on the same screen as the map.
-            const chromeReserve = 80 + 60 + 50; // navbar + page header + filter bar
+            /*
+             * navbar + filter bar. The AdminLTE 4 flip dropped the page-title
+             * header (~60px) the old reserve also subtracted, so the map gets
+             * that height back and reaches closer to the viewport foot.
+             */
+            const chromeReserve = 80 + 50;
             this._mapBigHeight = Math.max(420, wHeight - chromeReserve - 120);
             this._mapSmallHeight = Math.max(320, wHeight - chromeReserve - 760);
         }
@@ -276,12 +282,12 @@ export class OceanFishingMap extends BasePage {
         // Side panel: provenance legend -------------------------------------------------------
         this._legend = new ProvenanceLegend(sideWrap);
         this._legend.setStaticEntries([
-            {label: 'OSM tiles', source: 'OpenStreetMap (local cache)', url: 'https://www.openstreetmap.org/'},
-            {label: 'Bathymetry', source: 'EMODnet Bathymetry (local cache)', url: 'https://emodnet.ec.europa.eu/en/bathymetry'},
-            {label: 'Relief (ES)', source: 'IDEE / IGN España (local cache)', url: 'https://www.idee.es/'},
-            {label: 'Weather + waves', source: 'Open-Meteo marine + forecast API', url: 'https://open-meteo.com/'},
-            {label: 'Sea depth', source: 'EMODnet Bathymetry point lookup', url: 'https://emodnet.ec.europa.eu/en/bathymetry'},
-            {label: 'Ocean currents', source: 'CMEMS Global Analysis-Forecast 1/12° (WMTS)', url: 'https://data.marine.copernicus.eu/product/GLOBAL_ANALYSISFORECAST_PHY_001_024/description'}
+            {label: Lang.i().l('OSM tiles'), source: 'OpenStreetMap (local cache)', url: 'https://www.openstreetmap.org/'},
+            {label: Lang.i().l('Bathymetry'), source: 'EMODnet Bathymetry (local cache)', url: 'https://emodnet.ec.europa.eu/en/bathymetry'},
+            {label: Lang.i().l('Relief (ES)'), source: 'IDEE / IGN España (local cache)', url: 'https://www.idee.es/'},
+            {label: Lang.i().l('Weather + waves'), source: 'Open-Meteo marine + forecast API', url: 'https://open-meteo.com/'},
+            {label: Lang.i().l('Sea depth'), source: 'EMODnet Bathymetry point lookup', url: 'https://emodnet.ec.europa.eu/en/bathymetry'},
+            {label: Lang.i().l('Ocean currents'), source: 'CMEMS Global Analysis-Forecast 1/12° (WMTS)', url: 'https://data.marine.copernicus.eu/product/GLOBAL_ANALYSISFORECAST_PHY_001_024/description'}
         ]);
         this._legend.setMetricLayers(this._metricLayers.map(({layer}) => layer));
 

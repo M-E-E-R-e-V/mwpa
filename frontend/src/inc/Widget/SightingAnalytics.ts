@@ -127,7 +127,7 @@ export class SightingAnalytics extends Widget2 {
         type Slice = {label: string; value: number;};
 
         const data: Slice[] = top.map((x) => {
-            let label = '(no species)';
+            let label = Lang.i().l('(no species)');
             if (x.id !== 0) {
                 label = this._lookups.species.get(x.id)?.name.split(',')[0] ?? `#${x.id}`;
             }
@@ -135,10 +135,10 @@ export class SightingAnalytics extends Widget2 {
         });
 
         if (rest > 0) {
-            data.push({label: 'Other', value: rest});
+            data.push({label: Lang.i().l('Other'), value: rest});
         }
 
-        const width = this._donutEl.width() ?? 320;
+        const width = this._donutEl.width() || 320;
         const height = 240;
         const radius = (Math.min(width, height) / 2) - 10;
 
@@ -202,7 +202,7 @@ export class SightingAnalytics extends Widget2 {
             return;
         }
 
-        const width = this._monthEl.width() ?? 320;
+        const width = this._monthEl.width() || 320;
         const height = 240;
         const margin = {top: 10, right: 10, bottom: 50, left: 35};
         const innerW = width - margin.left - margin.right;
@@ -260,7 +260,7 @@ export class SightingAnalytics extends Widget2 {
 
         const max = Math.max(1, ...flat.map((c) => c.value));
 
-        const width = this._heatEl.width() ?? 320;
+        const width = this._heatEl.width() || 320;
         const height = 240;
         const margin = {top: 10, right: 10, bottom: 30, left: 38};
         const innerW = width - margin.left - margin.right;
@@ -328,7 +328,7 @@ export class SightingAnalytics extends Widget2 {
         .map(([key, value]) => ({key, value, label: bucketSize === 1 ? `${key}` : `${key}-${key + bucketSize - 1}`}))
         .sort((a, b) => a.key - b.key);
 
-        const width = this._histEl.width() ?? 320;
+        const width = this._histEl.width() || 320;
         const height = 240;
         const margin = {top: 10, right: 10, bottom: 35, left: 35};
         const innerW = width - margin.left - margin.right;

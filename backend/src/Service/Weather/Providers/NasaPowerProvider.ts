@@ -1,3 +1,4 @@
+import {Logger} from '@stefanwerfling/figtree';
 import {httpGetWithRetry} from '../../Common/HttpGet.js';
 import {RateLimiter} from '../../Common/RateLimiter.js';
 import {WeatherInfo, WeatherProvider, WeatherSample} from '../Types.js';
@@ -114,7 +115,8 @@ export class NasaPowerProvider implements WeatherProvider {
         let parsed: NasaPowerHourlyResponse;
         try {
             parsed = JSON.parse(response.body) as NasaPowerHourlyResponse;
-        } catch {
+        } catch (e) {
+            Logger.getLogger().warn(`NasaPowerProvider: failed to parse response — ${(e as Error).message}`);
             return null;
         }
 

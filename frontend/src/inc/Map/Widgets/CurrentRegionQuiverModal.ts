@@ -1,4 +1,5 @@
 import {SightingCurrentRegion} from '../../Api/SightingCurrentRegion';
+import {UtilBootstrap} from '../../Utils/UtilBootstrap';
 import {CurrentRegionQuiver} from './CurrentRegionQuiver';
 
 /**
@@ -26,7 +27,7 @@ export class CurrentRegionQuiverModal {
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Regional currents · Sighting #${sightingId}</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -49,7 +50,7 @@ export class CurrentRegionQuiverModal {
             $modal.remove();
         });
 
-        ($modal as unknown as {modal: (action: string) => void;}).modal('show');
+        UtilBootstrap.showModal($modal[0]);
 
         void CurrentRegionQuiverModal._loadAndRender(sightingId, $target, $meta);
     }

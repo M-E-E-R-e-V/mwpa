@@ -4,9 +4,9 @@ import {
     ContentCol2,
     ContentColSize2,
     ContentRow2,
-    SidebarMenuItem,
-    SidebarMenuItemBadge,
-    SidebarMenuTree
+    SidebarMenuItem2,
+    SidebarMenuItemBadge2,
+    SidebarMenuTree2
 } from 'bambooo';
 import moment from 'moment';
 import {Coordinate} from 'ol/coordinate';
@@ -26,7 +26,8 @@ import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
 import {UtilDistanceCoast} from '../../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../../Utils/UtilLocation';
 import {BasePage} from '../BasePage';
-import {Tours} from '../Tours';
+import {Lang} from '../../Lang';
+import {TOURS_PAGE_NAME} from '../PageNames';
 import {TrackingChart} from './TrackingChart';
 import {TransferModal} from './TransferModal';
 
@@ -88,7 +89,7 @@ export class ToursMap extends BasePage {
     /**
      * @protected
      */
-    protected _badge: SidebarMenuItemBadge | null = null;
+    protected _badge: SidebarMenuItemBadge2 | null = null;
 
     /**
      * Chart above the map (count bars + speed line).
@@ -154,18 +155,18 @@ export class ToursMap extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
-        const menuItem = this._wrapper.getMainSidebar().getSidebar().getMenu().getMenuItem(Tours.NAME);
-        let menuTree: SidebarMenuTree | null = null;
+        const menuItem = this._wrapper.getMainSidebar()?.getSidebar().getMenu()?.getMenuItem(TOURS_PAGE_NAME) ?? null;
+        let menuTree: SidebarMenuTree2 | null = null;
 
         const title = `Tour #${this._tourId}`;
 
         if (menuItem !== null) {
-            menuTree = new SidebarMenuTree(menuItem);
-            const pmenuItem = new SidebarMenuItem(menuTree, true);
+            menuTree = new SidebarMenuTree2(menuItem);
+            const pmenuItem = new SidebarMenuItem2(menuTree, true);
             pmenuItem.setTitle(title);
             pmenuItem.setActiv(true);
 
-            this._badge = new SidebarMenuItemBadge(pmenuItem);
+            this._badge = new SidebarMenuItemBadge2(pmenuItem);
             this._badge.setContent('0');
         }
 
@@ -173,11 +174,11 @@ export class ToursMap extends BasePage {
 
         // chart card --------------------------------------------------------------------------------------------------
 
-        const rowChart = new ContentRow2(contentWrapper.getElement());
+        const rowChart = new ContentRow2(contentWrapper.getContentFluidElement());
         const chartCol = new ContentCol2(rowChart, ContentColSize2.col12);
         const chartCard = new Card2({});
         chartCard.appendTo(chartCol.getElement());
-        chartCard.setTitle('Tracking points · time / count / speed');
+        chartCard.setTitle(Lang.i().l('Tracking points · time / count / speed'));
 
         const chartTools = chartCard.getToolsElement();
 
@@ -207,7 +208,7 @@ export class ToursMap extends BasePage {
 
         // map card ----------------------------------------------------------------------------------------------------
 
-        const rowMap = new ContentRow2(contentWrapper.getElement());
+        const rowMap = new ContentRow2(contentWrapper.getContentFluidElement());
         const mapCol = new ContentCol2(rowMap, ContentColSize2.col12);
         const card = new Card2({});
         card.appendTo(mapCol.getElement());
@@ -215,12 +216,15 @@ export class ToursMap extends BasePage {
 
         this._map = new BaseMap(card.getBodyElement());
 
-        const wHeight = jQuery(window).height();
-        if (wHeight) {
-            // The chart card eats ~240px on top of what the map card already
-            // had reserved — back off another 200px so the page still fits.
-            this._map.setHeight(Math.max(320, wHeight - 420));
-        }
+        /*
+         * Fill the map to the viewport bottom by measuring the map card body's
+         * own top (below the chart card above it). Adapts to the AdminLTE 4
+         * chrome — the old fixed `window.height() - 420` offset left a gap under
+         * the map once the page-title header was dropped. Window-offset fallback
+         * if layout isn't ready.
+         */
+        const tmMapTop = card.getBodyElement()[0]?.getBoundingClientRect().top ?? 0;
+        this._map.setHeight(Math.max(320, tmMapTop > 0 ? window.innerHeight - tmMapTop - 16 : window.innerHeight - 420));
 
         this._map.load({
             initialCenterLonLat: [11.030, 47.739],
@@ -310,7 +314,7 @@ export class ToursMap extends BasePage {
         const btnDelete = bar.find('button.btn-outline-danger') as unknown as JQuery<HTMLButtonElement>;
         const btnTransfer = bar.find('button.btn-outline-primary') as unknown as JQuery<HTMLButtonElement>;
 
-        info.text('Brush a range on the chart to enable actions.');
+        info.text(Lang.i().l('Brush a range on the chart to enable actions.'));
 
         btnDelete.on('click', () => {
             this._handleDelete();
@@ -377,7 +381,7 @@ export class ToursMap extends BasePage {
         }
         const count = this._selectedCount();
         if (count === 0 || !this._brushRange) {
-            this._actionBar.info.text('Brush a range on the chart to enable actions.');
+            this._actionBar.info.text(Lang.i().l('Brush a range on the chart to enable actions.'));
             this._actionBar.btnDelete.attr('disabled', 'disabled');
             this._actionBar.btnTransfer.attr('disabled', 'disabled');
             return;

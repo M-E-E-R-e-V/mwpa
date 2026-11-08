@@ -1,6 +1,6 @@
 {
   "name": "mwpa_frontend",
-  "version": "1.0.45",
+  "version": "1.0.46",
   "description": "Mammals watchig process analyse frontend",
   "main": "dist/main.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "author": "Stefan Werfling",
   "license": "ISC",
   "dependencies": {
-    "admin-lte": "^3.2.0",
+    "admin-lte": "^4.10.0",
     "bambooo": "git+https://github.com/stefanwerfling/bambooo.git",
     "d3": "^7.9.0",
     "d3-calendar": "git+https://github.com/vanch3d/d3-calendar.git",
@@ -38,7 +38,7 @@
     "@types/qrcode": "^1.5.6",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
-    "bootstrap": "^4.6.2",
+    "bootstrap": "^5.3.8",
     "crossfilter2": "^1.5.4",
     "dotenv": "^8.2.0",
     "eslint": "^8.38.0",

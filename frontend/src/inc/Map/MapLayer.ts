@@ -1,5 +1,5 @@
 import BaseLayer from 'ol/layer/Base';
-import {BaseMap} from './BaseMap';
+import type {BaseMap} from './BaseMap';
 
 /**
  * Abstract pluggable map layer.

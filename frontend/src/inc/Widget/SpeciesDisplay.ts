@@ -6,9 +6,9 @@ import {UtilSpeciesContextMenu} from '../Utils/UtilSpeciesContextMenu';
 
 /**
  * Optional callback fired when the user picks "Profiling" from the
- * species context menu. The page that owns the SpeciesDisplay is
- * responsible for actually loading the profile page (it owns
- * `_loadPageFn`).
+ * species context menu. The caller that creates the SpeciesDisplay is
+ * responsible for actually loading the profile page (typically via
+ * `PageLoader.getInstance().load(...)`).
  */
 export type SpeciesDisplayProfileFn = (speciesId: number) => void;
 
@@ -41,15 +41,24 @@ export class SpeciesDisplay extends Widget2 {
         super({element: jQuery<HTMLSpanElement>('<span/>')});
 
         let specieName = '';
-        let specieColor = '#ffffff';
+        /*
+         * `undefined` → Badge2 falls back to its visible Bootstrap 5
+         * `text-bg-info` class. A defined colour sets the badge background
+         * directly. Must NOT default to an empty string: Badge2 treats an empty
+         * string as a (defined) colour, so it adds neither the type class nor a
+         * background — leaving a bare `.badge` that renders white-on-transparent
+         * (i.e. an invisible, "empty" map popover). This is exactly what broke
+         * sightings whose species group has no colour set.
+         */
+        let specieColor: string|undefined;
 
         const specie: SpeciesEntry|undefined = speciesList.get(sighting.species_id!);
 
         if (specie) {
             specieName = specie.name.split(',')[0];
 
-            if (specie.species_group) {
-                specieColor = specie.species_group?.color;
+            if (specie.species_group?.color) {
+                specieColor = specie.species_group.color;
             }
         } else {
             specieName = 'not set';
@@ -65,7 +74,7 @@ export class SpeciesDisplay extends Widget2 {
 
         this._badge = new Badge2({type: BadgeType2.info, color: specieColor});
         this._badge.appendTo(SpeciesDisplay._asParent(element));
-        this._badge.getElement().html(`<b style="color: ${UtilColor.getContrastYIQ(specieColor)}">${specieName}</b>`);
+        this._badge.getElement().html(`<b style="color: ${UtilColor.getContrastYIQ(specieColor ?? '#17a2b8')}">${specieName}</b>`);
 
         this._element = this._badge.getElement() as JQuery<HTMLSpanElement>;
 

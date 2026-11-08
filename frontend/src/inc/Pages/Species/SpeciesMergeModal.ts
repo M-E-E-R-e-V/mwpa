@@ -1,3 +1,4 @@
+import {Lang} from '../../Lang';
 import {
     FormGroup2,
     ModalDialog2,
@@ -31,20 +32,20 @@ export class SpeciesMergeModal extends ModalDialog2 {
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupSrcSpecie = new FormGroup2({label: 'Specie source'});
+        const groupSrcSpecie = new FormGroup2({label: Lang.i().l('Specie source')});
         groupSrcSpecie.appendTo(bodyCard);
         this._specieSourceSelect = new Select2({});
         this._specieSourceSelect.appendTo(groupSrcSpecie);
 
-        const groupDstSpecie = new FormGroup2({label: 'Specie destination'});
+        const groupDstSpecie = new FormGroup2({label: Lang.i().l('Specie destination')});
         groupDstSpecie.appendTo(bodyCard);
         this._specieDestinationSelect = new Select2({});
         this._specieDestinationSelect.appendTo(groupDstSpecie);
 
         // buttons -----------------------------------------------------------------------------------------------------
 
-        this.addButtonClose('Close');
-        this.addButtonSave('Save changes', true);
+        this.addButtonClose(Lang.i().l('Close'));
+        this.addButtonSave(Lang.i().l('Save changes'), true);
     }
 
     /**

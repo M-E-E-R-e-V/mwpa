@@ -1,3 +1,4 @@
+import {Logger} from '@stefanwerfling/figtree';
 import {BathymetryProviderRegistry} from '../../Bathymetry/BathymetryProviderRegistry.js';
 import {RateLimiter} from '../../Common/RateLimiter.js';
 import {httpGetWithRetry} from '../../Common/HttpGet.js';
@@ -273,7 +274,8 @@ export class DerivedEnricher implements Enricher {
         try {
             const body = JSON.parse(response.body) as MarineResponse;
             return DerivedEnricher._mean(body.hourly?.sea_surface_temperature);
-        } catch {
+        } catch (e) {
+            Logger.getLogger().warn(`DerivedEnricher: failed to parse marine response — ${(e as Error).message}`);
             return null;
         }
     }

@@ -10,7 +10,6 @@ import {
     DialogConfirm2,
     IconFa,
     LangTextV2,
-    LeftNavbarLink,
     ModalDialogType2,
     Table2,
     TableWrapper2,
@@ -55,27 +54,18 @@ export class ExternalTourSource extends BasePage {
 
         this._dialog = new ExternalTourSourceEditModal();
 
-        // eslint-disable-next-line no-new
-        new LeftNavbarLink(this._wrapper.getNavbar().getLeftNavbar(), 'Add source', async() => {
-            this._dialog.resetValues();
-            this._dialog.setTitle(new LangTextV2({text: 'Add external tour source'}));
-            await this._refreshOrganizationList();
-            this._dialog.show();
-            return false;
-        }, 'btn btn-block btn-default btn-sm', IconFa.add);
-
         this._dialog.setOnSave(async(): Promise<void> => {
             const id = this._dialog.getSourceId();
             const orgId = this._dialog.getOrganization();
 
             if (orgId === 0) {
-                this._toast.fire({icon: 'error', title: 'Please select an organisation.'});
+                this._toast.fire({icon: 'error', title: Lang.i().l('Please select an organisation.')});
                 return;
             }
 
             const shortname = this._dialog.getCompanyShortname();
             if (shortname === '') {
-                this._toast.fire({icon: 'error', title: 'Company shortname is required.'});
+                this._toast.fire({icon: 'error', title: Lang.i().l('Company shortname is required.')});
                 return;
             }
 
@@ -95,7 +85,7 @@ export class ExternalTourSource extends BasePage {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: 'Source saved.'});
+                    this._toast.fire({icon: 'success', title: Lang.i().l('Source saved.')});
                 }
             } catch (message) {
                 this._toast.fire({icon: 'error', title: message});
@@ -110,8 +100,15 @@ export class ExternalTourSource extends BasePage {
     }
 
     public override async loadContent(): Promise<void> {
+        this.addNavbarButton('Add source', 'fas fa-plus', async() => {
+            this._dialog.resetValues();
+            this._dialog.setTitle(new LangTextV2({text: 'Add external tour source'}));
+            await this._refreshOrganizationList();
+            this._dialog.show();
+        });
+
         const content = this._wrapper.getContentWrapper().getContent();
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'External tour sources'}));
@@ -169,7 +166,7 @@ export class ExternalTourSource extends BasePage {
                 const when = moment(entry.last_full_pull_at * 1000);
                 tdLast.append(`<b>${when.format('YYYY-MM-DD HH:mm:ss')}</b><br><small class="text-muted">${when.fromNow()}</small>`);
             } else {
-                tdLast.append('<span class="text-muted">never</span>');
+                tdLast.append(`<span class="text-muted">${Lang.i().l('never')}</span>`);
             }
 
             const tdAction = new Td2({value: ''});
@@ -177,7 +174,7 @@ export class ExternalTourSource extends BasePage {
             const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
             btnMenu.appendTo(tdAction);
 
-            btnMenu.addMenuItem('Edit', async(): Promise<void> => {
+            btnMenu.addMenuItem(Lang.i().l('Edit'), async(): Promise<void> => {
                 this._dialog.resetValues();
                 this._dialog.setTitle(new LangTextV2({text: 'Edit external tour source'}));
                 this._dialog.setSourceId(entry.id);
@@ -193,17 +190,16 @@ export class ExternalTourSource extends BasePage {
 
             btnMenu.addDivider();
 
-            btnMenu.addMenuItem('Delete', (): void => {
+            btnMenu.addMenuItem(Lang.i().l('Delete'), (): void => {
                 DialogConfirm2.confirm(
                     'dcDeleteExternalTourSource',
                     ModalDialogType2.large,
-                    'Delete external tour source',
-                    'Delete this source config?'
-                    + ' Pulled external_tour rows remain in the database as a historical record.',
+                    Lang.i().l('Delete external tour source'),
+                    `${Lang.i().l('Delete this source config?')} ${Lang.i().l('Pulled external_tour rows remain in the database as a historical record.')}`,
                     async(_, dialog) => {
                         try {
                             if (await ExternalTourSourceAPI.delete({id: entry.id})) {
-                                this._toast.fire({icon: 'success', title: 'Source deleted.'});
+                                this._toast.fire({icon: 'success', title: Lang.i().l('Source deleted.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});

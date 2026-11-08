@@ -1,4 +1,5 @@
 import {ACL, BackendApp} from '@stefanwerfling/figtree';
+import {APP_NAME} from './AppName.js';
 import {MWPAHttpService} from './Http/MWPAHttpService.js';
 import {MWPAMariaDBService} from './MWPAMariaDBService.js';
 import {ConfigOptions, DefaultArgs, SchemaDefaultArgs} from 'figtree-schemas';
@@ -31,7 +32,7 @@ export class Backend extends BackendApp<DefaultArgs, ConfigOptions> {
     /**
      * Backend Name
      */
-    public static NAME = 'mwpa';
+    public static NAME = APP_NAME;
 
     /**
      * Constructor

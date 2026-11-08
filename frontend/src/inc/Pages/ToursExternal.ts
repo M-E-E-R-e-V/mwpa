@@ -54,7 +54,7 @@ export class ToursExternal extends BasePage {
 
     public override async loadContent(): Promise<void> {
         const content = this._wrapper.getContentWrapper().getContent();
-        const row1 = new ContentRow2(content.getElement());
+        const row1 = new ContentRow2(content.getContentFluidElement());
         const card = new Card2({});
         card.appendTo(new ContentCol2(row1, ContentColSize2.col12).getElement());
         card.setTitle(new LangTextV2({text: 'Tours External'}));
@@ -167,7 +167,7 @@ export class ToursExternal extends BasePage {
                     orgNameById.set(o.id, o.description);
                 }
 
-                card.setTitle(`Tours External (${allTours.length})`);
+                card.setTitle(`${Lang.i().l('Tours External')} (${allTours.length})`);
                 await tableWrapper.reset();
             } finally {
                 card.hideLoading();
