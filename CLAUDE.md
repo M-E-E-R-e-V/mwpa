@@ -135,8 +135,6 @@ npm workspaces monorepo with three packages that build in order:
 2. `backend/` — Node.js 18+ ES module (`NodeNext`) Express app. Built on the `figtree` framework (`BackendApp`, `HttpService`, `MariaDBService`, `DBRepository`, `DefaultRoute`).
 3. `frontend/` — Browser SPA bundled with webpack via gulp. Uses AdminLTE 4 + jQuery + Bootstrap 5 + the in-house `bambooo` widget library (v2 widgets; vendored as a git submodule under `frontend/node_modules/bambooo`). (Flipped from AdminLTE 3 / Bootstrap 4 / bambooo v1 on `feat/bootstrap5-adminlte4`.)
 
-`old-backend/` holds the pre-refactor codebase (legacy `app/` controllers and `inc/` infrastructure). New work lives in `backend/src/`. Do not modify `old-backend/` unless porting code from it.
-
 `package.json` declares `packageManager: "yarn@..."` for historical reasons but this repo uses **npm** for installs, updates, and workspace commands.
 
 ## Common commands
@@ -241,9 +239,9 @@ The single `inc/PageLoader.ts` (facade over bambooo `PageLoader2`) owns the shar
 - Add a page-action ("+ add") button from `loadContent` via the inherited `this.addNavbarButton(label, iconClass, onClick)` — the navbar is cleared on every navigation, so it can't be built in the constructor.
 - The content bridge `this._wrapper.getContentWrapper().getContent()` still works (`_wrapper` resolves through the injected loader) but is only valid from `loadContent`, not the constructor.
 
-## Active refactor
+## Legacy backend
 
-The repo is mid-migration from `old-backend/` (legacy `routing-controllers`-based express controllers, custom session management, hand-written DB setup) to `backend/src/` (figtree-based). Most Main and Mobile resources are ported. When extending a feature, first check `old-backend/app/Main|Mobile/<Resource>.ts` for any logic the new side hasn't picked up yet, then port what's needed — don't reintroduce the old `routing-controllers` decorators or `MariaDbHelper.getConnection().getRepository(...)` patterns into the new tree.
+The migration from the old `routing-controllers`-based backend to `backend/src/` (figtree) is complete; the `old-backend/` tree has been removed. Don't reintroduce `routing-controllers` decorators or `MariaDbHelper.getConnection().getRepository(...)` patterns — use figtree routes and `DBRepository` subclasses.
 
 ## Database backwards compatibility
 

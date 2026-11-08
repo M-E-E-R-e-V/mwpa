@@ -242,7 +242,7 @@ Topics covered:
 ## Project status
 
 - **Active** — under continuous development. See [issues](https://github.com/stefanwerfling/mwpa/issues) for the current backlog.
-- **Backend migration** — the backend is being ported from `old-backend/` (legacy routing-controllers) to `backend/` (figtree framework). Most main and mobile resources are ported; see `old-backend/` only for unported logic that needs to move over.
+- **Backend migration** — completed: the backend runs entirely on the figtree framework (`backend/`); the legacy routing-controllers code has been removed.
 - **Test suite** — *not yet*. Contributions welcome.
 
 The mobile app (Flutter) is in production with M.E.E.R. e.V., so any change touching `/mobile/*` REST endpoints must keep the wire format backward-compatible.
