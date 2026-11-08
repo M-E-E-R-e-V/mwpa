@@ -89,6 +89,176 @@
           "description": ""
         }
       ]
+    },
+    {
+      "unid": "ecbed2d0-79ad-4dbe-a0cf-ade1f45621e9",
+      "name": "MobileCoastlineRequest",
+      "description": "Body of POST /mobile/coastline. The coast lines are loaded for the home area of the organization; without one for the cell around the given position (last known GPS position of the device).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 100,
+        "y": 500
+      },
+      "fields": [
+        {
+          "unid": "6d0de335-4252-4595-9ba4-248f3054d0b1",
+          "name": "latitude",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Last known latitude of the device, used only when the organization has no home area."
+        },
+        {
+          "unid": "211afbac-e082-43f1-864a-3c3f30b46290",
+          "name": "longitude",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Last known longitude of the device, used only when the organization has no home area."
+        }
+      ]
+    },
+    {
+      "unid": "3dd12c75-b2da-4bb7-b080-ae7415d7847c",
+      "name": "MobileCoastlineData",
+      "description": "Coast lines (OpenStreetMap natural=coastline, ODbL) around the area, simplified. status: ok = lines are complete for the box, pending = the server is loading them (ask again later), error = loading failed, no_area = neither home area nor position.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 600,
+        "y": 500
+      },
+      "fields": [
+        {
+          "unid": "b53e8a66-1503-4f70-a6dd-76f8050d7946",
+          "name": "status",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "594e99be-342a-47ea-85d2-908f2d4abd1f",
+          "name": "area_key",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Identifies area and box; changes when the home area changes."
+        },
+        {
+          "unid": "a843c799-db5f-41fe-8750-f25f635b7d5d",
+          "name": "south",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ac0d47c4-7b62-414d-92c8-62d0b8e7c0e0",
+          "name": "west",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2102b74f-efd5-48fa-8d65-961aa1ce8e16",
+          "name": "north",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a765aaed-9150-4972-8adf-2ca3aefd7830",
+          "name": "east",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f2f558ec-b114-4afc-94d0-364612830be8",
+          "name": "lines",
+          "type": {
+            "type": "or",
+            "optional": true,
+            "array": true,
+            "types": [
+              {
+                "type": "number",
+                "optional": false,
+                "array": true,
+                "types": []
+              }
+            ]
+          },
+          "description": "One flat [lat, lon, lat, lon, ...] list per coast line, clipped to the box."
+        },
+        {
+          "unid": "9a3cfc2c-bcbd-4007-8417-679af27b6142",
+          "name": "fetch_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Seconds-epoch when the lines were loaded from OpenStreetMap, 0 if not yet."
+        }
+      ]
+    },
+    {
+      "unid": "05d05cf6-c557-42bc-8ebc-5432cdacb826",
+      "name": "MobileCoastlineResponse",
+      "description": "Response of POST /mobile/coastline.",
+      "extend": {
+        "type": "b9bcb4cc-e3d8-4248-aafe-6908ca3ff699"
+      },
+      "pos": {
+        "x": 100,
+        "y": 800
+      },
+      "fields": [
+        {
+          "unid": "d6e278b6-03d7-401f-b42f-b17cd50a8763",
+          "name": "data",
+          "type": {
+            "type": "3dd12c75-b2da-4bb7-b080-ae7415d7847c",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
     }
   ],
   "enums": [],

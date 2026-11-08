@@ -521,6 +521,12 @@ export {
     TrackingAreaHomeData,
     SchemaTrackingAreaHomeResponse,
     TrackingAreaHomeResponse,
+    SchemaMobileCoastlineRequest,
+    MobileCoastlineRequest,
+    SchemaMobileCoastlineData,
+    MobileCoastlineData,
+    SchemaMobileCoastlineResponse,
+    MobileCoastlineResponse,
 } from './Routes/Mobile/TrackingArea/MobileTrackingArea.js';
 export {
     SchemaSightingTourTrackingEntry,

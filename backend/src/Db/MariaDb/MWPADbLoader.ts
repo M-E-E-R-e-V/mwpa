@@ -3,6 +3,7 @@ import {EntitySchema, MixedList} from 'typeorm';
 import {AisVessel} from './Entities/AisVessel.js';
 import {BehaviouralStates} from './Entities/BehaviouralStates.js';
 import {ClimateIndex} from './Entities/ClimateIndex.js';
+import {CoastlineCache} from './Entities/CoastlineCache.js';
 import {Devices} from './Entities/Devices.js';
 import {Earthquake} from './Entities/Earthquake.js';
 import {LiveAisTrack} from './Entities/LiveAisTrack.js';
@@ -62,6 +63,7 @@ export class MWPADbLoader extends DBLoader {
             AisVessel,
             BehaviouralStates,
             ClimateIndex,
+            CoastlineCache,
             Devices,
             Earthquake,
             EncounterCategories,
