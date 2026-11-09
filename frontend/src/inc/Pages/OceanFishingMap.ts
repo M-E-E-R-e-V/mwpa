@@ -301,7 +301,7 @@ export class OceanFishingMap extends BasePage {
          * org-scope helpers have one in hand).
          */
         if (currentuser?.organization) {
-            await OrganizationAPI.getOrganization(currentuser.organization.id).catch(() => null);
+            await OrganizationAPI.getOrganization(currentuser.organization.id, true).catch(() => null);
         }
 
         // Initial data load — no filter, default backend pagination.

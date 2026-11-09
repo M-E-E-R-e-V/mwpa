@@ -1,124 +1,78 @@
-import {CheckBox2, ICollectionEntryWidget2, Td2, Tr2} from 'bambooo';
-import {RightEntry} from '../../../Api/Acl';
-import type {RoleRightListWidget} from './RoleRightListWidget';
+/* global JQuery */
+import {Lang} from '../../../Lang';
 
 /**
- * One right row in the role-rights table (v2). Carries the right id + raw key
- * (for filtering) and an access checkbox; the visible icon/label is set via
- * {@link setDisplay}.
+ * One right checkbox in the role-rights dialog: label + hint where the right
+ * takes effect. Keeps its own (stored) checked state separate from what is
+ * displayed, so a row can be shown as "inherited" (ticked + locked) while its
+ * area's full-access right is set, without losing the role's real grant.
  */
-export class RoleRightEntry extends Tr2 implements ICollectionEntryWidget2 {
+export class RoleRightEntry {
 
-    protected _tdName: Td2;
+    protected static _idCounter: number = 0;
 
-    protected _readonly: boolean = false;
+    protected _element: JQuery;
 
-    protected _checkAccess: CheckBox2;
+    protected _input: JQuery<HTMLInputElement>;
 
-    protected _rightId: number = 0;
+    protected _rightId: number;
 
-    protected _rightKey: string = '';
+    protected _rightKey: string;
 
-    protected _searchText: string = '';
+    protected _checked: boolean = false;
+
+    protected _inherited: boolean = false;
+
+    protected _searchText: string;
 
     /**
      * Constructor
-     * @param {RoleRightListWidget} element
+     * @param {JQuery} parent
+     * @param {number} rightId
+     * @param {string} rightKey
+     * @param {string} label already translated
+     * @param {string} hint already translated
      */
-    public constructor(element: RoleRightListWidget) {
-        super();
+    public constructor(parent: JQuery, rightId: number, rightKey: string, label: string, hint: string) {
+        this._rightId = rightId;
+        this._rightKey = rightKey;
+        this._searchText = `${rightKey} ${label} ${hint}`.toLowerCase();
 
-        this.appendTo(element.getTable().getTbody());
+        RoleRightEntry._idCounter++;
+        const inputId = `mwpa-role-right-${RoleRightEntry._idCounter}`;
 
-        this._tdName = new Td2({});
-        this._tdName.appendTo(this);
+        this._element = jQuery('<div class="form-check mb-2"/>').appendTo(parent);
 
-        const tdCA = new Td2({});
-        tdCA.appendTo(this);
-        this._checkAccess = new CheckBox2({});
-        this._checkAccess.appendTo(tdCA);
-    }
+        this._input = jQuery<HTMLInputElement>('<input class="form-check-input" type="checkbox">')
+        .attr('id', inputId)
+        .appendTo(this._element);
 
-    /**
-     * Set read only
-     * @param {boolean} readonly
-     */
-    public setReadOnly(readonly: boolean): void {
-        this._readonly = readonly;
-        this._checkAccess.setReadOnly(readonly);
-    }
+        const labelEl = jQuery('<label class="form-check-label d-block"/>')
+        .attr('for', inputId)
+        .appendTo(this._element);
 
-    /**
-     * Is read only
-     * @return {boolean}
-     */
-    public isReadOnly(): boolean {
-        return this._readonly;
-    }
+        jQuery('<span class="fw-semibold"/>').text(label).appendTo(labelEl);
+        jQuery('<code class="ms-2 small text-body-secondary"/>').text(rightKey).appendTo(labelEl);
 
-    /**
-     * Remove
-     */
-    public remove(): void {
-        this._element.remove();
-    }
-
-    /**
-     * Keep id + raw key (for filtering). Label/icon set via setDisplay().
-     * @param {RightEntry} right
-     */
-    public setRight(right: RightEntry): void {
-        this._rightId = right.id;
-        this._rightKey = right.key;
-    }
-
-    /**
-     * Configure the visible row: icon, label, search text, optional indent.
-     * @param {string} iconClasses
-     * @param {string} label
-     * @param {string} searchText
-     * @param {boolean} indent
-     */
-    public setDisplay(iconClasses: string, label: string, searchText: string, indent: boolean = false): void {
-        this._searchText = searchText.toLowerCase();
-
-        const padding = indent ? 'padding-left: 36px;' : 'padding-left: 12px;';
-        const td = this._tdName.getElement();
-
-        td.empty();
-        td.attr('style', padding);
-        td.append(
-            `<i class="${iconClasses} mr-2" style="width: 18px; text-align: center;"></i>` +
-            `<span>${label}</span>`
-        );
-    }
-
-    /**
-     * Return the raw right key
-     * @return {string}
-     */
-    public getRightKey(): string {
-        return this._rightKey;
-    }
-
-    /**
-     * Return the lower-cased combined search text
-     * @return {string}
-     */
-    public getSearchText(): string {
-        return this._searchText;
-    }
-
-    /**
-     * Show / hide the row
-     * @param {boolean} visible
-     */
-    public setVisible(visible: boolean): void {
-        if (visible) {
-            this._element.show();
-        } else {
-            this._element.hide();
+        if (hint !== '') {
+            jQuery('<span class="d-block small text-body-secondary"/>').text(hint).appendTo(labelEl);
         }
+
+        this._input.on('change', (): void => {
+            if (!this._inherited) {
+                this._checked = this._input.prop('checked') === true;
+            }
+        });
+    }
+
+    /**
+     * Register a change listener (called after the stored state was updated).
+     * @param {(checked: boolean) => void} onChange
+     */
+    public setOnChange(onChange: (checked: boolean) => void): void {
+        this._input.on('change', (): void => {
+            onChange(this._checked);
+        });
     }
 
     /**
@@ -130,19 +84,64 @@ export class RoleRightEntry extends Tr2 implements ICollectionEntryWidget2 {
     }
 
     /**
-     * Set checked
-     * @param {boolean} checked
+     * Return the right key
+     * @return {string}
      */
-    public setChecked(checked: boolean): void {
-        this._checkAccess.setChecked(checked);
+    public getRightKey(): string {
+        return this._rightKey;
     }
 
     /**
-     * Return the checked access
+     * Lower-cased text used by the filter (key + translated label + hint).
+     * @return {string}
+     */
+    public getSearchText(): string {
+        return this._searchText;
+    }
+
+    /**
+     * Set the stored grant.
+     * @param {boolean} checked
+     */
+    public setChecked(checked: boolean): void {
+        this._checked = checked;
+        this._render();
+    }
+
+    /**
+     * Return the stored grant (what is saved).
      * @return {boolean}
      */
     public getChecked(): boolean {
-        return this._checkAccess.isChecked();
+        return this._checked;
+    }
+
+    /**
+     * Show the row as granted by its area's full-access right (ticked and
+     * locked) — the stored grant stays untouched.
+     * @param {boolean} inherited
+     */
+    public setInherited(inherited: boolean): void {
+        this._inherited = inherited;
+        this._render();
+    }
+
+    /**
+     * Show / hide the row
+     * @param {boolean} visible
+     */
+    public setVisible(visible: boolean): void {
+        this._element.toggleClass('d-none', !visible);
+    }
+
+    /**
+     * Sync the checkbox with the stored + inherited state.
+     * @protected
+     */
+    protected _render(): void {
+        this._input.prop('checked', this._inherited || this._checked);
+        this._input.prop('disabled', this._inherited);
+        this._element.attr('title', this._inherited ? Lang.i().l('Granted by full access of this area.') : '');
     }
 
 }

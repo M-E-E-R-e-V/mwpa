@@ -62,8 +62,8 @@ export class OrphanTracks extends BasePage {
 
         // Resolve vehicle / driver names once.
         const [vehicles, drivers] = await Promise.all([
-            VehicleAPI.getList(),
-            VehicleDriverAPI.getList()
+            VehicleAPI.getList(true),
+            VehicleDriverAPI.getList(true)
         ]);
 
         if (vehicles) {

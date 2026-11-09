@@ -528,7 +528,7 @@ export class SightingExport extends Component2 {
             yearSelect.prop('disabled', false);
         });
 
-        OrganizationApi.getOrganizationByUser().then((orgs) => {
+        OrganizationApi.getOrganizationByUser(true).then((orgs) => {
             organizationSelect.empty();
             organizationSelect.append(
                 `<option value="">${escapeHtml(lang.l('All organizations'))}</option>`

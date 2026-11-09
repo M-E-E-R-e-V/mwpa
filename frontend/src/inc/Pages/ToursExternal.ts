@@ -14,7 +14,7 @@ import {
 } from 'bambooo';
 import moment from 'moment';
 import {ExternalTour as ExternalTourAPI, ExternalTourEntry} from '../Api/ExternalTour';
-import {Organization as OrganizationAPI, OrganizationFullEntry} from '../Api/Organization';
+import {Organization as OrganizationAPI} from '../Api/Organization';
 import {Lang} from '../Lang';
 import {BasePage} from './BasePage';
 
@@ -158,12 +158,12 @@ export class ToursExternal extends BasePage {
             try {
                 const [tours, orgs] = await Promise.all([
                     ExternalTourAPI.getList(),
-                    OrganizationAPI.getOrganizations()
+                    OrganizationAPI.getOrganizationByUser(true)
                 ]);
 
                 allTours = tours;
                 orgNameById = new Map<number, string>();
-                for (const o of (orgs as OrganizationFullEntry[] | null) ?? []) {
+                for (const o of orgs ?? []) {
                     orgNameById.set(o.id, o.description);
                 }
 

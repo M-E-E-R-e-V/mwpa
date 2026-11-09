@@ -473,7 +473,7 @@ export class ToursMap extends BasePage {
 
         // species -----------------------------------------------------------------------------------------------------
 
-        const species = await SpeciesAPI.getList();
+        const species = await SpeciesAPI.getList(true);
         const mspecies = new Map<number, SpeciesEntry>();
 
         if (species) {
@@ -502,7 +502,7 @@ export class ToursMap extends BasePage {
             return;
         }
 
-        const org = await OrganizationAPI.getOrganization(trackingData.org_id);
+        const org = await OrganizationAPI.getOrganization(trackingData.org_id, true);
 
         if (org && this._map) {
             const orgViewCenter = fromLonLat([

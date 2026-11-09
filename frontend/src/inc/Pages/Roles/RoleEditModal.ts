@@ -25,9 +25,8 @@ export class RoleEditModal extends ModalDialog2 {
 
         const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        jQuery(
-            '<h5 class="mb-3 text-primary"><i class="fas fa-user-tag mr-2"></i>Role</h5>'
-        ).appendTo(bodyCard);
+        const heading = jQuery('<h5 class="mb-3 text-primary"><i class="fas fa-user-tag me-2"></i></h5>').appendTo(bodyCard);
+        jQuery('<span/>').text(Lang.i().l('Role')).appendTo(heading);
 
         const groupName = new FormGroup2({label: new LangTextV2({text: 'name'})});
         groupName.appendTo(bodyCard);

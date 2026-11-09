@@ -138,7 +138,11 @@ export class PageLoader {
 
     /**
      * Side menu list. `aclRight` mirrors the per-route aclRight gating on the
-     * backend; undefined = always visible. Admins resolve to the `root` role on
+     * backend; undefined = always visible. The master-data read rights
+     * (species/vehicles/catalog/organizations) only open the Admin pages — the
+     * working pages load their names via the /json/lookup/* routes. External
+     * Tour Sources is gated on *write* because external_tours_read already
+     * opens the working page "Tours External". Admins resolve to the `root` role on
      * the backend (all rights), so Session.hasRight short-circuits for them.
      * @protected
      */
@@ -274,14 +278,14 @@ export class PageLoader {
                     icon: 'fa-solid fa-calendar-alt',
                     name: 'admin-external-tour-source',
                     page: ExternalTourSourcePage,
-                    aclRight: 'external_tours_read'
+                    aclRight: 'external_tours_write'
                 },
                 {
                     title: new LangTextV2({text: 'Services'}),
                     icon: 'fa-solid fa-cog',
                     name: 'admin-services',
                     page: ServicesPage,
-                    aclRight: 'service'
+                    aclRight: 'service_status'
                 },
                 {
                     title: new LangTextV2({text: 'Calculations'}),

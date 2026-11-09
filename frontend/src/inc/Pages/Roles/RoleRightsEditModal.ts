@@ -9,8 +9,9 @@ import {RightEntry, RoleRightEntry} from '../../Api/Acl';
 import {RoleRightListWidget} from './RoleRight/RoleRightListWidget';
 
 /**
- * Edit which rights a role has (v2). Renders a searchable, grouped access
- * table (parent → sub-group → per-action rows) via {@link RoleRightListWidget}.
+ * Edit which rights a role has (v2). Renders the rights grouped by where they
+ * take effect (basic access / working area / master data / administration)
+ * via {@link RoleRightListWidget}, with a filter field on top.
  */
 export class RoleRightsEditModal extends ModalDialog2 {
 
@@ -24,34 +25,37 @@ export class RoleRightsEditModal extends ModalDialog2 {
     public constructor() {
         super({modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
+        const body = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        jQuery(
-            '<h5 class="mb-2 text-primary"><i class="fas fa-shield-alt mr-2"></i>Rights</h5>'
-        ).appendTo(bodyCard);
+        jQuery('<p class="text-body-secondary mb-2"/>')
+        .text(Lang.i().l('Tick the rights this role should grant. The hint below each right shows where it takes effect.'))
+        .appendTo(body);
 
-        jQuery('<p class="text-muted mb-3">Tick the rights this role should grant.</p>').appendTo(bodyCard);
+        const note = jQuery('<div class="alert alert-info py-2 small mb-3"/>').appendTo(body);
+        jQuery('<i class="fas fa-info-circle me-2"/>').appendTo(note);
+        jQuery('<span/>')
+        .text(Lang.i().l('Normal users only need the working area (e.g. "Sightings: Read") — species, vehicles, encounters and organizations are then shown automatically. The master-data rights only open the Admin pages.'))
+        .appendTo(note);
 
-        // search field
-        const searchWrapper = jQuery('<div class="mb-3"/>').appendTo(bodyCard);
+        // filter field
+        const searchWrapper = jQuery('<div class="mb-3"/>').appendTo(body);
         this._searchInput = new Input2({type: InputType2.text});
         this._searchInput.appendTo(searchWrapper);
         this._searchInput.setPlaceholder(Lang.i().l('Filter rights …'));
 
         let searchTimer: ReturnType<typeof setTimeout> | null = null;
-        this._searchInput.getElement().on('keyup', () => {
+        this._searchInput.getElement().on('keyup', (): void => {
             if (searchTimer !== null) {
                 clearTimeout(searchTimer);
             }
-            searchTimer = setTimeout(() => {
+
+            searchTimer = setTimeout((): void => {
                 this._roleRightList.filterByName(this._searchInput.getValue());
             }, 150);
         });
 
-        // scrollable grouped rights table
-        const listWrapper = jQuery(
-            '<div style="max-height:60vh;overflow-y:auto;border:1px solid #dee2e6;border-radius:4px;"/>'
-        ).appendTo(bodyCard);
+        // scrollable grouped rights list
+        const listWrapper = jQuery('<div class="border rounded" style="max-height:60vh;overflow-y:auto;"/>').appendTo(body);
 
         this._roleRightList = new RoleRightListWidget(listWrapper);
 
@@ -92,7 +96,7 @@ export class RoleRightsEditModal extends ModalDialog2 {
     }
 
     /**
-     * Return all rights with their checked state.
+     * Return all rights with their stored state.
      * @return {RoleRightEntry[]}
      */
     public getRoleRights(): RoleRightEntry[] {

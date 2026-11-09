@@ -64,7 +64,7 @@ export class Roles extends BasePage {
      */
     protected _openRoleRightsDialog(roleName: string): RoleRightsEditModal {
         const dialog = new RoleRightsEditModal();
-        dialog.setTitle(`Rights for role: ${roleName}`);
+        dialog.setTitle(`${Lang.i().l('Rights for role')}: ${roleName}`);
 
         dialog.setOnSave(async(): Promise<void> => {
             try {
@@ -87,8 +87,8 @@ export class Roles extends BasePage {
      * loadContent
      */
     public override async loadContent(): Promise<void> {
-        this.addNavbarButton('Add role', 'fas fa-plus', async(): Promise<void> => {
-            this._openRoleDialog('Add new role').show();
+        this.addNavbarButton(Lang.i().l('Add role'), 'fas fa-plus', async(): Promise<void> => {
+            this._openRoleDialog(Lang.i().l('Add new role')).show();
         });
 
         const content = this._wrapper.getContentWrapper().getContent();
@@ -117,7 +117,7 @@ export class Roles extends BasePage {
                 trbody.appendTo(table.getTbody());
 
                 new Td2({
-                    value: `<i class="fas fa-user-tag mr-2 text-muted"></i><b>${role.name}</b>`
+                    value: `<i class="fas fa-user-tag me-2 text-body-secondary"></i><b>${role.name}</b>`
                 }).appendTo(trbody);
 
                 const actionTd = new Td2({value: ''});
@@ -127,7 +127,7 @@ export class Roles extends BasePage {
                 btnMenu.appendTo(actionTd);
 
                 btnMenu.addMenuItem(Lang.i().l('Edit'), (): void => {
-                    const dialog = this._openRoleDialog(`Edit role: ${role.name}`);
+                    const dialog = this._openRoleDialog(`${Lang.i().l('Edit role')}: ${role.name}`);
                     dialog.setRoleId(role.id);
                     dialog.setName(role.name);
                     dialog.show();
@@ -151,7 +151,7 @@ export class Roles extends BasePage {
                 if (role.name !== 'root' && role.name !== 'user') {
                     btnMenu.addMenuItem(Lang.i().l('Delete'), async(): Promise<void> => {
                         // eslint-disable-next-line no-alert
-                        if (!window.confirm(`Delete role "${role.name}"? Its rights and group assignments are removed.`)) {
+                        if (!window.confirm(`${Lang.i().l('Delete role')} "${role.name}"? ${Lang.i().l('Its rights and group assignments are removed.')}`)) {
                             return;
                         }
                         try {

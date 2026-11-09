@@ -11,6 +11,7 @@ import {EncounterCategories} from './Main/EncounterCategories.js';
 import {ExternalTour} from './Main/ExternalTour.js';
 import {Group} from './Main/Group.js';
 import {Login} from './Main/Login.js';
+import {Lookup} from './Main/Lookup.js';
 import {Organization} from './Main/Organization.js';
 import {OrphanTracks} from './Main/OrphanTracks.js';
 import {QuickConnect} from './Main/QuickConnect.js';
@@ -66,6 +67,7 @@ export class RouteLoader extends HttpRouteLoader {
             new EncounterCategories(),
             new ExternalTour(),
             new Group(),
+            new Lookup(),
             new Organization(),
             new OrphanTracks(),
             new QuickConnect(),

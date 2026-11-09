@@ -20,8 +20,14 @@ export type {
  */
 export class EncounterCategories {
 
-    public static async getList(): Promise<EncounterCategorieEntry[]> {
-        const result = await NetFetch.getData('/json/encountercategories/list');
+    /**
+     * getList
+     * @param {boolean} [lookup] true = read-only lookup route for the sighting/tour/analytics pages
+     *   (needs sightings_read, tours_read, analytics_read or external_tours_read instead of the master-data read right).
+     * @return {EncounterCategorieEntry[]}
+     */
+    public static async getList(lookup: boolean = false): Promise<EncounterCategorieEntry[]> {
+        const result = await NetFetch.getData(lookup ? '/json/lookup/encountercategories' : '/json/encountercategories/list');
 
         if (result && result.statusCode) {
             switch (result.statusCode) {

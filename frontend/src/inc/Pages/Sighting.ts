@@ -390,12 +390,12 @@ export class Sighting extends BasePage {
             encates,
             organizations
         ] = await Promise.all([
-            SpeciesAPI.getList(),
-            VehicleAPI.getList(),
-            VehicleDriverAPI.getList(),
-            BehaviouralStatesAPI.getList(),
-            EncounterCategoriesAPI.getList(),
-            OrganizationAPI.getOrganizationByUser()
+            SpeciesAPI.getList(true),
+            VehicleAPI.getList(true),
+            VehicleDriverAPI.getList(true),
+            BehaviouralStatesAPI.getList(true),
+            EncounterCategoriesAPI.getList(true),
+            OrganizationAPI.getOrganizationByUser(true)
         ]);
 
         if (species) {

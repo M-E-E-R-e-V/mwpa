@@ -102,9 +102,11 @@ export class Organization {
 
     /**
      * getOrganizationByUser
+     * @param {boolean} [lookup] true = read-only lookup route for the sighting/tour/analytics pages
+     *   (needs sightings_read, tours_read, analytics_read or external_tours_read instead of the master-data read right).
      */
-    public static async getOrganizationByUser(): Promise<OrganizationEntry[] | null> {
-        const result = await NetFetch.getData('/json/organization/userlist');
+    public static async getOrganizationByUser(lookup: boolean = false): Promise<OrganizationEntry[] | null> {
+        const result = await NetFetch.getData(lookup ? '/json/lookup/organizations' : '/json/organization/userlist');
 
         if (result && result.statusCode) {
             const tresult = result as OrganizationUserListResponse;
@@ -153,14 +155,16 @@ export class Organization {
     /**
      * Return a Organization by id
      * @param {number} orgId
+     * @param {boolean} [lookup] true = read-only lookup route for the sighting/tour/analytics pages
+     *   (needs sightings_read, tours_read, analytics_read or external_tours_read instead of the master-data read right).
      * @returns {OrganizationFullEntry|null}
      */
-    public static async getOrganization(orgId: number): Promise<OrganizationFullEntry | null> {
+    public static async getOrganization(orgId: number, lookup: boolean = false): Promise<OrganizationFullEntry | null> {
         const req: OrganizationGetRequest = {
             id: orgId
         };
 
-        const result = await NetFetch.postData('/json/organization/get', req);
+        const result = await NetFetch.postData(lookup ? '/json/lookup/organization' : '/json/organization/get', req);
 
         if (result && result.statusCode) {
             const tresult = result as OrganizationResponse;

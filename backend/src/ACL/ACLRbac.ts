@@ -40,7 +40,9 @@ import {Rbac} from 'rbac-simple';
  * decides; SyncRolesRightsSetup seeds these defaults only when a role is first
  * created. `root` gets every top-level right; `user` gets the operational
  * read + mobile-capture set so normal users and the mobile app keep working
- * without any admin rights.
+ * without any admin rights. No master-data read rights: those only open the
+ * Admin pages; the working pages get species/vehicle/encounter/organization
+ * names from the /json/lookup/* routes (Routes/Main/Lookup.ts).
  */
 export class ACLRbac extends TACLRbac<Role, MwpaRights> {
 
@@ -187,8 +189,6 @@ export class ACLRbac extends TACLRbac<Role, MwpaRights> {
             RightSightings.sightings_mobile_write,
             RightTours.tours_read,
             RightTours.tours_tracking_edit,
-            RightSpecies.species_read,
-            RightCatalog.catalog_read,
             RightMap.map,
             RightAnalytics.analytics,
             RightExternalTours.external_tours_read,

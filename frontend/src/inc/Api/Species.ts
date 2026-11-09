@@ -94,9 +94,11 @@ export class Species {
 
     /**
      * getList
+     * @param {boolean} [lookup] true = read-only lookup route for the sighting/tour/analytics pages
+     *   (needs sightings_read, tours_read, analytics_read or external_tours_read instead of the master-data read right).
      */
-    public static async getList(): Promise<null|SpeciesEntry[]> {
-        const result = await NetFetch.getData('/json/species/list');
+    public static async getList(lookup: boolean = false): Promise<null|SpeciesEntry[]> {
+        const result = await NetFetch.getData(lookup ? '/json/lookup/species' : '/json/species/list');
 
         if (result && result.statusCode) {
             switch (result.statusCode) {

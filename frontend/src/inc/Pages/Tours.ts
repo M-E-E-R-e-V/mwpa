@@ -176,9 +176,9 @@ export class Tours extends BasePage {
             drivers,
             organizations
         ] = await Promise.all([
-            VehicleAPI.getList(),
-            VehicleDriverAPI.getList(),
-            OrganizationAPI.getOrganizationByUser()
+            VehicleAPI.getList(true),
+            VehicleDriverAPI.getList(true),
+            OrganizationAPI.getOrganizationByUser(true)
         ]);
 
         if (vehicles) {
