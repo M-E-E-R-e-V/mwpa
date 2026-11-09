@@ -10,6 +10,21 @@ export class Lang_ES implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // organization list
+        'Search name, location, contact or id …': 'Buscar nombre, lugar, contacto o ID …',
+        'No organizations match the current filter.': 'Ninguna organización coincide con el filtro actual.',
+        'Organization save success.': 'Organización guardada.',
+        'No home position': 'Sin posición base',
+        'Show on OpenStreetMap': 'Mostrar en OpenStreetMap',
+        'No contact': 'Sin contacto',
+        'No AROC data': 'Sin datos AROC',
+        'Region': 'Región',
+        'No.': 'N.º',
+        'authorized boats': 'barcos autorizados',
+        'Tracking Area': 'Zona de seguimiento',
+        'with home position': 'con posición base',
+        'with contact': 'con contacto',
+        'with AROC data': 'con datos AROC',
         // encounter list
         'Search name or description …': 'Buscar nombre o descripción …',
         'No encounter categories match the current filter.': 'Ninguna categoría de encuentro coincide con el filtro actual.',
