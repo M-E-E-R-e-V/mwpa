@@ -1,25 +1,26 @@
+/* global JQuery */
 import {Lang} from '../../Lang';
 import {
-    FormGroup2,
+    FormRow2,
     Input2,
-    LangTextV2,
     ModalDialog2,
     ModalDialogType2,
-    Select2,
-    Switch2
+    Select2
 } from 'bambooo';
 import {OrganizationFullEntry} from '../../Api/Organization';
+import {FormLayout} from '../../Widget/FormLayout';
 
 /**
  * VehicleEditModal
  *
- * Admin dialog to create or edit a vehicle. Two independent switches:
+ * Admin dialog to create or edit a vehicle (v2, {@link FormLayout}): name
+ * and organization, plus two independent status switches:
  *
  *   - **In use** — drives whether the vehicle shows up in operational pickers
  *     (sighting create dialog, sighting filter, tour creation). Toggle off to
  *     retire an active boat without losing it from historical data.
- *   - **Deleted** — soft-delete marker. Set true to hide the vehicle from the
- *     admin list as well; historical sightings keep their reference.
+ *   - **Deleted** — soft-delete marker. Hides the vehicle from the admin list
+ *     (unless "show deleted"); historical sightings keep their reference.
  *
  * Both flags exist on the entity as separate columns by design — see
  * `Vehicle.in_use` / `Vehicle.isdeleted`.
@@ -48,13 +49,13 @@ export class VehicleEditModal extends ModalDialog2 {
      * Switch "in use"
      * @protected
      */
-    protected _switchInUse: Switch2;
+    protected _switchInUse: JQuery<HTMLInputElement>;
 
     /**
      * Switch "is deleted" (soft delete)
      * @protected
      */
-    protected _switchIsDeleted: Switch2;
+    protected _switchIsDeleted: JQuery<HTMLInputElement>;
 
     /**
      * constructor
@@ -62,37 +63,62 @@ export class VehicleEditModal extends ModalDialog2 {
     public constructor() {
         super({modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
+        const body = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupName = new FormGroup2({label: new LangTextV2({text: 'Vehicle Name'})});
-        groupName.appendTo(bodyCard);
-        this._inputName = new Input2({});
-        this._inputName.appendTo(groupName);
-        this._inputName.setPlaceholder(Lang.i().l('Name of vehicle'));
+        // general -----------------------------------------------------------------------------------------------------
 
-        const groupOrganization = new FormGroup2({label: new LangTextV2({text: 'Organization'})});
-        groupOrganization.appendTo(bodyCard);
-        this._selectOrganization = new Select2({});
-        this._selectOrganization.appendTo(groupOrganization);
+        const general = FormLayout.section(body, 'fas fa-ship', 'General');
+        const rowGeneral = new FormRow2({});
+        rowGeneral.appendTo(general);
 
-        const groupInUse = new FormGroup2({
-            label: new LangTextV2({text: 'In use (shown in operational pickers)'})
+        this._inputName = FormLayout.input(rowGeneral.createCol(6), 'Vehicle Name', {
+            icon: 'fas fa-ship',
+            placeholder: 'Name of vehicle',
+            required: true
         });
-        groupInUse.appendTo(bodyCard);
-        this._switchInUse = new Switch2({});
-        this._switchInUse.appendTo(groupInUse);
 
-        const groupIsDeleted = new FormGroup2({
-            label: new LangTextV2({text: 'Deleted (hidden from admin list)'})
+        this._selectOrganization = FormLayout.select(rowGeneral.createCol(6), 'Organization', {
+            icon: 'fas fa-building',
+            required: true
         });
-        groupIsDeleted.appendTo(bodyCard);
-        this._switchIsDeleted = new Switch2({});
-        this._switchIsDeleted.appendTo(groupIsDeleted);
+
+        // status ------------------------------------------------------------------------------------------------------
+
+        const status = FormLayout.section(body, 'fas fa-toggle-on', 'Status');
+
+        this._switchInUse = FormLayout.switch(
+            status,
+            'In use',
+            'Shown in the operational pickers (new sightings, sighting filter, tours). Switch off to retire a boat — its sightings stay unchanged.'
+        );
+
+        this._switchIsDeleted = FormLayout.switch(
+            status,
+            'Deleted',
+            'Hidden from the vehicle list and all pickers. Historical sightings keep their reference; can be restored at any time.'
+        );
+
+        // a deleted vehicle is never in use
+        this._switchIsDeleted.on('change', (): void => this._syncSwitches());
 
         // buttons -----------------------------------------------------------------------------------------------------
 
         this.addButtonClose(Lang.i().l('Close'));
         this.addButtonSave(Lang.i().l('Save changes'), true);
+    }
+
+    /**
+     * Deleted → in use is off and locked.
+     * @protected
+     */
+    protected _syncSwitches(): void {
+        const deleted = this.getIsDeleted();
+
+        if (deleted) {
+            this._switchInUse.prop('checked', false);
+        }
+
+        this._switchInUse.prop('disabled', deleted);
     }
 
     /**
@@ -132,6 +158,11 @@ export class VehicleEditModal extends ModalDialog2 {
     public setOrganizationList(orgs: OrganizationFullEntry[]): void {
         this._selectOrganization.clearValues();
 
+        this._selectOrganization.addValue({
+            key: '0',
+            value: Lang.i().l('Please select …')
+        });
+
         for (const org of orgs) {
             this._selectOrganization.addValue({
                 key: `${org.id}`,
@@ -161,7 +192,8 @@ export class VehicleEditModal extends ModalDialog2 {
      * @param {boolean} inUse
      */
     public setInUse(inUse: boolean): void {
-        this._switchInUse.setEnable(inUse);
+        this._switchInUse.prop('checked', inUse);
+        this._syncSwitches();
     }
 
     /**
@@ -169,7 +201,7 @@ export class VehicleEditModal extends ModalDialog2 {
      * @returns {boolean}
      */
     public getInUse(): boolean {
-        return this._switchInUse.isEnable();
+        return this._switchInUse.prop('checked') === true && !this.getIsDeleted();
     }
 
     /**
@@ -177,7 +209,8 @@ export class VehicleEditModal extends ModalDialog2 {
      * @param {boolean} deleted
      */
     public setIsDeleted(deleted: boolean): void {
-        this._switchIsDeleted.setEnable(deleted);
+        this._switchIsDeleted.prop('checked', deleted);
+        this._syncSwitches();
     }
 
     /**
@@ -185,7 +218,7 @@ export class VehicleEditModal extends ModalDialog2 {
      * @returns {boolean}
      */
     public getIsDeleted(): boolean {
-        return this._switchIsDeleted.isEnable();
+        return this._switchIsDeleted.prop('checked') === true;
     }
 
     /**
@@ -195,8 +228,8 @@ export class VehicleEditModal extends ModalDialog2 {
         this.setVehicleId(null);
         this.setName('');
         this.setOrganization(0);
-        this.setInUse(true);
         this.setIsDeleted(false);
+        this.setInUse(true);
     }
 
 }

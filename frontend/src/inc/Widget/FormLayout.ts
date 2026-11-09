@@ -1,5 +1,5 @@
 /* global JQuery */
-import {FormGroup2, Input2, InputType2, LangTextV2, Select2} from 'bambooo';
+import {FormGroup2, Input2, InputType2, LangTextV2, Select2, Textarea2} from 'bambooo';
 import {Lang} from '../Lang';
 import {InputGroup} from './InputGroup';
 
@@ -46,6 +46,12 @@ export type FormLayoutFieldOptions = {
  * they look alike.
  */
 export class FormLayout {
+
+    /**
+     * Counter for unique switch ids
+     * @protected
+     */
+    protected static _switchCounter: number = 0;
 
     /**
      * Add a titled section (icon + heading + optional hint) and return its body.
@@ -111,6 +117,51 @@ export class FormLayout {
         FormLayout._suffix(target, opt);
 
         return select;
+    }
+
+    /**
+     * Add a labelled multi-line text field into a column.
+     * @param {JQuery} col
+     * @param {string} label English source text (LangTextV2)
+     * @param {FormLayoutFieldOptions & {rows?: number}} opt
+     * @return {Textarea2}
+     */
+    public static textarea(col: JQuery, label: string, opt: FormLayoutFieldOptions & {rows?: number;} = {}): Textarea2 {
+        const target = FormLayout._field(col, label, {required: opt.required});
+
+        const textarea = new Textarea2({rows: opt.rows ?? 3});
+        textarea.appendTo(target);
+
+        if (opt.placeholder) {
+            textarea.setPlaceholder(Lang.i().l(opt.placeholder));
+        }
+
+        return textarea;
+    }
+
+    /**
+     * Add a switch with a bold label and a hint below it.
+     * @param {JQuery} parent
+     * @param {string} label English source text
+     * @param {string} [hint] English source text
+     * @return {JQuery<HTMLInputElement>}
+     */
+    public static switch(parent: JQuery, label: string, hint?: string): JQuery<HTMLInputElement> {
+        FormLayout._switchCounter++;
+        const id = `mwpa-form-switch-${FormLayout._switchCounter}`;
+
+        const wrap = jQuery('<div class="form-check form-switch mb-3"/>').appendTo(parent);
+        const input = jQuery<HTMLInputElement>('<input class="form-check-input" type="checkbox" role="switch">')
+        .attr('id', id)
+        .appendTo(wrap);
+        const labelEl = jQuery('<label class="form-check-label d-block"/>').attr('for', id).appendTo(wrap);
+        jQuery('<span class="fw-semibold"/>').text(Lang.i().l(label)).appendTo(labelEl);
+
+        if (hint) {
+            jQuery('<span class="d-block small text-body-secondary"/>').text(Lang.i().l(hint)).appendTo(labelEl);
+        }
+
+        return input;
     }
 
     /**

@@ -10,6 +10,30 @@ export class Lang_DE implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // encounter list
+        'Search name or description …': 'Name oder Beschreibung suchen …',
+        'No encounter categories match the current filter.': 'Keine Begegnungen passen zum aktuellen Filter.',
+        'No description': 'Keine Beschreibung',
+        'Active': 'Aktiv',
+        'with description': 'mit Beschreibung',
+        'How the animals react to the boat. Chosen per sighting as "Reaction"; the description helps the crew to pick the right one.': 'Wie die Tiere auf das Boot reagieren. Wird bei jeder Sichtung als „Reaktion“ gewählt; die Beschreibung hilft der Crew bei der Auswahl.',
+        'e.g. Proximity': 'z. B. Proximity',
+        'What exactly is observed, e.g. distance to the boat, direction of movement …': 'Was genau beobachtet wird, z. B. Abstand zum Boot, Bewegungsrichtung …',
+        'No longer offered for new sightings. Existing sightings keep their reaction; can be restored at any time.': 'Wird für neue Sichtungen nicht mehr angeboten. Bestehende Sichtungen behalten ihre Reaktion; jederzeit wiederherstellbar.',
+        // vehicle list
+        'Search name, organization or id …': 'Name, Organisation oder ID suchen …',
+        'Any status': 'Jeder Status',
+        'In use': 'Im Einsatz',
+        'Out of service': 'Außer Dienst',
+        'Unknown organization': 'Unbekannte Organisation',
+        'Restore': 'Wiederherstellen',
+        'Take out of service': 'Außer Dienst stellen',
+        'Put back into service': 'Wieder in Dienst stellen',
+        'No vehicles match the current filter.': 'Keine Fahrzeuge passen zum aktuellen Filter.',
+        'deleted – show': 'gelöscht – anzeigen',
+        'Please select …': 'Bitte auswählen …',
+        'Shown in the operational pickers (new sightings, sighting filter, tours). Switch off to retire a boat — its sightings stay unchanged.': 'Wird in den Auswahllisten angeboten (neue Sichtungen, Sichtungsfilter, Touren). Ausschalten, um ein Boot außer Dienst zu stellen – seine Sichtungen bleiben unverändert.',
+        'Hidden from the vehicle list and all pickers. Historical sightings keep their reference; can be restored at any time.': 'Aus der Fahrzeugliste und allen Auswahllisten ausgeblendet. Bestehende Sichtungen behalten ihren Bezug; jederzeit wiederherstellbar.',
         // species dialog
         'No species match the current filter.': 'Keine Spezies passen zum aktuellen Filter.',
         'Add species': 'Spezies hinzufügen',

@@ -1,6 +1,4 @@
 import {
-    Badge2,
-    BadgeType2,
     ButtonClass2,
     ButtonMenu2,
     Card2,
@@ -9,8 +7,6 @@ import {
     ContentRow2,
     DialogConfirm2,
     IconFa,
-    Input2,
-    InputType2,
     LangTextV2,
     ModalDialogType2,
     SortingColumn2,
@@ -23,43 +19,43 @@ import {
 } from 'bambooo';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Lang} from '../Lang';
+import {AdminListUi} from '../Widget/AdminListUi';
 import {BasePage} from './BasePage';
 import {EncounterCategoriesEditModal} from './EncounterCategories/EncounterCategoriesEditModal';
 
-const PAGE_SIZE = 30;
-
+/**
+ * Sortable columns
+ */
 type SortKey = 'id' | 'name' | 'status';
+
+/**
+ * Sort state per column
+ */
 type SortState = Record<SortKey, SortOrder2>;
 
-const escapeHtml = (s: string): string => s
-.replace(/&/gu, '&amp;')
-.replace(/</gu, '&lt;')
-.replace(/>/gu, '&gt;')
-.replace(/"/gu, '&quot;')
-.replace(/'/gu, '&#39;');
-
-const highlight = (text: string, term: string): string => {
-    if (text === '') {
-        return '';
-    }
-    const escaped = escapeHtml(text);
-    if (term === '') {
-        return escaped;
-    }
-    const safe = term.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-    return escaped.replace(new RegExp(safe, 'giu'), (match) => `<mark>${match}</mark>`);
+/**
+ * Toolbar filter state
+ */
+type EncounterFilter = {
+    term: string;
+    showDeleted: boolean;
 };
 
 /**
- * Encounter Categories admin page — drives the picker for a
- * sighting's "reaction" field.
- *
- * Modern Sighting/Vehicle-style: TableWrapper with infinite scroll,
- * single-column sort, in-header quick search across name + description.
- * Soft-deleted rows stay visible with a grey badge so admins can
- * revive them.
+ * Encounter Categories admin page — drives the picker for a sighting's
+ * "reaction" field. Same look as the species / vehicle lists (see
+ * {@link AdminListUi}): search over name + description, "show deleted"
+ * (old typo variants are soft-deleted), summary figures, name (click to
+ * edit) with the description as guideline text, status pill, quick restore
+ * for deleted rows.
  */
 export class EncounterCategories extends BasePage {
+
+    /**
+     * Rows per TableWrapper page
+     * @protected
+     */
+    protected static readonly _PAGE_SIZE = 30;
 
     protected override _name: string = 'admin-encounters';
 
@@ -71,7 +67,6 @@ export class EncounterCategories extends BasePage {
         this._dialog = new EncounterCategoriesEditModal();
 
         this._dialog.setOnSave(async(): Promise<void> => {
-            const id = this._dialog.getEntryId();
             const name = this._dialog.getName();
 
             if (name === '') {
@@ -79,25 +74,86 @@ export class EncounterCategories extends BasePage {
                 return;
             }
 
-            try {
-                const entry: EncounterCategorieEntry = {
-                    id: id ?? 0,
-                    name,
-                    description: this._dialog.getDescription(),
-                    isdeleted: this._dialog.getIsDeleted()
-                };
-
-                if (await EncounterCategoriesAPI.save(entry)) {
-                    this._dialog.hide();
-                    if (this._onLoadTable) {
-                        this._onLoadTable();
-                    }
-                    this._toast.fire({icon: 'success', title: Lang.i().l('Encounter saved.')});
-                }
-            } catch (message) {
-                this._toast.fire({icon: 'error', title: message});
-            }
+            await this._save({
+                id: this._dialog.getEntryId() ?? 0,
+                name,
+                description: this._dialog.getDescription(),
+                isdeleted: this._dialog.getIsDeleted()
+            }, true);
         });
+    }
+
+    /**
+     * Save an entry and refresh the list.
+     * @param {EncounterCategorieEntry} entry
+     * @param {boolean} fromDialog hide the dialog on success
+     * @protected
+     */
+    protected async _save(entry: EncounterCategorieEntry, fromDialog: boolean): Promise<void> {
+        try {
+            if (await EncounterCategoriesAPI.save(entry)) {
+                if (fromDialog) {
+                    this._dialog.hide();
+                }
+
+                if (this._onLoadTable) {
+                    this._onLoadTable();
+                }
+
+                this._toast.fire({icon: 'success', title: Lang.i().l('Encounter saved.')});
+            }
+        } catch (message) {
+            this._toast.fire({icon: 'error', title: message});
+        }
+    }
+
+    /**
+     * Open the edit dialog.
+     * @param {EncounterCategorieEntry} entry
+     * @protected
+     */
+    protected _openEdit(entry: EncounterCategorieEntry): void {
+        this._dialog.resetValues();
+        this._dialog.setTitle(new LangTextV2({text: 'Edit Encounter Category'}));
+        this._dialog.setEntryId(entry.id);
+        this._dialog.setName(entry.name);
+        this._dialog.setDescription(entry.description ?? '');
+        this._dialog.setIsDeleted(entry.isdeleted);
+        this._dialog.show();
+    }
+
+    /**
+     * Ask and soft-delete an entry.
+     * @param {EncounterCategorieEntry} entry
+     * @protected
+     */
+    protected _confirmDelete(entry: EncounterCategorieEntry): void {
+        const lang = Lang.i();
+
+        DialogConfirm2.confirm(
+            'dcDeleteEncounter',
+            ModalDialogType2.large,
+            lang.l('Delete Encounter Category'),
+            `${lang.l('Soft-delete this encounter category?')} ${lang.l('Historical sightings that reference it keep the link; it disappears from the picker for new sightings. Revive it later from the Edit dialog.')}`,
+            async(_, dialog) => {
+                try {
+                    if (await EncounterCategoriesAPI.delete({id: entry.id})) {
+                        this._toast.fire({icon: 'success', title: lang.l('Encounter deleted.')});
+                    }
+                } catch (message) {
+                    this._toast.fire({icon: 'error', title: message});
+                }
+
+                dialog.hide();
+
+                if (this._onLoadTable) {
+                    this._onLoadTable();
+                }
+            },
+            undefined,
+            'Delete',
+            ButtonClass2.danger
+        );
     }
 
     public override async loadContent(): Promise<void> {
@@ -115,10 +171,35 @@ export class EncounterCategories extends BasePage {
         card.appendTo(col.getElement());
         card.setTitle(new LangTextV2({text: 'Encounter Categories'}));
 
-        const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
-        const searchInput = new Input2({type: InputType2.text});
-        searchInput.appendTo(searchSlot);
-        searchInput.setPlaceholder(`${lang.l('search name / description …')}`);
+        const filter: EncounterFilter = {
+            term: '',
+            showDeleted: false
+        };
+
+        let allEntries: EncounterCategorieEntry[] = [];
+        let filteredEntries: EncounterCategorieEntry[] = [];
+
+        // assigned below, used by the toolbar + sort handlers
+        let applyFilter: (() => void) | null = null;
+
+        // toolbar -----------------------------------------------------------------------------------------------------
+
+        const toolbar = AdminListUi.toolbar(card.getElement());
+
+        AdminListUi.search(toolbar, 'Search name or description …', (term): void => {
+            filter.term = term;
+            applyFilter?.();
+        });
+
+        AdminListUi.switch(toolbar, 'mwpa-encounter-show-deleted', 'Show deleted', (checked): void => {
+            filter.showDeleted = checked;
+            applyFilter?.();
+        });
+
+        const resultInfo = AdminListUi.resultInfo(toolbar);
+        const stats = AdminListUi.statsRow(card.getElement());
+
+        // table -------------------------------------------------------------------------------------------------------
 
         const sort: SortState = {
             id: SortOrder2.NONE,
@@ -126,12 +207,11 @@ export class EncounterCategories extends BasePage {
             status: SortOrder2.NONE
         };
 
-        let searchTerm = '';
-        let allEntries: EncounterCategorieEntry[] = [];
-
         const tableWrapper = new TableWrapper2<EncounterCategorieEntry>({tableOptions: {head_fixed: true}});
         tableWrapper.appendTo(card.getElement());
+        const emptyInfo = AdminListUi.emptyInfo(card.getElement(), 'No encounter categories match the current filter.');
         const table = tableWrapper.getTable();
+        table.getElement().addClass('table-hover align-middle mb-0');
         const trhead = new Tr2();
         trhead.appendTo(table.getThead());
 
@@ -151,7 +231,7 @@ export class EncounterCategories extends BasePage {
                     }
 
                     sort[key] = newValue as SortOrder2;
-                    tableWrapper.reset();
+                    applyFilter?.();
                 }
             });
 
@@ -160,134 +240,180 @@ export class EncounterCategories extends BasePage {
             return column;
         };
 
-        new Th2({value: makeSortColumn('Id', 'id')}).appendTo(trhead);
-        new Th2({value: makeSortColumn('Name', 'name')}).appendTo(trhead);
+        const thName = new Th2({value: makeSortColumn('Name', 'name')});
+        thName.appendTo(trhead);
+        thName.getElement().css('width', '22%');
         new Th2({value: new LangTextV2({text: 'Description'})}).appendTo(trhead);
         new Th2({value: makeSortColumn('Status', 'status')}).appendTo(trhead);
-        new Th2({value: new LangTextV2({text: 'Action'})}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Id', 'id')}).appendTo(trhead);
+        const thAction = new Th2({value: ''});
+        thAction.appendTo(trhead);
+        thAction.getElement().css('width', '96px');
 
         const renderRow = (_table: Table2, entry: EncounterCategorieEntry): void => {
-            const trbody = new Tr2();
-            trbody.appendTo(table.getTbody());
-            const term = searchTerm;
+            const term = filter.term;
+            const tr = new Tr2();
+            tr.appendTo(table.getTbody());
 
-            new Td2({value: `#${entry.id}`}).appendTo(trbody);
-
-            const nameTd = new Td2({value: ''});
-            nameTd.appendTo(trbody);
-            nameTd.getElement().html(`<b>${highlight(entry.name, term)}</b>`);
-
-            const descTd = new Td2({value: ''});
-            descTd.appendTo(trbody);
-            descTd.getElement().html(highlight(entry.description ?? '', term));
-
-            const statusTd = new Td2({value: ''});
-            statusTd.appendTo(trbody);
             if (entry.isdeleted) {
-                new Badge2({text: lang.l('deleted') ?? 'deleted', type: BadgeType2.secondary}).appendTo(statusTd);
-            } else {
-                new Badge2({text: lang.l('active') ?? 'active', type: BadgeType2.success}).appendTo(statusTd);
+                tr.getElement().addClass('opacity-50');
             }
 
-            const actionTd = new Td2({value: ''});
-            actionTd.appendTo(trbody);
+            // name (click → edit)
+            const tdName = new Td2({value: ''});
+            tdName.appendTo(tr);
+            AdminListUi.nameLink(tdName.getElement(), AdminListUi.highlight(entry.name, term), (): void => {
+                this._openEdit(entry);
+            });
+
+            // description (guideline text)
+            const tdDescription = new Td2({value: ''});
+            tdDescription.appendTo(tr);
+            const description = (entry.description ?? '').trim();
+
+            if (description === '') {
+                jQuery('<span class="small text-body-tertiary fst-italic"/>').text(lang.l('No description')).appendTo(tdDescription.getElement());
+            } else {
+                jQuery('<div class="small text-body-secondary" style="max-width:720px;"/>')
+                .html(AdminListUi.highlight(description, term))
+                .appendTo(tdDescription.getElement());
+            }
+
+            // status
+            const tdStatus = new Td2({value: ''});
+            tdStatus.appendTo(tr);
+
+            if (entry.isdeleted) {
+                AdminListUi.pill(tdStatus.getElement(), 'Deleted', 'secondary', 'fas fa-trash');
+            } else {
+                AdminListUi.pill(tdStatus.getElement(), 'Active', 'success', 'fas fa-check-circle');
+            }
+
+            // id
+            const tdId = new Td2({value: ''});
+            tdId.appendTo(tr);
+            jQuery('<span class="font-monospace small text-body-secondary"/>').text(`#${entry.id}`).appendTo(tdId.getElement());
+
+            // actions
+            const tdAction = new Td2({value: ''});
+            tdAction.appendTo(tr);
+            const actions = AdminListUi.actions(tdAction.getElement(), (): void => {
+                this._openEdit(entry);
+            });
+
             const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
-            btnMenu.appendTo(actionTd);
+            btnMenu.appendTo(actions);
 
-            btnMenu.addMenuItem(Lang.i().l('Edit'), (): void => {
-                this._dialog.resetValues();
-                this._dialog.setTitle(new LangTextV2({text: 'Edit Encounter Category'}));
-                this._dialog.setEntryId(entry.id);
-                this._dialog.setName(entry.name);
-                this._dialog.setDescription(entry.description ?? '');
-                this._dialog.setIsDeleted(entry.isdeleted);
-                this._dialog.show();
-            }, IconFa.edit);
-
-            btnMenu.addDivider();
-
-            btnMenu.addMenuItem(Lang.i().l('Delete'), (): void => {
-                DialogConfirm2.confirm(
-                    'dcDeleteEncounter',
-                    ModalDialogType2.large,
-                    Lang.i().l('Delete Encounter Category'),
-                    `${Lang.i().l('Soft-delete this encounter category?')} ${Lang.i().l('Historical sightings that reference it keep the link; it disappears from the picker for new sightings. Revive it later from the Edit dialog.')}`,
-                    async(_, dialog) => {
-                        try {
-                            if (await EncounterCategoriesAPI.delete({id: entry.id})) {
-                                this._toast.fire({icon: 'success', title: Lang.i().l('Encounter deleted.')});
-                            }
-                        } catch (message) {
-                            this._toast.fire({icon: 'error', title: message});
-                        }
-                        dialog.hide();
-                        if (this._onLoadTable) {
-                            this._onLoadTable();
-                        }
-                    },
-                    undefined,
-                    'Delete',
-                    ButtonClass2.danger
-                );
-            }, IconFa.trash);
+            if (entry.isdeleted) {
+                btnMenu.addMenuItem(lang.l('Restore'), (): void => {
+                    this._save({...entry, isdeleted: false}, false).then();
+                }, 'fas fa-undo');
+            } else {
+                btnMenu.addMenuItem(lang.l('Delete'), (): void => {
+                    this._confirmDelete(entry);
+                }, IconFa.trash);
+            }
 
             Lang.i().lAll();
         };
 
-        const statusRank = (e: EncounterCategorieEntry): number => e.isdeleted ? 1 : 0;
+        // filter + sort -----------------------------------------------------------------------------------------------
 
-        const buildPage = (page: number): EncounterCategorieEntry[] => {
-            const term = searchTerm.toLowerCase();
+        const sortValue = (e: EncounterCategorieEntry, key: SortKey): string | number => {
+            switch (key) {
+                case 'id':
+                    return e.id;
 
-            const filtered = term === ''
-                ? allEntries.slice()
-                : allEntries.filter((e) => {
-                    if (e.name.toLowerCase().includes(term)) {
-                        return true;
-                    }
-                    return (e.description ?? '').toLowerCase().includes(term);
-                });
+                case 'name':
+                    return e.name.toLowerCase();
+
+                case 'status':
+                    return e.isdeleted ? 1 : 0;
+            }
+
+            return 0;
+        };
+
+        const matches = (e: EncounterCategorieEntry): boolean => {
+            if (!filter.showDeleted && e.isdeleted) {
+                return false;
+            }
+
+            const term = filter.term.toLowerCase();
+
+            if (term === '') {
+                return true;
+            }
+
+            return [e.name, e.description ?? '', `${e.id}`].some((value) => value.toLowerCase().includes(term));
+        };
+
+        applyFilter = (): void => {
+            filteredEntries = allEntries.filter(matches);
 
             const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder2.NONE);
 
             if (activeKey) {
-                const order = sort[activeKey];
-                const dir = order === SortOrder2.DESC ? -1 : 1;
-                filtered.sort((a, b) => {
-                    let av: string | number;
-                    let bv: string | number;
+                const dir = sort[activeKey] === SortOrder2.DESC ? -1 : 1;
 
-                    switch (activeKey) {
-                        case 'id':
-                            av = a.id;
-                            bv = b.id;
-                            break;
-                        case 'name':
-                            av = a.name.toLowerCase();
-                            bv = b.name.toLowerCase();
-                            break;
-                        case 'status':
-                            av = statusRank(a);
-                            bv = statusRank(b);
-                            break;
+                filteredEntries.sort((a, b) => {
+                    const av = sortValue(a, activeKey);
+                    const bv = sortValue(b, activeKey);
+
+                    if (av < bv) {
+                        return -1 * dir;
                     }
 
-                    if (av < bv) {return -1 * dir;}
-                    if (av > bv) {return Number(dir);}
+                    if (av > bv) {
+                        return Number(dir);
+                    }
+
                     return 0;
                 });
             }
 
-            const offset = page * PAGE_SIZE;
-            return filtered.slice(offset, offset + PAGE_SIZE);
+            const visible = allEntries.filter((e) => filter.showDeleted || !e.isdeleted).length;
+            AdminListUi.setResult(resultInfo, filteredEntries.length, visible);
+            AdminListUi.setEmpty(emptyInfo, filteredEntries.length === 0);
+
+            tableWrapper.reset().then();
+        };
+
+        const renderStats = (): void => {
+            stats.empty();
+
+            const active = allEntries.filter((e) => !e.isdeleted);
+            const deleted = allEntries.length - active.length;
+            const withDescription = active.filter((e) => (e.description ?? '').trim() !== '').length;
+
+            AdminListUi.stat(stats, 'fas fa-check-circle', `${active.length}`, 'Active', 'text-success');
+            AdminListUi.stat(
+                stats,
+                'fas fa-align-left',
+                `${withDescription} / ${active.length}`,
+                'with description',
+                withDescription === active.length ? 'text-success' : 'text-warning'
+            );
+
+            if (deleted > 0) {
+                const hint = jQuery('<button type="button" class="btn btn-sm btn-outline-secondary align-self-center"/>').appendTo(stats);
+                jQuery('<i class="fas fa-trash me-1"/>').appendTo(hint);
+                jQuery('<span/>').text(`${deleted} ${lang.l('deleted – show')}`).appendTo(hint);
+                hint.on('click', (): void => {
+                    jQuery('#mwpa-encounter-show-deleted').prop('checked', true).trigger('change');
+                });
+            }
         };
 
         this._onLoadTable = async(): Promise<void> => {
             card.showLoading();
+
             try {
                 allEntries = await EncounterCategoriesAPI.getList();
-                card.setTitle(`${Lang.i().l('Encounter Categories')} (${allEntries.length})`);
-                await tableWrapper.reset();
+                card.setTitle(`${lang.l('Encounter Categories')} (${allEntries.filter((e) => !e.isdeleted).length})`);
+
+                renderStats();
+                applyFilter?.();
             } finally {
                 card.hideLoading();
                 Lang.i().lAll();
@@ -295,26 +421,13 @@ export class EncounterCategories extends BasePage {
         };
 
         tableWrapper.setDataSource(
-            async(page) => buildPage(page),
+            async(page) => {
+                const offset = page * EncounterCategories._PAGE_SIZE;
+                return filteredEntries.slice(offset, offset + EncounterCategories._PAGE_SIZE);
+            },
             renderRow,
             false
         );
-
-        let searchTimer: ReturnType<typeof setTimeout> | null = null;
-        searchInput.getElement().on('keyup', () => {
-            if (searchTimer !== null) {
-                clearTimeout(searchTimer);
-            }
-
-            searchTimer = setTimeout(() => {
-                const value = searchInput.getValue().trim();
-                if (value === searchTerm) {
-                    return;
-                }
-                searchTerm = value;
-                tableWrapper.reset();
-            }, 300);
-        });
 
         this._onLoadTable();
     }

@@ -10,6 +10,30 @@ export class Lang_ES implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // encounter list
+        'Search name or description …': 'Buscar nombre o descripción …',
+        'No encounter categories match the current filter.': 'Ninguna categoría de encuentro coincide con el filtro actual.',
+        'No description': 'Sin descripción',
+        'Active': 'Activa',
+        'with description': 'con descripción',
+        'How the animals react to the boat. Chosen per sighting as "Reaction"; the description helps the crew to pick the right one.': 'Cómo reaccionan los animales ante el barco. Se elige en cada avistamiento como «Reacción»; la descripción ayuda a la tripulación a elegir.',
+        'e.g. Proximity': 'p. ej. Proximity',
+        'What exactly is observed, e.g. distance to the boat, direction of movement …': 'Qué se observa exactamente, p. ej. distancia al barco, dirección del movimiento …',
+        'No longer offered for new sightings. Existing sightings keep their reaction; can be restored at any time.': 'Ya no se ofrece para nuevos avistamientos. Los avistamientos existentes conservan su reacción; se puede restaurar en cualquier momento.',
+        // vehicle list
+        'Search name, organization or id …': 'Buscar nombre, organización o ID …',
+        'Any status': 'Cualquier estado',
+        'In use': 'En servicio',
+        'Out of service': 'Fuera de servicio',
+        'Unknown organization': 'Organización desconocida',
+        'Restore': 'Restaurar',
+        'Take out of service': 'Poner fuera de servicio',
+        'Put back into service': 'Volver a poner en servicio',
+        'No vehicles match the current filter.': 'Ningún vehículo coincide con el filtro actual.',
+        'deleted – show': 'eliminados – mostrar',
+        'Please select …': 'Seleccione …',
+        'Shown in the operational pickers (new sightings, sighting filter, tours). Switch off to retire a boat — its sightings stay unchanged.': 'Se ofrece en las listas de selección (nuevos avistamientos, filtro de avistamientos, tours). Desactivar para retirar un barco; sus avistamientos no cambian.',
+        'Hidden from the vehicle list and all pickers. Historical sightings keep their reference; can be restored at any time.': 'Oculto en la lista de vehículos y en todas las listas de selección. Los avistamientos existentes conservan su referencia; se puede restaurar en cualquier momento.',
         // species dialog
         'No species match the current filter.': 'Ninguna especie coincide con el filtro actual.',
         'Add species': 'Añadir especie',

@@ -8,8 +8,6 @@ import {
     ContentRow2,
     DialogConfirm2,
     IconFa,
-    Input2,
-    InputType2,
     LangTextV2,
     ModalDialogType2,
     SortingColumn2,
@@ -28,6 +26,7 @@ import {UtilOttLink} from '../Utils/UtilOttLink';
 import {SpeciesNameParts, UtilSpeciesName} from '../Utils/UtilSpeciesName';
 import {UtilSpeciesSilhouette} from '../Utils/UtilSpeciesSilhouette';
 import {UtilWormsLink} from '../Utils/UtilWormsLink';
+import {AdminListUi} from '../Widget/AdminListUi';
 import {SpeciesGroupDisplay} from '../Widget/SpeciesGroupDisplay';
 import {BasePage} from './BasePage';
 import {SpeciesProfile as SpeciesProfilePage} from './Species/Profile';
@@ -148,39 +147,6 @@ export class Species extends BasePage {
     }
 
     /**
-     * HTML-escape a string.
-     * @param {string} s
-     * @return {string}
-     * @protected
-     */
-    protected static _escape(s: string): string {
-        return s
-        .replace(/&/gu, '&amp;')
-        .replace(/</gu, '&lt;')
-        .replace(/>/gu, '&gt;')
-        .replace(/"/gu, '&quot;')
-        .replace(/'/gu, '&#39;');
-    }
-
-    /**
-     * Escape + mark the search term.
-     * @param {string} text
-     * @param {string} term
-     * @return {string}
-     * @protected
-     */
-    protected static _highlight(text: string, term: string): string {
-        const escaped = Species._escape(text);
-
-        if (text === '' || term === '') {
-            return escaped;
-        }
-
-        const safe = Species._escape(term).replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-        return escaped.replace(new RegExp(safe, 'giu'), (match) => `<mark class="px-0">${match}</mark>`);
-    }
-
-    /**
      * True when a taxonomy id is missing.
      * @param {SpeciesEntry} entry
      * @return {boolean}
@@ -216,21 +182,16 @@ export class Species extends BasePage {
     }
 
     /**
-     * Summary figure ("24 / 26 with WoRMS").
+     * Summary figure "value / total" (green icon when complete).
      * @param {JQuery} parent
      * @param {string} icon
      * @param {number} value
      * @param {number} total
-     * @param {string} label
+     * @param {string} label English source text
      * @protected
      */
-    protected static _stat(parent: JQuery, icon: string, value: number, total: number, label: string): void {
-        const complete = value === total;
-        const stat = jQuery('<div class="d-flex align-items-center gap-2 px-3 py-1 border rounded bg-body"/>').appendTo(parent);
-        jQuery('<i/>').addClass(`${icon} ${complete ? 'text-success' : 'text-body-secondary'}`).appendTo(stat);
-        const text = jQuery('<div class="lh-sm"/>').appendTo(stat);
-        jQuery('<div class="fw-bold"/>').text(`${value} / ${total}`).appendTo(text);
-        jQuery('<div class="small text-body-secondary"/>').text(Lang.i().l(label)).appendTo(text);
+    protected static _statOf(parent: JQuery, icon: string, value: number, total: number, label: string): void {
+        AdminListUi.stat(parent, icon, `${value} / ${total}`, label, value === total ? 'text-success' : 'text-body-secondary');
     }
 
     /**
@@ -310,32 +271,33 @@ export class Species extends BasePage {
 
         // toolbar -----------------------------------------------------------------------------------------------------
 
-        const toolbar = jQuery('<div class="d-flex flex-wrap align-items-center gap-2 px-3 pt-3"/>').appendTo(card.getElement());
+        // assigned below, used by the toolbar + sort handlers
+        let applyFilter: (() => void) | null = null;
 
-        const searchGroup = jQuery('<div class="input-group input-group-sm" style="max-width:340px;"/>').appendTo(toolbar);
-        jQuery('<span class="input-group-text"><i class="fas fa-search"></i></span>').appendTo(searchGroup);
-        const searchInput = new Input2({type: InputType2.text});
-        searchInput.appendTo(searchGroup);
-        searchInput.getElement().addClass('form-control-sm');
-        searchInput.setPlaceholder(lang.l('Search name, Latin name, group or id …'));
+        const toolbar = AdminListUi.toolbar(card.getElement());
 
-        const groupSelect = jQuery<HTMLSelectElement>('<select class="form-select form-select-sm" style="max-width:200px;"/>').appendTo(toolbar);
-        jQuery('<option value="0"/>').text(lang.l('All groups')).appendTo(groupSelect);
+        AdminListUi.search(toolbar, 'Search name, Latin name, group or id …', (term): void => {
+            filter.term = term;
+            applyFilter?.();
+        });
 
-        const makeSwitch = (label: string): JQuery<HTMLInputElement> => {
-            const id = `mwpa-species-${label.replace(/\W+/gu, '-').toLowerCase()}`;
-            const wrap = jQuery('<div class="form-check form-switch mb-0 ms-2"/>').appendTo(toolbar);
-            const input = jQuery<HTMLInputElement>('<input class="form-check-input" type="checkbox" role="switch">').attr('id', id).appendTo(wrap);
-            jQuery('<label class="form-check-label small"/>').attr('for', id).text(lang.l(label)).appendTo(wrap);
-            return input;
-        };
+        const groupSelect = AdminListUi.select(toolbar, 'All groups', (value): void => {
+            filter.groupId = parseInt(value, 10) || 0;
+            applyFilter?.();
+        });
 
-        const incompleteSwitch = makeSwitch('Only incomplete');
-        const deletedSwitch = makeSwitch('Show deleted');
+        const incompleteSwitch = AdminListUi.switch(toolbar, 'mwpa-species-only-incomplete', 'Only incomplete', (checked): void => {
+            filter.incompleteOnly = checked;
+            applyFilter?.();
+        });
 
-        const resultInfo = jQuery('<div class="small text-body-secondary ms-auto"/>').appendTo(toolbar);
+        AdminListUi.switch(toolbar, 'mwpa-species-show-deleted', 'Show deleted', (checked): void => {
+            filter.showDeleted = checked;
+            applyFilter?.();
+        });
 
-        const stats = jQuery('<div class="d-flex flex-wrap gap-2 px-3 py-3 border-bottom"/>').appendTo(card.getElement());
+        const resultInfo = AdminListUi.resultInfo(toolbar);
+        const stats = AdminListUi.statsRow(card.getElement());
 
         // table -------------------------------------------------------------------------------------------------------
 
@@ -352,9 +314,7 @@ export class Species extends BasePage {
 
         const tableWrapper = new TableWrapper2<SpeciesRow>({tableOptions: {head_fixed: true}});
         tableWrapper.appendTo(card.getElement());
-        const emptyInfo = jQuery('<div class="text-center text-body-secondary py-5 d-none"/>').appendTo(card.getElement());
-        jQuery('<i class="fas fa-search fa-2x mb-2 d-block opacity-50"/>').appendTo(emptyInfo);
-        jQuery('<span/>').text(lang.l('No species match the current filter.')).appendTo(emptyInfo);
+        const emptyInfo = AdminListUi.emptyInfo(card.getElement(), 'No species match the current filter.');
 
         const table = tableWrapper.getTable();
         table.getElement().addClass('table-hover align-middle mb-0');
@@ -362,9 +322,6 @@ export class Species extends BasePage {
         trhead.appendTo(table.getThead());
 
         const sortRegistry: {key: SortKey; column: LangTextV2;}[] = [];
-
-        // assigned below, used by the sort-column click handlers
-        let applyFilter: (() => void) | null = null;
 
         const makeSortColumn = (label: string, key: SortKey): LangTextV2 => {
             const column = new LangTextV2({
@@ -429,7 +386,7 @@ export class Species extends BasePage {
             const tdName = new Td2({value: ''});
             tdName.appendTo(tr);
             const nameLink = jQuery('<a href="#" class="fw-semibold text-decoration-none text-body"/>')
-            .html(Species._highlight(row.name.common, term))
+            .html(AdminListUi.highlight(row.name.common, term))
             .appendTo(tdName.getElement());
             nameLink.on('click', (e): void => {
                 e.preventDefault();
@@ -441,7 +398,7 @@ export class Species extends BasePage {
             }
 
             if (row.name.local !== '') {
-                jQuery('<div class="small text-body-secondary"/>').html(Species._highlight(row.name.local, term)).appendTo(tdName.getElement());
+                jQuery('<div class="small text-body-secondary"/>').html(AdminListUi.highlight(row.name.local, term)).appendTo(tdName.getElement());
             }
 
             // scientific name
@@ -451,7 +408,7 @@ export class Species extends BasePage {
             if (row.name.scientific === '') {
                 jQuery('<span class="small text-body-tertiary"/>').text('—').appendTo(tdScientific.getElement());
             } else {
-                jQuery('<i/>').html(Species._highlight(row.name.scientific, term)).appendTo(tdScientific.getElement());
+                jQuery('<i/>').html(AdminListUi.highlight(row.name.scientific, term)).appendTo(tdScientific.getElement());
             }
 
             // group
@@ -631,8 +588,8 @@ export class Species extends BasePage {
             }
 
             const visible = allRows.filter((r) => filter.showDeleted || !r.entry.isdeleted).length;
-            emptyInfo.toggleClass('d-none', filteredRows.length > 0);
-            resultInfo.text(`${filteredRows.length} ${lang.l('of')} ${visible} ${lang.l('shown')}`);
+            AdminListUi.setResult(resultInfo, filteredRows.length, visible);
+            AdminListUi.setEmpty(emptyInfo, filteredRows.length === 0);
 
             tableWrapper.reset().then();
         };
@@ -642,9 +599,9 @@ export class Species extends BasePage {
             const active = allRows.filter((r) => !r.entry.isdeleted).map((r) => r.entry);
             const total = active.length;
 
-            Species._stat(stats, 'fas fa-fish', active.filter((e) => (e.aphiaid ?? 0) > 0).length, total, 'with WoRMS AphiaID');
-            Species._stat(stats, 'fas fa-tree', active.filter((e) => e.ottid > 0).length, total, 'with OTT ID');
-            Species._stat(stats, 'fas fa-image', active.filter((e) => Boolean(e.image)).length, total, 'with own image');
+            Species._statOf(stats, 'fas fa-fish', active.filter((e) => (e.aphiaid ?? 0) > 0).length, total, 'with WoRMS AphiaID');
+            Species._statOf(stats, 'fas fa-tree', active.filter((e) => e.ottid > 0).length, total, 'with OTT ID');
+            Species._statOf(stats, 'fas fa-image', active.filter((e) => Boolean(e.image)).length, total, 'with own image');
 
             const missing = active.filter((e) => Species._isIncomplete(e)).length;
 
@@ -666,13 +623,7 @@ export class Species extends BasePage {
                 allRows = (species ?? []).map((entry) => ({entry, name: UtilSpeciesName.parse(entry.name)}));
                 card.setTitle(`${lang.l('Species')} (${allRows.filter((r) => !r.entry.isdeleted).length})`);
 
-                groupSelect.find('option:not(:first)').remove();
-
-                for (const group of groups ?? []) {
-                    jQuery('<option/>').attr('value', `${group.id}`).text(group.name).appendTo(groupSelect);
-                }
-
-                groupSelect.val(`${filter.groupId}`);
+                AdminListUi.setOptions(groupSelect, (groups ?? []).map((g) => ({value: `${g.id}`, label: g.name})));
 
                 renderStats();
                 applyFilter?.();
@@ -690,39 +641,6 @@ export class Species extends BasePage {
             renderRow,
             false
         );
-
-        // toolbar events ----------------------------------------------------------------------------------------------
-
-        let searchTimer: ReturnType<typeof setTimeout> | null = null;
-        searchInput.getElement().on('input', () => {
-            if (searchTimer !== null) {
-                clearTimeout(searchTimer);
-            }
-
-            searchTimer = setTimeout(() => {
-                const value = searchInput.getValue().trim();
-
-                if (value !== filter.term) {
-                    filter.term = value;
-                    applyFilter?.();
-                }
-            }, 250);
-        });
-
-        groupSelect.on('change', (): void => {
-            filter.groupId = parseInt(`${groupSelect.val() ?? '0'}`, 10) || 0;
-            applyFilter?.();
-        });
-
-        incompleteSwitch.on('change', (): void => {
-            filter.incompleteOnly = incompleteSwitch.prop('checked') === true;
-            applyFilter?.();
-        });
-
-        deletedSwitch.on('change', (): void => {
-            filter.showDeleted = deletedSwitch.prop('checked') === true;
-            applyFilter?.();
-        });
 
         this._onLoadTable();
     }

@@ -1,49 +1,70 @@
+/* global JQuery */
 import {Lang} from '../../Lang';
 import {
-    FormGroup2,
+    FormRow2,
     Input2,
-    InputType2,
-    LangTextV2,
     ModalDialog2,
     ModalDialogType2,
-    Switch2,
     Textarea2
 } from 'bambooo';
+import {FormLayout} from '../../Widget/FormLayout';
 
 /**
- * Edit modal for one `encounter_categories` row.
- *
- * Exposes the soft-delete switch so admins can revive a previously
- * deleted row directly here — separating the kill-switch into a
- * dedicated endpoint would create the same UX-asymmetry we already
- * had on Vehicle.
+ * Edit modal for one `encounter_categories` row (v2, {@link FormLayout}):
+ * name + description (the description is the guideline the crew follows
+ * when choosing the reaction of a sighting) and the soft-delete switch, so
+ * admins can revive a previously deleted row directly here.
  */
 export class EncounterCategoriesEditModal extends ModalDialog2 {
 
     protected _id: number|null = null;
+
     protected _inputName: Input2;
+
     protected _textareaDescription: Textarea2;
-    protected _switchDeleted: Switch2;
+
+    protected _switchDeleted: JQuery<HTMLInputElement>;
 
     public constructor() {
         super({modalType: ModalDialogType2.large});
 
         const body = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupName = new FormGroup2({label: new LangTextV2({text: 'Name'})});
-        groupName.appendTo(body);
-        this._inputName = new Input2({type: InputType2.text});
-        this._inputName.appendTo(groupName);
+        // general -----------------------------------------------------------------------------------------------------
 
-        const groupDescription = new FormGroup2({label: new LangTextV2({text: 'Description'})});
-        groupDescription.appendTo(body);
-        this._textareaDescription = new Textarea2({});
-        this._textareaDescription.appendTo(groupDescription);
+        const general = FormLayout.section(
+            body,
+            'fas fa-exchange-alt',
+            'General',
+            'How the animals react to the boat. Chosen per sighting as "Reaction"; the description helps the crew to pick the right one.'
+        );
 
-        const groupDeleted = new FormGroup2({label: new LangTextV2({text: 'Deleted'})});
-        groupDeleted.appendTo(body);
-        this._switchDeleted = new Switch2({});
-        this._switchDeleted.appendTo(groupDeleted);
+        const rowName = new FormRow2({});
+        rowName.appendTo(general);
+
+        this._inputName = FormLayout.input(rowName.createCol(12), 'Name', {
+            icon: 'fas fa-tag',
+            placeholder: 'e.g. Proximity',
+            required: true
+        });
+
+        const rowDescription = new FormRow2({});
+        rowDescription.appendTo(general);
+
+        this._textareaDescription = FormLayout.textarea(rowDescription.createCol(12), 'Description', {
+            rows: 4,
+            placeholder: 'What exactly is observed, e.g. distance to the boat, direction of movement …'
+        });
+
+        // status ------------------------------------------------------------------------------------------------------
+
+        const status = FormLayout.section(body, 'fas fa-toggle-on', 'Status');
+
+        this._switchDeleted = FormLayout.switch(
+            status,
+            'Deleted',
+            'No longer offered for new sightings. Existing sightings keep their reaction; can be restored at any time.'
+        );
 
         this.addButtonClose(Lang.i().l('Close'));
         this.addButtonSave(Lang.i().l('Save'), true);
@@ -61,7 +82,7 @@ export class EncounterCategoriesEditModal extends ModalDialog2 {
         this._id = null;
         this._inputName.setValue('');
         this._textareaDescription.setValue('');
-        this._switchDeleted.setEnable(false);
+        this.setIsDeleted(false);
     }
 
     public override getName(): string {
@@ -73,7 +94,7 @@ export class EncounterCategoriesEditModal extends ModalDialog2 {
     }
 
     public getDescription(): string {
-        return this._textareaDescription.getValue();
+        return this._textareaDescription.getValue().trim();
     }
 
     public setDescription(description: string): void {
@@ -81,11 +102,11 @@ export class EncounterCategoriesEditModal extends ModalDialog2 {
     }
 
     public getIsDeleted(): boolean {
-        return this._switchDeleted.isEnable();
+        return this._switchDeleted.prop('checked') === true;
     }
 
     public setIsDeleted(deleted: boolean): void {
-        this._switchDeleted.setEnable(deleted);
+        this._switchDeleted.prop('checked', deleted);
     }
 
 }
