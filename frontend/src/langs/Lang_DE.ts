@@ -11,6 +11,8 @@ export class Lang_DE implements LangDefine {
      */
     private _content: {[index: string]: string;} = {
         // tour map
+        'Sighting routes': 'Wege während der Sichtungen',
+        'Tour track': 'Track der Tour',
         'Delete range': 'Bereich löschen',
         '%d tracking points deleted.': '%d Tracking-Punkte gelöscht.',
         '%d tracking points moved to tour #%t.': '%d Tracking-Punkte zu Tour #%t verschoben.',

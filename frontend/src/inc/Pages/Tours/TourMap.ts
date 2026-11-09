@@ -12,6 +12,7 @@ import moment from 'moment';
 import {boundingExtent} from 'ol/extent';
 import {fromLonLat} from 'ol/proj';
 import {Organization as OrganizationAPI} from '../../Api/Organization';
+import {ProtectedArea as ProtectedAreaAPI} from '../../Api/ProtectedArea';
 import {Species as SpeciesAPI, SpeciesEntry} from '../../Api/Species';
 import {
     Tours as ToursAPI,
@@ -25,7 +26,9 @@ import {VehicleDriver as VehicleDriverAPI} from '../../Api/VehicleDriver';
 import {Lang} from '../../Lang';
 import {BaseMap} from '../../Map/BaseMap';
 import {BathymetryLayer} from '../../Map/Layers/BathymetryLayer';
+import {IdeeEsLayer} from '../../Map/Layers/IdeeEsLayer';
 import {OsmBaseLayer} from '../../Map/Layers/OsmBaseLayer';
+import {ProtectedAreaLayer} from '../../Map/Layers/ProtectedAreaLayer';
 import {SightingPointsLayer} from '../../Map/Layers/SightingPointsLayer';
 import {TourSightingRouteLayer} from '../../Map/Layers/TourSightingRouteLayer';
 import {TourTrackLayer} from '../../Map/Layers/TourTrackLayer';
@@ -36,6 +39,7 @@ import {UtilDistanceCoast} from '../../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../../Utils/UtilLocation';
 import {UtilSpeciesSilhouette} from '../../Utils/UtilSpeciesSilhouette';
 import {AdminListUi} from '../../Widget/AdminListUi';
+import {MapLayerPanel} from '../../Widget/MapLayerPanel';
 import {BasePage} from '../BasePage';
 import {TOURS_PAGE_NAME} from '../PageNames';
 import {Tours} from '../Tours';
@@ -129,6 +133,10 @@ export class ToursMap extends BasePage {
     protected _stats: JQuery | null = null;
 
     protected _panel: JQuery | null = null;
+
+    protected _layerPanel: MapLayerPanel | null = null;
+
+    protected _protectedAreas: ProtectedAreaLayer | null = null;
 
     protected _species = new Map<number, SpeciesEntry>();
 
@@ -247,6 +255,8 @@ export class ToursMap extends BasePage {
         this._header = null;
         this._stats = null;
         this._panel = null;
+        this._layerPanel = null;
+        this._protectedAreas = null;
     }
 
     public override async loadContent(): Promise<void> {
@@ -295,9 +305,14 @@ export class ToursMap extends BasePage {
         this._map.setHeight(mapHeight);
         this._panel.css('max-height', `${mapHeight}px`);
 
-        this._map.load({initialCenterLonLat: [11.030, 47.739], initialZoom: 2.2});
+        this._map.load({initialCenterLonLat: [11.030, 47.739], initialZoom: 2.2, withLayerSwitcher: false});
         this._map.addLayer(new OsmBaseLayer());
         this._map.addLayer(new BathymetryLayer());
+
+        // relief only covers Spain — offered, but OpenStreetMap is the default background
+        const relief = new IdeeEsLayer();
+        this._map.addLayer(relief);
+        relief.getOlLayer().setVisible(false);
 
         this._track = new TourTrackLayer();
         this._sightingRoutes = new TourSightingRouteLayer();
@@ -312,6 +327,10 @@ export class ToursMap extends BasePage {
         this._map.addLayer(this._sightingRoutes);
         this._map.addLayer(this._highlight);
         this._map.addLayer(this._points);
+
+        // own layer panel (as on the sighting map); the brush highlight is not a user layer
+        this._layerPanel = new MapLayerPanel(mapMain, this._map, [this._highlight.getName()]);
+        this._loadProtectedAreas().catch(() => undefined);
 
         // highlight above track (60) and routes (70), below the clickable markers (99)
         this._highlight.getOlLayer()?.setZIndex(80);
@@ -559,6 +578,52 @@ export class ToursMap extends BasePage {
             } else {
                 itemEl.prop('disabled', true).attr('title', lang.l('No position'));
             }
+        }
+    }
+
+    /**
+     * Natura 2000 areas of the organisation's region in the layer panel
+     * (same source as the sighting map; one attempt — the sighting page
+     * triggers the background load).
+     */
+    protected async _loadProtectedAreas(): Promise<void> {
+        const lang = Lang.i();
+        const data = await ProtectedAreaAPI.get().catch(() => null);
+
+        if (!this._map || !this._layerPanel || data === null) {
+            return;
+        }
+
+        switch (data.status) {
+            case 'ok':
+                this._protectedAreas = new ProtectedAreaLayer();
+                this._map.addLayer(this._protectedAreas);
+                this._protectedAreas.setGeoJson(data.geojson ?? '{"type":"FeatureCollection","features":[]}');
+                this._layerPanel.setAreaStatus(`${data.feature_count} ${lang.l('areas')} · ${data.source} · ${lang.l('as of')} ${moment(data.fetch_datetime * 1000).format('YYYY.MM.DD')}`);
+                this._layerPanel.setAreaLayer(this._protectedAreas);
+                this._updateAreaCounts();
+                break;
+
+            case 'pending':
+                this._layerPanel.setAreaStatus(lang.l('Loading the protected areas of your region …'));
+                break;
+
+            case 'no_area':
+                this._layerPanel.setAreaStatus(lang.l('Your organization has no home area or position — no protected areas.'));
+                break;
+
+            default:
+                this._layerPanel.setAreaStatus(lang.l('The protected areas could not be loaded (EEA service). Next attempt in a few hours.'));
+        }
+    }
+
+    /**
+     * Sightings of the tour per protected area (panel badges + default
+     * visibility: areas with sightings are shown).
+     */
+    protected _updateAreaCounts(): void {
+        if (this._protectedAreas && this._layerPanel && this._points) {
+            this._layerPanel.setAreaCounts(this._protectedAreas.countInside(this._points.getPointCoordinates()));
         }
     }
 
@@ -908,6 +973,7 @@ export class ToursMap extends BasePage {
         await this._renderHeader(data);
         this._renderStats(data, ToursMap.trackStats(this._parsedPositions), sightings.length);
         this._renderPanel(sightings);
+        this._updateAreaCounts();
 
         if (!this._fitView()) {
             let center = orgCenter;

@@ -24,7 +24,10 @@ export class MapLayerPanel {
         base_osm_layer: 'OpenStreetMap',
         base_idee_es_layer: 'Relief (IDEE Spain)',
         base_bathymetry_layer: 'Sea depth (EMODnet)',
-        sigthing_movement_layer: 'Movement tracks'
+        sigthing_movement_layer: 'Movement tracks',
+        tour_track_layer: 'Tour track',
+        tour_sighting_route_layer: 'Sighting routes',
+        sigthing_layer: 'Sightings'
     };
 
     protected _base: BaseMap;
