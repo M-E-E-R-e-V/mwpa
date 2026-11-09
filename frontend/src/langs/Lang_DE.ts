@@ -10,6 +10,26 @@ export class Lang_DE implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // device list
+        'Search device, user, organization or id …': 'Gerät, Benutzer, Organisation oder ID suchen …',
+        'User': 'Benutzer',
+        'Any activity': 'Jede Aktivität',
+        'Sighting in the last 7 days': 'Sichtung in den letzten 7 Tagen',
+        'Sighting in the last 30 days': 'Sichtung in den letzten 30 Tagen',
+        'No sighting for over 30 days': 'Seit über 30 Tagen keine Sichtung',
+        'No sightings yet': 'Noch keine Sichtungen',
+        'No devices match the current filter.': 'Keine Geräte passen zum aktuellen Filter.',
+        'Last sighting': 'Letzte Sichtung',
+        'today': 'heute',
+        'yesterday': 'gestern',
+        '%d days ago': 'vor %d Tagen',
+        'Copy device id': 'Geräte-ID kopieren',
+        'Copied.': 'Kopiert.',
+        '(unnamed user)': '(Benutzer ohne Namen)',
+        'Not bound to a user': 'Keinem Benutzer zugeordnet',
+        'since': 'seit',
+        'active in the last 7 days': 'aktiv in den letzten 7 Tagen',
+        'active in the last 30 days': 'aktiv in den letzten 30 Tagen',
         // organization list
         'Search name, location, contact or id …': 'Name, Ort, Kontakt oder ID suchen …',
         'No organizations match the current filter.': 'Keine Organisationen passen zum aktuellen Filter.',
