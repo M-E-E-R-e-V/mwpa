@@ -832,3 +832,21 @@ body.mwpa-print-mode-profile .popover {
   padding-top: .45rem;
   padding-bottom: .45rem;
 }
+
+/* loading overlay of bambooo ModalDialog2 / Card2: AdminLTE 4 no longer styles .overlay */
+.modal-content > .overlay,
+.card > .overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  background: rgba(var(--bs-body-bg-rgb), .65);
+  color: var(--bs-primary);
+}
+.card > .overlay {
+  align-items: flex-start;
+  padding-top: 6rem;
+}
