@@ -21,7 +21,10 @@ export class Tile {
      * @param {MapCacheRequest} request
      * @param {Response} response
      */
-    private static TILE_COORD: RegExp = /^\d{1,4}$/u;
+    // Up to 7 digits: at zoom 16 x/y already reach 65535, at zoom 22 4194303.
+    private static TILE_COORD: RegExp = /^\d{1,7}$/u;
+
+    private static TILE_MAX_ZOOM: number = 22;
 
     private static TILE_FORMAT: RegExp = /^[a-zA-Z0-9]{1,5}$/u;
 
@@ -35,6 +38,16 @@ export class Tile {
             !Tile.TILE_COORD.test(request.x) ||
             !Tile.TILE_COORD.test(request.y) ||
             !Tile.TILE_FORMAT.test(request.fileformat)) {
+            response.status(400).send('Bad tile request');
+            return;
+        }
+
+        const zoom = Number(request.z);
+        const tileCount = 2 ** zoom;
+
+        if (zoom > Tile.TILE_MAX_ZOOM ||
+            Number(request.x) >= tileCount ||
+            Number(request.y) >= tileCount) {
             response.status(400).send('Bad tile request');
             return;
         }
