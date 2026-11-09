@@ -10,6 +10,30 @@ export class Lang_ES implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // sighting map
+        'Reset selection': 'Restablecer selección',
+        'Timeline': 'Evolución temporal',
+        'drag to select a period': 'arrastrar para elegir un periodo',
+        'Species (top 10)': 'Especies (top 10)',
+        'click to select': 'clic para seleccionar',
+        'Time of day': 'Hora del día',
+        'drag to select': 'arrastrar para seleccionar',
+        'Beaufort': 'Beaufort',
+        '(no time)': '(sin hora)',
+        'Animals': 'Animales',
+        'Selection active — the map only shows the selected sightings.': 'Selección activa: el mapa solo muestra los avistamientos seleccionados.',
+        'Select in the charts to filter the map.': 'Seleccione en los gráficos para filtrar el mapa.',
+        'Grouped': 'Agrupado',
+        'Heatmap': 'Mapa de calor',
+        'Zoom to the sightings': 'Acercar a los avistamientos',
+        'Toothed whales': 'Odontocetos',
+        'Baleen whales': 'Misticetos',
+        'Sea turtles': 'Tortugas marinas',
+        'Load the rest': 'Cargar el resto',
+        'Loading sightings …': 'Cargando avistamientos …',
+        'sightings on the map': 'avistamientos en el mapa',
+        'sightings at this position': 'avistamientos en esta posición',
+        'more': 'más',
         // sighting list
         'No sightings match the current filter.': 'Ningún avistamiento coincide con el filtro actual.',
         'Tour': 'Tour',

@@ -3,7 +3,11 @@ import {ComponentType, Widget2} from 'bambooo';
 import {Map as OlMap, Overlay, View} from 'ol';
 import LayerSwitcher from 'ol-layerswitcher';
 import {Coordinate} from 'ol/coordinate';
+import {boundingExtent, getHeight, getWidth} from 'ol/extent';
+import {FeatureLike} from 'ol/Feature';
+import {Point} from 'ol/geom';
 import {fromLonLat} from 'ol/proj';
+import {Lang} from '../Lang';
 import {MapLayer} from './MapLayer';
 
 /**
@@ -326,6 +330,102 @@ export class BaseMap extends Widget2 {
      * existing callers don't have to change.
      * @protected
      */
+    /**
+     * Popover HTML of a feature's `content` property (string or thunk
+     * returning a string / element), null when it has none.
+     * @param {FeatureLike} feature
+     * @return {string|null}
+     * @protected
+     */
+    protected static _contentOf(feature: FeatureLike): string | null {
+        const content = feature.get('content');
+
+        if (typeof content === 'string') {
+            return content;
+        }
+
+        if (typeof content === 'function') {
+            const returnContent = content();
+
+            if (typeof returnContent === 'string') {
+                return returnContent;
+            }
+
+            if (typeof returnContent === 'object') {
+                return jQuery(returnContent).html() ?? '';
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Zoom to the members of a cluster when they are spread out and the view
+     * can still zoom in.
+     * @param {FeatureLike[]} members
+     * @return {boolean} true when zoomed
+     * @protected
+     */
+    protected _zoomToMembers(members: FeatureLike[]): boolean {
+        const view = this._map?.getView();
+
+        if (!view) {
+            return false;
+        }
+
+        const coordinates = members
+        .map((member) => member.getGeometry())
+        .filter((geometry): geometry is Point => geometry instanceof Point)
+        .map((geometry) => geometry.getCoordinates());
+
+        if (coordinates.length === 0) {
+            return false;
+        }
+
+        const extent = boundingExtent(coordinates);
+        const zoom = view.getZoom() ?? 0;
+
+        // all at (nearly) the same spot, or nothing left to zoom into
+        if ((getWidth(extent) < 5 && getHeight(extent) < 5) || zoom >= 17) {
+            return false;
+        }
+
+        view.fit(extent, {
+            padding: [80, 80, 80, 80],
+            maxZoom: 17,
+            duration: 350
+        });
+
+        return true;
+    }
+
+    /**
+     * Popover for several features at one position: the first three plus
+     * the number of further ones.
+     * @param {FeatureLike[]} members
+     * @return {string}
+     * @protected
+     */
+    protected _membersContent(members: FeatureLike[]): string {
+        const lang = Lang.i();
+        const parts: string[] = [];
+
+        for (const member of members.slice(0, 3)) {
+            const content = BaseMap._contentOf(member);
+
+            if (content !== null) {
+                parts.push(content);
+            }
+        }
+
+        const head = `<div class="small fw-semibold mb-2">${members.length} ${lang.l('sightings at this position')}</div>`;
+        const more = members.length > 3
+            ? `<div class="small text-body-secondary mt-2">+ ${members.length - 3} ${lang.l('more')}</div>`
+            : '';
+
+        return `${head}${parts.join('<hr class="my-2">')}${more}`;
+    }
+
     protected _createPopover(): void {
         if (!this._map) {
             return;
@@ -346,12 +446,33 @@ export class BaseMap extends Widget2 {
                 return;
             }
 
-            const feature = this._map.forEachFeatureAtPixel(evt.pixel, (f) => f);
+            const hit = this._map.forEachFeatureAtPixel(evt.pixel, (f) => f);
 
             this.disposePopover();
 
-            if (!feature) {
+            if (!hit) {
                 return;
+            }
+
+            /*
+             * Cluster feature (ol/source/Cluster): a group spread over an area
+             * zooms in; a group at one position (or at max zoom) lists its
+             * members in the popover; a single member behaves like a point.
+             */
+            const members = hit.get('features') as FeatureLike[] | undefined;
+            let feature: FeatureLike = hit;
+            let html: string | null = null;
+
+            if (Array.isArray(members) && members.length > 0) {
+                feature = members[0];
+
+                if (members.length > 1) {
+                    if (this._zoomToMembers(members)) {
+                        return;
+                    }
+
+                    html = this._membersContent(members);
+                }
             }
 
             overlay.setPosition(evt.coordinate);
@@ -380,23 +501,7 @@ export class BaseMap extends Widget2 {
                  */
                 sanitize: false,
                 trigger: 'manual',
-                content: (): string => {
-                    const content = feature.get('content');
-
-                    if (typeof content === 'string') {
-                        return content;
-                    } else if (typeof content === 'function') {
-                        const returnContent = content();
-
-                        if (typeof returnContent === 'string') {
-                            return returnContent;
-                        } else if (typeof returnContent === 'object') {
-                            return jQuery(returnContent).html() ?? '';
-                        }
-                    }
-
-                    return 'None content found.';
-                }
+                content: (): string => html ?? BaseMap._contentOf(feature) ?? 'None content found.'
             });
 
             this._popover.show();

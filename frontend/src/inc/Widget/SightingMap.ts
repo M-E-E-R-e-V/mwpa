@@ -24,7 +24,17 @@ export type {SightingMovementLike} from '../Map/Layers/MovementTracksLayer';
 export type SightingMapLoadOptions = {
     useHeatmap?: boolean;
     useBathymetriemap?: boolean;
+
+    /**
+     * Group nearby sighting points into count bubbles (points-only maps).
+     */
+    useCluster?: boolean;
 };
+
+/**
+ * How the sightings are drawn: grouped bubbles, single points or heatmap only.
+ */
+export type SightingMapDisplayMode = 'cluster' | 'points' | 'heat';
 
 /**
  * Legacy convenience widget — now a thin compose over {@link BaseMap}
@@ -116,7 +126,7 @@ export class SightingMap extends Widget2 {
          * require addSighting to come after refrech, so the source must
          * exist immediately.
          */
-        this._points = new SightingPointsLayer();
+        this._points = new SightingPointsLayer({cluster: this._loadOptions.useCluster === true});
         this._base.addLayer(this._points);
 
         if (this._loadOptions.useBathymetriemap) {
@@ -229,6 +239,39 @@ export class SightingMap extends Widget2 {
 
     public setOnMovementsVisibilityChange(cb: (visible: boolean) => void): void {
         this._movements?.setOnVisibilityChange(cb);
+    }
+
+    /**
+     * Switch how the sightings are drawn. 'cluster' / 'points' need
+     * `useCluster`, 'heat' needs `useHeatmap`.
+     * @param {SightingMapDisplayMode} mode
+     */
+    public setDisplayMode(mode: SightingMapDisplayMode): void {
+        this._points?.getOlLayer().setVisible(mode !== 'heat');
+        this._points?.setClusterDistance(mode === 'cluster' ? 40 : 0);
+        this._heatmap?.getOlLayer().setVisible(mode === 'heat');
+        this._base.refreshLayerSwitcher();
+    }
+
+    /**
+     * Fit the view to all loaded sighting points.
+     * @return {boolean} false when there is nothing to fit
+     */
+    public fitToData(): boolean {
+        const extent = this._points?.getDataExtent();
+        const view = this._base.getOlMap()?.getView();
+
+        if (!extent || !view) {
+            return false;
+        }
+
+        view.fit(extent, {
+            padding: [60, 60, 60, 60],
+            maxZoom: 13,
+            duration: 400
+        });
+
+        return true;
     }
 
     public async addAreaByJson(jsonFileUrl: string, title: string, name: string, visible: boolean = false): Promise<void> {

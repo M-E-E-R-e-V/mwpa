@@ -56,7 +56,7 @@ import {ReactionDisplay} from '../Widget/ReactionDisplay';
 import {SightingAnalytics} from '../Widget/SightingAnalytics';
 import {SightingDashboard} from '../Widget/SightingDashboard';
 import {SightingExport} from '../Widget/SightingExport';
-import {SightingMap, SightingMapObjectType} from '../Widget/SightingMap';
+import {SightingMap, SightingMapDisplayMode, SightingMapObjectType} from '../Widget/SightingMap';
 import {SightingYearCompare} from '../Widget/SightingYearCompare';
 import {SpeciesDisplay} from '../Widget/SpeciesDisplay';
 import {BasePage} from './BasePage';
@@ -260,12 +260,19 @@ export class Sighting extends BasePage {
 
         let inHeaderSearch = '';
         let totalCount = 0;
-        let loadedCount = 0;
+
+        /*
+         * Bumped on every fresh first page (filter / sort change) — background
+         * loads of an older generation drop their results.
+         */
+        let dataGeneration = 0;
+        let activeTab: 'list' | 'map' | 'analytics' | 'other' = 'list';
         /*
          * Mirrors what's been streamed onto the map; fed into the crossfilter dashboard
          * and re-used to redraw the map when the dashboard filters change.
          */
         const loadedEntries: SightingsEntry[] = [];
+        const loadedIds = new Set<number>();
 
         /*
          * The search highlight should match anything currently filtering the result —
@@ -609,9 +616,88 @@ export class Sighting extends BasePage {
         const yearCompareBody = jQuery(`<div class="tab-pane fade" id="${yearCompareTabId}"/>`).appendTo(tabBodies);
         const exportBody = jQuery(`<div class="tab-pane fade" id="${exportTabId}"/>`).appendTo(tabBodies);
 
-        // Dashboard (crossfilter + dc.js) sits on top of the map, fed from `loadedEntries` -------
-        const dashboard = new SightingDashboard(mapBody);
-        const mapContainer = jQuery('<div/>').appendTo(mapBody);
+        // Map tab: map with overlays (left) + crossfilter side panel (right), fed from `loadedEntries`
+        const mapLayout = jQuery('<div class="mwpa-sighting-map"/>').appendTo(mapBody);
+        const mapMain = jQuery('<div class="mwpa-sighting-map-main"/>').appendTo(mapLayout);
+        const mapPanel = jQuery('<div class="mwpa-sighting-map-panel"/>').appendTo(mapLayout);
+        const mapContainer = jQuery('<div/>').appendTo(mapMain);
+        const dashboard = new SightingDashboard(mapPanel);
+
+        // display mode + zoom to data (top left, next to the zoom buttons)
+        const mapTools = jQuery('<div class="mwpa-map-overlay mwpa-map-overlay-tools d-flex gap-2"/>').appendTo(mapMain);
+        const modeGroup = jQuery('<div class="btn-group btn-group-sm shadow-sm" role="group"/>').appendTo(mapTools);
+        const displayModes: {mode: SightingMapDisplayMode; icon: string; label: string;}[] = [
+            {mode: 'cluster', icon: 'far fa-dot-circle', label: 'Grouped'},
+            {mode: 'points', icon: 'fas fa-map-marker-alt', label: 'Points'},
+            {mode: 'heat', icon: 'fas fa-fire', label: 'Heatmap'}
+        ];
+
+        for (const displayMode of displayModes) {
+            const btn = jQuery('<button type="button" class="btn"/>')
+            .addClass(displayMode.mode === 'cluster' ? 'btn-primary' : 'btn-light')
+            .attr('data-mode', displayMode.mode)
+            .appendTo(modeGroup);
+            jQuery('<i class="me-1"/>').addClass(displayMode.icon).appendTo(btn);
+            jQuery('<span/>').text(lang.l(displayMode.label)).appendTo(btn);
+
+            btn.on('click', (): void => {
+                modeGroup.find('button').removeClass('btn-primary').addClass('btn-light');
+                btn.removeClass('btn-light').addClass('btn-primary');
+                this._map?.setDisplayMode(displayMode.mode);
+            });
+        }
+
+        const btnFit = jQuery('<button type="button" class="btn btn-light btn-sm shadow-sm"/>')
+        .attr('title', lang.l('Zoom to the sightings'))
+        .appendTo(mapTools);
+        jQuery('<i class="fas fa-expand-arrows-alt"/>').appendTo(btnFit);
+        btnFit.on('click', (): void => {
+            this._map?.fitToData();
+        });
+
+        // legend of the bubble colours (bottom left)
+        const legend = jQuery('<div class="mwpa-map-overlay shadow-sm bg-body rounded px-2 py-1 small d-flex flex-wrap gap-3"/>')
+        .css({bottom: '0.75rem', left: '0.75rem'})
+        .appendTo(mapMain);
+
+        for (const [color, label] of [['#2f6fb5', 'Toothed whales'], ['#2e8b57', 'Baleen whales'], ['#c47f17', 'Sea turtles']]) {
+            const item = jQuery('<span class="d-inline-flex align-items-center gap-1"/>').appendTo(legend);
+            jQuery('<span class="rounded-circle d-inline-block"/>').css({width: '10px', height: '10px', background: color}).appendTo(item);
+            jQuery('<span/>').text(lang.l(label)).appendTo(item);
+        }
+
+        // loading chip (top centre) — progress of the background load + cancel / resume
+        const loadChip = jQuery('<div class="mwpa-map-overlay mwpa-map-overlay-top shadow bg-body rounded-pill px-3 py-2 small d-flex align-items-center gap-2 d-none"/>')
+        .appendTo(mapMain);
+        const loadSpinner = jQuery('<span class="spinner-border spinner-border-sm text-primary"/>').appendTo(loadChip);
+        const loadText = jQuery('<span class="text-nowrap"/>').appendTo(loadChip);
+        const loadProgress = jQuery('<div class="progress" style="width:110px;height:6px;"/>').appendTo(loadChip);
+        const loadBar = jQuery('<div class="progress-bar"/>').appendTo(loadProgress);
+        const btnLoadCancel = jQuery('<button type="button" class="btn btn-link btn-sm p-0 text-nowrap"/>')
+        .text(lang.l('Cancel'))
+        .appendTo(loadChip);
+        const btnLoadResume = jQuery('<button type="button" class="btn btn-link btn-sm p-0 text-nowrap"/>')
+        .text(lang.l('Load the rest'))
+        .appendTo(loadChip);
+
+        /*
+         * Add sightings to `loadedEntries` + the map, skipping ones already
+         * there (list pages and the background load can overlap).
+         */
+        const pushLoaded = (list: SightingsEntry[]): SightingsEntry[] => {
+            const added: SightingsEntry[] = [];
+
+            for (const entry of list) {
+                if (!loadedIds.has(entry.id)) {
+                    loadedIds.add(entry.id);
+                    loadedEntries.push(entry);
+                    added.push(entry);
+                    this._addSightingToMap(entry, sightingLookups);
+                }
+            }
+
+            return added;
+        };
 
         /*
          * Redraw the map against whatever survived the dashboard's filters. The full
@@ -759,7 +845,17 @@ export class Sighting extends BasePage {
          * so on first tab-open we usually need to backfill the rest under the active filter.
          * Shared helper so Map and Analytics behave identically.
          */
+        let dashboardKey = '';
+
         const refreshDataDashboards = (): void => {
+            const key = `${dataGeneration}:${loadedEntries.length}`;
+
+            // unchanged data — keep the user's chart selection
+            if (key === dashboardKey) {
+                return;
+            }
+
+            dashboardKey = key;
             dashboard.setData(loadedEntries);
             analytics.setData(loadedEntries);
 
@@ -777,52 +873,115 @@ export class Sighting extends BasePage {
                     }
 
                     // eslint-disable-next-line no-use-before-define
-                    this._map.setHeight(computeMapHeight());
-                    this._map.updateSize();
+                    applyMapHeight();
                 });
             }
         };
 
-        const triggerBackfillIfNeeded = (): void => {
-            if (loadedCount >= totalCount) {
-                refreshDataDashboards();
-                return;
+        /*
+         * Map / Analytics need every sighting under the filter, the list only
+         * streams 30 at a time. The rest loads in the background in chunks
+         * (markers appear while it runs); a chip on the map shows the progress
+         * and can cancel / resume. No confirmation dialog.
+         */
+        const BACKFILL_CHUNK = 2500;
+        let backfill: Promise<void> | null = null;
+        let backfillCancelled = false;
+
+        const updateLoadInfo = (): void => {
+            const loaded = loadedEntries.length;
+            const running = backfill !== null && !backfillCancelled;
+            const partial = loaded < totalCount;
+            const onDataTab = activeTab === 'map' || activeTab === 'analytics';
+
+            resultInfo.text(`${loaded.toLocaleString()} ${lang.l('of')} ${totalCount.toLocaleString()} ${lang.l('loaded')}`);
+
+            loadChip.toggleClass('d-none', !(running || (partial && onDataTab && totalCount > 0)));
+            loadSpinner.toggleClass('d-none', !running);
+            loadProgress.toggleClass('d-none', !running);
+            btnLoadCancel.toggleClass('d-none', !running);
+            btnLoadResume.toggleClass('d-none', running);
+            loadBar.css('width', `${totalCount > 0 ? Math.round((loaded / totalCount) * 100) : 0}%`);
+            loadText.text(running
+                ? `${lang.l('Loading sightings …')} ${loaded.toLocaleString()} / ${totalCount.toLocaleString()}`
+                : `${loaded.toLocaleString()} ${lang.l('of')} ${totalCount.toLocaleString()} ${lang.l('sightings on the map')}`);
+        };
+
+        const loadRemaining = (): Promise<void> => {
+            if (backfill !== null) {
+                return backfill;
             }
 
-            DialogConfirm2.confirm(
-                'loadallsightings',
-                ModalDialogType2.xlarge,
-                Lang.i().l('Load all ...'),
-                `${Lang.i().l('Load all')} ${totalCount} ${Lang.i().l('sightings under the current filter?')}`,
-                async(_, modal) => {
-                    const remaining = totalCount - loadedCount;
-                    const more = await SightingsAPI.getList(buildApiFilter(loadedCount, remaining));
+            if (loadedEntries.length >= totalCount) {
+                refreshDataDashboards();
+                updateLoadInfo();
+                return Promise.resolve();
+            }
 
-                    if (more) {
-                        for (const entry of more.list) {
-                            loadedEntries.push(entry);
-                            this._addSightingToMap(entry, sightingLookups);
+            const generation = dataGeneration;
+            backfillCancelled = false;
+
+            const shouldContinue = (): boolean => !backfillCancelled
+                && generation === dataGeneration
+                && loadedEntries.length < totalCount;
+
+            backfill = (async(): Promise<void> => {
+                try {
+                    while (shouldContinue()) {
+                        updateLoadInfo();
+
+                        const offset = loadedEntries.length;
+                        // eslint-disable-next-line no-await-in-loop
+                        const more = await SightingsAPI.getList(buildApiFilter(offset, Math.min(BACKFILL_CHUNK, totalCount - offset)));
+
+                        if (generation !== dataGeneration || !more || more.list.length === 0) {
+                            break;
                         }
-                        loadedCount += more.list.length;
+
+                        const added = pushLoaded(more.list);
 
                         /*
-                         * Backfill brought in N new sightings — append
-                         * tracks for those only (the existing chunks are
-                         * still valid). Skips silently when the layer is
-                         * hidden, so closed-layer "load all" stays cheap.
+                         * Tracks only for the new ones (skips silently while the
+                         * movements layer is hidden).
                          */
-                        await appendMovementsForEntries(more.list);
+                        // eslint-disable-next-line no-await-in-loop
+                        await appendMovementsForEntries(added);
 
                         if (this._map) {
+                            // eslint-disable-next-line no-await-in-loop
                             await this._map.refrech();
                         }
-                    }
 
-                    refreshDataDashboards();
-                    modal.hide();
+                        // no progress (data changed under us) — stop instead of looping
+                        if (added.length === 0) {
+                            break;
+                        }
+                    }
+                } catch (err) {
+                    this._toast.fire({icon: 'error', title: (err as Error).message});
+                } finally {
+                    backfill = null;
                 }
-            );
+
+                if (generation === dataGeneration) {
+                    refreshDataDashboards();
+                }
+
+                updateLoadInfo();
+            })();
+
+            updateLoadInfo();
+            return backfill;
         };
+
+        btnLoadCancel.on('click', (): void => {
+            backfillCancelled = true;
+            updateLoadInfo();
+        });
+
+        btnLoadResume.on('click', (): void => {
+            loadRemaining().catch(() => undefined);
+        });
 
         // Map ----------------------------------------------------------------------------------
         const currentuser = await UserAPI.getUserInfo();
@@ -847,23 +1006,36 @@ export class Sighting extends BasePage {
          * container has no layout (top ≈ 0), so fall back to a window estimate
          * for the first (invisible) render; `shown.bs.tab` recomputes it.
          */
-        const dashboardHeight = 320;
         const computeMapHeight = (): number => {
             const top = mapContainer[0]?.getBoundingClientRect().top ?? 0;
 
             if (top <= 0) {
-                return Math.max(300, window.innerHeight - 220 - dashboardHeight);
+                return Math.max(420, window.innerHeight - 260);
             }
 
-            return Math.max(300, window.innerHeight - top - 16);
+            return Math.max(420, window.innerHeight - top - 24);
         };
 
-        this._map.setHeight(computeMapHeight());
+        // map + side panel share the height
+        const applyMapHeight = (): void => {
+            const height = computeMapHeight();
+            mapPanel.css('max-height', `${height}px`);
+
+            if (this._map) {
+                this._map.setHeight(height);
+                this._map.updateSize();
+            }
+        };
+
+        applyMapHeight();
 
         this._map.load({
             useHeatmap: true,
-            useBathymetriemap: true
+            useBathymetriemap: true,
+            useCluster: true
         });
+
+        this._map.setDisplayMode('cluster');
 
         this._map.setView(viewCenter);
 
@@ -906,11 +1078,10 @@ export class Sighting extends BasePage {
                     return;
                 }
 
-                this._map.setHeight(computeMapHeight());
-                this._map.updateSize();
+                applyMapHeight();
             });
 
-            triggerBackfillIfNeeded();
+            loadRemaining().catch(() => undefined);
         });
 
         navContainer.find(`a[href="#${analyticsTabId}"]`).on('shown.bs.tab', () => {
@@ -924,7 +1095,7 @@ export class Sighting extends BasePage {
                 analytics.setData(loadedEntries);
             });
 
-            triggerBackfillIfNeeded();
+            loadRemaining().catch(() => undefined);
         });
 
         /*
@@ -949,6 +1120,22 @@ export class Sighting extends BasePage {
             }
         };
 
+        navContainer.find('a').on('shown.bs.tab', (event): void => {
+            const href = jQuery(event.target).attr('href');
+
+            if (href === `#${mapTabId}`) {
+                activeTab = 'map';
+            } else if (href === `#${analyticsTabId}`) {
+                activeTab = 'analytics';
+            } else if (href === `#${listTabId}`) {
+                activeTab = 'list';
+            } else {
+                activeTab = 'other';
+            }
+
+            updateLoadInfo();
+        });
+
         navContainer.find(`a[href="#${yearCompareTabId}"]`).on('shown.bs.tab', () => {
             loadYearCompareIfNeeded().catch(() => undefined);
         });
@@ -959,26 +1146,7 @@ export class Sighting extends BasePage {
          * committed to "Generate PDF" so we don't ask twice).
          */
         const ensureAllSightingsLoaded = async(): Promise<void> => {
-            if (loadedCount >= totalCount) {
-                refreshDataDashboards();
-                return;
-            }
-
-            const remaining = totalCount - loadedCount;
-            const more = await SightingsAPI.getList(buildApiFilter(loadedCount, remaining));
-
-            if (more) {
-                for (const entry of more.list) {
-                    loadedEntries.push(entry);
-                    this._addSightingToMap(entry, sightingLookups);
-                }
-                loadedCount += more.list.length;
-
-                if (this._map) {
-                    await this._map.refrech();
-                }
-            }
-
+            await loadRemaining();
             refreshDataDashboards();
         };
 
@@ -1519,8 +1687,6 @@ export class Sighting extends BasePage {
                 this._sightingDeletedDialog.setSightingId(entry.id);
                 this._sightingDeletedDialog.show();
             }, IconFa.trash);
-
-            this._addSightingToMap(entry, sightingLookups);
         };
 
         // Hook the data source — TableWrapper drives infinite scroll itself ----------------------
@@ -1545,17 +1711,18 @@ export class Sighting extends BasePage {
                         if (this._map) {
                             this._map.clearFeatureList();
                         }
-                        loadedCount = 0;
+                        dataGeneration++;
+                        backfillCancelled = true;
+                        dashboardKey = '';
                         loadedEntries.length = 0;
+                        loadedIds.clear();
                         dashboard.clear();
                         analytics.clear();
                         yearCompare.clear();
                         yearCompareLoaded = false;
                     }
 
-                    for (const entry of response.list) {
-                        loadedEntries.push(entry);
-                    }
+                    const added = pushLoaded(response.list);
 
                     /*
                      * If the user already has the movements layer open,
@@ -1563,13 +1730,19 @@ export class Sighting extends BasePage {
                      * cheaper than re-fetching for the whole accumulated
                      * set on every infinite-scroll tick.
                      */
-                    await appendMovementsForEntries(response.list);
+                    await appendMovementsForEntries(added);
 
                     totalCount = response.count;
-                    loadedCount += response.list.length;
                     renderTitle(response.count);
-                    resultInfo.text(`${loadedCount} ${Lang.i().l('of')} ${response.count} ${Lang.i().l('loaded')}`);
+                    updateLoadInfo();
                     AdminListUi.setEmpty(emptyInfo, response.count === 0);
+
+                    // Map / Analytics open → load the rest of the new result right away
+                    if (page === 0 && (activeTab === 'map' || activeTab === 'analytics')) {
+                        setTimeout((): void => {
+                            loadRemaining().catch(() => undefined);
+                        }, 0);
+                    }
 
                     return response.list;
                 } finally {

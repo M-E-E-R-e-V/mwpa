@@ -75,38 +75,56 @@
 }
 
 /**
- * Crossfilter / dc.js dashboard above the SightingMap. Layout: header with
- * status text + reset, full-width time bar, then a row of three category
- * charts. SVG charts get their width from the container — the row uses flex
- * so charts share horizontal space evenly.
+ * Sighting map tab: map on the left, crossfilter / dc.js side panel on the
+ * right (stacked below the map on narrower screens). Overlays (display
+ * switch, zoom-to-data, loading chip) sit absolutely on top of the map.
  */
-.sighting-dashboard {
-  border: 1px solid rgba(0,0,0,.1);
-  border-radius: 4px;
-  background: #fff;
-  padding: 0.5rem 0.5rem 0.25rem;
-}
-.sighting-dashboard-header {
+.mwpa-sighting-map {
   display: flex;
-  align-items: center;
-  margin-bottom: 0.25rem;
+  gap: 1rem;
+  padding: 1rem;
 }
-.sighting-dashboard-status {
+.mwpa-sighting-map-main {
+  position: relative;
   flex: 1 1 auto;
-  font-size: 0.8rem;
-  color: #6c757d;
-}
-.sighting-dashboard-row {
-  display: flex;
-  gap: 0.5rem;
-  align-items: stretch;
-}
-.sighting-dashboard-row > .sighting-dashboard-chart {
-  flex: 1 1 0;
   min-width: 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--bs-border-color);
+}
+.mwpa-sighting-map-panel {
+  flex: 0 0 360px;
+  min-width: 0;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+@media (max-width: 1199.98px) {
+  .mwpa-sighting-map {
+    flex-direction: column;
+  }
+  .mwpa-sighting-map-panel {
+    flex-basis: auto;
+    max-height: none !important;
+  }
+}
+.mwpa-map-overlay {
+  position: absolute;
+  z-index: 3;
+}
+.mwpa-map-overlay.mwpa-map-overlay-top {
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.mwpa-map-overlay.mwpa-map-overlay-tools {
+  top: 0.5rem;
+  left: 3rem;
 }
 .sighting-dashboard-chart {
   overflow: hidden;
+}
+.sighting-dashboard-chart svg text {
+  font-size: 11px;
 }
 
 /* dc.js core styles, inlined (originally node_modules/dc/dist/style/dc.css). */
