@@ -2,7 +2,7 @@ import {ComponentType, Widget2} from 'bambooo';
 import {Map as OlMap} from 'ol';
 import {Coordinate} from 'ol/coordinate';
 import {Style} from 'ol/style';
-import {BaseMap} from '../Map/BaseMap';
+import {BaseMap, BaseMapPopupActionFn} from '../Map/BaseMap';
 import {AreaOverlayLayer} from '../Map/Layers/AreaOverlayLayer';
 import {BathymetryLayer} from '../Map/Layers/BathymetryLayer';
 import {IdeeEsLayer} from '../Map/Layers/IdeeEsLayer';
@@ -222,6 +222,14 @@ export class SightingMap extends Widget2 {
      */
     public getBaseMap(): BaseMap {
         return this._base;
+    }
+
+    /**
+     * Actions of the point popovers (see {@link BaseMap.setOnPopupAction}).
+     * @param {BaseMapPopupActionFn|null} fn
+     */
+    public setOnPopupAction(fn: BaseMapPopupActionFn | null): void {
+        this._base.setOnPopupAction(fn);
     }
 
     public addSighting(

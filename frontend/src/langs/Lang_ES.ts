@@ -11,6 +11,10 @@ export class Lang_ES implements LangDefine {
      */
     private _content: {[index: string]: string;} = {
         // map layers + protected areas
+        'Open sighting': 'Abrir avistamiento',
+        'Show tour': 'Mostrar tour',
+        'Zoom in': 'Acercar',
+        'Species profile': 'Perfil de la especie',
         'Layers': 'Capas',
         'Map layers': 'Capas del mapa',
         'Background': 'Fondo',

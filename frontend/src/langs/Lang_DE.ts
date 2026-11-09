@@ -11,6 +11,10 @@ export class Lang_DE implements LangDefine {
      */
     private _content: {[index: string]: string;} = {
         // map layers + protected areas
+        'Open sighting': 'Sichtung öffnen',
+        'Show tour': 'Tour anzeigen',
+        'Zoom in': 'Heranzoomen',
+        'Species profile': 'Artprofil',
         'Layers': 'Ebenen',
         'Map layers': 'Kartenebenen',
         'Background': 'Hintergrund',

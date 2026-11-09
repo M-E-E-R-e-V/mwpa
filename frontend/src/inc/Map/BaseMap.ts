@@ -13,6 +13,12 @@ import {MapLayer} from './MapLayer';
 /**
  * Options for {@link BaseMap.load}.
  */
+/**
+ * Popover action callback: `data-map-action` and `data-map-value` of the
+ * clicked element.
+ */
+export type BaseMapPopupActionFn = (action: string, value: string) => void;
+
 export type BaseMapLoadOptions = {
 
     /**
@@ -75,6 +81,12 @@ export class BaseMap extends Widget2 {
      * @protected
      */
     protected _popover: any | undefined;
+
+    /**
+     * Called when a `[data-map-action]` element inside the popover is clicked.
+     * @protected
+     */
+    protected _onPopupAction: BaseMapPopupActionFn | null = null;
 
     /**
      * @protected
@@ -264,6 +276,17 @@ export class BaseMap extends Widget2 {
     }
 
     /**
+     * Handle clicks on `[data-map-action]` elements in the popover content.
+     * The element's `data-map-action` and `data-map-value` attributes are
+     * passed on; the popover closes afterwards. The content is serialised
+     * HTML, so this is the way to give it live actions.
+     * @param {BaseMapPopupActionFn|null} fn
+     */
+    public setOnPopupAction(fn: BaseMapPopupActionFn | null): void {
+        this._onPopupAction = fn;
+    }
+
+    /**
      * Dispose the click-popover if one is currently open.
      */
     public disposePopover(andRemove: boolean = false): void {
@@ -426,6 +449,30 @@ export class BaseMap extends Widget2 {
         return `${head}${parts.join('<hr class="my-2">')}${more}`;
     }
 
+    /**
+     * Wire the action elements of the open popover to {@link _onPopupAction}.
+     * @protected
+     */
+    protected _bindPopupActions(): void {
+        const tipId = this._popoverAnchor?.attr('aria-describedby') as string | undefined;
+        const tip = tipId ? document.getElementById(tipId) : null;
+
+        if (!tip) {
+            return;
+        }
+
+        jQuery(tip).on('click', '[data-map-action]', (event) => {
+            event.preventDefault();
+
+            const target = jQuery(event.currentTarget);
+            const action = `${target.attr('data-map-action') ?? ''}`;
+            const value = `${target.attr('data-map-value') ?? ''}`;
+
+            this.disposePopover();
+            this._onPopupAction?.(action, value);
+        });
+    }
+
     protected _createPopover(): void {
         if (!this._map) {
             return;
@@ -505,6 +552,7 @@ export class BaseMap extends Widget2 {
             });
 
             this._popover.show();
+            this._bindPopupActions();
         });
 
         this._map.on('pointermove', (evt) => {

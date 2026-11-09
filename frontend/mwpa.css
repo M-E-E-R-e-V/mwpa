@@ -479,3 +479,15 @@ body.mwpa-print-mode-profile .species-profile-info,
 body.mwpa-print-mode-profile .popover {
   display: none !important;
 }
+
+
+/* Map popover action bar (Sighting page) */
+.mwpa-map-popup-actions {
+    border-top: 1px solid var(--bs-border-color);
+    margin-top: .5rem;
+    padding-top: .5rem;
+}
+
+.mwpa-map-popup-actions .btn {
+    white-space: nowrap;
+}

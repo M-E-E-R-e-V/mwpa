@@ -117,6 +117,13 @@ export class Sighting extends BasePage {
     protected _map: SightingMap|null = null;
 
     /**
+     * Sightings on the map by unid, so the popover actions (serialised HTML)
+     * can find their entry again.
+     * @protected
+     */
+    protected _mapEntries: Map<string, SightingsEntry> = new Map<string, SightingsEntry>();
+
+    /**
      * @param {string} [presetUnid] saved list filter to apply
      */
     public constructor(presetUnid?: string) {
@@ -1480,6 +1487,47 @@ export class Sighting extends BasePage {
             );
         };
 
+        // Map popover actions (see _buildSightingPopupActions) ------------------------------------
+        this._map?.setOnPopupAction((action, unid) => {
+            const entry = this._mapEntries.get(unid);
+
+            if (!entry) {
+                return;
+            }
+
+            switch (action) {
+                case 'open':
+                    openEdit(entry);
+                    break;
+
+                case 'tour':
+                    Nav.load(new ToursMap(entry.tour_id)).then();
+                    break;
+
+                case 'zoom':
+                    this._zoomToSighting(entry);
+                    break;
+
+                case 'species':
+                    if (entry.species_id) {
+                        Nav.load(new SpeciesProfilePage(entry.species_id)).then();
+                    }
+                    break;
+
+                case 'photo':
+                    if (entry.files.length > 0) {
+                        showImage(entry, entry.files[0]);
+                    }
+                    break;
+
+                case 'fishing':
+                    showFishingVessels(entry).catch(() => undefined);
+                    break;
+
+                default:
+            }
+        });
+
         const subline = (parent: JQuery, icon: string, html: string, title?: string): JQuery => {
             const line = jQuery('<div class="small text-body-secondary text-nowrap"/>').appendTo(parent);
             jQuery('<i class="fa-fw me-1 opacity-75"/>').addClass(icon).appendTo(line);
@@ -2105,6 +2153,8 @@ export class Sighting extends BasePage {
 
         const objectType = entry.pointtype ?? `${SightingMapObjectType.Testudines}`;
 
+        this._mapEntries.set(entry.unid!, entry);
+
         this._map.addSighting(
             objectType,
             entry.unid!,
@@ -2149,7 +2199,89 @@ export class Sighting extends BasePage {
 
         jQuery(`<table style="font-size:0.82rem;border-collapse:collapse;"><tbody>${trs}</tbody></table>`).appendTo(div);
 
+        Sighting._buildSightingPopupActions(entry).appendTo(div);
+
         return div;
+    }
+
+    /**
+     * Action bar of the map popover: open the sighting and show its tour as
+     * buttons, zoom / species profile / photo / fishing vessels as icons.
+     * The popover is serialised HTML, so the buttons only carry
+     * `data-map-action` + `data-map-value` (the unid); the page handles them
+     * via SightingMap.setOnPopupAction.
+     * @param {SightingsEntry} entry
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _buildSightingPopupActions(entry: SightingsEntry): JQuery {
+        const lang = Lang.i();
+        const unid = entry.unid ?? '';
+        const bar = jQuery('<div class="mwpa-map-popup-actions"/>');
+
+        const button = (parent: JQuery, action: string, icon: string, label: string, text: boolean): void => {
+            const btn = jQuery('<button type="button" class="btn btn-sm"/>')
+            .addClass(text ? 'btn-outline-primary text-start' : 'btn-outline-secondary')
+            .attr('data-map-action', action)
+            .attr('data-map-value', unid)
+            .attr('title', lang.l(label))
+            .appendTo(parent);
+
+            jQuery('<i/>').addClass(`${icon} fa-fw`).appendTo(btn);
+
+            if (text) {
+                jQuery('<span class="ms-1"/>').text(lang.l(label)).appendTo(btn);
+            }
+        };
+
+        // the popover is at most 276px wide — the labelled buttons stack, full width
+        const main = jQuery('<div class="d-grid gap-1"/>').appendTo(bar);
+
+        if (!entry.is_old) {
+            button(main, 'open', 'fas fa-pen', 'Open sighting', true);
+        }
+
+        if (entry.tour_id > 0) {
+            button(main, 'tour', 'fas fa-route', 'Show tour', true);
+        }
+
+        const tools = jQuery('<div class="d-flex gap-1 mt-1"/>').appendTo(bar);
+
+        button(tools, 'zoom', 'fas fa-search-plus', 'Zoom in', false);
+
+        if (entry.species_id) {
+            button(tools, 'species', 'fas fa-book-open', 'Species profile', false);
+        }
+
+        if (entry.files.length > 0) {
+            button(tools, 'photo', 'fas fa-camera', 'Photos', false);
+        }
+
+        if (!entry.is_old) {
+            button(tools, 'fishing', 'fas fa-ship', 'Fishing vessels', false);
+        }
+
+        return bar;
+    }
+
+    /**
+     * Center the map on a sighting, zoomed in close.
+     * @param {SightingsEntry} entry
+     * @protected
+     */
+    protected _zoomToSighting(entry: SightingsEntry): void {
+        const geo = UtilLocation.strToGeolocationCoordinates(entry.location_begin!);
+        const view = this._map?.getOlMap()?.getView();
+
+        if (!geo || !view) {
+            return;
+        }
+
+        view.animate({
+            center: fromLonLat(UtilLocation.geoLocationToOlCoordinates(geo)),
+            zoom: Math.max(view.getZoom() ?? 0, 14),
+            duration: 400
+        });
     }
 
 }
