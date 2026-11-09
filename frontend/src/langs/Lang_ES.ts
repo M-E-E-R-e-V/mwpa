@@ -10,6 +10,29 @@ export class Lang_ES implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // tour map
+        'Delete range': 'Borrar rango',
+        '%d tracking points deleted.': '%d puntos de seguimiento borrados.',
+        '%d tracking points moved to tour #%t.': '%d puntos de seguimiento movidos a la salida #%t.',
+        'animals': 'animales',
+        'Average speed': 'Velocidad media',
+        'Delete %d tracking points? This cannot be undone.': '¿Borrar %d puntos de seguimiento? No se puede deshacer.',
+        'Delete failed': 'Error al borrar',
+        'Distance': 'Distancia',
+        'Distance to coast': 'Distancia a la costa',
+        'End of track': 'Fin del track',
+        'Interval': 'Intervalo',
+        'Next tour': 'Salida siguiente',
+        'No position': 'Sin posición',
+        'No sightings on this tour.': 'No hay avistamientos en esta salida.',
+        'points': 'puntos',
+        'Previous tour': 'Salida anterior',
+        'Selection': 'Selección',
+        'Show whole tour': 'Mostrar toda la salida',
+        'Start of track': 'Inicio del track',
+        'Tour key': 'Clave de la salida',
+        'Transfer failed': 'Error al transferir',
+        'Transfer range …': 'Transferir rango …',
         // tour list
         'All skippers': 'Todos los patrones',
         'Boat & crew': 'Barco y tripulación',

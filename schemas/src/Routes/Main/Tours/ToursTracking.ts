@@ -64,6 +64,10 @@ export const SchemaToursTrackingData = Vts.object({
     positions: Vts.array(Vts.string()),
     sightings: Vts.array(SchemaToursTrackingSightingData),
     org_id: Vts.number(),
+    vehicle_id: Vts.optional(Vts.number({description: 'Boat of the tour.'})),
+    vehicle_driver_id: Vts.optional(Vts.number({description: 'Skipper of the tour.'})),
+    beaufort_wind: Vts.optional(Vts.string({description: 'Wind / sea state of the tour (Beaufort).'})),
+    tour_fid: Vts.optional(Vts.string({description: 'Tour key (boat-skipper-date-start).'})),
 }, {
     description: '',
 });

@@ -132,7 +132,11 @@ export class Tracking {
                 end: tour.tour_end,
                 positions: positionList,
                 sightings: sightList,
-                org_id: tour.organization_id
+                org_id: tour.organization_id,
+                vehicle_id: tour.vehicle_id,
+                vehicle_driver_id: tour.vehicle_driver_id,
+                beaufort_wind: tour.beaufort_wind,
+                tour_fid: tour.tour_fid
             }
         };
     }

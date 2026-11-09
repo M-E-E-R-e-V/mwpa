@@ -273,6 +273,50 @@
             "types": []
           },
           "description": ""
+        },
+        {
+          "unid": "c61c92bb-bb7c-4553-9c80-6eb4d01cdce7",
+          "name": "vehicle_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Boat of the tour."
+        },
+        {
+          "unid": "16680398-151b-4344-9427-6e0896611a60",
+          "name": "vehicle_driver_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Skipper of the tour."
+        },
+        {
+          "unid": "6545bfde-3118-423e-ab3e-041efb1898c3",
+          "name": "beaufort_wind",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Wind / sea state of the tour (Beaufort)."
+        },
+        {
+          "unid": "34cf3146-28ae-4505-a783-8d730f2c098c",
+          "name": "tour_fid",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Tour key (boat-skipper-date-start)."
         }
       ]
     },
@@ -608,5 +652,411 @@
         "y": 50
       }
     }
-  ]
+  ],
+  "history": {
+    "e9b503e4-4f48-4712-9a97-c49f0a985573": [
+      {
+        "ts": 1794264270147,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "e9b503e4-4f48-4712-9a97-c49f0a985573",
+          "name": "ToursTrackingData",
+          "description": "",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 508,
+            "y": 11
+          },
+          "fields": [
+            {
+              "unid": "25f3a993-6b63-4158-a66d-b61b6b88b1cc",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "cce9f9d3-83e9-4c6d-8e48-25e8ba6ec4ff",
+              "name": "start",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "4ec40da8-ebf0-4de1-8b6b-0ab56f03bd00",
+              "name": "end",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "f9933085-1587-4d10-b41b-856525ef4c89",
+              "name": "positions",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a505f9d2-ff17-43fd-96d7-37a41f95a4dd",
+              "name": "sightings",
+              "type": {
+                "type": "a4b678f9-0c04-4cee-bfba-911f0b992c1c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "fa359a27-11e3-4891-8401-12571fce21af",
+              "name": "org_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794264272130,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "e9b503e4-4f48-4712-9a97-c49f0a985573",
+          "name": "ToursTrackingData",
+          "description": "",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 508,
+            "y": 11
+          },
+          "fields": [
+            {
+              "unid": "25f3a993-6b63-4158-a66d-b61b6b88b1cc",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "cce9f9d3-83e9-4c6d-8e48-25e8ba6ec4ff",
+              "name": "start",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "4ec40da8-ebf0-4de1-8b6b-0ab56f03bd00",
+              "name": "end",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "f9933085-1587-4d10-b41b-856525ef4c89",
+              "name": "positions",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a505f9d2-ff17-43fd-96d7-37a41f95a4dd",
+              "name": "sightings",
+              "type": {
+                "type": "a4b678f9-0c04-4cee-bfba-911f0b992c1c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "fa359a27-11e3-4891-8401-12571fce21af",
+              "name": "org_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "c61c92bb-bb7c-4553-9c80-6eb4d01cdce7",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Boat of the tour."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794264274312,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "e9b503e4-4f48-4712-9a97-c49f0a985573",
+          "name": "ToursTrackingData",
+          "description": "",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 508,
+            "y": 11
+          },
+          "fields": [
+            {
+              "unid": "25f3a993-6b63-4158-a66d-b61b6b88b1cc",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "cce9f9d3-83e9-4c6d-8e48-25e8ba6ec4ff",
+              "name": "start",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "4ec40da8-ebf0-4de1-8b6b-0ab56f03bd00",
+              "name": "end",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "f9933085-1587-4d10-b41b-856525ef4c89",
+              "name": "positions",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a505f9d2-ff17-43fd-96d7-37a41f95a4dd",
+              "name": "sightings",
+              "type": {
+                "type": "a4b678f9-0c04-4cee-bfba-911f0b992c1c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "fa359a27-11e3-4891-8401-12571fce21af",
+              "name": "org_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "c61c92bb-bb7c-4553-9c80-6eb4d01cdce7",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Boat of the tour."
+            },
+            {
+              "unid": "16680398-151b-4344-9427-6e0896611a60",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Skipper of the tour."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794264276698,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "e9b503e4-4f48-4712-9a97-c49f0a985573",
+          "name": "ToursTrackingData",
+          "description": "",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 508,
+            "y": 11
+          },
+          "fields": [
+            {
+              "unid": "25f3a993-6b63-4158-a66d-b61b6b88b1cc",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "cce9f9d3-83e9-4c6d-8e48-25e8ba6ec4ff",
+              "name": "start",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "4ec40da8-ebf0-4de1-8b6b-0ab56f03bd00",
+              "name": "end",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "f9933085-1587-4d10-b41b-856525ef4c89",
+              "name": "positions",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a505f9d2-ff17-43fd-96d7-37a41f95a4dd",
+              "name": "sightings",
+              "type": {
+                "type": "a4b678f9-0c04-4cee-bfba-911f0b992c1c",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "fa359a27-11e3-4891-8401-12571fce21af",
+              "name": "org_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "c61c92bb-bb7c-4553-9c80-6eb4d01cdce7",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Boat of the tour."
+            },
+            {
+              "unid": "16680398-151b-4344-9427-6e0896611a60",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Skipper of the tour."
+            },
+            {
+              "unid": "6545bfde-3118-423e-ab3e-041efb1898c3",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Wind / sea state of the tour (Beaufort)."
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

@@ -765,3 +765,62 @@ body.mwpa-print-mode-profile .popover {
   background: transparent;
   color: inherit;
 }
+/* tour map: header, figures, sightings panel */
+.mwpa-tourmap-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.mwpa-tourmap-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: 1rem;
+}
+.mwpa-tourmap-map {
+  padding: 1rem 0 0;
+}
+.mwpa-tourmap-chart {
+  margin-top: 1rem;
+  padding-top: .75rem;
+  border-top: 1px solid var(--bs-border-color-translucent);
+}
+.mwpa-tourmap-chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: .5rem;
+}
+.mwpa-tourmap-panel-title {
+  padding: .25rem 0 .5rem;
+  font-size: .8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--bs-secondary-color);
+}
+.mwpa-tourmap-panel {
+  overflow-x: hidden;
+}
+.mwpa-tourmap-head .min-w-0,
+.mwpa-tourmap-sighting .min-w-0 {
+  min-width: 0;
+}
+.mwpa-tourmap-sighting {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .5rem .25rem;
+}
+.mwpa-tourmap-sighting-pic {
+  flex: 0 0 32px;
+  display: flex;
+  justify-content: center;
+}
+.mwpa-tourmap-sighting-pic img {
+  max-width: 32px;
+  max-height: 32px;
+}
