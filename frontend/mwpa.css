@@ -560,3 +560,67 @@ body.mwpa-print-mode-profile .popover {
 .mwpa-map-popup-actions .btn {
     white-space: nowrap;
 }
+
+/* Export tab (Sighting page) */
+.mwpa-export-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: .75rem;
+}
+.mwpa-export-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  padding: .85rem 1rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  transition: border-color .15s, box-shadow .15s;
+}
+.mwpa-export-choice:hover {
+  border-color: var(--bs-primary-border-subtle);
+}
+.mwpa-export-choice.active {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 .2rem rgba(var(--bs-primary-rgb), .15);
+}
+.mwpa-export-choice-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary-text-emphasis);
+}
+.mwpa-export-choice.active .mwpa-export-choice-icon {
+  background: var(--bs-primary);
+  color: #fff;
+}
+.mwpa-export-group + .mwpa-export-group {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--bs-border-color-translucent);
+}
+.mwpa-export-column {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  padding: .3rem .5rem;
+  border-radius: var(--bs-border-radius);
+  font-size: .875rem;
+  cursor: pointer;
+}
+.mwpa-export-column:hover {
+  background: var(--bs-tertiary-bg);
+}
+@media (min-width: 1200px) {
+  .mwpa-export-summary {
+    position: sticky;
+    top: 1rem;
+  }
+}

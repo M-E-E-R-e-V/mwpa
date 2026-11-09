@@ -481,6 +481,14 @@ export class Sighting extends BasePage {
         const filterHint = jQuery('<span class="ms-2 small text-muted fw-normal"/>');
 
         /*
+         * Readable active filters (title hint + export summary) and the export
+         * refresh — both assigned once the toolbar/options and the export
+         * widget exist further down.
+         */
+        let describeFilter = (): string[] => [];
+        let refreshExport = (): void => undefined;
+
+        /*
          * Title = "Sighting[: <preset>] (<count>)" + active-filter hint. The
          * loader re-renders it with the count on every page fetch, so the hint
          * span is re-attached each time.
@@ -494,6 +502,7 @@ export class Sighting extends BasePage {
 
             if (count !== undefined) {
                 title += ` (${count})`;
+                refreshExport();
             }
 
             card.setTitle(jQuery('<span/>').text(title));
@@ -1310,8 +1319,7 @@ export class Sighting extends BasePage {
             }
         };
 
-        // eslint-disable-next-line no-new
-        new SightingExport(
+        const sightingExport = new SightingExport(
             exportBody,
             () => ({
                 period_from: filterValues.period_from,
@@ -1324,6 +1332,13 @@ export class Sighting extends BasePage {
             }),
             generatePdf
         );
+
+        refreshExport = (): void => sightingExport.refresh();
+        sightingExport.setSummaryProvider(() => ({
+            filters: describeFilter(),
+            count: totalCount,
+            includeOld: filterValues.include_old
+        }));
 
         // Table ---------------------------------------------------------------------------------
         const tableWrapper = new TableWrapper2<SightingsEntry>({tableOptions: {head_fixed: true}});
@@ -1938,7 +1953,7 @@ export class Sighting extends BasePage {
             };
         };
 
-        const updateFilterHint = (): void => {
+        describeFilter = (): string[] => {
             const hints: string[] = [];
 
             if (filterValues.period_from !== '' || filterValues.period_to !== '') {
@@ -1969,7 +1984,13 @@ export class Sighting extends BasePage {
                 hints.push(tr('incl. old data'));
             }
 
+            return hints;
+        };
+
+        const updateFilterHint = (): void => {
+            const hints = describeFilter();
             filterHint.text(hints.length > 0 ? `· ${hints.join(' · ')}` : '');
+            refreshExport();
         };
 
         // apply dialog values to the list (ad hoc, nothing stored)
