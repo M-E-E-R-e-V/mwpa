@@ -1,3 +1,4 @@
+import {TableDropdownFix} from './inc/Base/TableDropdownFix';
 import {PageLoader} from './inc/PageLoader';
 import {Sighting as SightingPage} from './inc/Pages/Sighting';
 
@@ -7,6 +8,7 @@ import {Sighting as SightingPage} from './inc/Pages/Sighting';
  * menu by the user's rights; it loads the default page (Sighting).
  */
 const boot = async(): Promise<void> => {
+    TableDropdownFix.install();
     await PageLoader.getInstance().load(new SightingPage());
 };
 
