@@ -5,8 +5,6 @@
  */
 /* eslint-disable max-classes-per-file */
 import {
-    Badge2,
-    BadgeType2,
     ButtonClass2,
     ButtonMenu2,
     Card2,
@@ -17,8 +15,6 @@ import {
     DialogConfirm2,
     DialogInfo2,
     IconFa,
-    Input2,
-    InputType2,
     LangTextV2,
     ModalDialogType2,
     SelectOption2,
@@ -52,6 +48,7 @@ import {UtilDistanceCoast} from '../Utils/UtilDistanceCoast';
 import {UtilLocation} from '../Utils/UtilLocation';
 import {TableFilterModal, TableFilterModalConfig, TableFilterModalValues} from '../Widget/TableFilter/TableFilterModal';
 import {UtilSelect} from '../Utils/UtilSelect';
+import {AdminListUi} from '../Widget/AdminListUi';
 import {SightingPopup, SightingPopupLookups} from '../Utils/SightingPopup';
 import {UtilSpeciesSilhouette} from '../Utils/UtilSpeciesSilhouette';
 import {LocationDisplay} from '../Widget/LocationDisplay';
@@ -69,41 +66,9 @@ import {SightingEditModal} from './Sighting/SightingEditModal';
 import {SightingFilterValues, SightingSortKey, SightingTableFilter} from './Sighting/SightingTableFilter';
 import {ToursMap} from './Tours/TourMap';
 
-const PAGE_SIZE = 30;
-
 type SortKey = SightingSortKey;
 
 type SortState = Record<SortKey, SortOrder2>;
-
-const escapeHtml = (s: string): string => s
-.replace(/&/gu, '&amp;')
-.replace(/</gu, '&lt;')
-.replace(/>/gu, '&gt;')
-.replace(/"/gu, '&quot;')
-.replace(/'/gu, '&#39;');
-
-/**
- * Lookup maps the sighting map popover needs to resolve ids → display names.
- */
-/**
- * Wrap any (case-insensitive) match of `term` in `<mark>` so search hits are
- * highlighted in the rendered cells. HTML in the source text is escaped first;
- * the term is regex-escaped before matching.
- */
-const highlight = (text: string, term: string): string => {
-    if (text === '') {
-        return '';
-    }
-
-    const escaped = escapeHtml(text);
-
-    if (term === '') {
-        return escaped;
-    }
-
-    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-    return escaped.replace(new RegExp(`(${escapedTerm})`, 'giu'), '<mark>$1</mark>');
-};
 
 /**
  * Sighting page.
@@ -131,6 +96,12 @@ export class Sighting extends BasePage {
      * @protected
      */
     protected static _filterModal: TableFilterModal|null = null;
+
+    /**
+     * Rows per server page (infinite scroll)
+     * @protected
+     */
+    protected static readonly _PAGE_SIZE = 30;
 
     protected override _name: string = Sighting.MENU_NAME;
 
@@ -516,22 +487,101 @@ export class Sighting extends BasePage {
 
         renderTitle();
 
-        const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
-        btnMenu.appendTo(card.getToolsElement());
-
-        btnMenu.addMenuItem(new LangTextV2({text: 'Filter'}), () => {
-            openFilterDialog();
-        }, 'fa fa-filter');
+        const lang = Lang.i();
 
         /*
-         * In-header quick-search — sibling of .card-title in the card-header so AdminLTE's
-         * float layout puts it directly right of the title (and left of the tools menu).
+         * Toolbar above the tabs. The quick filters drive the same filter
+         * state as the filter dialog (and saved presets), so List, Map,
+         * Analytics and Export all follow them; `applyQuick` is wired once the
+         * dialog helpers exist further down.
          */
-        const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
+        let applyQuick: ((mutate: (values: TableFilterModalValues) => void) => void) | null = null;
 
-        const searchInput = new Input2({type: InputType2.text});
-        searchInput.appendTo(searchSlot);
-        searchInput.setPlaceholder(Lang.i().l('search note / recognizable …'));
+        const toolbar = AdminListUi.toolbar(card.getElement());
+        toolbar.addClass('pb-3');
+
+        AdminListUi.search(toolbar, 'search note / recognizable …', (term): void => {
+            inHeaderSearch = term;
+            this._onLoadTable?.();
+        });
+
+        const periodSelect = AdminListUi.select(toolbar, 'Whole period', (value): void => {
+            if (value === 'absolute') {
+                return;
+            }
+
+            applyQuick?.((values) => {
+                values.periodMode = value === '0' ? '' : value;
+                values.periodFrom = '';
+                values.periodTo = '';
+            });
+        });
+
+        AdminListUi.setOptions(periodSelect, [
+            {value: 'current_year', label: lang.l('Current year')},
+            {value: 'last_year', label: lang.l('Last year')},
+            {value: 'last_30_days', label: lang.l('Last 30 days')},
+            {value: 'last_90_days', label: lang.l('Last 90 days')},
+            {value: 'last_365_days', label: lang.l('Last 365 days')}
+        ]);
+
+        const quickSelect = (allLabel: string, key: string, options: SelectOption2[]): JQuery<HTMLSelectElement> => {
+            const select = AdminListUi.select(toolbar, allLabel, (value): void => {
+                applyQuick?.((values) => {
+                    values.selects[key] = value === '0' ? '' : value;
+                });
+            });
+
+            AdminListUi.setOptions(select, options.map((o) => ({value: o.key, label: o.value})));
+            return select;
+        };
+
+        const speciesSelect = quickSelect('All species', 'species', speciesOptions);
+        const organizationSelect = quickSelect('All organizations', 'organization', organizationOptions);
+        const vehicleSelect = quickSelect('All vehicles', 'vehicle', vehicleOptions);
+
+        const oldSwitch = AdminListUi.switch(toolbar, `mwpa-sighting-include-old-${Date.now()}`, 'Show old data', (checked): void => {
+            applyQuick?.((values) => {
+                values.toggles.include_old = checked;
+            });
+        });
+
+        const btnFilter = jQuery('<button type="button" class="btn btn-sm btn-outline-secondary"/>').appendTo(toolbar);
+        jQuery('<i class="fas fa-sliders-h me-1"/>').appendTo(btnFilter);
+        jQuery('<span/>').text(lang.l('More filters …')).appendTo(btnFilter);
+        btnFilter.on('click', (event): void => openFilterMenu(event));
+
+        const resultInfo = AdminListUi.resultInfo(toolbar);
+
+        // toolbar <- filter state (after the dialog, a preset or a quick filter)
+        const syncToolbar = (): void => {
+            periodSelect.find('option[value="absolute"]').remove();
+
+            if (periodMode === 'absolute') {
+                jQuery('<option value="absolute"/>')
+                .text(`${filterValues.period_from || '…'} – ${filterValues.period_to || '…'}`)
+                .appendTo(periodSelect);
+            }
+
+            periodSelect.val(periodMode === '' ? '0' : periodMode);
+
+            const setSelect = (select: JQuery<HTMLSelectElement>, id: number): void => {
+                const value = id > 0 ? `${id}` : '0';
+
+                if (select.find(`option[value="${value}"]`).length === 0) {
+                    jQuery('<option/>').attr('value', value).text(`#${id}`).appendTo(select);
+                }
+
+                select.val(value);
+            };
+
+            setSelect(speciesSelect, filterValues.species_id);
+            setSelect(organizationSelect, filterValues.organization_id);
+            setSelect(vehicleSelect, filterValues.vehicle_id);
+            oldSwitch.prop('checked', filterValues.include_old);
+        };
+
+        syncToolbar();
 
         /*
          * Map tab on top of the table — the existing layout has both views side-by-side via NavTab,
@@ -547,7 +597,6 @@ export class Sighting extends BasePage {
         const yearCompareTabId = `sighting-tab-year-${Date.now()}`;
         const exportTabId = `sighting-tab-export-${Date.now()}`;
 
-        const lang = Lang.i();
         navContainer.append(`<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#${listTabId}">${lang.l('List')}</a></li>`);
         navContainer.append(`<li class="nav-item"><a class="nav-link" href="#${mapTabId}" data-bs-toggle="tab">${lang.l('Map')}</a></li>`);
         navContainer.append(`<li class="nav-item"><a class="nav-link" href="#${analyticsTabId}" data-bs-toggle="tab">${lang.l('Analytics')}</a></li>`);
@@ -1054,7 +1103,9 @@ export class Sighting extends BasePage {
         // Table ---------------------------------------------------------------------------------
         const tableWrapper = new TableWrapper2<SightingsEntry>({tableOptions: {head_fixed: true}});
         tableWrapper.appendTo(listBody);
+        const emptyInfo = AdminListUi.emptyInfo(listBody, 'No sightings match the current filter.');
         const table = tableWrapper.getTable();
+        table.getElement().addClass('table-hover align-middle mb-0');
         const trhead = new Tr2();
         trhead.appendTo(table.getThead());
 
@@ -1088,307 +1139,386 @@ export class Sighting extends BasePage {
             return column;
         };
 
-        const thIdTourDate = new Th2({});
-        thIdTourDate.addComponent(makeSortColumn('Id', 'id'));
-        thIdTourDate.append('<br>');
-        thIdTourDate.addComponent(makeSortColumn('TourId', 'tour_id'));
-        thIdTourDate.append('<br>');
-        thIdTourDate.addComponent(makeSortColumn('Date', 'date'));
-        thIdTourDate.appendTo(trhead);
+        const thPicture = new Th2({value: ''});
+        thPicture.appendTo(trhead);
+        thPicture.getElement().css('width', '60px');
 
-        const thVehicle = new Th2({});
-        thVehicle.addComponent(new LangTextV2({text: 'Vehicle'}));
-        thVehicle.append('<br>');
-        thVehicle.addComponent(new LangTextV2({text: 'Driver'}));
-        thVehicle.append('<br>');
-        thVehicle.addComponent(new LangTextV2({text: 'Organization'}));
-        thVehicle.appendTo(trhead);
+        const thSighting = new Th2({});
+        thSighting.addComponent(new LangTextV2({text: 'Species'}));
+        thSighting.append('<span class="text-body-tertiary fw-normal"> · </span>');
+        thSighting.addComponent(makeSortColumn('Id', 'id'));
+        thSighting.appendTo(trhead);
 
-        const thSpecies = new Th2({});
-        thSpecies.addComponent(new LangTextV2({text: 'Species'}));
-        thSpecies.append('<br>');
-        thSpecies.addComponent(new LangTextV2({text: 'Other species'}));
-        thSpecies.appendTo(trhead);
+        const thDate = new Th2({});
+        thDate.addComponent(makeSortColumn('Date', 'date'));
+        thDate.append('<span class="text-body-tertiary fw-normal"> · </span>');
+        thDate.addComponent(makeSortColumn('Time begin-end', 'tour_start'));
+        thDate.appendTo(trhead);
 
-        const thGroupSize = new Th2({});
-        thGroupSize.addComponent(new LangTextV2({text: 'Group-Size'}));
-        thGroupSize.append('<br>');
-        thGroupSize.addComponent(new LangTextV2({text: 'Subgroups'}));
-        thGroupSize.appendTo(trhead);
+        const thTour = new Th2({});
+        thTour.addComponent(new LangTextV2({text: 'Vehicle'}));
+        thTour.append('<span class="text-body-tertiary fw-normal"> · </span>');
+        thTour.addComponent(makeSortColumn('Tour', 'tour_id'));
+        thTour.appendTo(trhead);
 
-        const thTime = new Th2({});
-        thTime.addComponent(makeSortColumn('Time begin-end', 'tour_start'));
-        thTime.append('<br>');
-        thTime.addComponent(new LangTextV2({text: 'Duration'}));
-        thTime.appendTo(trhead);
-
+        new Th2({value: new LangTextV2({text: 'Group-Size'})}).appendTo(trhead);
         new Th2({value: new LangTextV2({text: 'Location'})}).appendTo(trhead);
-
-        new Th2({value: new LangTextV2({text: 'Distance<br>(Miles)'})}).appendTo(trhead);
-
-        const thPhotos = new Th2({});
-        thPhotos.addComponent(new LangTextV2({text: 'Photos taken'}));
-        thPhotos.append('<br>');
-        thPhotos.addComponent(new LangTextV2({text: 'E. without GPS'}));
-        thPhotos.appendTo(trhead);
-
-        const thBehaviour = new Th2({});
-        thBehaviour.addComponent(new LangTextV2({text: 'Behaviour'}));
-        thBehaviour.append('<br>');
-        thBehaviour.addComponent(new LangTextV2({text: 'Reaction'}));
-        thBehaviour.appendTo(trhead);
+        new Th2({value: new LangTextV2({text: 'Behaviour'})}).appendTo(trhead);
 
         const thCreated = new Th2({});
         thCreated.addComponent(makeSortColumn('Created', 'create_datetime'));
-        thCreated.append('<br>');
-        thCreated.addComponent(new LangTextV2({text: 'Created by'}));
-        thCreated.append('<br>');
+        thCreated.append('<span class="text-body-tertiary fw-normal"> · </span>');
         thCreated.addComponent(makeSortColumn('Updated', 'update_datetime'));
         thCreated.appendTo(trhead);
 
-        const thAction = new Th2({value: ''});
-        thAction.appendTo(trhead);
+        new Th2({value: ''}).appendTo(trhead);
 
-        // Gear: filter dialog + saved filter presets (new / edit / delete)
-        jQuery('<a href="#" class="text-secondary"><i class="fas fa-cog"></i></a>')
-        .attr('title', Lang.i().l('Filter') ?? 'Filter')
-        .on('click', (event: JQuery.ClickEvent) => openFilterMenu(event))
-        .appendTo(thAction.getElement());
+        // Edit dialog ---------------------------------------------------------------------------
+        const openEdit = (entry: SightingsEntry): void => {
+            const distanceCoast = parseFloat(entry.distance_coast!) || 0;
+
+            this._sightingDialog.setTitle(Lang.i().l('Edit Sighting'));
+            this._sightingDialog.resetValues();
+            this._sightingDialog.setSightingId(entry.id);
+            this._sightingDialog.setTourId(entry.tour_id);
+            this._sightingDialog.setVehicle(entry.vehicle_id!);
+            this._sightingDialog.setVehicleDriver(entry.vehicle_driver_id!);
+            this._sightingDialog.setBeaufortWind(entry.beaufort_wind!);
+            this._sightingDialog.setDateSight(entry.date!);
+            this._sightingDialog.setTourStart(entry.tour_start!);
+            this._sightingDialog.setTourEnd(entry.tour_end!);
+            this._sightingDialog.setDurationFrom(entry.duration_from!);
+            this._sightingDialog.setDurationUntil(entry.duration_until!);
+            this._sightingDialog.setPositionBegin(entry.location_begin!);
+            this._sightingDialog.setPositionEnd(entry.location_end!);
+            this._sightingDialog.setDistanceCoast(UtilDistanceCoast.meterToM(distanceCoast, true));
+            this._sightingDialog.setSpecie(entry.species_id!);
+            this._sightingDialog.setSpeciesCount(entry.species_count!);
+            this._sightingDialog.setReaction(entry.reaction_id!);
+            this._sightingDialog.setOther(entry.other!);
+            this._sightingDialog.setOtherBoats(entry.other_vehicle!);
+            this._sightingDialog.setNote(entry.note!);
+            this._sightingDialog.show();
+        };
+
+        /*
+         * Per-vessel GFW breakdown — a small modal listing each fishing vessel
+         * that was active in the 25 km buffer on the sighting day. An empty
+         * list shows a placeholder so "no activity" differs from "failed".
+         */
+        const showFishingVessels = async(entry: SightingsEntry): Promise<void> => {
+            let vessels: SightingFishingVesselEntry[] = [];
+
+            try {
+                vessels = await SightingFishingVesselAPI.getList([entry.id]);
+            } catch (e) {
+                this._toast.fire({icon: 'error', title: (e as Error).message});
+                return;
+            }
+
+            const esc = (s: string): string => AdminListUi.escape(s);
+            const body = jQuery('<div/>');
+
+            if (vessels.length === 0) {
+                body.html('<p class="text-muted">No fishing vessels recorded for this sighting (no activity, or GFW pull hasn\'t run yet).</p>');
+            } else {
+                const lines: string[] = ['<table class="table table-sm table-striped">'];
+                lines.push('<thead><tr><th>Vessel</th><th>Flag</th><th>Gear</th><th class="text-end">Hours</th></tr></thead><tbody>');
+
+                for (const v of vessels) {
+                    const name = v.name && v.name !== '' ? esc(v.name) : `<code class="small">${esc(v.vessel_id)}</code>`;
+                    const mmsi = v.mmsi && v.mmsi !== '' ? `<br><small class="text-muted">MMSI ${esc(v.mmsi)}</small>` : '';
+                    lines.push('<tr>'
+                        + `<td>${name}${mmsi}</td>`
+                        + `<td>${esc(v.flag ?? '—')}</td>`
+                        + `<td>${esc(v.gear_type ?? '—')}</td>`
+                        + `<td class="text-end">${v.hours.toFixed(2)}</td>`
+                        + '</tr>');
+                }
+
+                lines.push('</tbody></table>');
+                body.html(lines.join(''));
+            }
+
+            DialogInfo2.info(
+                'fishingvessels',
+                ModalDialogType2.large,
+                `Fishing vessels — Sighting #${entry.id}`,
+                body,
+                (_, modal) => modal.hide()
+            );
+        };
+
+        const showImage = (entry: SightingsEntry, fname: string): void => {
+            const aImage = jQuery<HTMLImageElement>('<img alt="" style="width:100%;"/>')
+            .attr('src', `/json/sightings/getimage/${entry.id}/${encodeURIComponent(fname)}`);
+
+            DialogInfo2.info(
+                'sightimage',
+                ModalDialogType2.xlarge,
+                `Image for Sighting #${entry.id}`,
+                aImage,
+                (_, modal) => modal.hide()
+            );
+        };
+
+        const subline = (parent: JQuery, icon: string, html: string, title?: string): JQuery => {
+            const line = jQuery('<div class="small text-body-secondary text-nowrap"/>').appendTo(parent);
+            jQuery('<i class="fa-fw me-1 opacity-75"/>').addClass(icon).appendTo(line);
+            const span = jQuery('<span/>').html(html).appendTo(line);
+
+            if (title) {
+                line.attr('title', Lang.i().l(title));
+            }
+
+            return span;
+        };
 
         // Renderer ------------------------------------------------------------------------------
         const renderRow = (_table: Table2, entry: SightingsEntry): void => {
+            const esc = (s: string): string => AdminListUi.escape(s);
             const term = activeHighlight();
-            const trbody = new Tr2();
-            trbody.appendTo(table.getTbody());
+            const tr = new Tr2();
+            tr.appendTo(table.getTbody());
 
-            /* Historical hand-maintained rows (sighting_old): muted style + "ALT" badge, read-only. */
+            /* Historical hand-maintained rows (sighting_old): muted + "ALT" pill, read-only. */
             if (entry.is_old) {
-                trbody.getElement().addClass('mwpa-old-row').css('background-color', '#f5f1e8');
+                tr.getElement().addClass('mwpa-old-row table-secondary');
             }
 
-            const date = moment(entry.date?.split(' ')[0]);
+            const specie = entry.species_id ? mspecies.get(entry.species_id) : undefined;
 
-            const oldBadge = entry.is_old
-                ? ' <span class="badge badge-secondary" title="Alte Daten – manuell erfasst, schreibgeschützt"><i class="fas fa-archive"></i> ALT</span>'
-                : '';
+            // picture
+            const tdPicture = new Td2({value: ''});
+            tdPicture.appendTo(tr);
+            tdPicture.getElement()[0]?.insertAdjacentHTML(
+                'beforeend',
+                UtilSpeciesSilhouette.img(specie?.name ?? entry.other ?? '', 44, SpeciesAPI.imageUrl(specie))
+            );
 
-            new Td2({
-                value: `<b>#${entry.id}</b>${oldBadge}<br>#${entry.tour_id}<br>${date.format('YYYY.MM.DD')}`
-            }).appendTo(trbody);
+            // species + id + other species + note hit
+            const tdSighting = new Td2({value: ''});
+            tdSighting.appendTo(tr);
+            // eslint-disable-next-line no-new
+            new SpeciesDisplay(tdSighting.getElement(), entry, mspecies, (speciesId) => {
+                Nav.load(new SpeciesProfilePage(speciesId)).then();
+            });
 
-            const vehicleName = mvehicles.get(entry.vehicle_id!)?.name ?? '';
-            const driverName = mdrivers.get(entry.vehicle_driver_id!)?.user.name ?? '';
-            const orgStr = entry.organization_id ? morganizations.get(entry.organization_id)?.description ?? '' : '';
+            const idLine = jQuery('<div class="small mt-1 d-flex flex-wrap align-items-center gap-1"/>').appendTo(tdSighting.getElement());
+            jQuery('<span class="font-monospace text-body-secondary"/>').text(`#${entry.id}`).appendTo(idLine);
 
-            new Td2({
-                value: `${escapeHtml(vehicleName)}<br>${escapeHtml(driverName)}<br>${escapeHtml(orgStr)}`
-            }).appendTo(trbody);
+            if (entry.is_old) {
+                AdminListUi.pill(idLine, 'OLD', 'warning', 'fas fa-archive')
+                .attr('title', lang.l('Old data – entered by hand, read-only'));
+            }
 
             const otherSpecies = SightingPopup.parseIdMapNames(
                 entry.other_species ?? '',
                 (id) => mspecies.get(id)?.name.split(',')[0]
-            ).join(', ');
+            );
 
-            const speciesTd = new Td2({value: ''});
-            speciesTd.appendTo(trbody);
-            // eslint-disable-next-line no-new
-            new SpeciesDisplay(speciesTd.getElement(), entry, mspecies, (speciesId) => {
-                Nav.load(new SpeciesProfilePage(speciesId)).then();
-            });
-            speciesTd.append(`<br>${escapeHtml(otherSpecies)}`);
-
-            const speciesCountGroupTd = new Td2({value: ''});
-            speciesCountGroupTd.appendTo(trbody);
-            if (entry.species_count === 0) {
-                const badgeZero = new Badge2({type: BadgeType2.info, color: 'red'});
-                badgeZero.appendTo(speciesCountGroupTd);
-                badgeZero.getElement().html('<b style="color: white">0</b>');
-            } else {
-                speciesCountGroupTd.append(`<b>${entry.species_count}</b>`);
+            if (otherSpecies.length > 0) {
+                subline(tdSighting.getElement(), 'fas fa-plus', esc(otherSpecies.join(', ')), 'Other species');
             }
-            speciesCountGroupTd.append(`<br>${UtilSelect.getSelectStr(entry.subgroups!)}`);
 
-            new Td2({
-                value: `<b>${escapeHtml(entry.tour_start ?? '')} - ${escapeHtml(entry.tour_end ?? '')}</b><br>${escapeHtml(entry.duration_from ?? '')} - ${escapeHtml(entry.duration_until ?? '')}`
-            }).appendTo(trbody);
+            const note = (entry.note ?? '').trim();
 
+            if (note !== '') {
+                const noteLine = jQuery('<div class="small fst-italic text-body-secondary text-truncate" style="max-width:260px;"/>')
+                .attr('title', note)
+                .appendTo(tdSighting.getElement());
+                jQuery('<i class="far fa-sticky-note me-1"/>').appendTo(noteLine);
+                jQuery('<span/>').html(AdminListUi.highlight(note, term)).appendTo(noteLine);
+            }
+
+            // date + times
+            const tdDate = new Td2({value: ''});
+            tdDate.appendTo(tr);
+            const date = moment(entry.date?.split(' ')[0]);
+            jQuery('<div class="fw-semibold text-nowrap"/>')
+            .text(date.isValid() ? date.format('YYYY.MM.DD') : '—')
+            .appendTo(tdDate.getElement());
+
+            const sightFrom = entry.duration_from ?? '';
+            const sightUntil = entry.duration_until ?? '';
+
+            if (sightFrom !== '' || sightUntil !== '') {
+                subline(tdDate.getElement(), 'far fa-eye', esc(`${sightFrom} – ${sightUntil}`), 'Duration');
+            }
+
+            const tourStart = entry.tour_start ?? '';
+            const tourEnd = entry.tour_end ?? '';
+
+            if (tourStart !== '' || tourEnd !== '') {
+                subline(tdDate.getElement(), 'far fa-clock', esc(`${tourStart} – ${tourEnd}`), 'Time begin-end');
+            }
+
+            // vehicle, driver, organization, tour
+            const tdTour = new Td2({value: ''});
+            tdTour.appendTo(tr);
+            const vehicleName = mvehicles.get(entry.vehicle_id!)?.name ?? '';
+            const driverName = mdrivers.get(entry.vehicle_driver_id!)?.user.name ?? '';
+            const orgName = entry.organization_id ? morganizations.get(entry.organization_id)?.description ?? '' : '';
+
+            const vehicle = jQuery('<div class="text-nowrap"/>').appendTo(tdTour.getElement());
+            jQuery('<i class="fas fa-ship me-1 text-body-secondary"/>').appendTo(vehicle);
+            jQuery('<span class="fw-semibold"/>').text(vehicleName === '' ? '—' : vehicleName).appendTo(vehicle);
+
+            if (driverName !== '') {
+                subline(tdTour.getElement(), 'fas fa-user', esc(driverName), 'Driver');
+            }
+
+            if (orgName !== '') {
+                subline(tdTour.getElement(), 'fas fa-building', esc(orgName), 'Organization');
+            }
+
+            const tourLink = subline(tdTour.getElement(), 'fas fa-route', '', 'Show tour on the map');
+            jQuery('<a href="#" class="text-decoration-none"/>')
+            .text(`${lang.l('Tour')} #${entry.tour_id}`)
+            .on('click', (e): void => {
+                e.preventDefault();
+                Nav.load(new ToursMap(entry.tour_id)).then();
+            })
+            .appendTo(tourLink);
+
+            // group size + subgroups + photos
+            const tdGroup = new Td2({value: ''});
+            tdGroup.appendTo(tr);
+
+            if (entry.species_count === 0) {
+                AdminListUi.pill(tdGroup.getElement(), '0', 'danger', 'fas fa-exclamation-triangle')
+                .attr('title', lang.l('Group size not set'));
+            } else {
+                jQuery('<span class="fs-6 fw-semibold"/>').text(`${entry.species_count}`).appendTo(tdGroup.getElement());
+            }
+
+            subline(
+                tdGroup.getElement(),
+                'fas fa-sitemap',
+                `${esc(lang.l('Subgroups'))}: ${esc(lang.l(UtilSelect.getSelectStr(entry.subgroups!)))}`
+            );
+
+            const photos = jQuery('<div class="mt-1"/>').appendTo(tdGroup.getElement());
+            const photoTaken = entry.photo_taken ?? -1;
+            AdminListUi.pill(
+                photos,
+                UtilSelect.getSelectStr(photoTaken),
+                photoTaken === 1 ? 'success' : 'secondary',
+                'fas fa-camera'
+            ).attr('title', lang.l('Photos taken'));
+
+            // location + distance to coast + track points
             const tdLocation = new Td2({value: ''});
-            tdLocation.appendTo(trbody);
-            // eslint-disable-next-line no-new
-            new LocationDisplay(tdLocation.getElement(), entry.location_begin!, () => {
+            tdLocation.appendTo(tr);
+            const location = new LocationDisplay(tdLocation.getElement(), entry.location_begin!, () => {
                 Nav.load(new ToursMap(entry.tour_id)).then();
             });
 
-            /*
-             * Track-point indicator. Always rendered so the user can spot
-             * at a glance which sightings have a real boat GPS track
-             * behind them (segment_count + 1, grey) vs which only have
-             * hand-entered begin/end anchors or no movement at all (0, red).
-             */
-            const trackCount = entry.track_point_count ?? 0;
-            const trackLabel = Lang.i().l('track pts') ?? 'track pts';
-            if (trackCount > 0) {
-                tdLocation.append(
-                    `<small class="text-muted"><i class="fas fa-route mr-1"></i>${trackCount} ${trackLabel}</small>`
-                );
-            } else {
-                tdLocation.append(
-                    `<small style="color:#dc3545"><i class="fas fa-route mr-1"></i>0 ${trackLabel}</small>`
-                );
-            }
+            // the widget is a <dl class="row"> with grid columns — compact it for the table cell
+            location.getElement().addClass('mb-1 flex-nowrap g-0 text-nowrap');
+            location.getElement().find('dt').removeClass('col-sm-1').addClass('col-auto me-1');
+            location.getElement().find('dd').removeClass('col-sm-5').addClass('col-auto mb-0');
 
             const fDistance = parseFloat(entry.distance_coast!) || 0;
-            new Td2({value: `${UtilDistanceCoast.meterToM(fDistance, true)}`}).appendTo(trbody);
+            const distance = subline(
+                tdLocation.getElement(),
+                'fas fa-water',
+                `${esc(UtilDistanceCoast.meterToM(fDistance, true))} ${esc(lang.l('mi to the coast'))}`,
+                'Distance (Miles)'
+            );
 
-            new Td2({
-                value: `<b>${UtilSelect.getSelectStr(entry.photo_taken!)}</b><br>${UtilSelect.getSelectStr(entry.distance_coast_estimation_gps!)}`
-            }).appendTo(trbody);
+            if (entry.distance_coast_estimation_gps === 1) {
+                jQuery('<span class="ms-1 text-warning-emphasis"/>')
+                .text(`(${lang.l('estimated')})`)
+                .attr('title', lang.l('E. without GPS'))
+                .appendTo(distance);
+            }
 
+            const trackCount = entry.track_point_count ?? 0;
+            const tracks = jQuery('<div class="mt-1"/>').appendTo(tdLocation.getElement());
+            AdminListUi.pill(
+                tracks,
+                `${trackCount} ${lang.l('track pts')}`,
+                trackCount > 0 ? 'secondary' : 'danger',
+                'fas fa-route'
+            );
+
+            // behaviour + reaction
+            const tdBehaviour = new Td2({value: ''});
+            tdBehaviour.appendTo(tr);
             const behaviourNames = SightingPopup.parseIdMapNames(
                 entry.behaviours ?? '',
                 (id) => mbehaviours.get(id)?.name
             );
-            const behaviourStr = behaviourNames.length > 0
-                ? behaviourNames.map((n) => `${n}<br>`).join('')
-                : 'not set<br>';
+            const behaviourPills = jQuery('<div class="d-flex flex-wrap gap-1 mb-1"/>').appendTo(tdBehaviour.getElement());
 
-            const tdbehRex = new Td2({value: behaviourStr});
-            tdbehRex.appendTo(trbody);
-            // eslint-disable-next-line no-new
-            new ReactionDisplay(tdbehRex.getElement(), entry, mencates);
-
-            const createDate = moment(entry.create_datetime * 1000);
-            const updateDate = moment(entry.update_datetime * 1000);
-
-            new Td2({
-                value: `<b>${createDate.format('YYYY.MM.DD HH:mm:ss')}</b><br>${highlight(entry.creater_name, term)}<br>${updateDate.format('YYYY.MM.DD HH:mm:ss')}`
-            }).appendTo(trbody);
-
-            /*
-             * Note column gets the search highlight too — small affordance so the user can
-             * see *why* a row matched a free-text search.
-             */
-            if (term !== '' && entry.note) {
-                trbody.getElement().attr('title', entry.note);
+            if (behaviourNames.length === 0) {
+                jQuery('<span class="small text-body-tertiary"/>').text(lang.l('not set')).appendTo(behaviourPills);
+            } else {
+                for (const name of behaviourNames) {
+                    AdminListUi.pill(behaviourPills, name, 'primary');
+                }
             }
 
+            const reaction = jQuery('<div class="small text-nowrap"/>').appendTo(tdBehaviour.getElement());
+            jQuery('<span class="text-body-secondary me-1"/>').text(`${lang.l('Reaction')}:`).appendTo(reaction);
+            // eslint-disable-next-line no-new
+            new ReactionDisplay(reaction, entry, mencates);
+
+            // created / updated
+            const tdCreated = new Td2({value: ''});
+            tdCreated.appendTo(tr);
+            const createDate = moment(entry.create_datetime * 1000);
+            const updateDate = moment(entry.update_datetime * 1000);
+            jQuery('<div class="small text-nowrap"/>').text(createDate.format('YYYY.MM.DD HH:mm')).appendTo(tdCreated.getElement());
+
+            if (entry.creater_name !== '') {
+                subline(tdCreated.getElement(), 'fas fa-user-edit', AdminListUi.highlight(entry.creater_name, term), 'Created by');
+            }
+
+            if (entry.update_datetime > 0 && entry.update_datetime !== entry.create_datetime) {
+                subline(tdCreated.getElement(), 'fas fa-history', esc(updateDate.format('YYYY.MM.DD HH:mm')), 'Updated');
+            }
+
+            // actions
             const tdAction = new Td2({value: ''});
-            tdAction.appendTo(trbody);
+            tdAction.appendTo(tr);
 
             // Old (hand-imported) rows are read-only — no edit/delete menu.
             if (entry.is_old) {
-                tdAction.append('<small class="text-muted"><i class="fas fa-lock"></i></small>');
+                jQuery('<div class="text-end text-body-tertiary"/>')
+                .attr('title', lang.l('Old data – entered by hand, read-only'))
+                .html('<i class="fas fa-lock"></i>')
+                .appendTo(tdAction.getElement());
                 return;
             }
 
+            const actions = AdminListUi.actions(tdAction.getElement(), (): void => openEdit(entry));
+
+            if (entry.files.length > 0) {
+                const btnAttachment = new ButtonMenu2({icon: IconFa.paperclip, positionRight: true});
+                btnAttachment.appendTo(actions);
+                btnAttachment.getElement().attr('title', `${entry.files.length} ${lang.l('Photos')}`);
+
+                for (const fname of entry.files) {
+                    btnAttachment.addMenuItem(fname, (): void => showImage(entry, fname), IconFa.camera);
+                }
+            }
+
             const abtnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
-            abtnMenu.appendTo(tdAction);
+            abtnMenu.appendTo(actions);
 
-            abtnMenu.addMenuItem(Lang.i().l('Edit'), () => {
-                const distanceCoast = parseFloat(entry.distance_coast!) || 0;
-
-                this._sightingDialog.setTitle(Lang.i().l('Edit Sighting'));
-                this._sightingDialog.resetValues();
-                this._sightingDialog.setSightingId(entry.id);
-                this._sightingDialog.setTourId(entry.tour_id);
-                this._sightingDialog.setVehicle(entry.vehicle_id!);
-                this._sightingDialog.setVehicleDriver(entry.vehicle_driver_id!);
-                this._sightingDialog.setBeaufortWind(entry.beaufort_wind!);
-                this._sightingDialog.setDateSight(entry.date!);
-                this._sightingDialog.setTourStart(entry.tour_start!);
-                this._sightingDialog.setTourEnd(entry.tour_end!);
-                this._sightingDialog.setDurationFrom(entry.duration_from!);
-                this._sightingDialog.setDurationUntil(entry.duration_until!);
-                this._sightingDialog.setPositionBegin(entry.location_begin!);
-                this._sightingDialog.setPositionEnd(entry.location_end!);
-                this._sightingDialog.setDistanceCoast(UtilDistanceCoast.meterToM(distanceCoast, true));
-                this._sightingDialog.setSpecie(entry.species_id!);
-                this._sightingDialog.setSpeciesCount(entry.species_count!);
-                this._sightingDialog.setReaction(entry.reaction_id!);
-                this._sightingDialog.setOther(entry.other!);
-                this._sightingDialog.setOtherBoats(entry.other_vehicle!);
-                this._sightingDialog.setNote(entry.note!);
-                this._sightingDialog.show();
-            }, IconFa.edit);
-
+            abtnMenu.addMenuItem(lang.l('Edit'), (): void => openEdit(entry), IconFa.edit);
+            abtnMenu.addMenuItem(lang.l('Fishing vessels'), (): void => {
+                showFishingVessels(entry).catch(() => undefined);
+            }, 'fas fa-ship');
             abtnMenu.addDivider();
-
-            /*
-             * Per-vessel GFW breakdown — opens a small modal listing
-             * each fishing vessel that was active in the 25 km buffer
-             * on the sighting day. Empty list shows a "no fishing
-             * vessels for this sighting" placeholder so the user can
-             * tell "no activity" from "endpoint failed".
-             */
-            abtnMenu.addMenuItem(Lang.i().l('Fishing vessels'), async() => {
-                let vessels: SightingFishingVesselEntry[] = [];
-                try {
-                    vessels = await SightingFishingVesselAPI.getList([entry.id]);
-                } catch (e) {
-                    this._toast.fire({icon: 'error', title: (e as Error).message});
-                    return;
-                }
-
-                const body = jQuery('<div/>');
-                if (vessels.length === 0) {
-                    body.html('<p class="text-muted">No fishing vessels recorded for this sighting (no activity, or GFW pull hasn\'t run yet).</p>');
-                } else {
-                    const lines: string[] = ['<table class="table table-sm table-striped">'];
-                    lines.push('<thead><tr><th>Vessel</th><th>Flag</th><th>Gear</th><th class="text-right">Hours</th></tr></thead><tbody>');
-                    for (const v of vessels) {
-                        const name = v.name && v.name !== '' ? v.name : `<code class="small">${escapeHtml(v.vessel_id)}</code>`;
-                        const mmsi = v.mmsi && v.mmsi !== '' ? `<br><small class="text-muted">MMSI ${escapeHtml(v.mmsi)}</small>` : '';
-                        lines.push('<tr>'
-                            + `<td>${name}${mmsi}</td>`
-                            + `<td>${escapeHtml(v.flag ?? '—')}</td>`
-                            + `<td>${escapeHtml(v.gear_type ?? '—')}</td>`
-                            + `<td class="text-right">${v.hours.toFixed(2)}</td>`
-                            + '</tr>');
-                    }
-                    lines.push('</tbody></table>');
-                    body.html(lines.join(''));
-                }
-
-                DialogInfo2.info(
-                    'fishingvessels',
-                    ModalDialogType2.large,
-                    `Fishing vessels — Sighting #${entry.id}`,
-                    body,
-                    (_, modal) => modal.hide()
-                );
-            }, 'fa fa-ship');
-
-            abtnMenu.addDivider();
-
-            abtnMenu.addMenuItem(Lang.i().l('Delete'), () => {
-                this._sightingDeletedDialog.setTitle(Lang.i().l('Delete a sighting'));
+            abtnMenu.addMenuItem(lang.l('Delete'), (): void => {
+                this._sightingDeletedDialog.setTitle(lang.l('Delete a sighting'));
                 this._sightingDeletedDialog.resetValues();
                 this._sightingDeletedDialog.setSightingId(entry.id);
                 this._sightingDeletedDialog.show();
             }, IconFa.trash);
-
-            if (entry.files.length > 0) {
-                tdAction.append('<br>');
-                const btnAttachment = new ButtonMenu2({icon: IconFa.paperclip, positionRight: true});
-                btnAttachment.appendTo(tdAction);
-
-                for (const fname of entry.files) {
-                    btnAttachment.addMenuItem(fname, () => {
-                        const aImage = new Image();
-                        aImage.src = `/json/sightings/getimage/${entry.id}/${fname}`;
-                        aImage.style.width = '100%';
-
-                        DialogInfo2.info(
-                            'sightimage',
-                            ModalDialogType2.xlarge,
-                            `Image for Sighting #${entry.id}`,
-                            // @ts-ignore
-                            JQuery<HTMLImageElement>(aImage),
-                            (_, modal) => modal.hide()
-                        );
-                    }, IconFa.camera);
-                }
-            }
 
             this._addSightingToMap(entry, sightingLookups);
         };
@@ -1403,8 +1533,8 @@ export class Sighting extends BasePage {
                 card.showLoading();
 
                 try {
-                    const offset = page * PAGE_SIZE;
-                    const response = await SightingsAPI.getList(buildApiFilter(offset, PAGE_SIZE));
+                    const offset = page * Sighting._PAGE_SIZE;
+                    const response = await SightingsAPI.getList(buildApiFilter(offset, Sighting._PAGE_SIZE));
 
                     if (!response) {
                         return [];
@@ -1438,6 +1568,8 @@ export class Sighting extends BasePage {
                     totalCount = response.count;
                     loadedCount += response.list.length;
                     renderTitle(response.count);
+                    resultInfo.text(`${loadedCount} ${Lang.i().l('of')} ${response.count} ${Lang.i().l('loaded')}`);
+                    AdminListUi.setEmpty(emptyInfo, response.count === 0);
 
                     return response.list;
                 } finally {
@@ -1452,24 +1584,6 @@ export class Sighting extends BasePage {
             },
             renderRow
         );
-
-        // Wire the in-header quick-search (debounced) -------------------------------------------
-        let searchTimer: ReturnType<typeof setTimeout> | null = null;
-
-        searchInput.getElement().on('keyup', () => {
-            if (searchTimer !== null) {
-                clearTimeout(searchTimer);
-            }
-
-            searchTimer = setTimeout(() => {
-                const value = searchInput.getValue().trim();
-                if (value === inHeaderSearch) {
-                    return;
-                }
-                inHeaderSearch = value;
-                tableWrapper.reset();
-            }, 300);
-        });
 
         // Filter dialog + saved presets --------------------------------------------------------
         const tr = (key: string): string => Lang.i().l(key) ?? key;
@@ -1608,7 +1722,14 @@ export class Sighting extends BasePage {
             }
 
             updateFilterHint();
+            syncToolbar();
             tableWrapper.reset();
+        };
+
+        applyQuick = (mutate): void => {
+            const values = currentValues('');
+            mutate(values);
+            applyValues(values);
         };
 
         const savePreset = async(unid: string, values: TableFilterModalValues): Promise<void> => {
@@ -1698,12 +1819,12 @@ export class Sighting extends BasePage {
 
             if (preset !== null) {
                 const current = preset;
-                const presetName = escapeHtml(current.name);
+                const presetName = AdminListUi.escape(current.name);
 
                 menu.addItem({divider: true});
 
                 menu.addItem({
-                    label: `${escapeHtml(tr('Edit'))} „${presetName}“`,
+                    label: `${AdminListUi.escape(tr('Edit'))} „${presetName}“`,
                     icon: 'fas fa-pen',
                     onClick: (): void => {
                         askFilter(tr('Edit saved filter'), current.name, current).catch(() => undefined);
@@ -1711,7 +1832,7 @@ export class Sighting extends BasePage {
                 });
 
                 menu.addItem({
-                    label: `${escapeHtml(tr('Delete'))} „${presetName}“`,
+                    label: `${AdminListUi.escape(tr('Delete'))} „${presetName}“`,
                     icon: 'fas fa-trash text-danger',
                     onClick: (): void => {
                         DialogConfirm2.confirm(
@@ -1799,8 +1920,8 @@ export class Sighting extends BasePage {
         .filter(([, value]) => value !== '')
         .map(([label, value]) =>
             '<tr><td style="color:#6c757d;white-space:nowrap;vertical-align:top;padding:1px 8px 1px 0;">' +
-            `${escapeHtml(lang.l(label))}</td>` +
-            `<td style="vertical-align:top;padding:1px 0;">${escapeHtml(value)}</td></tr>`)
+            `${AdminListUi.escape(lang.l(label))}</td>` +
+            `<td style="vertical-align:top;padding:1px 0;">${AdminListUi.escape(value)}</td></tr>`)
         .join('');
 
         jQuery(`<table style="font-size:0.82rem;border-collapse:collapse;"><tbody>${trs}</tbody></table>`).appendTo(div);

@@ -10,6 +10,26 @@ export class Lang_ES implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // sighting list
+        'No sightings match the current filter.': 'Ningún avistamiento coincide con el filtro actual.',
+        'Tour': 'Tour',
+        'OLD': 'ANTIGUO',
+        'Old data – entered by hand, read-only': 'Datos antiguos – introducidos a mano, solo lectura',
+        'Show tour on the map': 'Mostrar el tour en el mapa',
+        'Group size not set': 'Tamaño de grupo no indicado',
+        'Yes': 'Sí',
+        'No': 'No',
+        'Unknown': 'Desconocido',
+        'mi to the coast': 'mn a la costa',
+        'Distance (Miles)': 'Distancia (millas)',
+        'estimated': 'estimada',
+        'Photos': 'Fotos',
+        'Whole period': 'Todo el periodo',
+        'All species': 'Todas las especies',
+        'All vehicles': 'Todos los vehículos',
+        'Show old data': 'Mostrar datos antiguos',
+        'More filters …': 'Más filtros …',
+        'loaded': 'cargados',
         // service list
         'Search service, dependency or message …': 'Buscar servicio, dependencia o mensaje …',
         'All types': 'Todos los tipos',
