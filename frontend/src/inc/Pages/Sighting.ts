@@ -842,7 +842,7 @@ export class Sighting extends BasePage {
 
         // Analytics tab (d3 charts on the same loadedEntries) -----------------------------------
         const analytics = new SightingAnalytics(analyticsBody);
-        analytics.setLookups({species: mspecies});
+        analytics.setLookups(sightingLookups);
 
         // Year-comparison tab (loads its own dataset, ignoring period filter) -------------------
         const yearCompare = new SightingYearCompare(yearCompareBody);
