@@ -10,6 +10,19 @@ export class Lang_ES implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // tour list
+        'All skippers': 'Todos los patrones',
+        'Boat & crew': 'Barco y tripulación',
+        'End before start': 'Fin antes del inicio',
+        'ID': 'ID',
+        'No tours match the current filter.': 'Ninguna salida coincide con el filtro actual.',
+        'no times': 'sin horas',
+        'no track': 'sin track',
+        'none': 'ninguno',
+        'Only without track': 'Solo sin track',
+        'Time': 'Hora',
+        'Track': 'Track',
+        'Web': 'Web',
         // sighting dialog
         'Group & behaviour': 'Grupo y comportamiento',
         'Add species …': 'Añadir especie …',
