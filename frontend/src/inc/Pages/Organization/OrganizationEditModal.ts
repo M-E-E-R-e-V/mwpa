@@ -1,15 +1,18 @@
+/* global JQuery */
 import {Lang} from '../../Lang';
 import {
-    FormGroup2,
     FormRow2,
     Input2,
     InputType2,
-    LangTextV2,
     ModalDialog2,
     ModalDialogType2
 } from 'bambooo';
+import {FormLayout} from '../../Widget/FormLayout';
 
-
+/**
+ * Create / edit an organization (v2): sections for general data, home
+ * position (with OSM check link), contact and the AROC office-report fields.
+ */
 export class OrganizationEditModal extends ModalDialog2 {
 
     /**
@@ -103,104 +106,164 @@ export class OrganizationEditModal extends ModalDialog2 {
     protected _inputArocAuthorizedBoats: Input2;
 
     /**
+     * "Show on map" link under the home position
+     * @protected
+     */
+    protected _mapLink: JQuery<HTMLAnchorElement>;
+
+    /**
      * constructor
      */
     public constructor() {
         super({modalType: ModalDialogType2.large});
 
-        const bodyCard = jQuery('<div class="card-body"/>').appendTo(this.getBody());
+        const body = jQuery('<div class="card-body"/>').appendTo(this.getBody());
 
-        const groupName = new FormGroup2({label: new LangTextV2({text: 'Name'})});
-        groupName.appendTo(bodyCard);
-        this._inputName = new Input2({});
-        this._inputName.appendTo(groupName);
+        // general -----------------------------------------------------------------------------------------------------
 
-        const groupCountry = new FormGroup2({label: new LangTextV2({text: 'Country'})});
-        groupCountry.appendTo(bodyCard);
-        this._inputCountry = new Input2({});
-        this._inputCountry.appendTo(groupCountry);
+        const general = FormLayout.section(body, 'fas fa-building', 'General');
+        const rowGeneral = new FormRow2({});
+        rowGeneral.appendTo(general);
 
-        const groupLocation = new FormGroup2({label: new LangTextV2({text: 'Location'})});
-        groupLocation.appendTo(bodyCard);
-        this._inputLocation = new Input2({});
-        this._inputLocation.appendTo(groupLocation);
-
-        const rowPosition = new FormRow2({});
-        rowPosition.appendTo(bodyCard);
-
-        const groupLon = new FormGroup2({label: new LangTextV2({text: 'Lon'})});
-        groupLon.appendTo(rowPosition.createCol(6));
-        this._inputLon = new Input2({});
-        this._inputLon.appendTo(groupLon);
-
-        const groupLat = new FormGroup2({label: new LangTextV2({text: 'Lat'})});
-        groupLat.appendTo(rowPosition.createCol(6));
-        this._inputLat = new Input2({});
-        this._inputLat.appendTo(groupLat);
-
-        // AROC office-report fields ---------------------------------------------------------------------------------
-
-        jQuery('<hr/>').appendTo(bodyCard);
-        jQuery('<h6 class="text-muted"></h6>').text('AROC').appendTo(bodyCard);
+        this._inputName = FormLayout.input(rowGeneral.createCol(12), 'Name', {
+            icon: 'fas fa-signature',
+            placeholder: 'e.g. Oceano Barcos S.L.',
+            required: true
+        });
 
         const rowPlace = new FormRow2({});
-        rowPlace.appendTo(bodyCard);
+        rowPlace.appendTo(general);
 
-        const groupProvince = new FormGroup2({label: new LangTextV2({text: 'Province'})});
-        groupProvince.appendTo(rowPlace.createCol(4));
-        this._inputProvince = new Input2({});
-        this._inputProvince.appendTo(groupProvince);
+        this._inputCountry = FormLayout.input(rowPlace.createCol(4), 'Country', {
+            icon: 'fas fa-flag',
+            placeholder: 'e.g. ES'
+        });
 
-        const groupIsland = new FormGroup2({label: new LangTextV2({text: 'Island'})});
-        groupIsland.appendTo(rowPlace.createCol(4));
-        this._inputIsland = new Input2({});
-        this._inputIsland.appendTo(groupIsland);
+        this._inputLocation = FormLayout.input(rowPlace.createCol(8), 'Location', {
+            icon: 'fas fa-city',
+            placeholder: 'e.g. La Gomera'
+        });
 
-        const groupPort = new FormGroup2({label: new LangTextV2({text: 'Port'})});
-        groupPort.appendTo(rowPlace.createCol(4));
-        this._inputPort = new Input2({});
-        this._inputPort.appendTo(groupPort);
+        // home position -----------------------------------------------------------------------------------------------
 
+        const position = FormLayout.section(
+            body,
+            'fas fa-map-marker-alt',
+            'Home position',
+            'Map centre for tours and sightings. Decimal degrees (WGS84), south and west are negative.'
+        );
+
+        const rowPosition = new FormRow2({});
+        rowPosition.appendTo(position);
+
+        this._inputLat = FormLayout.input(rowPosition.createCol(6), 'Lat', {
+            icon: 'fas fa-arrows-alt-v',
+            placeholder: 'e.g. 28.0831',
+            suffix: '°'
+        });
+
+        this._inputLon = FormLayout.input(rowPosition.createCol(6), 'Lon', {
+            icon: 'fas fa-arrows-alt-h',
+            placeholder: 'e.g. -17.3344',
+            suffix: '°'
+        });
+
+        this._mapLink = FormLayout.link(position, 'Show position on OpenStreetMap');
+        this._mapLink.parent().addClass('mt-n2 mb-3');
+
+        this._inputLat.getElement().on('input', (): void => this._updateMapLink());
+        this._inputLon.getElement().on('input', (): void => this._updateMapLink());
+
+        // contact -----------------------------------------------------------------------------------------------------
+
+        const contact = FormLayout.section(body, 'fas fa-address-card', 'Contact');
         const rowContact = new FormRow2({});
-        rowContact.appendTo(bodyCard);
+        rowContact.appendTo(contact);
 
-        const groupEmail = new FormGroup2({label: new LangTextV2({text: 'E-Mail'})});
-        groupEmail.appendTo(rowContact.createCol(6));
-        this._inputEmail = new Input2({});
-        this._inputEmail.appendTo(groupEmail);
+        this._inputEmail = FormLayout.input(rowContact.createCol(6), 'E-Mail', {
+            icon: 'fas fa-envelope',
+            placeholder: 'info@example.com',
+            htmlType: 'email'
+        });
 
-        const groupWeb = new FormGroup2({label: new LangTextV2({text: 'Website'})});
-        groupWeb.appendTo(rowContact.createCol(6));
-        this._inputWeb = new Input2({});
-        this._inputWeb.appendTo(groupWeb);
+        this._inputWeb = FormLayout.input(rowContact.createCol(6), 'Website', {
+            icon: 'fas fa-globe',
+            placeholder: 'https://',
+            htmlType: 'url'
+        });
+
+        // AROC office report ------------------------------------------------------------------------------------------
+
+        const aroc = FormLayout.section(
+            body,
+            'fas fa-file-alt',
+            'Authority report (AROC)',
+            'Only needed for the AROC export (sightings → Export).'
+        );
 
         const rowAroc1 = new FormRow2({});
-        rowAroc1.appendTo(bodyCard);
+        rowAroc1.appendTo(aroc);
 
-        const groupArocRegion = new FormGroup2({label: new LangTextV2({text: 'AROC region'})});
-        groupArocRegion.appendTo(rowAroc1.createCol(4));
-        this._inputArocRegion = new Input2({});
-        this._inputArocRegion.appendTo(groupArocRegion);
+        this._inputProvince = FormLayout.input(rowAroc1.createCol(4), 'Province', {
+            icon: 'fas fa-map',
+            placeholder: 'e.g. Santa Cruz de Tenerife'
+        });
 
-        const groupArocNumber = new FormGroup2({label: new LangTextV2({text: 'AROC number'})});
-        groupArocNumber.appendTo(rowAroc1.createCol(4));
-        this._inputArocNumber = new Input2({});
-        this._inputArocNumber.appendTo(groupArocNumber);
+        this._inputIsland = FormLayout.input(rowAroc1.createCol(4), 'Island', {
+            icon: 'fas fa-mountain',
+            placeholder: 'e.g. La Gomera'
+        });
 
-        const groupArocBoats = new FormGroup2({label: new LangTextV2({text: 'Authorized boats'})});
-        groupArocBoats.appendTo(rowAroc1.createCol(4));
-        this._inputArocAuthorizedBoats = new Input2({type: InputType2.number});
-        this._inputArocAuthorizedBoats.appendTo(groupArocBoats);
+        this._inputPort = FormLayout.input(rowAroc1.createCol(4), 'Port', {
+            icon: 'fas fa-anchor',
+            placeholder: 'e.g. Puerto de Vueltas'
+        });
 
-        const groupArocReference = new FormGroup2({label: new LangTextV2({text: 'AROC reference'})});
-        groupArocReference.appendTo(bodyCard);
-        this._inputArocReference = new Input2({});
-        this._inputArocReference.appendTo(groupArocReference);
+        const rowAroc2 = new FormRow2({});
+        rowAroc2.appendTo(aroc);
+
+        this._inputArocRegion = FormLayout.input(rowAroc2.createCol(4), 'AROC region', {
+            icon: 'fas fa-map-signs',
+            placeholder: 'CAN / RES / AND'
+        });
+
+        this._inputArocNumber = FormLayout.input(rowAroc2.createCol(4), 'AROC number', {
+            icon: 'fas fa-hashtag'
+        });
+
+        this._inputArocAuthorizedBoats = FormLayout.input(rowAroc2.createCol(4), 'Authorized boats', {
+            icon: 'fas fa-ship',
+            type: InputType2.number,
+            placeholder: '0'
+        });
+        this._inputArocAuthorizedBoats.getElement().attr('min', '0');
+
+        const rowAroc3 = new FormRow2({});
+        rowAroc3.appendTo(aroc);
+
+        this._inputArocReference = FormLayout.input(rowAroc3.createCol(12), 'AROC reference', {
+            icon: 'fas fa-file-signature',
+            placeholder: 'e.g. SGBTM/AUTAROC/CAN 44 2022'
+        });
+
+        this._updateMapLink();
 
         // buttons -----------------------------------------------------------------------------------------------------
 
         this.addButtonClose(Lang.i().l('Close'));
         this.addButtonSave(Lang.i().l('Save changes'), true);
+    }
+
+    /**
+     * Point the map link to the entered position (hidden while invalid).
+     * @protected
+     */
+    protected _updateMapLink(): void {
+        const lat = parseFloat(this._inputLat.getValue().replace(',', '.'));
+        const lon = parseFloat(this._inputLon.getValue().replace(',', '.'));
+        const valid = Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180;
+
+        FormLayout.setLink(this._mapLink, valid ? `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=12/${lat}/${lon}` : null);
     }
 
     /**
@@ -273,6 +336,7 @@ export class OrganizationEditModal extends ModalDialog2 {
      */
     public setLon(lon: string): void {
         this._inputLon.setValue(lon);
+        this._updateMapLink();
     }
 
     /**
@@ -288,6 +352,7 @@ export class OrganizationEditModal extends ModalDialog2 {
      */
     public setLat(lat: string): void {
         this._inputLat.setValue(lat);
+        this._updateMapLink();
     }
 
     /**
