@@ -120,6 +120,27 @@
   top: 0.5rem;
   left: 3rem;
 }
+/* Layer panel of a map (MapLayerPanel) — button + floating card, top right. */
+.mwpa-layer-panel {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  max-height: calc(100% - 1rem);
+}
+.mwpa-layer-panel-card {
+  width: 330px;
+  max-width: calc(100vw - 3rem);
+  min-height: 0;
+  overflow-y: auto;
+}
+.mwpa-layer-panel-areas .form-check-input:checked {
+  background-color: currentColor;
+}
 .sighting-dashboard-chart {
   overflow: hidden;
 }

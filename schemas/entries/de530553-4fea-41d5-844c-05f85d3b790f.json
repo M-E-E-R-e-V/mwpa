@@ -1,0 +1,406 @@
+{
+  "schemas": [
+    {
+      "unid": "46ae968e-ceb5-4b5d-84e2-590a2e435766",
+      "name": "ProtectedAreaData",
+      "description": "Natura 2000 sites around the home area of the organization (EEA, loaded in the background and cached).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 40,
+        "y": 40
+      },
+      "fields": [
+        {
+          "unid": "278e159a-4069-4e89-aeee-0c3dfe681fb2",
+          "name": "status",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "'ok', 'pending' (loading), 'error' or 'no_area'."
+        },
+        {
+          "unid": "b0b460ab-4d78-41d8-98f3-9d461a97e1b8",
+          "name": "area_key",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "7222c3a8-24b1-458e-ab79-4ad2c7c826ce",
+          "name": "fetch_datetime",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Seconds-epoch of the last successful load, 0 if none yet."
+        },
+        {
+          "unid": "a3b8f35d-e3a7-4315-805b-a04d45607ec8",
+          "name": "feature_count",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "a390078a-65bc-4199-80cb-f91da7d05655",
+          "name": "source",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Data source / version, e.g. 'EEA Natura 2000 (2024)'."
+        },
+        {
+          "unid": "4a56279f-1bb7-48ae-834f-412057330efe",
+          "name": "geojson",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "GeoJSON FeatureCollection (EPSG:4326) as string; properties code, name, site_type (A=SPA, B=SCI/SAC, C=both), area_km2, url."
+        }
+      ]
+    },
+    {
+      "unid": "095118ea-d5ec-4cfa-9962-2fe764e6d447",
+      "name": "ProtectedAreaResponse",
+      "description": "Response of /json/protectedarea/list.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 420,
+        "y": 40
+      },
+      "fields": [
+        {
+          "unid": "4e845279-9a05-4587-8ed4-0817daae65e1",
+          "name": "data",
+          "type": {
+            "type": "46ae968e-ceb5-4b5d-84e2-590a2e435766",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "links": [],
+  "history": {
+    "46ae968e-ceb5-4b5d-84e2-590a2e435766": [
+      {
+        "ts": 1794256964865,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "46ae968e-ceb5-4b5d-84e2-590a2e435766",
+          "name": "ProtectedAreaData",
+          "description": "Natura 2000 sites around the home area of the organization (EEA, loaded in the background and cached).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 40,
+            "y": 40
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1794256967031,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "46ae968e-ceb5-4b5d-84e2-590a2e435766",
+          "name": "ProtectedAreaData",
+          "description": "Natura 2000 sites around the home area of the organization (EEA, loaded in the background and cached).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 40,
+            "y": 40
+          },
+          "fields": [
+            {
+              "unid": "278e159a-4069-4e89-aeee-0c3dfe681fb2",
+              "name": "status",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'ok', 'pending' (loading), 'error' or 'no_area'."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794256969127,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "46ae968e-ceb5-4b5d-84e2-590a2e435766",
+          "name": "ProtectedAreaData",
+          "description": "Natura 2000 sites around the home area of the organization (EEA, loaded in the background and cached).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 40,
+            "y": 40
+          },
+          "fields": [
+            {
+              "unid": "278e159a-4069-4e89-aeee-0c3dfe681fb2",
+              "name": "status",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'ok', 'pending' (loading), 'error' or 'no_area'."
+            },
+            {
+              "unid": "b0b460ab-4d78-41d8-98f3-9d461a97e1b8",
+              "name": "area_key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794256971356,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "46ae968e-ceb5-4b5d-84e2-590a2e435766",
+          "name": "ProtectedAreaData",
+          "description": "Natura 2000 sites around the home area of the organization (EEA, loaded in the background and cached).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 40,
+            "y": 40
+          },
+          "fields": [
+            {
+              "unid": "278e159a-4069-4e89-aeee-0c3dfe681fb2",
+              "name": "status",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'ok', 'pending' (loading), 'error' or 'no_area'."
+            },
+            {
+              "unid": "b0b460ab-4d78-41d8-98f3-9d461a97e1b8",
+              "name": "area_key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "7222c3a8-24b1-458e-ab79-4ad2c7c826ce",
+              "name": "fetch_datetime",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Seconds-epoch of the last successful load, 0 if none yet."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794256973144,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "46ae968e-ceb5-4b5d-84e2-590a2e435766",
+          "name": "ProtectedAreaData",
+          "description": "Natura 2000 sites around the home area of the organization (EEA, loaded in the background and cached).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 40,
+            "y": 40
+          },
+          "fields": [
+            {
+              "unid": "278e159a-4069-4e89-aeee-0c3dfe681fb2",
+              "name": "status",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'ok', 'pending' (loading), 'error' or 'no_area'."
+            },
+            {
+              "unid": "b0b460ab-4d78-41d8-98f3-9d461a97e1b8",
+              "name": "area_key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "7222c3a8-24b1-458e-ab79-4ad2c7c826ce",
+              "name": "fetch_datetime",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Seconds-epoch of the last successful load, 0 if none yet."
+            },
+            {
+              "unid": "a3b8f35d-e3a7-4315-805b-a04d45607ec8",
+              "name": "feature_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794256975256,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "46ae968e-ceb5-4b5d-84e2-590a2e435766",
+          "name": "ProtectedAreaData",
+          "description": "Natura 2000 sites around the home area of the organization (EEA, loaded in the background and cached).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 40,
+            "y": 40
+          },
+          "fields": [
+            {
+              "unid": "278e159a-4069-4e89-aeee-0c3dfe681fb2",
+              "name": "status",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'ok', 'pending' (loading), 'error' or 'no_area'."
+            },
+            {
+              "unid": "b0b460ab-4d78-41d8-98f3-9d461a97e1b8",
+              "name": "area_key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "7222c3a8-24b1-458e-ab79-4ad2c7c826ce",
+              "name": "fetch_datetime",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Seconds-epoch of the last successful load, 0 if none yet."
+            },
+            {
+              "unid": "a3b8f35d-e3a7-4315-805b-a04d45607ec8",
+              "name": "feature_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a390078a-65bc-4199-80cb-f91da7d05655",
+              "name": "source",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Data source / version, e.g. 'EEA Natura 2000 (2024)'."
+            }
+          ]
+        }
+      }
+    ],
+    "095118ea-d5ec-4cfa-9962-2fe764e6d447": [
+      {
+        "ts": 1794256976978,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "095118ea-d5ec-4cfa-9962-2fe764e6d447",
+          "name": "ProtectedAreaResponse",
+          "description": "Response of /json/protectedarea/list.",
+          "extend": {
+            "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+          },
+          "pos": {
+            "x": 420,
+            "y": 40
+          },
+          "fields": []
+        }
+      }
+    ]
+  }
+}

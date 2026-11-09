@@ -485,6 +485,12 @@ export {
     LoginLockoutUnblockResponse,
 } from './Routes/Main/Blacklist.js';
 export {
+    SchemaProtectedAreaData,
+    ProtectedAreaData,
+    SchemaProtectedAreaResponse,
+    ProtectedAreaResponse,
+} from './Routes/Main/ProtectedArea/ProtectedArea.js';
+export {
     SchemaMapCacheRequest,
     MapCacheRequest,
 } from './Routes/Map/MapCache.js';

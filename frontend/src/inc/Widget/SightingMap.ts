@@ -8,9 +8,11 @@ import {BathymetryLayer} from '../Map/Layers/BathymetryLayer';
 import {IdeeEsLayer} from '../Map/Layers/IdeeEsLayer';
 import {MovementTracksLayer, SightingMovementLike} from '../Map/Layers/MovementTracksLayer';
 import {OsmBaseLayer} from '../Map/Layers/OsmBaseLayer';
+import {ProtectedAreaLayer} from '../Map/Layers/ProtectedAreaLayer';
 import {SightingHeatmapLayer} from '../Map/Layers/SightingHeatmapLayer';
 import {SightingPointsLayer, SightingMapPopupContent} from '../Map/Layers/SightingPointsLayer';
 import {SightingMapObjectType, SightingStyles} from '../Map/Styles/SightingStyles';
+import {MapLayerPanel} from './MapLayerPanel';
 
 export {SightingMapObjectType} from '../Map/Styles/SightingStyles';
 export type {SightingMapPopupContent} from '../Map/Layers/SightingPointsLayer';
@@ -29,6 +31,13 @@ export type SightingMapLoadOptions = {
      * Group nearby sighting points into count bubbles (points-only maps).
      */
     useCluster?: boolean;
+
+    /**
+     * Own layer panel ({@link MapLayerPanel}) instead of the OpenLayers
+     * LayerSwitcher; sighting points + heatmap are left to the page's display
+     * switch.
+     */
+    useLayerPanel?: boolean;
 };
 
 /**
@@ -89,6 +98,16 @@ export class SightingMap extends Widget2 {
      */
     protected _loadOptions: SightingMapLoadOptions = {};
 
+    /**
+     * @protected
+     */
+    protected _layerPanel: MapLayerPanel | undefined;
+
+    /**
+     * @protected
+     */
+    protected _protectedAreas: ProtectedAreaLayer | undefined;
+
     public constructor(aelement?: ComponentType) {
         /*
          * BaseMap creates its own child div under `aelement`. We hold a
@@ -107,7 +126,8 @@ export class SightingMap extends Widget2 {
 
         this._base.load({
             initialCenterLonLat: [11.030, 47.739],
-            initialZoom: 2.2
+            initialZoom: 2.2,
+            withLayerSwitcher: this._loadOptions.useLayerPanel !== true
         });
 
         this._osm = new OsmBaseLayer();
@@ -152,6 +172,15 @@ export class SightingMap extends Widget2 {
                 this._heatmap.setSource(src);
             }
             this._base.addLayer(this._heatmap);
+        }
+
+        if (this._loadOptions.useLayerPanel === true) {
+            const container = this._base.getElement().parent();
+            container.css('position', 'relative');
+            this._layerPanel = new MapLayerPanel(container, this._base, [
+                this._points.getName(),
+                this._heatmap?.getName() ?? ''
+            ]);
         }
     }
 
@@ -272,6 +301,44 @@ export class SightingMap extends Widget2 {
         });
 
         return true;
+    }
+
+    /**
+     * Show protected areas (GeoJSON FeatureCollection string, EPSG:4326) and
+     * list them in the layer panel.
+     * @param {string} geojson
+     * @param {string} status status line for the panel (translated)
+     */
+    public setProtectedAreas(geojson: string, status: string): void {
+        if (!this._protectedAreas) {
+            this._protectedAreas = new ProtectedAreaLayer();
+            this._base.addLayer(this._protectedAreas);
+        }
+
+        this._protectedAreas.setGeoJson(geojson);
+        this._layerPanel?.setAreaStatus(status);
+        this._layerPanel?.setAreaLayer(this._protectedAreas);
+        this.updateProtectedAreaCounts();
+    }
+
+    /**
+     * Status of the protected areas without data yet (loading, no area, error).
+     * @param {string} status translated
+     */
+    public setProtectedAreaStatus(status: string): void {
+        this._layerPanel?.setAreaStatus(status);
+    }
+
+    /**
+     * Count the loaded sighting points per protected area (panel badges +
+     * default visibility).
+     */
+    public updateProtectedAreaCounts(): void {
+        if (!this._protectedAreas || !this._layerPanel || !this._points) {
+            return;
+        }
+
+        this._layerPanel.setAreaCounts(this._protectedAreas.countInside(this._points.getPointCoordinates()));
     }
 
     public async addAreaByJson(jsonFileUrl: string, title: string, name: string, visible: boolean = false): Promise<void> {

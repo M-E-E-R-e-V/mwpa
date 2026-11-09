@@ -4,6 +4,7 @@ import {AisVessel} from './Entities/AisVessel.js';
 import {BehaviouralStates} from './Entities/BehaviouralStates.js';
 import {ClimateIndex} from './Entities/ClimateIndex.js';
 import {CoastlineCache} from './Entities/CoastlineCache.js';
+import {ProtectedAreaCache} from './Entities/ProtectedAreaCache.js';
 import {Devices} from './Entities/Devices.js';
 import {Earthquake} from './Entities/Earthquake.js';
 import {LiveAisTrack} from './Entities/LiveAisTrack.js';
@@ -64,6 +65,7 @@ export class MWPADbLoader extends DBLoader {
             BehaviouralStates,
             ClimateIndex,
             CoastlineCache,
+            ProtectedAreaCache,
             Devices,
             Earthquake,
             EncounterCategories,

@@ -616,6 +616,27 @@
                 "enums": [],
                 "istoggle": true,
                 "links": []
+              },
+              {
+                "unid": "a9fc3833-d081-4382-8feb-56e20fbc372b",
+                "name": "ProtectedArea",
+                "type": "folder",
+                "entrys": [
+                  {
+                    "unid": "de530553-4fea-41d5-844c-05f85d3b790f",
+                    "name": "ProtectedArea",
+                    "type": "file",
+                    "entrys": [],
+                    "schemas": [],
+                    "enums": [],
+                    "istoggle": true,
+                    "links": []
+                  }
+                ],
+                "schemas": [],
+                "enums": [],
+                "istoggle": true,
+                "links": []
               }
             ],
             "schemas": [],

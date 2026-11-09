@@ -10,6 +10,29 @@ export class Lang_DE implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // map layers + protected areas
+        'Layers': 'Ebenen',
+        'Map layers': 'Kartenebenen',
+        'Background': 'Hintergrund',
+        'Overlays': 'Überlagerungen',
+        'Relief (IDEE Spain)': 'Relief (IDEE Spanien)',
+        'Sea depth (EMODnet)': 'Meerestiefe (EMODnet)',
+        'Protected areas (Natura 2000)': 'Schutzgebiete (Natura 2000)',
+        'Show protected areas': 'Schutzgebiete anzeigen',
+        'With sightings': 'Mit Sichtungen',
+        'All areas': 'Alle Gebiete',
+        'No protected area contains loaded sightings.': 'Kein Schutzgebiet enthält geladene Sichtungen.',
+        'zoom to area': 'auf Gebiet zoomen',
+        'Sightings in this area': 'Sichtungen in diesem Gebiet',
+        'Birds Directive (SPA / ZEPA)': 'Vogelschutzrichtlinie (SPA / ZEPA)',
+        'Habitats + Birds Directive': 'FFH- + Vogelschutzrichtlinie',
+        'Habitats Directive (SCI, SAC / ZEC)': 'FFH-Richtlinie (GGB / ZEC)',
+        'Standard data form (EEA)': 'Standarddatenbogen (EEA)',
+        'areas': 'Gebiete',
+        'as of': 'Stand',
+        'Loading the protected areas of your region …': 'Lade die Schutzgebiete deiner Region …',
+        'Your organization has no home area or position — no protected areas.': 'Deine Organisation hat kein Heimatgebiet und keine Position – keine Schutzgebiete.',
+        'The protected areas could not be loaded (EEA service). Next attempt in a few hours.': 'Die Schutzgebiete konnten nicht geladen werden (EEA-Dienst). Nächster Versuch in einigen Stunden.',
         // sighting map
         'Reset selection': 'Auswahl zurücksetzen',
         'Timeline': 'Zeitverlauf',

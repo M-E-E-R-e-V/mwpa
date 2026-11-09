@@ -15,6 +15,7 @@ import {Lookup} from './Main/Lookup.js';
 import {Organization} from './Main/Organization.js';
 import {OrphanTracks} from './Main/OrphanTracks.js';
 import {QuickConnect} from './Main/QuickConnect.js';
+import {ProtectedArea} from './Main/ProtectedArea.js';
 import {SightingMovement} from './Main/SightingMovement.js';
 import {Sightings} from './Main/Sightings.js';
 import {Species} from './Main/Species.js';
@@ -73,6 +74,7 @@ export class RouteLoader extends HttpRouteLoader {
             new QuickConnect(),
             new Sightings(),
             new SightingMovement(),
+            new ProtectedArea(),
             new Species(),
             new SpeciesGroup(),
             new TableFilter(),

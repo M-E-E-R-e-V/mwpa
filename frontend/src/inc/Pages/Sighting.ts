@@ -28,12 +28,13 @@ import {
     Tr2
 } from 'bambooo';
 import moment from 'moment';
-import {SightingTableFilterSettings} from 'mwpa_schemas';
+import {ProtectedAreaData, SightingTableFilterSettings} from 'mwpa_schemas';
 import {Coordinate} from 'ol/coordinate';
 import {fromLonLat} from 'ol/proj';
 import {BehaviouralStateEntry, BehaviouralStates as BehaviouralStatesAPI} from '../Api/BehaviouralStates';
 import {EncounterCategorieEntry, EncounterCategories as EncounterCategoriesAPI} from '../Api/EncounterCategories';
 import {Organization as OrganizationAPI, OrganizationEntry} from '../Api/Organization';
+import {ProtectedArea as ProtectedAreaAPI} from '../Api/ProtectedArea';
 import {SightingMovement as SightingMovementAPI} from '../Api/SightingMovement';
 import {TABLE_FILTER_SIGHTING, TableFilter as TableFilterAPI, TableFilterEntry} from '../Api/TableFilter';
 import {SightingFishingVessel as SightingFishingVesselAPI, SightingFishingVesselEntry} from '../Api/SightingFishingVessel';
@@ -858,6 +859,7 @@ export class Sighting extends BasePage {
             dashboardKey = key;
             dashboard.setData(loadedEntries);
             analytics.setData(loadedEntries);
+            this._map?.updateProtectedAreaCounts();
 
             /*
              * The dashboard just grew to its data-filled height, which changes
@@ -1032,16 +1034,64 @@ export class Sighting extends BasePage {
         this._map.load({
             useHeatmap: true,
             useBathymetriemap: true,
-            useCluster: true
+            useCluster: true,
+            useLayerPanel: true
         });
 
         this._map.setDisplayMode('cluster');
 
         this._map.setView(viewCenter);
 
-        await this._map.addAreaByJson('map_areas/ES7020123.json', 'ES7020123', 'sigthing_ES7020123_layer');
-        await this._map.addAreaByJson('map_areas/ES7020122.json', 'ES7020122', 'sigthing_ES7020122_layer');
-        await this._map.addAreaByJson('map_areas/ES0000526.json', 'ES0000526', 'sigthing_ES0000526_layer');
+        /*
+         * Protected areas (Natura 2000) around the organization's home area —
+         * the backend loads them from the EEA on first request ("pending"),
+         * so ask again every 15 s for a few minutes until they are there.
+         */
+        const loadProtectedAreas = async(attempt: number): Promise<void> => {
+            if (!this._map || !mapContainer[0]?.isConnected) {
+                return;
+            }
+
+            let data: ProtectedAreaData | null = null;
+
+            try {
+                data = await ProtectedAreaAPI.get();
+            } catch {
+                data = null;
+            }
+
+            if (!this._map || data === null) {
+                return;
+            }
+
+            switch (data.status) {
+                case 'ok':
+                    this._map.setProtectedAreas(
+                        data.geojson ?? '{"type":"FeatureCollection","features":[]}',
+                        `${data.feature_count} ${lang.l('areas')} · ${data.source} · ${lang.l('as of')} ${moment(data.fetch_datetime * 1000).format('YYYY.MM.DD')}`
+                    );
+                    break;
+
+                case 'pending':
+                    this._map.setProtectedAreaStatus(lang.l('Loading the protected areas of your region …'));
+
+                    if (attempt < 20) {
+                        setTimeout((): void => {
+                            loadProtectedAreas(attempt + 1).catch(() => undefined);
+                        }, 15000);
+                    }
+                    break;
+
+                case 'no_area':
+                    this._map.setProtectedAreaStatus(lang.l('Your organization has no home area or position — no protected areas.'));
+                    break;
+
+                default:
+                    this._map.setProtectedAreaStatus(lang.l('The protected areas could not be loaded (EEA service). Next attempt in a few hours.'));
+            }
+        };
+
+        loadProtectedAreas(0).catch(() => undefined);
 
         /*
          * Lazy-fetch movements only when the user opens the layer in

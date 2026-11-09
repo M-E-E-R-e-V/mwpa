@@ -242,6 +242,24 @@ export class SightingPointsLayer extends MapLayer {
     }
 
     /**
+     * Coordinates (EPSG:3857) of all sighting points.
+     * @return {number[][]}
+     */
+    public getPointCoordinates(): number[][] {
+        const points: number[][] = [];
+
+        for (const feature of this._source?.getFeatures() ?? []) {
+            const geometry = feature.getGeometry();
+
+            if (geometry instanceof Point) {
+                points.push(geometry.getCoordinates());
+            }
+        }
+
+        return points;
+    }
+
+    /**
      * Extent of the points (EPSG:3857), undefined when empty. From 20 points
      * on, the outer 2 % per axis are ignored so single stray positions (e.g.
      * test sightings from an emulator on another continent) don't zoom the
