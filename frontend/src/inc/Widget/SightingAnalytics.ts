@@ -8,6 +8,7 @@ import {SpeciesEntry} from '../Api/Species';
 import {Lang} from '../Lang';
 import {SightingPopup} from '../Utils/SightingPopup';
 import {AdminListUi} from './AdminListUi';
+import {ChartTooltip} from './ChartTooltip';
 
 /*
  * Same d3-as-any pattern the rest of the project uses (see
@@ -77,7 +78,7 @@ export class SightingAnalytics extends Widget2 {
 
     protected _statsEl: JQuery;
 
-    protected _tipEl: JQuery;
+    protected _tip: ChartTooltip;
 
     protected _emptyEl: JQuery;
 
@@ -123,13 +124,13 @@ export class SightingAnalytics extends Widget2 {
         this._behaviour = this._card('fas fa-swimmer', 'Behaviour', 'Share of the sightings, several per sighting possible');
         this._reaction = this._card('fas fa-ship', 'Reaction to the boat', 'Share of the sightings');
 
-        this._tipEl = jQuery('<div class="mwpa-chart-tip"/>').appendTo(root);
+        this._tip = new ChartTooltip(root);
 
         if (typeof ResizeObserver !== 'undefined') {
             new ResizeObserver(() => {
                 const width = this._gridEl.width() ?? 0;
 
-                if (width > 0 && Math.abs(width - this._renderedWidth) > 24) {
+                if (width > 0 && Math.abs(width - this._renderedWidth) > 4) {
                     window.requestAnimationFrame(() => this._render());
                 }
             }).observe(root[0]);
@@ -163,7 +164,7 @@ export class SightingAnalytics extends Widget2 {
         this._statsEl.empty();
         this._gridEl.find('.sighting-analytics-body').empty();
         this._gridEl.find('.sighting-analytics-figure').empty();
-        this._tipEl.removeClass('show');
+        this._tip.hide();
 
         const empty = data.length === 0;
         this._emptyEl.toggleClass('d-none', !empty);
@@ -192,6 +193,7 @@ export class SightingAnalytics extends Widget2 {
         this._renderDistance(data);
         this._renderBehaviour(data);
         this._renderReaction(data);
+        ChartTooltip.fluid(this._element);
     }
 
     /*
@@ -608,7 +610,7 @@ export class SightingAnalytics extends Widget2 {
             .text(label);
 
             row.append('path')
-            .attr('d', SightingAnalytics._barPath(labelW, y + 4, Math.max(2, x(bar.value)), rowH - 10, 'h'))
+            .attr('d', ChartTooltip.barPath(labelW, y + 4, Math.max(2, x(bar.value)), rowH - 10, 'h'))
             .style('fill', bar.color ?? 'var(--mwpa-chart-primary)');
 
             row.append('text')
@@ -616,9 +618,9 @@ export class SightingAnalytics extends Widget2 {
             .attr('x', labelW + Math.max(2, x(bar.value)) + 6)
             .attr('y', y + (rowH / 2))
             .attr('dy', '0.32em')
-            .text(`${bar.value.toLocaleString()} · ${SightingAnalytics._percent(bar.value, total)}`);
+            .text(`${bar.value.toLocaleString()} · ${ChartTooltip.percent(bar.value, total)}`);
 
-            this._bindTip(row, bar.tip);
+            this._tip.bind(row, bar.tip);
         });
     }
 
@@ -682,7 +684,7 @@ export class SightingAnalytics extends Widget2 {
 
             if (bar.value > 0) {
                 col.append('path')
-                .attr('d', SightingAnalytics._barPath(left, y(bar.value), x.bandwidth(), innerH - y(bar.value), 'v'))
+                .attr('d', ChartTooltip.barPath(left, y(bar.value), x.bandwidth(), innerH - y(bar.value), 'v'))
                 .style('fill', bar.color ?? 'var(--mwpa-chart-primary)');
             }
 
@@ -697,7 +699,7 @@ export class SightingAnalytics extends Widget2 {
                 .text(tick);
             }
 
-            this._bindTip(col, bar.tip);
+            this._tip.bind(col, bar.tip);
         });
 
         g.append('line')
@@ -750,7 +752,7 @@ export class SightingAnalytics extends Widget2 {
 
             const hour = String(cell.col).padStart(2, '0');
 
-            this._bindTip(
+            this._tip.bind(
                 rect,
                 `<b>${lang.l(SightingAnalytics._MONTH_KEYS[cell.row])}, ${hour}:00–${hour}:59</b><br>` +
                 `${cell.value.toLocaleString()} ${lang.l('Sightings')}`
@@ -777,34 +779,6 @@ export class SightingAnalytics extends Widget2 {
             .attr('text-anchor', 'middle')
             .text(String(hour).padStart(2, '0'));
         }
-    }
-
-    /**
-     * Show the shared tooltip while the pointer is over the element.
-     * @param {d3.Selection} target d3 selection
-     * @param {string} html
-     * @protected
-     */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected _bindTip(target: any, html: string): void {
-        target
-        .on('mouseenter', () => {
-            this._tipEl.html(html).addClass('show');
-        })
-        .on('mousemove', (event: MouseEvent) => {
-            const box = this._element[0].getBoundingClientRect();
-            const tipW = this._tipEl.outerWidth() ?? 0;
-            let left = event.clientX - box.left + 14;
-
-            if (left + tipW > box.width) {
-                left = event.clientX - box.left - tipW - 14;
-            }
-
-            this._tipEl.css({left: Math.max(0, left), top: event.clientY - box.top + 14});
-        })
-        .on('mouseleave', () => {
-            this._tipEl.removeClass('show');
-        });
     }
 
     /**
@@ -895,45 +869,16 @@ export class SightingAnalytics extends Widget2 {
             bars.push({
                 label: text,
                 value: counts[i],
-                tip: `<b>${text}</b><br>${counts[i].toLocaleString()} ${unit} · ${SightingAnalytics._percent(counts[i], values.length)}`
+                tip: `<b>${text}</b><br>${counts[i].toLocaleString()} ${unit} · ${ChartTooltip.percent(counts[i], values.length)}`
             });
         }
 
         return bars;
     }
 
-    /**
-     * SVG path of a bar with rounded data end (4px) and square baseline.
-     * @param {number} x
-     * @param {number} y
-     * @param {number} w
-     * @param {number} h
-     * @param {'h'|'v'} orientation h: grows to the right, v: grows upwards
-     * @return {string}
-     * @protected
-     */
-    protected static _barPath(x: number, y: number, w: number, h: number, orientation: 'h' | 'v'): string {
-        if (orientation === 'h') {
-            const r = Math.min(4, w, h / 2);
-            return `M${x},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h - r}Q${x + w},${y + h} ${x + w - r},${y + h}H${x}Z`;
-        }
-
-        const r = Math.min(4, h, w / 2);
-        return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
-    }
-
-    protected static _percent(value: number, total: number): string {
-        if (total <= 0) {
-            return '0 %';
-        }
-
-        const share = (value / total) * 100;
-        return `${share.toLocaleString(undefined, {maximumFractionDigits: share < 10 ? 1 : 0})} %`;
-    }
-
     protected static _shareTip(label: string, value: number, total: number): string {
         return `<b>${AdminListUi.escape(label)}</b><br>${value.toLocaleString()} ${Lang.i().l('Sightings')} · ` +
-            `${SightingAnalytics._percent(value, total)}`;
+            `${ChartTooltip.percent(value, total)}`;
     }
 
     /**

@@ -10,6 +10,27 @@ export class Lang_DE implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // sighting year comparison
+        'All years on one Jan–Dec axis': 'Alle Jahre auf einer Achse Jan–Dez',
+        'Average per complete year': 'Ø pro vollständigem Jahr',
+        'Best year': 'Bestes Jahr',
+        'Change against the previous year': 'Veränderung zum Vorjahr',
+        'Course of the year': 'Jahresverlauf',
+        'Cumulative': 'Kumuliert',
+        'Data': 'Daten',
+        'Mon': 'Mo',
+        'Wed': 'Mi',
+        'Fri': 'Fr',
+        'No data for the whole year': 'Keine Daten für das ganze Jahr',
+        'Not comparable: one of the years is incomplete': 'Nicht vergleichbar: eines der Jahre ist unvollständig',
+        'Per month': 'Pro Monat',
+        'Previous year': 'Vorjahr',
+        'Sightings per day': 'Sichtungen pro Tag',
+        'Sightings since 1 January': 'Sichtungen seit 1. Januar',
+        'Years': 'Jahre',
+        'incomplete': 'unvollständig',
+        'running': 'laufend',
+        'vs.': 'vs.',
         // sighting analytics
         'Animals per sighting': 'Tiere pro Sichtung',
         'Distance to the coast': 'Entfernung zur Küste',

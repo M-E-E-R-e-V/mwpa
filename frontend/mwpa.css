@@ -216,6 +216,7 @@
  */
 :root {
   --mwpa-chart-primary: #3a78b5;
+  --mwpa-chart-accent: #e8590c;
 }
 
 .sighting-analytics {
@@ -301,43 +302,59 @@
 }
 
 /**
- * Jahresvergleich tab — single big line plot with hover-tooltip overlay.
+ * Jahresvergleich tab (shares the card/axis styles of .sighting-analytics).
  */
-.sighting-yearcompare {
-  padding: 0.5rem;
-  position: relative;
+.sighting-yearcompare-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: .4rem;
+  flex: 0 0 auto;
 }
-.sighting-yearcompare-status {
-  font-size: 0.8rem;
-  color: #6c757d;
-  margin-bottom: 0.5rem;
-}
-.sighting-yearcompare-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.25rem;
-  color: #444;
-}
-.sighting-yearcompare-chart {
-  position: relative;
-  width: 100%;
-  min-height: 380px;
-}
-.sighting-yearcompare-calendar {
-  width: 100%;
-  overflow-x: auto;
-}
-.sighting-yearcompare-tooltip {
-  position: absolute;
-  background: rgba(255,255,255,0.95);
-  border: 1px solid rgba(0,0,0,.15);
+.sighting-yearcompare-track {
+  height: 6px;
   border-radius: 3px;
-  padding: 4px 8px;
+  background: var(--bs-tertiary-bg);
+  overflow: hidden;
+}
+.sighting-yearcompare-track > div {
+  height: 100%;
+  border-radius: 0 3px 3px 0;
+}
+.sighting-yearcompare-table th,
+.sighting-yearcompare-table td {
+  background: transparent;
+}
+.sighting-yearcompare-month-line {
+  stroke: var(--bs-border-color);
+}
+.sighting-yearcompare-guide {
+  stroke: var(--bs-secondary-color);
+  stroke-dasharray: 3 3;
+}
+.sighting-yearcompare-dot {
+  stroke: var(--bs-body-bg);
+  stroke-width: 2px;
+}
+.sighting-yearcompare-end-label {
+  fill: var(--bs-body-color);
   font-size: 11px;
-  pointer-events: none;
-  box-shadow: 0 2px 6px rgba(0,0,0,.1);
-  z-index: 10;
-  white-space: nowrap;
+}
+.sighting-yearcompare-cal-year {
+  fill: var(--bs-body-color);
+  font-size: 12px !important;
+  font-weight: 600;
+}
+.sighting-yearcompare-legend-box {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--mwpa-chart-primary);
+}
+.sighting-yearcompare-legend-box.empty {
+  background: var(--bs-tertiary-bg);
 }
 /* --------------------------------------------------------------------------
  * Print stylesheet — Data Page sub-tab on the Sighting page
