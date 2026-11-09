@@ -989,6 +989,180 @@
           "description": ""
         }
       ]
+    },
+    {
+      "unid": "0307229d-a81c-427c-af82-39148d71dd58",
+      "name": "SightingHistoryRequest",
+      "description": "Change history of one sighting.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "4dbd093d-2375-457a-8ec8-369eaac78b9e",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Sighting id."
+        }
+      ]
+    },
+    {
+      "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+      "name": "SightingHistoryEntry",
+      "description": "One changed field (or a create / delete event) from the history table.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "563205a6-02d1-4ea7-9f64-d4e23bb73c5e",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "dc74aa12-fdd9-45c9-8808-6f6cf499455e",
+          "name": "change_group",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Groups the fields changed by one save."
+        },
+        {
+          "unid": "f674e703-c422-45ab-88ff-af621e55fcc9",
+          "name": "action",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "'create', 'update' or 'delete'."
+        },
+        {
+          "unid": "b286afc4-2689-4ec7-91be-f90dd05b1a66",
+          "name": "field",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Column name; empty for a create / delete event without field."
+        },
+        {
+          "unid": "beee027f-bb2c-4ab6-8fd4-5d6b490402f3",
+          "name": "old_value",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "554d9bd3-fdef-49d4-9257-e238a47575e5",
+          "name": "new_value",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "75f643e0-f248-424e-b1f1-671a89e8b0f7",
+          "name": "changer_id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "f91e3349-6949-45e9-ba3a-11f65293e210",
+          "name": "changer_name",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "4abb00d0-7b1e-4aac-a6a5-384162efdaad",
+          "name": "change_time",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Unix seconds."
+        },
+        {
+          "unid": "7c64a80c-a919-4abe-ac81-31368f91de54",
+          "name": "source",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "'web' or 'mobile'."
+        }
+      ]
+    },
+    {
+      "unid": "9cfe7d9a-33aa-4a90-a089-fe1acf2d00fa",
+      "name": "SightingHistoryResponse",
+      "description": "Change history of a sighting, newest first.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "16cc890e-32d9-4135-9005-0667067648a8",
+          "name": "list",
+          "type": {
+            "type": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
     }
   ],
   "enums": [],
@@ -4595,6 +4769,720 @@
               "description": "Free text about recognizable individuals."
             }
           ]
+        }
+      }
+    ],
+    "0307229d-a81c-427c-af82-39148d71dd58": [
+      {
+        "ts": 1794267289755,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "0307229d-a81c-427c-af82-39148d71dd58",
+          "name": "SightingHistoryRequest",
+          "description": "Change history of one sighting.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": []
+        }
+      }
+    ],
+    "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f": [
+      {
+        "ts": 1794267291682,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+          "name": "SightingHistoryEntry",
+          "description": "One changed field (or a create / delete event) from the history table.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1794267293379,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+          "name": "SightingHistoryEntry",
+          "description": "One changed field (or a create / delete event) from the history table.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "563205a6-02d1-4ea7-9f64-d4e23bb73c5e",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794267295108,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+          "name": "SightingHistoryEntry",
+          "description": "One changed field (or a create / delete event) from the history table.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "563205a6-02d1-4ea7-9f64-d4e23bb73c5e",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "dc74aa12-fdd9-45c9-8808-6f6cf499455e",
+              "name": "change_group",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Groups the fields changed by one save."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794267297217,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+          "name": "SightingHistoryEntry",
+          "description": "One changed field (or a create / delete event) from the history table.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "563205a6-02d1-4ea7-9f64-d4e23bb73c5e",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "dc74aa12-fdd9-45c9-8808-6f6cf499455e",
+              "name": "change_group",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Groups the fields changed by one save."
+            },
+            {
+              "unid": "f674e703-c422-45ab-88ff-af621e55fcc9",
+              "name": "action",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'create', 'update' or 'delete'."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794267298932,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+          "name": "SightingHistoryEntry",
+          "description": "One changed field (or a create / delete event) from the history table.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "563205a6-02d1-4ea7-9f64-d4e23bb73c5e",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "dc74aa12-fdd9-45c9-8808-6f6cf499455e",
+              "name": "change_group",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Groups the fields changed by one save."
+            },
+            {
+              "unid": "f674e703-c422-45ab-88ff-af621e55fcc9",
+              "name": "action",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'create', 'update' or 'delete'."
+            },
+            {
+              "unid": "b286afc4-2689-4ec7-91be-f90dd05b1a66",
+              "name": "field",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Column name; empty for a create / delete event without field."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794267300691,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+          "name": "SightingHistoryEntry",
+          "description": "One changed field (or a create / delete event) from the history table.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "563205a6-02d1-4ea7-9f64-d4e23bb73c5e",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "dc74aa12-fdd9-45c9-8808-6f6cf499455e",
+              "name": "change_group",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Groups the fields changed by one save."
+            },
+            {
+              "unid": "f674e703-c422-45ab-88ff-af621e55fcc9",
+              "name": "action",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'create', 'update' or 'delete'."
+            },
+            {
+              "unid": "b286afc4-2689-4ec7-91be-f90dd05b1a66",
+              "name": "field",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Column name; empty for a create / delete event without field."
+            },
+            {
+              "unid": "beee027f-bb2c-4ab6-8fd4-5d6b490402f3",
+              "name": "old_value",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794267302315,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+          "name": "SightingHistoryEntry",
+          "description": "One changed field (or a create / delete event) from the history table.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "563205a6-02d1-4ea7-9f64-d4e23bb73c5e",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "dc74aa12-fdd9-45c9-8808-6f6cf499455e",
+              "name": "change_group",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Groups the fields changed by one save."
+            },
+            {
+              "unid": "f674e703-c422-45ab-88ff-af621e55fcc9",
+              "name": "action",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'create', 'update' or 'delete'."
+            },
+            {
+              "unid": "b286afc4-2689-4ec7-91be-f90dd05b1a66",
+              "name": "field",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Column name; empty for a create / delete event without field."
+            },
+            {
+              "unid": "beee027f-bb2c-4ab6-8fd4-5d6b490402f3",
+              "name": "old_value",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "554d9bd3-fdef-49d4-9257-e238a47575e5",
+              "name": "new_value",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794267304126,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+          "name": "SightingHistoryEntry",
+          "description": "One changed field (or a create / delete event) from the history table.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "563205a6-02d1-4ea7-9f64-d4e23bb73c5e",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "dc74aa12-fdd9-45c9-8808-6f6cf499455e",
+              "name": "change_group",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Groups the fields changed by one save."
+            },
+            {
+              "unid": "f674e703-c422-45ab-88ff-af621e55fcc9",
+              "name": "action",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'create', 'update' or 'delete'."
+            },
+            {
+              "unid": "b286afc4-2689-4ec7-91be-f90dd05b1a66",
+              "name": "field",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Column name; empty for a create / delete event without field."
+            },
+            {
+              "unid": "beee027f-bb2c-4ab6-8fd4-5d6b490402f3",
+              "name": "old_value",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "554d9bd3-fdef-49d4-9257-e238a47575e5",
+              "name": "new_value",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "75f643e0-f248-424e-b1f1-671a89e8b0f7",
+              "name": "changer_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794267305883,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+          "name": "SightingHistoryEntry",
+          "description": "One changed field (or a create / delete event) from the history table.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "563205a6-02d1-4ea7-9f64-d4e23bb73c5e",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "dc74aa12-fdd9-45c9-8808-6f6cf499455e",
+              "name": "change_group",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Groups the fields changed by one save."
+            },
+            {
+              "unid": "f674e703-c422-45ab-88ff-af621e55fcc9",
+              "name": "action",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'create', 'update' or 'delete'."
+            },
+            {
+              "unid": "b286afc4-2689-4ec7-91be-f90dd05b1a66",
+              "name": "field",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Column name; empty for a create / delete event without field."
+            },
+            {
+              "unid": "beee027f-bb2c-4ab6-8fd4-5d6b490402f3",
+              "name": "old_value",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "554d9bd3-fdef-49d4-9257-e238a47575e5",
+              "name": "new_value",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "75f643e0-f248-424e-b1f1-671a89e8b0f7",
+              "name": "changer_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "f91e3349-6949-45e9-ba3a-11f65293e210",
+              "name": "changer_name",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794267307642,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "ce0510e1-dbac-4ee9-a3cd-ab623dfe9c5f",
+          "name": "SightingHistoryEntry",
+          "description": "One changed field (or a create / delete event) from the history table.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "563205a6-02d1-4ea7-9f64-d4e23bb73c5e",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "dc74aa12-fdd9-45c9-8808-6f6cf499455e",
+              "name": "change_group",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Groups the fields changed by one save."
+            },
+            {
+              "unid": "f674e703-c422-45ab-88ff-af621e55fcc9",
+              "name": "action",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "'create', 'update' or 'delete'."
+            },
+            {
+              "unid": "b286afc4-2689-4ec7-91be-f90dd05b1a66",
+              "name": "field",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Column name; empty for a create / delete event without field."
+            },
+            {
+              "unid": "beee027f-bb2c-4ab6-8fd4-5d6b490402f3",
+              "name": "old_value",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "554d9bd3-fdef-49d4-9257-e238a47575e5",
+              "name": "new_value",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "75f643e0-f248-424e-b1f1-671a89e8b0f7",
+              "name": "changer_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "f91e3349-6949-45e9-ba3a-11f65293e210",
+              "name": "changer_name",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "4abb00d0-7b1e-4aac-a6a5-384162efdaad",
+              "name": "change_time",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Unix seconds."
+            }
+          ]
+        }
+      }
+    ],
+    "9cfe7d9a-33aa-4a90-a089-fe1acf2d00fa": [
+      {
+        "ts": 1794267313951,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "9cfe7d9a-33aa-4a90-a089-fe1acf2d00fa",
+          "name": "SightingHistoryResponse",
+          "description": "Change history of a sighting, newest first.",
+          "extend": {
+            "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": []
         }
       }
     ]

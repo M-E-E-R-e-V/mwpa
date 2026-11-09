@@ -10,6 +10,8 @@ import {
     SchemaSightingEnvironmentListResponse,
     SchemaSightingFishingVesselListRequest,
     SchemaSightingFishingVesselListResponse,
+    SchemaSightingHistoryRequest,
+    SchemaSightingHistoryResponse,
     SchemaSightingImageGetRequest,
     SchemaSightingSaveRequest,
     SchemaSightingYearsResponse,
@@ -18,6 +20,7 @@ import {
     SightingCurrentRegionResponse,
     SightingEnvironmentListResponse,
     SightingFishingVesselListResponse,
+    SightingHistoryResponse,
     SightingYearsResponse,
     SightingsListResponse,
     RightExport,
@@ -30,6 +33,7 @@ import {Environment} from './Sightings/Environment.js';
 import {Excel} from './Sightings/Excel.js';
 import {FishingVesselList} from './Sightings/FishingVesselList.js';
 import {GetImage} from './Sightings/GetImage.js';
+import {History} from './Sightings/History.js';
 import {List} from './Sightings/List.js';
 import {OldPoints} from './Sightings/OldPoints.js';
 import {Save} from './Sightings/Save.js';
@@ -154,6 +158,24 @@ export class Sightings extends DefaultRoute {
         );
 
         this._post(
+            '/json/sightings/history',
+            checkMWPAUserIsLoginACL,
+            async(_req, _res, data): Promise<SightingHistoryResponse> => {
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                return History.getHistory(userId, isAdmin, data.body);
+            },
+            {
+                description: 'Change history of a sighting (who changed which field when), newest first.',
+                aclRight: RightSightings.sightings_read,
+                bodySchema: SchemaSightingHistoryRequest,
+                responseBodySchema: SchemaSightingHistoryResponse,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._post(
             '/json/sightings/delete',
             checkMWPAUserIsLoginACL,
             async(_req, _res, data): Promise<DefaultReturn> => {
@@ -162,7 +184,7 @@ export class Sightings extends DefaultRoute {
                         statusCode: StatusCodes.FORBIDDEN
                     };
                 }
-                return Delete.deleteSighting(data.body);
+                return Delete.deleteSighting(data.session?.user?.userid ?? 0, data.body);
             },
             {
                 aclRight: RightSightings.sightings_write,

@@ -305,6 +305,12 @@ export {
     SightingSaveRequest,
     SchemaSightingYearsResponse,
     SightingYearsResponse,
+    SchemaSightingHistoryRequest,
+    SightingHistoryRequest,
+    SchemaSightingHistoryEntry,
+    SightingHistoryEntry,
+    SchemaSightingHistoryResponse,
+    SightingHistoryResponse,
 } from './Routes/Main/Sightings/Sightings.js';
 export {
     SchemaSightingMovementTrackEntry,

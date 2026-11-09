@@ -223,3 +223,57 @@ export const SchemaSightingYearsResponse = SchemaDefaultReturn.extend({
  * Type of schema SightingYearsResponse
  */
 export type SightingYearsResponse = ExtractSchemaResultType<typeof SchemaSightingYearsResponse>;
+
+/**
+ * Schema of SightingHistoryRequest
+ * Change history of one sighting.
+ */
+export const SchemaSightingHistoryRequest = Vts.object({
+    id: Vts.number({description: 'Sighting id.'}),
+}, {
+    description: 'Change history of one sighting.',
+});
+
+/**
+ * Type of schema SightingHistoryRequest
+ */
+export type SightingHistoryRequest = ExtractSchemaResultType<typeof SchemaSightingHistoryRequest>;
+
+/**
+ * Schema of SightingHistoryEntry
+ * One changed field (or a create / delete event) from the history table.
+ */
+export const SchemaSightingHistoryEntry = Vts.object({
+    id: Vts.number(),
+    change_group: Vts.string({description: 'Groups the fields changed by one save.'}),
+    action: Vts.string({description: '\'create\', \'update\' or \'delete\'.'}),
+    field: Vts.string({description: 'Column name; empty for a create / delete event without field.'}),
+    old_value: Vts.string(),
+    new_value: Vts.string(),
+    changer_id: Vts.number(),
+    changer_name: Vts.string(),
+    change_time: Vts.number({description: 'Unix seconds.'}),
+    source: Vts.string({description: '\'web\' or \'mobile\'.'}),
+}, {
+    description: 'One changed field (or a create / delete event) from the history table.',
+});
+
+/**
+ * Type of schema SightingHistoryEntry
+ */
+export type SightingHistoryEntry = ExtractSchemaResultType<typeof SchemaSightingHistoryEntry>;
+
+/**
+ * Schema of SightingHistoryResponse
+ * Change history of a sighting, newest first.
+ */
+export const SchemaSightingHistoryResponse = SchemaDefaultReturn.extend({
+    list: Vts.array(SchemaSightingHistoryEntry),
+}, {
+    description: 'Change history of a sighting, newest first.',
+});
+
+/**
+ * Type of schema SightingHistoryResponse
+ */
+export type SightingHistoryResponse = ExtractSchemaResultType<typeof SchemaSightingHistoryResponse>;

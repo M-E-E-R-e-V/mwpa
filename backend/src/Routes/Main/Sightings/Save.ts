@@ -4,10 +4,13 @@ import {v4 as uuidv4} from 'uuid';
 import {Vts} from 'vts';
 import {SightingSaveRequest, TypeSighting} from 'mwpa_schemas';
 import {CoastDistance} from '../../../Application/CoastDistance.js';
+import {HistoryDiff} from '../../../Application/History/HistoryDiff.js';
+import {SightingHistory} from '../../../Application/History/SightingHistory.js';
 import {SightingSaveFields} from '../../../Application/SightingSaveFields.js';
 import {Sighting, SightingType} from '../../../Db/MariaDb/Entities/Sighting.js';
 import {SightingTour} from '../../../Db/MariaDb/Entities/SightingTour.js';
 import {CoastlineCacheRepository} from '../../../Db/MariaDb/Repositories/CoastlineCacheRepository.js';
+import {HistoryRepository} from '../../../Db/MariaDb/Repositories/HistoryRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {VehicleRepository} from '../../../Db/MariaDb/Repositories/VehicleRepository.js';
@@ -115,6 +118,7 @@ export class Save {
         const positionChanged = isNew || sighting.location_begin !== request.location_begin;
         const sightingTime = Save.normaliseTime(request.duration_from ?? '') || Save.normaliseTime(request.tour_start ?? '');
         let tour = await Save._findOwningTour(request, sightingTime);
+        const before = HistoryDiff.snapshot(sighting, SightingHistory.FIELDS);
 
         Save._applyFields(sighting, request, tour);
 
@@ -139,6 +143,14 @@ export class Save {
         }
 
         const saved = await SightingRepository.getInstance().save(sighting);
+
+        await HistoryRepository.getInstance().record(
+            SightingHistory.TABLE,
+            saved.id,
+            isNew ? 'create' : 'update',
+            isNew ? [] : HistoryDiff.diff(before, HistoryDiff.snapshot(saved, SightingHistory.FIELDS), SightingHistory.FIELDS),
+            {changerId: userId, source: 'web'}
+        );
 
         if (isNew) {
             Logger.getLogger().info(`Main/Sightings::save: created sighting id ${saved.id} (tour ${saved.tour_id}) by user ${userId}`);

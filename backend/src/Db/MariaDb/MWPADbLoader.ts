@@ -13,6 +13,7 @@ import {EncounterCategories} from './Entities/EncounterCategories.js';
 import {ExternalReceiver} from './Entities/ExternalReceiver.js';
 import {ExternalTour} from './Entities/ExternalTour.js';
 import {Group} from './Entities/Group.js';
+import {History} from './Entities/History.js';
 import {OrganizationExternalTourSource} from './Entities/OrganizationExternalTourSource.js';
 import {GroupsRoles} from './Entities/GroupsRoles.js';
 import {Organization} from './Entities/Organization.js';
@@ -72,6 +73,7 @@ export class MWPADbLoader extends DBLoader {
             ExternalReceiver,
             ExternalTour,
             Group,
+            History,
             LiveAisTrack,
             GroupsRoles,
             Organization,

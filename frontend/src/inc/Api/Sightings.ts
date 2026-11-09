@@ -1,7 +1,10 @@
+import {SightingHistoryEntry, SightingHistoryResponse} from 'mwpa_schemas';
 import {NetFetch} from '../Net/NetFetch';
 import {UnauthorizedError} from './Error/UnauthorizedError';
 import {StatusCodes} from './Status/StatusCodes';
 import {DefaultReturn} from './Types/DefaultReturn';
+
+export type {SightingHistoryEntry};
 
 /**
  * SightingsFilter
@@ -202,6 +205,32 @@ export class Sightings {
         }
 
         return false;
+    }
+
+    /**
+     * Change history of a sighting (newest first).
+     * @param {number} id
+     * @return {SightingHistoryEntry[]}
+     */
+    public static async getHistory(id: number): Promise<SightingHistoryEntry[]> {
+        const result = await NetFetch.postData('/json/sightings/history', {id});
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return (result as SightingHistoryResponse).list;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+
+                default:
+                    if (result.msg) {
+                        throw new Error(result.msg);
+                    }
+            }
+        }
+
+        return [];
     }
 
     /**

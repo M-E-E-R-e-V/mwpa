@@ -13,6 +13,7 @@ import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
 import {UtilDistanceCoast} from '../../Utils/UtilDistanceCoast';
 import {LocationPickerInput} from '../../Widget/LocationPickerInput';
 import {LocationPickerModal} from '../../Widget/LocationPickerModal';
+import {SightingHistoryView} from './SightingHistoryView';
 
 /**
  * Option of a select / chip list (id + label).
@@ -26,7 +27,8 @@ type SightingEditOption = {
  * SightingEditModal
  *
  * "Add new sighting" / "Edit sighting" in three tabs: the essentials
- * (trip, species, times, position), group & behaviour, and more. The tab
+ * (trip, species, times, position), group & behaviour, and more; an
+ * existing sighting also has a "History" tab (who changed what when). The tab
  * labels count the filled fields, so data on a hidden tab stays visible.
  * Required fields are checked inline before saving (the tab with the first
  * problem opens); the app's plausibility checks show as non-blocking hints.
@@ -104,6 +106,12 @@ export class SightingEditModal extends ModalDialog2 {
     protected _tagInput: JQuery<HTMLInputElement>;
 
     protected _tags: string[] = [];
+
+    protected _history: SightingHistoryView;
+
+    protected _historyIndex: number;
+
+    protected _historyTab: JQuery;
 
     protected _names = {
         vehicle: new Map<number, string>(),
@@ -230,6 +238,18 @@ export class SightingEditModal extends ModalDialog2 {
         const note = jQuery('<textarea class="form-control form-control-sm" rows="3"/>').attr('name', 'note');
         this._controls.set('note', note);
         this._field(more, 'col-12', 'Note', 'note', note);
+
+        // history (existing sightings only) ---------------------------------------------------------------------
+        this._historyIndex = this._panes.length;
+        const historyRow = this._pane('History');
+        this._historyTab = this._tabs.children().last();
+        this._history = new SightingHistoryView(
+            jQuery('<div class="col-12"/>').appendTo(historyRow),
+            (field, value) => this._historyValue(field, value),
+            (count) => {
+                this._historyTab.find('.mwpa-sighting-tab-count').text(count > 0 ? `${count}` : '');
+            }
+        );
 
         this._form.on('change input', () => {
             this._updateChecks();
@@ -438,6 +458,8 @@ export class SightingEditModal extends ModalDialog2 {
         this._renderTags();
         this._distanceText.text(Lang.i().l('The distance to the coast is calculated when saving.'));
         this._meta.empty();
+        this._history.clear();
+        this._historyTab.addClass('d-none');
         this._showPane(0);
         this._updateChecks();
     }
@@ -508,6 +530,7 @@ export class SightingEditModal extends ModalDialog2 {
         }
 
         jQuery('<span/>').text(`#${entry.id}`).appendTo(this._meta);
+        this._historyTab.removeClass('d-none');
 
         if (entry.tour_id) {
             jQuery('<span/>').text(`${Lang.i().l('Tour')} #${entry.tour_id}`).appendTo(this._meta);
@@ -612,6 +635,94 @@ export class SightingEditModal extends ModalDialog2 {
         this._tabs.find('.nav-link').each((i, el) => {
             jQuery(el).toggleClass('active', i === index).attr('aria-selected', `${i === index}`);
         });
+
+        if (index === this._historyIndex && this._sightingId !== null) {
+            this._history.load(this._sightingId).then();
+        }
+    }
+
+    /**
+     * Display text of a stored value for the history tab ('' = empty).
+     * @param {string} field
+     * @param {string} value
+     * @return {string}
+     */
+    protected _historyValue(field: string, value: string): string {
+        const lang = Lang.i();
+        const id = parseInt(value, 10);
+        const named = (names: Map<number, string>): string => id > 0 ? names.get(id) ?? `#${id}` : '';
+
+        switch (field) {
+            case 'vehicle_id':
+                return named(this._names.vehicle);
+
+            case 'vehicle_driver_id':
+                return named(this._names.driver);
+
+            case 'species_id':
+                return named(this._names.species);
+
+            case 'reaction_id':
+                return id > 0 ? named(this._names.reaction) : lang.l('Not recorded');
+
+            case 'tour_id':
+                return id > 0 ? `#${id}` : '';
+
+            case 'group_structure_id':
+                return this._controls.get('group_structure_id')!.find(`option[value="${id}"]`).text() || value;
+
+            case 'behaviours':
+                return SightingEditModal._ids(value).map((b) => this._names.behaviour.get(b) ?? `#${b}`).join(', ');
+
+            case 'other_species':
+                return SightingEditModal._ids(value).map((sp) => this._names.species.get(sp) ?? `#${sp}`).join(', ');
+
+            case 'freq_behaviour':
+                return SightingEditModal._tagsOf(value).join(', ') || value;
+
+            case 'location_begin':
+            case 'location_end':
+                return SightingEditModal._position(value);
+
+            case 'distance_coast': {
+                const meters = parseFloat(value);
+                return Number.isFinite(meters) && meters > 0 ? `${UtilDistanceCoast.meterToM(meters, true)} nm` : '';
+            }
+
+            case 'deleted':
+                return value === '1' ? lang.l('Yes') : lang.l('No');
+
+            case 'sighting_type':
+                return lang.l(['Normal', 'Short entry', 'Notice', 'Free entry'][id] ?? value);
+
+            default:
+                if ((SightingEditModal._TRI_STATES as readonly string[]).includes(field)) {
+                    return lang.l({'-1': 'Unknown', '0': 'No', '1': 'Yes'}[value] ?? value);
+                }
+
+                return value;
+        }
+    }
+
+    /**
+     * "lat, lon" of a JSON position ('' when there is none).
+     * @param {string} raw
+     * @return {string}
+     */
+    protected static _position(raw: string): string {
+        try {
+            const position = JSON.parse(raw) as {latitude?: unknown; longitude?: unknown;} | null;
+            const lat = Number(position?.latitude);
+            const lon = Number(position?.longitude);
+
+            if (Number.isFinite(lat) && Number.isFinite(lon)) {
+                return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+            }
+        } catch {
+            // legacy text
+        }
+
+        return raw === 'null' ? '' : raw;
     }
 
     /**
@@ -920,7 +1031,9 @@ export class SightingEditModal extends ModalDialog2 {
         ];
 
         this._tabs.find('.mwpa-sighting-tab-count').each((i, el) => {
-            jQuery(el).text(counts[i] > 0 ? `${counts[i]}` : '');
+            if (i < counts.length) {
+                jQuery(el).text(counts[i] > 0 ? `${counts[i]}` : '');
+            }
         });
 
         this._form.find('[data-field].is-invalid').each((_i, el) => {

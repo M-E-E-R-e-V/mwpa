@@ -2,10 +2,13 @@ import {Logger} from '@stefanwerfling/figtree';
 import {Vts} from 'vts';
 import {v4 as uuidv4} from 'uuid';
 import {SightingSaveResponse, TypeSighting} from 'mwpa_schemas';
+import {HistoryDiff} from '../../../Application/History/HistoryDiff.js';
+import {SightingHistory} from '../../../Application/History/SightingHistory.js';
 import {Const} from '../../../Const.js';
 import {Sighting as SightingDB, SightingType} from '../../../Db/MariaDb/Entities/Sighting.js';
 import {SightingTour as SightingTourDB} from '../../../Db/MariaDb/Entities/SightingTour.js';
 import {DevicesRepository} from '../../../Db/MariaDb/Repositories/DevicesRepository.js';
+import {HistoryRepository} from '../../../Db/MariaDb/Repositories/HistoryRepository.js';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SightingTourRepository} from '../../../Db/MariaDb/Repositories/SightingTourRepository.js';
 import {SightingMovementService} from '../../../Service/Movement/SightingMovementService.js';
@@ -126,6 +129,10 @@ export class Save {
             }
         }
 
+        // history: a row without id is new; otherwise remember the stored values
+        const isNewSighting = !sighting.id;
+        const before = HistoryDiff.snapshot(sighting, SightingHistory.FIELDS);
+
         const createrId = body.creater_id === 0 || body.creater_id === undefined ? userId : body.creater_id;
         const organization = await Users.getMainOrganization(createrId);
         const organizationId = organization?.id ?? 0;
@@ -173,6 +180,14 @@ export class Save {
         sighting = await SightingRepository.getInstance().save(sighting);
 
         Logger.getLogger().info(`Mobile/Sightings::save: saved unid: ${sighting.unid} id: ${sighting.id}`);
+
+        await HistoryRepository.getInstance().record(
+            SightingHistory.TABLE,
+            sighting.id,
+            isNewSighting ? 'create' : 'update',
+            isNewSighting ? [] : HistoryDiff.diff(before, HistoryDiff.snapshot(sighting, SightingHistory.FIELDS), SightingHistory.FIELDS),
+            {changerId: userId, source: 'mobile'}
+        );
 
         // Refresh derived movement data for this sighting. Service catches
         // its own errors so this never breaks the mobile sync contract.

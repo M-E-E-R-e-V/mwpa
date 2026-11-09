@@ -10,6 +10,21 @@ export class Lang_DE implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // sighting history
+        'Changes are recorded from now on with every save.': 'Änderungen werden ab jetzt bei jedem Speichern aufgezeichnet.',
+        'changed': 'hat geändert',
+        'created': 'hat angelegt',
+        'empty': 'leer',
+        'Free entry': 'Freier Eintrag',
+        'History': 'History',
+        'History could not be loaded': 'History konnte nicht geladen werden',
+        'Loading …': 'Lädt …',
+        'No changes recorded yet.': 'Noch keine Änderungen aufgezeichnet.',
+        'Normal': 'Normal',
+        'Notice': 'Notiz',
+        'Reason for deletion': 'Grund der Löschung',
+        'Short entry': 'Kurzeintrag',
+        'Sighting until': 'Sichtung bis',
         // external tours
         'search tour / meeting point …': 'Tour / Treffpunkt suchen …',
         'All statuses': 'Alle Status',
