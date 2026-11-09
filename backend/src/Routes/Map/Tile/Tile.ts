@@ -1,5 +1,6 @@
 import {Response} from 'express';
 import {FileHelper, Logger, StringHelper} from '@stefanwerfling/figtree';
+import {createHash} from 'crypto';
 import fs from 'fs/promises';
 import {MapCacheRequest} from 'mwpa_schemas';
 import Path from 'path';
@@ -15,6 +16,28 @@ export class Tile {
         ['tms-relieve.idee.es', 'https://tms-relieve.idee.es/1.0.0/relieve/{z}/{x}/{y}.{f}'],
         ['emodnet-bathymetry', 'https://tiles.emodnet-bathymetry.eu/latest/mean_atlas_land/web_mercator/{z}/{x}/{y}.{f}']
     ]);
+
+    /**
+     * Tile servers (OSM tile usage policy) block clients without an
+     * identifying User-Agent — Node's fetch default included.
+     */
+    public static readonly USER_AGENT = 'MWPA tile cache (https://github.com/M-E-E-R-e-V/mwpa)';
+
+    /**
+     * MD5 of the "Access blocked" image tile.openstreetmap.org returns
+     * (with HTTP 200) to blocked clients. Never stored; cached copies from
+     * before the User-Agent fix count as a cache miss and are fetched again.
+     */
+    public static readonly BLOCKED_TILE_MD5 = new Set(['8e8d1ff492c2bdae445a83ccdb8e449f']);
+
+    /**
+     * Is this the image of a blocked client instead of a map tile?
+     * @param {Buffer} buffer
+     * @return {boolean}
+     */
+    public static isBlockedTile(buffer: Buffer): boolean {
+        return Tile.BLOCKED_TILE_MD5.has(createHash('md5').update(buffer).digest('hex'));
+    }
 
     /**
      * Load title
@@ -63,7 +86,14 @@ export class Tile {
         if (mapCacheDir) {
             const tileFile = Path.join(mapCacheDir, `${request.y}.${request.fileformat}`);
 
-            if (!await FileHelper.fileExist(tileFile)) {
+            let cached = await FileHelper.fileExist(tileFile);
+
+            if (cached && Tile.isBlockedTile(await fs.readFile(tileFile))) {
+                await fs.unlink(tileFile).catch(() => undefined);
+                cached = false;
+            }
+
+            if (!cached) {
                 const serverUrl = Tile.MAP_SERVER.get(useServer);
 
                 if (serverUrl !== undefined) {
@@ -74,13 +104,20 @@ export class Tile {
                     .replace('{f}', request.fileformat);
 
                     try {
-                        const downloadResponse = await fetch(tileUrl);
+                        const downloadResponse = await fetch(tileUrl, {
+                            headers: {'User-Agent': Tile.USER_AGENT}
+                        });
 
                         if (!downloadResponse.ok) {
                             throw new Error(`HTTP ${downloadResponse.status} ${downloadResponse.statusText}`);
                         }
 
                         const buffer = Buffer.from(await downloadResponse.arrayBuffer());
+
+                        if (Tile.isBlockedTile(buffer)) {
+                            throw new Error('tile server blocked the request (access blocked tile)');
+                        }
+
                         await FileHelper.create(tileFile, buffer);
                     } catch (error) {
                         Logger.getLogger().error(StringHelper.sprintf(`Faild to download: ${tileUrl} - %e`, error));
