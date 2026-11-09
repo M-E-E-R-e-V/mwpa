@@ -139,49 +139,26 @@ export class Sighting extends BasePage {
         this._sightingDeletedDialog = new SightingDeletedModal();
 
         this._sightingDialog.setOnSave(async(): Promise<void> => {
-            const sid = this._sightingDialog.getSightingId();
-
-            /*
-             * Add-flow is not wired yet — the modal doesn't capture tour_id/unid/etc.
-             * needed for an INSERT, so the backend save endpoint is update-only.
-             */
-            if (sid === null) {
-                this._toast.fire({icon: 'error', title: Lang.i().l('Creating new sightings via this dialog is not supported yet.')});
+            if (!this._sightingDialog.validate()) {
+                this._toast.fire({icon: 'warning', title: Lang.i().l('Please fill in the marked fields.')});
                 return;
             }
 
-            try {
-                const ok = await SightingsAPI.save({
-                    id: sid,
-                    vehicle_id: this._sightingDialog.getVehicle(),
-                    vehicle_driver_id: this._sightingDialog.getVehicleDriver(),
-                    beaufort_wind: this._sightingDialog.getBeaufortWind(),
-                    date: this._sightingDialog.getDateSight(),
-                    tour_start: this._sightingDialog.getTourStart(),
-                    tour_end: this._sightingDialog.getTourEnd(),
-                    duration_from: this._sightingDialog.getDurationFrom(),
-                    duration_until: this._sightingDialog.getDurationUntil(),
-                    location_begin: this._sightingDialog.getPositionBegin(),
-                    location_end: this._sightingDialog.getPositionEnd(),
-                    species_id: this._sightingDialog.getSpecie(),
-                    species_count: this._sightingDialog.getSpeciesCount(),
-                    reaction_id: this._sightingDialog.getReaction(),
-                    other: this._sightingDialog.getOther(),
-                    other_vehicle: this._sightingDialog.getOtherBoats(),
-                    note: this._sightingDialog.getNote()
-                });
+            const isNew = this._sightingDialog.getSightingId() === null;
 
-                if (ok) {
+            try {
+                if (await SightingsAPI.save(this._sightingDialog.getValues())) {
                     if (this._onLoadTable) {
                         this._onLoadTable();
                     }
-                    this._toast.fire({icon: 'success', title: Lang.i().l('Sighting saved.')});
+
+                    this._toast.fire({icon: 'success', title: Lang.i().l(isNew ? 'Sighting created.' : 'Sighting saved.')});
                     this._sightingDialog.hide();
                 } else {
                     this._toast.fire({icon: 'error', title: Lang.i().l('Sighting save failed.')});
                 }
             } catch (message) {
-                this._toast.fire({icon: 'error', title: message});
+                this._toast.fire({icon: 'error', title: Lang.i().l(message instanceof Error ? message.message : `${message}`)});
             }
         });
 
@@ -243,9 +220,7 @@ export class Sighting extends BasePage {
      */
     public override async loadContent(): Promise<void> {
         this.addNavbarButton('Add sighting', 'fas fa-plus', () => {
-            this._sightingDialog.setTitle(new LangTextV2({text: 'Add new sighting'}));
-            this._sightingDialog.resetValues();
-            this._sightingDialog.show();
+            this._sightingDialog.openNew();
         });
 
         // shared mutable state across loaders / renderers ----------------------------------------
@@ -403,7 +378,7 @@ export class Sighting extends BasePage {
              * rows referencing a retired boat keep rendering its name.
              */
             const activeVehicles = vehicles.filter((v) => v.in_use && !v.isdeleted);
-            this._sightingDialog.setVehicleList(activeVehicles);
+            this._sightingDialog.setVehicleList(activeVehicles, vehicles);
             vehicleOptions.push(...activeVehicles.map((e) => ({key: `${e.id}`, value: e.name})));
         }
 
@@ -419,6 +394,7 @@ export class Sighting extends BasePage {
             for (const b of behaviours) {
                 mbehaviours.set(b.id, b);
             }
+            this._sightingDialog.setBehaviourList(behaviours);
         }
 
         if (encates) {
@@ -1415,30 +1391,7 @@ export class Sighting extends BasePage {
 
         // Edit dialog ---------------------------------------------------------------------------
         const openEdit = (entry: SightingsEntry): void => {
-            const distanceCoast = parseFloat(entry.distance_coast!) || 0;
-
-            this._sightingDialog.setTitle(Lang.i().l('Edit Sighting'));
-            this._sightingDialog.resetValues();
-            this._sightingDialog.setSightingId(entry.id);
-            this._sightingDialog.setTourId(entry.tour_id);
-            this._sightingDialog.setVehicle(entry.vehicle_id!);
-            this._sightingDialog.setVehicleDriver(entry.vehicle_driver_id!);
-            this._sightingDialog.setBeaufortWind(entry.beaufort_wind!);
-            this._sightingDialog.setDateSight(entry.date!);
-            this._sightingDialog.setTourStart(entry.tour_start!);
-            this._sightingDialog.setTourEnd(entry.tour_end!);
-            this._sightingDialog.setDurationFrom(entry.duration_from!);
-            this._sightingDialog.setDurationUntil(entry.duration_until!);
-            this._sightingDialog.setPositionBegin(entry.location_begin!);
-            this._sightingDialog.setPositionEnd(entry.location_end!);
-            this._sightingDialog.setDistanceCoast(UtilDistanceCoast.meterToM(distanceCoast, true));
-            this._sightingDialog.setSpecie(entry.species_id!);
-            this._sightingDialog.setSpeciesCount(entry.species_count!);
-            this._sightingDialog.setReaction(entry.reaction_id!);
-            this._sightingDialog.setOther(entry.other!);
-            this._sightingDialog.setOtherBoats(entry.other_vehicle!);
-            this._sightingDialog.setNote(entry.note!);
-            this._sightingDialog.show();
+            this._sightingDialog.openEntry(entry);
         };
 
         /*

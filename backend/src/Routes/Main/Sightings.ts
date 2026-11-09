@@ -144,7 +144,7 @@ export class Sightings extends DefaultRoute {
                 return Save.save(userId, isAdmin, data.body);
             },
             {
-                description: 'Update an existing sighting. Gated by RightSightings.sightings_write.',
+                description: 'Update a sighting (id > 0) or create a new one (id = 0). Gated by RightSightings.sightings_write.',
                 aclRight: RightSightings.sightings_write,
                 bodySchema: SchemaSightingSaveRequest,
                 responseBodySchema: SchemaDefaultReturn,

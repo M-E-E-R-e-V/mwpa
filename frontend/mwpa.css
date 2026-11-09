@@ -624,3 +624,144 @@ body.mwpa-print-mode-profile .popover {
     top: 1rem;
   }
 }
+
+/* sighting dialog (add / edit) */
+.mwpa-sighting-tabbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: -.25rem 0 1rem;
+  border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+.mwpa-sighting-tabs {
+  margin-bottom: -1px;
+  --bs-nav-link-padding-y: .5rem;
+  --bs-nav-underline-gap: 1.25rem;
+}
+.mwpa-sighting-tabs .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .9rem;
+  color: var(--bs-secondary-color);
+}
+.mwpa-sighting-tabs .nav-link.active {
+  color: var(--bs-emphasis-color);
+}
+.mwpa-sighting-tab-count:not(:empty) {
+  min-width: 1.25rem;
+  padding: 0 .35rem;
+  border-radius: 50rem;
+  background: var(--bs-secondary-bg);
+  font-size: .72rem;
+  line-height: 1.25rem;
+  text-align: center;
+}
+.mwpa-sighting-meta {
+  display: flex;
+  gap: .75rem;
+  padding-bottom: .5rem;
+  font-size: .8rem;
+  color: var(--bs-secondary-color);
+  white-space: nowrap;
+}
+.mwpa-sighting-checks {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  margin-bottom: 1rem;
+  padding: .5rem .75rem;
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-warning-bg-subtle);
+  color: var(--bs-warning-text-emphasis);
+  font-size: .85rem;
+}
+.mwpa-sighting-checks i {
+  margin-right: .5rem;
+}
+.mwpa-sighting-pane {
+  min-height: 22rem;
+}
+.mwpa-sighting-divider {
+  margin: .25rem 0 0;
+  opacity: .08;
+}
+.mwpa-sighting-field .form-label {
+  margin-bottom: .25rem;
+  font-size: .8rem;
+  color: var(--bs-secondary-color);
+}
+.mwpa-sighting-error {
+  display: none;
+  margin-top: .25rem;
+  font-size: .8rem;
+  color: var(--bs-form-invalid-color);
+}
+.mwpa-sighting-field.is-invalid .mwpa-sighting-error {
+  display: block;
+}
+.mwpa-sighting-field.is-invalid .form-control,
+.mwpa-sighting-field.is-invalid .form-select {
+  border-color: var(--bs-form-invalid-border-color);
+}
+.mwpa-sighting-field .location-picker-input {
+  flex-wrap: nowrap;
+}
+.mwpa-sighting-field .location-picker-input .input-group-append .btn {
+  height: 100%;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-left: 0;
+  border-radius: 0 var(--bs-border-radius-sm) var(--bs-border-radius-sm) 0;
+}
+.mwpa-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+}
+.mwpa-chip-list .btn {
+  border-radius: 50rem;
+  --bs-btn-padding-y: .15rem;
+  --bs-btn-padding-x: .65rem;
+}
+.mwpa-other-species {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.mwpa-other-species .form-select {
+  max-width: 20rem;
+}
+.mwpa-tag-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem;
+  min-height: calc(1.5em + .5rem + 2px);
+  cursor: text;
+}
+.mwpa-tag-list {
+  display: contents;
+}
+.mwpa-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .1rem .3rem .1rem .6rem;
+  border-radius: 50rem;
+  background: var(--bs-secondary-bg);
+  font-size: .8rem;
+}
+.mwpa-tag .btn-close {
+  width: .45em;
+  height: .45em;
+  padding: .25em;
+}
+.mwpa-tag-entry {
+  flex: 1 1 8rem;
+  min-width: 6rem;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+}

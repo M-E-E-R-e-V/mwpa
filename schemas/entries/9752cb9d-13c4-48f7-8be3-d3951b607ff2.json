@@ -646,7 +646,7 @@
     {
       "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
       "name": "SightingSaveRequest",
-      "description": "Update payload for an existing sighting (admin only). All fields are required; pass empty string / 0 to clear.",
+      "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
       "extend": {
         "type": "object"
       },
@@ -664,7 +664,7 @@
             "array": false,
             "types": []
           },
-          "description": ""
+          "description": "Sighting id to update; 0 creates a new sighting."
         },
         {
           "unid": "33f93358-e484-403b-93e3-037437a59d13",
@@ -841,6 +841,127 @@
             "types": []
           },
           "description": ""
+        },
+        {
+          "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+          "name": "photo_taken",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "1 yes, 0 no, -1 unknown."
+        },
+        {
+          "unid": "ad83c485-e733-4182-a9d4-bf0dfe71afe3",
+          "name": "distance_coast_estimation_gps",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Position estimated without GPS: 1 yes, 0 no, -1 unknown."
+        },
+        {
+          "unid": "716a4712-41a7-4d26-a0fa-a7f45886109d",
+          "name": "juveniles",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "1 yes, 0 no, -1 unknown."
+        },
+        {
+          "unid": "2e8ca035-bff6-4608-8cec-616a6c0db2ac",
+          "name": "calves",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "1 yes, 0 no, -1 unknown."
+        },
+        {
+          "unid": "a35663ed-bba5-45a0-861d-c62085053ff0",
+          "name": "newborns",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "1 yes, 0 no, -1 unknown."
+        },
+        {
+          "unid": "f491d41d-26ca-41a2-b1cf-25f35dfbd1d4",
+          "name": "subgroups",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "1 yes, 0 no, -1 unknown."
+        },
+        {
+          "unid": "fc498b3c-c34a-4e5b-bac0-4a1f104f51a3",
+          "name": "group_structure_id",
+          "type": {
+            "type": "number",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "0 not set, 1 widely dispersed, 2 dispersed, 3 loose, 4 tight."
+        },
+        {
+          "unid": "5eb2c767-a245-447b-ae4e-b907d0a8065e",
+          "name": "behaviours",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "JSON id map of behavioural states, e.g. {\"0\":\"2\",\"1\":\"6\"}."
+        },
+        {
+          "unid": "e1c1274f-febc-427d-9c8c-7df249cc7907",
+          "name": "freq_behaviour",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "JSON list of free-text tags, e.g. [\"breaching\",\"tailslaps\"]."
+        },
+        {
+          "unid": "61494fa3-320e-48ed-86ef-a0cc2a94b119",
+          "name": "recognizable_animals",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "Free text about recognizable individuals."
+        },
+        {
+          "unid": "2daaa68e-9821-426d-a399-3d8c091086dd",
+          "name": "other_species",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "JSON id map of further species, e.g. {\"0\":\"3\"}."
         }
       ]
     },
@@ -1200,6 +1321,3278 @@
                 "types": []
               },
               "description": "Free-text search applied as LIKE on note + recognizable_animals"
+            }
+          ]
+        }
+      }
+    ],
+    "68d80197-f3d7-4833-b570-1a75a1927fad": [
+      {
+        "ts": 1794260908775,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Update payload for an existing sighting (admin only). All fields are required; pass empty string / 0 to clear.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260911106,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260916596,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260919121,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+              "name": "photo_taken",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260921223,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+              "name": "photo_taken",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "ad83c485-e733-4182-a9d4-bf0dfe71afe3",
+              "name": "distance_coast_estimation_gps",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Position estimated without GPS: 1 yes, 0 no, -1 unknown."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260923894,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+              "name": "photo_taken",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "ad83c485-e733-4182-a9d4-bf0dfe71afe3",
+              "name": "distance_coast_estimation_gps",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Position estimated without GPS: 1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "716a4712-41a7-4d26-a0fa-a7f45886109d",
+              "name": "juveniles",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260926039,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+              "name": "photo_taken",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "ad83c485-e733-4182-a9d4-bf0dfe71afe3",
+              "name": "distance_coast_estimation_gps",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Position estimated without GPS: 1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "716a4712-41a7-4d26-a0fa-a7f45886109d",
+              "name": "juveniles",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "2e8ca035-bff6-4608-8cec-616a6c0db2ac",
+              "name": "calves",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260928315,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+              "name": "photo_taken",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "ad83c485-e733-4182-a9d4-bf0dfe71afe3",
+              "name": "distance_coast_estimation_gps",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Position estimated without GPS: 1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "716a4712-41a7-4d26-a0fa-a7f45886109d",
+              "name": "juveniles",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "2e8ca035-bff6-4608-8cec-616a6c0db2ac",
+              "name": "calves",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "a35663ed-bba5-45a0-861d-c62085053ff0",
+              "name": "newborns",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260930026,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+              "name": "photo_taken",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "ad83c485-e733-4182-a9d4-bf0dfe71afe3",
+              "name": "distance_coast_estimation_gps",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Position estimated without GPS: 1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "716a4712-41a7-4d26-a0fa-a7f45886109d",
+              "name": "juveniles",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "2e8ca035-bff6-4608-8cec-616a6c0db2ac",
+              "name": "calves",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "a35663ed-bba5-45a0-861d-c62085053ff0",
+              "name": "newborns",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "f491d41d-26ca-41a2-b1cf-25f35dfbd1d4",
+              "name": "subgroups",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260932305,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+              "name": "photo_taken",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "ad83c485-e733-4182-a9d4-bf0dfe71afe3",
+              "name": "distance_coast_estimation_gps",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Position estimated without GPS: 1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "716a4712-41a7-4d26-a0fa-a7f45886109d",
+              "name": "juveniles",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "2e8ca035-bff6-4608-8cec-616a6c0db2ac",
+              "name": "calves",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "a35663ed-bba5-45a0-861d-c62085053ff0",
+              "name": "newborns",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "f491d41d-26ca-41a2-b1cf-25f35dfbd1d4",
+              "name": "subgroups",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "fc498b3c-c34a-4e5b-bac0-4a1f104f51a3",
+              "name": "group_structure_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "0 not set, 1 widely dispersed, 2 dispersed, 3 loose, 4 tight."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260934765,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+              "name": "photo_taken",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "ad83c485-e733-4182-a9d4-bf0dfe71afe3",
+              "name": "distance_coast_estimation_gps",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Position estimated without GPS: 1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "716a4712-41a7-4d26-a0fa-a7f45886109d",
+              "name": "juveniles",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "2e8ca035-bff6-4608-8cec-616a6c0db2ac",
+              "name": "calves",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "a35663ed-bba5-45a0-861d-c62085053ff0",
+              "name": "newborns",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "f491d41d-26ca-41a2-b1cf-25f35dfbd1d4",
+              "name": "subgroups",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "fc498b3c-c34a-4e5b-bac0-4a1f104f51a3",
+              "name": "group_structure_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "0 not set, 1 widely dispersed, 2 dispersed, 3 loose, 4 tight."
+            },
+            {
+              "unid": "5eb2c767-a245-447b-ae4e-b907d0a8065e",
+              "name": "behaviours",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON id map of behavioural states, e.g. {\"0\":\"2\",\"1\":\"6\"}."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260937438,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+              "name": "photo_taken",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "ad83c485-e733-4182-a9d4-bf0dfe71afe3",
+              "name": "distance_coast_estimation_gps",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Position estimated without GPS: 1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "716a4712-41a7-4d26-a0fa-a7f45886109d",
+              "name": "juveniles",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "2e8ca035-bff6-4608-8cec-616a6c0db2ac",
+              "name": "calves",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "a35663ed-bba5-45a0-861d-c62085053ff0",
+              "name": "newborns",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "f491d41d-26ca-41a2-b1cf-25f35dfbd1d4",
+              "name": "subgroups",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "fc498b3c-c34a-4e5b-bac0-4a1f104f51a3",
+              "name": "group_structure_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "0 not set, 1 widely dispersed, 2 dispersed, 3 loose, 4 tight."
+            },
+            {
+              "unid": "5eb2c767-a245-447b-ae4e-b907d0a8065e",
+              "name": "behaviours",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON id map of behavioural states, e.g. {\"0\":\"2\",\"1\":\"6\"}."
+            },
+            {
+              "unid": "e1c1274f-febc-427d-9c8c-7df249cc7907",
+              "name": "freq_behaviour",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON list of free-text tags, e.g. [\"breaching\",\"tailslaps\"]."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794260939620,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "68d80197-f3d7-4833-b570-1a75a1927fad",
+          "name": "SightingSaveRequest",
+          "description": "Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1202,
+            "y": 516
+          },
+          "fields": [
+            {
+              "unid": "0fc1a24c-16b6-4fb3-92c9-141b6acebb4f",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Sighting id to update; 0 creates a new sighting."
+            },
+            {
+              "unid": "33f93358-e484-403b-93e3-037437a59d13",
+              "name": "vehicle_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3f6d99af-7239-4c7a-b564-eb8d1bc7de69",
+              "name": "vehicle_driver_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "53fe00ca-6c0f-4bf1-9b6e-8910b66c8bc0",
+              "name": "beaufort_wind",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Stored in beaufort_wind_n column. May contain decimals like \"1.5\"."
+            },
+            {
+              "unid": "bde4e26d-2faf-47a1-b472-7ea1f3210870",
+              "name": "date",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a93f75e2-6483-49a7-ac62-90ba9d76fabf",
+              "name": "tour_start",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "eb2afa3a-499e-4b70-b00f-843669414063",
+              "name": "tour_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d531d451-1d58-4baf-9b44-3143f39eac99",
+              "name": "duration_from",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d3a3604d-472d-4471-958d-bdc6c8f94c94",
+              "name": "duration_until",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "48ae9d60-8e5c-4651-8ac3-f3246aa27924",
+              "name": "location_begin",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "7fe29f42-81d0-4f38-a3d6-b885a5d23c01",
+              "name": "location_end",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON-stringified GeolocationCoordinates (\"null\" or \"\" for unset)."
+            },
+            {
+              "unid": "84f0aed5-8bfb-4ee8-be19-d293b4fc68e9",
+              "name": "species_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "12cbdc59-a98f-4e1b-998a-61422563d120",
+              "name": "species_count",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ce51e090-275d-4fb5-9b5d-9e5ab79f419c",
+              "name": "reaction_id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "342aa238-fe87-41d0-a9cc-378e6acaf720",
+              "name": "other",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "e40eb379-7b2f-45d3-952e-5279e9fd925e",
+              "name": "other_vehicle",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "56bdb073-7204-4fd4-b472-6d6f317a8a6c",
+              "name": "note",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "128ca5d6-e0cf-4fa0-937e-d82d790acf27",
+              "name": "photo_taken",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "ad83c485-e733-4182-a9d4-bf0dfe71afe3",
+              "name": "distance_coast_estimation_gps",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Position estimated without GPS: 1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "716a4712-41a7-4d26-a0fa-a7f45886109d",
+              "name": "juveniles",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "2e8ca035-bff6-4608-8cec-616a6c0db2ac",
+              "name": "calves",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "a35663ed-bba5-45a0-861d-c62085053ff0",
+              "name": "newborns",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "f491d41d-26ca-41a2-b1cf-25f35dfbd1d4",
+              "name": "subgroups",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "1 yes, 0 no, -1 unknown."
+            },
+            {
+              "unid": "fc498b3c-c34a-4e5b-bac0-4a1f104f51a3",
+              "name": "group_structure_id",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "0 not set, 1 widely dispersed, 2 dispersed, 3 loose, 4 tight."
+            },
+            {
+              "unid": "5eb2c767-a245-447b-ae4e-b907d0a8065e",
+              "name": "behaviours",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON id map of behavioural states, e.g. {\"0\":\"2\",\"1\":\"6\"}."
+            },
+            {
+              "unid": "e1c1274f-febc-427d-9c8c-7df249cc7907",
+              "name": "freq_behaviour",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "JSON list of free-text tags, e.g. [\"breaching\",\"tailslaps\"]."
+            },
+            {
+              "unid": "61494fa3-320e-48ed-86ef-a0cc2a94b119",
+              "name": "recognizable_animals",
+              "type": {
+                "type": "string",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "Free text about recognizable individuals."
             }
           ]
         }

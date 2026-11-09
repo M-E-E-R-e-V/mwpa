@@ -170,10 +170,10 @@ export type SightingImageGetRequest = ExtractSchemaResultType<typeof SchemaSight
 
 /**
  * Schema of SightingSaveRequest
- * Update payload for an existing sighting (admin only). All fields are required; pass empty string / 0 to clear.
+ * Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.
  */
 export const SchemaSightingSaveRequest = Vts.object({
-    id: Vts.number(),
+    id: Vts.number({description: 'Sighting id to update; 0 creates a new sighting.'}),
     vehicle_id: Vts.number(),
     vehicle_driver_id: Vts.number(),
     beaufort_wind: Vts.string({description: 'Stored in beaufort_wind_n column. May contain decimals like "1.5".'}),
@@ -190,8 +190,19 @@ export const SchemaSightingSaveRequest = Vts.object({
     other: Vts.optional(Vts.string()),
     other_vehicle: Vts.optional(Vts.string()),
     note: Vts.optional(Vts.string()),
+    photo_taken: Vts.optional(Vts.number({description: '1 yes, 0 no, -1 unknown.'})),
+    distance_coast_estimation_gps: Vts.optional(Vts.number({description: 'Position estimated without GPS: 1 yes, 0 no, -1 unknown.'})),
+    juveniles: Vts.optional(Vts.number({description: '1 yes, 0 no, -1 unknown.'})),
+    calves: Vts.optional(Vts.number({description: '1 yes, 0 no, -1 unknown.'})),
+    newborns: Vts.optional(Vts.number({description: '1 yes, 0 no, -1 unknown.'})),
+    subgroups: Vts.optional(Vts.number({description: '1 yes, 0 no, -1 unknown.'})),
+    group_structure_id: Vts.optional(Vts.number({description: '0 not set, 1 widely dispersed, 2 dispersed, 3 loose, 4 tight.'})),
+    behaviours: Vts.optional(Vts.string({description: 'JSON id map of behavioural states, e.g. {"0":"2","1":"6"}.'})),
+    freq_behaviour: Vts.optional(Vts.string({description: 'JSON list of free-text tags, e.g. ["breaching","tailslaps"].'})),
+    recognizable_animals: Vts.optional(Vts.string({description: 'Free text about recognizable individuals.'})),
+    other_species: Vts.optional(Vts.string({description: 'JSON id map of further species, e.g. {"0":"3"}.'})),
 }, {
-    description: 'Update payload for an existing sighting (admin only). All fields are required; pass empty string / 0 to clear.',
+    description: 'Save payload of the web sighting dialog. id > 0 updates that sighting, id = 0 creates a new one. The extended fields (photo_taken … other_species) are optional: left out, an update keeps the stored value.',
 });
 
 /**

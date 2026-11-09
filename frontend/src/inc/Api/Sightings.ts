@@ -63,6 +63,7 @@ export type SightingsEntry = {
     newborns?: number;
     behaviours?: string;
     subgroups?: number;
+    group_structure_id?: number;
     reaction_id?: number;
     freq_behaviour?: string;
     recognizable_animals?: string;
@@ -97,7 +98,7 @@ export type SightingDeleteRequest = {
 };
 
 /**
- * SightingSaveRequest
+ * SightingSaveRequest — `id: 0` creates a new sighting.
  */
 export type SightingSaveRequest = {
     id: number;
@@ -117,6 +118,17 @@ export type SightingSaveRequest = {
     other?: string;
     other_vehicle?: string;
     note?: string;
+    photo_taken?: number;
+    distance_coast_estimation_gps?: number;
+    juveniles?: number;
+    calves?: number;
+    newborns?: number;
+    subgroups?: number;
+    group_structure_id?: number;
+    behaviours?: string;
+    freq_behaviour?: string;
+    recognizable_animals?: string;
+    other_species?: string;
 };
 
 export type SightingGPSUpdateData = {
@@ -181,6 +193,11 @@ export class Sightings {
 
                 case StatusCodes.UNAUTHORIZED:
                     throw new UnauthorizedError();
+
+                default:
+                    if (result.msg) {
+                        throw new Error(result.msg);
+                    }
             }
         }
 

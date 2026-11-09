@@ -25,4 +25,19 @@ export class CoastlineCacheRepository extends DBRepository<CoastlineCache> {
         });
     }
 
+    /**
+     * Areas with loaded lines whose box contains the point, smallest box first.
+     */
+    public async findContaining(lat: number, lon: number): Promise<CoastlineCache[]> {
+        const repository = await this._repository;
+
+        return repository.createQueryBuilder('c')
+        .where('c.lines IS NOT NULL')
+        .andWhere('c.fetch_datetime > 0')
+        .andWhere('c.south <= :lat AND c.north >= :lat', {lat})
+        .andWhere('c.west <= :lon AND c.east >= :lon', {lon})
+        .orderBy('(c.north - c.south) * (c.east - c.west)', 'ASC')
+        .getMany();
+    }
+
 }
