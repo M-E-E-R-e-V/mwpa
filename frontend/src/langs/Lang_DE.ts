@@ -10,6 +10,32 @@ export class Lang_DE implements LangDefine {
      * @private
      */
     private _content: {[index: string]: string;} = {
+        // external tours
+        'search tour / meeting point …': 'Tour / Treffpunkt suchen …',
+        'All statuses': 'Alle Status',
+        'All tours': 'Alle Touren',
+        'Bookable': 'Buchbar',
+        'Booking provider · slot id': 'Buchungsanbieter · Termin-ID',
+        'Closed': 'Geschlossen',
+        'date': 'Termin',
+        'dates': 'Termine',
+        'Free seats': 'Freie Plätze',
+        'Last sync': 'Letzter Abgleich',
+        'Next 30 days': 'Nächste 30 Tage',
+        'Next 60 days': 'Nächste 60 Tage',
+        'Next 7 days': 'Nächste 7 Tage',
+        'Next bookable tour': 'Nächste buchbare Tour',
+        'No tour dates match the current filter.': 'Keine Termine passen zum aktuellen Filter.',
+        'reserved': 'reserviert',
+        'seat free': 'Platz frei',
+        'Seats': 'Plätze',
+        'seats free': 'Plätze frei',
+        'Sold out': 'Ausgebucht',
+        'Today': 'Heute',
+        'Tomorrow': 'Morgen',
+        'Tour dates': 'Termine',
+        'unknown': 'unbekannt',
+        'Unnamed tour': 'Tour ohne Namen',
         // tour map
         'Sighting routes': 'Wege während der Sichtungen',
         'Tour track': 'Track der Tour',
