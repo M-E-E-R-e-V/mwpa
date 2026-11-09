@@ -14,9 +14,13 @@ type FhCompany = {
     processor_currency?: string;
 };
 
+/**
+ * Calendar payloads carry either the full item or only a stub
+ * (`{cls, uri}`), so pk and name are optional.
+ */
 type FhItem = {
-    pk: number;
-    name: string;
+    pk?: number;
+    name?: string;
 };
 
 type FhLocation = {
@@ -31,6 +35,8 @@ type FhAvailability = {
     item: FhItem;
     start_at: string;
     end_at: string;
+    utc_start_at?: string;
+    utc_end_at?: string;
     approximate_available_capacity?: number | null;
     headline?: string;
     is_bookable: boolean;
@@ -84,6 +90,7 @@ type FhPricingOverviewResponse = {
 };
 
 type FhItemDetail = {
+    name?: string;
     primary_location?: FhLocation;
     headline?: string;
 };
@@ -93,6 +100,14 @@ type FhCompanyDetail = {
     primary_location?: FhLocation;
     processor_currency?: string;
 };
+
+/**
+ * The detail endpoints wrap their object: `{"item": {...}}` and
+ * `{"company": {...}}`. The flat shape is still accepted.
+ */
+type FhItemDetailResponse = FhItemDetail & {item?: FhItemDetail;};
+
+type FhCompanyDetailResponse = FhCompanyDetail & {company?: FhCompanyDetail;};
 
 /**
  * Pulls planned tour slots from FareHarbor's public read API. Uses
@@ -227,8 +242,8 @@ export class FareHarborProvider implements ExternalTourProvider {
             return cached;
         }
         const url = `${this._baseUrl(config)}/companies/${encodeURIComponent(key)}/`;
-        const body = await this._getJson<FhCompanyDetail>(url);
-        const detail = body ?? {};
+        const body = await this._getJson<FhCompanyDetailResponse>(url);
+        const detail: FhCompanyDetail = body?.company ?? body ?? {};
         this._companyCache.set(key, detail);
         return detail;
     }
@@ -240,8 +255,8 @@ export class FareHarborProvider implements ExternalTourProvider {
             return cached;
         }
         const url = `${this._baseUrl(config)}/companies/${encodeURIComponent(config.company_shortname)}/items/${encodeURIComponent(itemPk)}/`;
-        const body = await this._getJson<FhItemDetail>(url);
-        const detail = body ?? {};
+        const body = await this._getJson<FhItemDetailResponse>(url);
+        const detail: FhItemDetail = body?.item ?? body ?? {};
         this._itemCache.set(key, detail);
         return detail;
     }
@@ -316,20 +331,25 @@ export class FareHarborProvider implements ExternalTourProvider {
         availability: FhAvailability,
         pricing: FhPricePreview[]
     ): ExternalTourSlot | null {
-        const startAtUtcMs = Date.parse(availability.start_at);
-        if (Number.isNaN(startAtUtcMs)) {
+        // FareHarbor's "start_at" is the local wall-clock, with or
+        // without an offset suffix; "utc_start_at" (when present) is
+        // the exact instant. Never parse a suffix-less time in the
+        // server's own time zone.
+        const startLocalMs = this._parseWallClock(availability.start_at);
+        if (startLocalMs === null) {
             return null;
         }
-        const endAtUtcMs = Date.parse(availability.end_at);
-        const startUtcSec = Math.floor(startAtUtcMs / 1000);
-        const endUtcSec = Number.isNaN(endAtUtcMs) ? startUtcSec : Math.floor(endAtUtcMs / 1000);
 
-        // FareHarbor's "start_at" is the local wall-clock with a tz
-        // offset suffix; turning it into "local unix seconds" means
-        // stripping the offset. Date.parse already applied the offset,
-        // so add it back to get the wall-clock unix-equivalent.
         const tzOffsetMin = this._extractTzOffsetMinutes(availability.start_at);
-        const startLocalSec = startUtcSec + (tzOffsetMin * 60);
+        const startUtcMs = this._parseInstant(availability.utc_start_at)
+            ?? (startLocalMs - (tzOffsetMin * 60000));
+        const endUtcMs = this._parseInstant(availability.utc_end_at)
+            ?? this._parseInstant(availability.end_at)
+            ?? startUtcMs;
+
+        const startUtcSec = Math.floor(startUtcMs / 1000);
+        const endUtcSec = Math.floor(endUtcMs / 1000);
+        const startLocalSec = Math.floor(startLocalMs / 1000);
 
         const itemDetail = this._itemCache.get(`${config.company_shortname}/${itemPk}`);
         const companyDetail = this._companyCache.get(config.company_shortname);
@@ -345,8 +365,8 @@ export class FareHarborProvider implements ExternalTourProvider {
 
         return {
             external_id: `${availability.pk}`,
-            item_pk: `${availability.item.pk}`,
-            item_name: availability.item.name,
+            item_pk: availability.item?.pk === undefined ? itemPk : `${availability.item.pk}`,
+            item_name: availability.item?.name ?? itemDetail?.name ?? '',
             start_at: startLocalSec,
             start_at_utc: startUtcSec,
             end_at: endUtcSec,
@@ -407,6 +427,39 @@ export class FareHarborProvider implements ExternalTourProvider {
      * when no offset suffix is present.
      * @private
      */
+    /**
+     * Wall-clock of an ISO time as unix ms (offset suffix ignored),
+     * null when unparsable.
+     * @private
+     */
+    private _parseWallClock(iso: string): number | null {
+        const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/u.exec(iso);
+        if (!match) {
+            return null;
+        }
+        return Date.UTC(
+            parseInt(match[1], 10),
+            parseInt(match[2], 10) - 1,
+            parseInt(match[3], 10),
+            parseInt(match[4], 10),
+            parseInt(match[5], 10),
+            parseInt(match[6] ?? '0', 10)
+        );
+    }
+
+    /**
+     * Exact instant of an ISO time WITH an offset suffix (or "Z") as
+     * unix ms; null when missing, suffix-less or unparsable.
+     * @private
+     */
+    private _parseInstant(iso: string | undefined): number | null {
+        if (!iso || !(/(?:Z|[+-]\d{2}:?\d{2})$/u).test(iso)) {
+            return null;
+        }
+        const ms = Date.parse(iso.replace(/([+-]\d{2})(\d{2})$/u, '$1:$2'));
+        return Number.isNaN(ms) ? null : ms;
+    }
+
     private _extractTzOffsetMinutes(iso: string): number {
         const match = /([+-])(\d{2}):?(\d{2})$/u.exec(iso);
         if (!match) {

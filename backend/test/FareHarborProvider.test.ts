@@ -271,4 +271,74 @@ describe('FareHarborProvider', () => {
         }
     });
 
+    /**
+     * Real payload shape (2026-11): the calendar carries only an item
+     * stub (`{cls, uri}`), times without offset plus `utc_start_at`,
+     * and the detail endpoints wrap their object (`{"item": {...}}`,
+     * `{"company": {...}}`). Item pk / name / meeting point must come
+     * from the request + item detail, and the times must not depend on
+     * the server's time zone.
+     */
+    it('maps item stubs, wrapped details and suffix-less times', async() => {
+        installFetchStub((url) => {
+            if (url.includes('/items/326313/calendar/')) {
+                return {
+                    calendar: {
+                        weeks: [{
+                            days: [{
+                                availabilities: [{
+                                    pk: -10467871,
+                                    item: {cls: 'Item', uri: '/api/v1/companies/whalewatching-gomera/items/326313/'},
+                                    start_at: '2026-07-28T09:30:00',
+                                    end_at: '2026-07-28T09:30:00',
+                                    utc_start_at: '2026-07-28T08:30:00+0000',
+                                    utc_end_at: '2026-07-28T08:30:00+0000',
+                                    approximate_available_capacity: 4,
+                                    headline: 'Dauer: 3-4 Stunden',
+                                    is_bookable: true,
+                                    is_sold_out: false
+                                }]
+                            }]
+                        }]
+                    }
+                };
+            }
+            if (url.endsWith('/items/326313/')) {
+                return {
+                    item: {
+                        pk: 326313,
+                        name: 'Whale Watching Tour La Gomera',
+                        primary_location: {name: 'Puerto de Vueltas', latitude: 28.08093, longitude: -17.33226}
+                    }
+                };
+            }
+            if (url.endsWith('/companies/whalewatching-gomera/')) {
+                return {company: {processor_currency: 'eur'}};
+            }
+            return {};
+        });
+
+        try {
+            const provider = new FareHarborProvider();
+            const slots = await provider.fetchSchedule(
+                baseConfig,
+                new Date(Date.UTC(2026, 6, 1)),
+                new Date(Date.UTC(2026, 6, 31))
+            );
+
+            assert.equal(slots.length, 1);
+            const slot = slots[0];
+            assert.equal(slot.item_pk, '326313');
+            assert.equal(slot.item_name, 'Whale Watching Tour La Gomera');
+            assert.equal(slot.meeting_name, 'Puerto de Vueltas');
+            assert.equal(slot.meeting_lat, 28.08093);
+            assert.equal(slot.start_at_utc, Math.floor(Date.UTC(2026, 6, 28, 8, 30) / 1000));
+            assert.equal(slot.start_at, Math.floor(Date.UTC(2026, 6, 28, 9, 30) / 1000));
+            assert.equal(slot.end_at, slot.start_at_utc);
+            assert.equal(slot.currency, 'EUR');
+        } finally {
+            restoreFetch();
+        }
+    });
+
 });
