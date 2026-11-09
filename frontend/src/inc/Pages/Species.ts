@@ -1,6 +1,5 @@
+/* global JQuery */
 import {
-    Badge2,
-    BadgeType2,
     ButtonClass2,
     ButtonMenu2,
     Card2,
@@ -19,14 +18,15 @@ import {
     TableWrapper2,
     Td2,
     Th2,
-    Tr2,
-    UtilColor
+    Tr2
 } from 'bambooo';
 import {Species as SpeciesAPI, SpeciesEntry, SpeciesMerge} from '../Api/Species';
 import {SpeciesGroup as SpeciesGroupAPI} from '../Api/SpeciesGroup';
 import {Lang} from '../Lang';
 import {Nav} from '../Nav';
 import {UtilOttLink} from '../Utils/UtilOttLink';
+import {SpeciesNameParts, UtilSpeciesName} from '../Utils/UtilSpeciesName';
+import {UtilSpeciesSilhouette} from '../Utils/UtilSpeciesSilhouette';
 import {UtilWormsLink} from '../Utils/UtilWormsLink';
 import {SpeciesGroupDisplay} from '../Widget/SpeciesGroupDisplay';
 import {BasePage} from './BasePage';
@@ -35,40 +35,50 @@ import {SPECIES_PAGE_NAME} from './PageNames';
 import {SpeciesEditModal} from './Species/SpeciesEditModal';
 import {SpeciesMergeModal} from './Species/SpeciesMergeModal';
 
-const PAGE_SIZE = 30;
+/**
+ * Sortable columns
+ */
+type SortKey = 'id' | 'name' | 'scientific' | 'group' | 'taxonomy';
 
-type SortKey = 'id' | 'name' | 'ottid' | 'aphiaid' | 'group';
+/**
+ * Sort state per column
+ */
 type SortState = Record<SortKey, SortOrder2>;
 
-const escapeHtml = (s: string): string => s
-.replace(/&/gu, '&amp;')
-.replace(/</gu, '&lt;')
-.replace(/>/gu, '&gt;')
-.replace(/"/gu, '&quot;')
-.replace(/'/gu, '&#39;');
-
-const highlight = (text: string, term: string): string => {
-    if (text === '') {
-        return '';
-    }
-    const escaped = escapeHtml(text);
-    if (term === '') {
-        return escaped;
-    }
-    const safe = term.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-    return escaped.replace(new RegExp(safe, 'giu'), (match) => `<mark>${match}</mark>`);
+/**
+ * Species entry with its parsed name parts (computed once per load).
+ */
+type SpeciesRow = {
+    entry: SpeciesEntry;
+    name: SpeciesNameParts;
 };
 
 /**
- * Species admin page — modern Sighting/Vehicle-style:
- * TableWrapper with infinite scroll, single-column sort, in-header
- * quick search across name + species_group + ottid. Backend still
- * returns the whole species list at once (small table), so filter +
- * sort happen client-side.
+ * Toolbar filter state
+ */
+type SpeciesFilter = {
+    term: string;
+    groupId: number;
+    incompleteOnly: boolean;
+    showDeleted: boolean;
+};
+
+/**
+ * Species admin page. Client-side list (the species table is small): a
+ * toolbar with search, group filter and data-quality toggles, summary
+ * figures (how many species have WoRMS / OTT ids and an own image), and a
+ * table with picture, common + local name, scientific name, group and the
+ * taxonomy ids as links (missing ids are flagged).
  */
 export class Species extends BasePage {
 
     public static NAME: string = SPECIES_PAGE_NAME;
+
+    /**
+     * Rows per TableWrapper page
+     * @protected
+     */
+    protected static readonly _PAGE_SIZE = 30;
 
     protected override _name: string = Species.NAME;
 
@@ -99,6 +109,13 @@ export class Species extends BasePage {
                 };
 
                 if (await SpeciesAPI.save(aspecie)) {
+                    const imageError = await this._saveImage(tid);
+
+                    if (imageError !== null) {
+                        this._toast.fire({icon: 'error', title: `${Lang.i().l('Image could not be saved')}: ${Lang.i().l(imageError)}`});
+                        return;
+                    }
+
                     this._speciesDialog.hide();
                     if (this._onLoadTable) {
                         this._onLoadTable();
@@ -130,10 +147,143 @@ export class Species extends BasePage {
         });
     }
 
+    /**
+     * HTML-escape a string.
+     * @param {string} s
+     * @return {string}
+     * @protected
+     */
+    protected static _escape(s: string): string {
+        return s
+        .replace(/&/gu, '&amp;')
+        .replace(/</gu, '&lt;')
+        .replace(/>/gu, '&gt;')
+        .replace(/"/gu, '&quot;')
+        .replace(/'/gu, '&#39;');
+    }
+
+    /**
+     * Escape + mark the search term.
+     * @param {string} text
+     * @param {string} term
+     * @return {string}
+     * @protected
+     */
+    protected static _highlight(text: string, term: string): string {
+        const escaped = Species._escape(text);
+
+        if (text === '' || term === '') {
+            return escaped;
+        }
+
+        const safe = Species._escape(term).replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+        return escaped.replace(new RegExp(safe, 'giu'), (match) => `<mark class="px-0">${match}</mark>`);
+    }
+
+    /**
+     * True when a taxonomy id is missing.
+     * @param {SpeciesEntry} entry
+     * @return {boolean}
+     * @protected
+     */
+    protected static _isIncomplete(entry: SpeciesEntry): boolean {
+        return (entry.aphiaid ?? 0) === 0 || entry.ottid === 0;
+    }
+
+    /**
+     * Small taxonomy id pill: link-styled when set, warning when missing.
+     * @param {JQuery} parent
+     * @param {string} label e.g. "WoRMS"
+     * @param {number} id
+     * @return {JQuery}
+     * @protected
+     */
+    protected static _taxonPill(parent: JQuery, label: string, id: number): JQuery {
+        const pill = jQuery('<span class="badge rounded-pill border me-1 mb-1 fw-normal"/>').appendTo(parent);
+
+        if (id > 0) {
+            pill.addClass('text-primary-emphasis bg-primary-subtle border-primary-subtle');
+            jQuery('<span class="fw-semibold me-1"/>').text(label).appendTo(pill);
+            jQuery('<span class="font-monospace"/>').text(`${id}`).appendTo(pill);
+            jQuery('<i class="fas fa-external-link-alt ms-1 small"/>').appendTo(pill);
+        } else {
+            pill.addClass('text-warning-emphasis bg-warning-subtle border-warning-subtle');
+            jQuery('<i class="fas fa-exclamation-triangle me-1"/>').appendTo(pill);
+            jQuery('<span/>').text(`${label} ${Lang.i().l('missing')}`).appendTo(pill);
+        }
+
+        return pill;
+    }
+
+    /**
+     * Summary figure ("24 / 26 with WoRMS").
+     * @param {JQuery} parent
+     * @param {string} icon
+     * @param {number} value
+     * @param {number} total
+     * @param {string} label
+     * @protected
+     */
+    protected static _stat(parent: JQuery, icon: string, value: number, total: number, label: string): void {
+        const complete = value === total;
+        const stat = jQuery('<div class="d-flex align-items-center gap-2 px-3 py-1 border rounded bg-body"/>').appendTo(parent);
+        jQuery('<i/>').addClass(`${icon} ${complete ? 'text-success' : 'text-body-secondary'}`).appendTo(stat);
+        const text = jQuery('<div class="lh-sm"/>').appendTo(stat);
+        jQuery('<div class="fw-bold"/>').text(`${value} / ${total}`).appendTo(text);
+        jQuery('<div class="small text-body-secondary"/>').text(Lang.i().l(label)).appendTo(text);
+    }
+
+    /**
+     * Upload / remove the species image chosen in the dialog (existing species only).
+     * @param {number} id species id
+     * @return {Promise<string|null>} null = ok, otherwise error message
+     * @protected
+     */
+    protected async _saveImage(id: number): Promise<string | null> {
+        if (id === 0) {
+            return null;
+        }
+
+        const file = this._speciesDialog.getPendingImage();
+
+        if (file !== null) {
+            return SpeciesAPI.uploadImage(id, file);
+        }
+
+        if (this._speciesDialog.isImageRemoved() && !await SpeciesAPI.deleteImage(id)) {
+            return 'Request failed';
+        }
+
+        return null;
+    }
+
+    /**
+     * Open the edit dialog for a species.
+     * @param {SpeciesEntry} specie
+     * @protected
+     */
+    protected async _openEdit(specie: SpeciesEntry): Promise<void> {
+        this._speciesDialog.resetValues();
+        this._speciesDialog.setTitle(new LangTextV2({text: 'Edit Species'}));
+        this._speciesDialog.setSpecieId(specie.id);
+        this._speciesDialog.setName(specie.name);
+        this._speciesDialog.setOttId(specie.ottid);
+        this._speciesDialog.setAphiaId(specie.aphiaid ?? 0);
+        this._speciesDialog.setImageUrl(SpeciesAPI.imageUrl(specie));
+
+        const groups = await SpeciesGroupAPI.getList();
+        if (groups) {
+            this._speciesDialog.setSpeciesGroupList(groups);
+        }
+
+        this._speciesDialog.setSpeciesGroup(specie.species_groupid);
+        this._speciesDialog.show();
+    }
+
     public override async loadContent(): Promise<void> {
-        this.addNavbarButton('Add Specie', 'fas fa-plus', async() => {
+        this.addNavbarButton('Add species', 'fas fa-plus', async() => {
             this._speciesDialog.resetValues();
-            this._speciesDialog.setTitle(new LangTextV2({text: 'Add Specie'}));
+            this._speciesDialog.setTitle(new LangTextV2({text: 'Add species'}));
 
             const groups = await SpeciesGroupAPI.getList();
             if (groups) {
@@ -151,30 +301,70 @@ export class Species extends BasePage {
         card.appendTo(col.getElement());
         card.setTitle(new LangTextV2({text: 'Species'}));
 
-        // In-header quick search.
-        const searchSlot = jQuery('<div class="sighting-quick-search"/>').insertAfter(card.getTitleElement());
+        const filter: SpeciesFilter = {
+            term: '',
+            groupId: 0,
+            incompleteOnly: false,
+            showDeleted: false
+        };
+
+        // toolbar -----------------------------------------------------------------------------------------------------
+
+        const toolbar = jQuery('<div class="d-flex flex-wrap align-items-center gap-2 px-3 pt-3"/>').appendTo(card.getElement());
+
+        const searchGroup = jQuery('<div class="input-group input-group-sm" style="max-width:340px;"/>').appendTo(toolbar);
+        jQuery('<span class="input-group-text"><i class="fas fa-search"></i></span>').appendTo(searchGroup);
         const searchInput = new Input2({type: InputType2.text});
-        searchInput.appendTo(searchSlot);
-        searchInput.setPlaceholder(`${lang.l('search name / group / ott-id / WoRMS …')}`);
+        searchInput.appendTo(searchGroup);
+        searchInput.getElement().addClass('form-control-sm');
+        searchInput.setPlaceholder(lang.l('Search name, Latin name, group or id …'));
+
+        const groupSelect = jQuery<HTMLSelectElement>('<select class="form-select form-select-sm" style="max-width:200px;"/>').appendTo(toolbar);
+        jQuery('<option value="0"/>').text(lang.l('All groups')).appendTo(groupSelect);
+
+        const makeSwitch = (label: string): JQuery<HTMLInputElement> => {
+            const id = `mwpa-species-${label.replace(/\W+/gu, '-').toLowerCase()}`;
+            const wrap = jQuery('<div class="form-check form-switch mb-0 ms-2"/>').appendTo(toolbar);
+            const input = jQuery<HTMLInputElement>('<input class="form-check-input" type="checkbox" role="switch">').attr('id', id).appendTo(wrap);
+            jQuery('<label class="form-check-label small"/>').attr('for', id).text(lang.l(label)).appendTo(wrap);
+            return input;
+        };
+
+        const incompleteSwitch = makeSwitch('Only incomplete');
+        const deletedSwitch = makeSwitch('Show deleted');
+
+        const resultInfo = jQuery('<div class="small text-body-secondary ms-auto"/>').appendTo(toolbar);
+
+        const stats = jQuery('<div class="d-flex flex-wrap gap-2 px-3 py-3 border-bottom"/>').appendTo(card.getElement());
+
+        // table -------------------------------------------------------------------------------------------------------
 
         const sort: SortState = {
             id: SortOrder2.NONE,
             name: SortOrder2.ASC,
-            ottid: SortOrder2.NONE,
-            aphiaid: SortOrder2.NONE,
-            group: SortOrder2.NONE
+            scientific: SortOrder2.NONE,
+            group: SortOrder2.NONE,
+            taxonomy: SortOrder2.NONE
         };
 
-        let searchTerm = '';
-        let allSpecies: SpeciesEntry[] = [];
+        let allRows: SpeciesRow[] = [];
+        let filteredRows: SpeciesRow[] = [];
 
-        const tableWrapper = new TableWrapper2<SpeciesEntry>({tableOptions: {head_fixed: true}});
+        const tableWrapper = new TableWrapper2<SpeciesRow>({tableOptions: {head_fixed: true}});
         tableWrapper.appendTo(card.getElement());
+        const emptyInfo = jQuery('<div class="text-center text-body-secondary py-5 d-none"/>').appendTo(card.getElement());
+        jQuery('<i class="fas fa-search fa-2x mb-2 d-block opacity-50"/>').appendTo(emptyInfo);
+        jQuery('<span/>').text(lang.l('No species match the current filter.')).appendTo(emptyInfo);
+
         const table = tableWrapper.getTable();
+        table.getElement().addClass('table-hover align-middle mb-0');
         const trhead = new Tr2();
         trhead.appendTo(table.getThead());
 
         const sortRegistry: {key: SortKey; column: LangTextV2;}[] = [];
+
+        // assigned below, used by the sort-column click handlers
+        let applyFilter: (() => void) | null = null;
 
         const makeSortColumn = (label: string, key: SortKey): LangTextV2 => {
             const column = new LangTextV2({
@@ -190,7 +380,7 @@ export class Species extends BasePage {
                     }
 
                     sort[key] = newValue as SortOrder2;
-                    tableWrapper.reset();
+                    applyFilter?.();
                 }
             });
 
@@ -199,78 +389,126 @@ export class Species extends BasePage {
             return column;
         };
 
+        const thPicture = new Th2({value: ''});
+        thPicture.appendTo(trhead);
+        thPicture.getElement().css('width', '72px');
+        new Th2({value: makeSortColumn('Species', 'name')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Scientific name', 'scientific')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Group', 'group')}).appendTo(trhead);
+        new Th2({value: makeSortColumn('Taxonomy', 'taxonomy')}).appendTo(trhead);
         new Th2({value: makeSortColumn('Id', 'id')}).appendTo(trhead);
-        new Th2({value: makeSortColumn('Name', 'name')}).appendTo(trhead);
-        new Th2({value: makeSortColumn('Ott-Id', 'ottid')}).appendTo(trhead);
-        new Th2({value: makeSortColumn('WoRMS', 'aphiaid')}).appendTo(trhead);
-        new Th2({value: makeSortColumn('Species Group', 'group')}).appendTo(trhead);
-        new Th2({value: new LangTextV2({text: 'Action'})}).appendTo(trhead);
+        const thAction = new Th2({value: ''});
+        thAction.appendTo(trhead);
+        thAction.getElement().css('width', '96px');
 
-        const renderRow = (_table: Table2, specie: SpeciesEntry): void => {
-            const trbody = new Tr2();
-            trbody.appendTo(table.getTbody());
-            const term = searchTerm;
+        const renderRow = (_table: Table2, row: SpeciesRow): void => {
+            const specie = row.entry;
+            const term = filter.term;
+            const tr = new Tr2();
+            tr.appendTo(table.getTbody());
 
-            new Td2({value: `#${specie.id}`}).appendTo(trbody);
-
-            const nameTd = new Td2({value: ''});
-            nameTd.appendTo(trbody);
-            nameTd.getElement().html(`<b>${highlight(specie.name, term)}</b>`);
-
-            const ottIdTd = new Td2({value: ''});
-            ottIdTd.appendTo(trbody);
-            if (specie.ottid !== 0) {
-                const ottBadge = new Badge2({type: BadgeType2.info, color: '#6c757d'});
-                ottBadge.appendTo(ottIdTd);
-                ottBadge.getElement().html(`<b style="color: ${UtilColor.getContrastYIQ('#6c757d')}">${specie.ottid}</b>`);
-                UtilOttLink.setDialog(ottBadge.getElement(), `ID: ${specie.ottid}`, specie.ottid);
+            if (specie.isdeleted) {
+                tr.getElement().addClass('opacity-50');
             }
 
-            const aphiaIdTd = new Td2({value: ''});
-            aphiaIdTd.appendTo(trbody);
-            const aphiaValue = specie.aphiaid ?? 0;
-            if (aphiaValue !== 0) {
-                const aphiaBadge = new Badge2({type: BadgeType2.info, color: '#1b6ec2'});
-                aphiaBadge.appendTo(aphiaIdTd);
-                aphiaBadge.getElement().html(`<b style="color: ${UtilColor.getContrastYIQ('#1b6ec2')}">${aphiaValue}</b>`);
-                UtilWormsLink.setDialog(aphiaBadge.getElement(), specie.name, aphiaValue);
+            // picture
+            const tdPicture = new Td2({value: ''});
+            tdPicture.appendTo(tr);
+            const picture = jQuery('<div class="border rounded bg-body-tertiary d-flex align-items-center justify-content-center p-1"/>')
+            .css({width: '56px', height: '44px'})
+            .appendTo(tdPicture.getElement());
+            picture[0]?.insertAdjacentHTML('beforeend', UtilSpeciesSilhouette.img(specie.name, 34, SpeciesAPI.imageUrl(specie)));
+
+            if (specie.image) {
+                picture.attr('title', lang.l('Own image'));
+            } else {
+                picture.addClass('opacity-75').attr('title', lang.l('No own image – automatic silhouette by name.'));
             }
 
-            const speciesGroupTd = new Td2({value: ''});
-            speciesGroupTd.appendTo(trbody);
-            // eslint-disable-next-line no-new
-            new SpeciesGroupDisplay(speciesGroupTd.getElement(), specie.species_group ?? {
-                name: 'Unknown',
-                color: 'white'
+            // common + local name (click → edit)
+            const tdName = new Td2({value: ''});
+            tdName.appendTo(tr);
+            const nameLink = jQuery('<a href="#" class="fw-semibold text-decoration-none text-body"/>')
+            .html(Species._highlight(row.name.common, term))
+            .appendTo(tdName.getElement());
+            nameLink.on('click', (e): void => {
+                e.preventDefault();
+                this._openEdit(specie).then();
             });
 
-            const actionTd = new Td2({value: ''});
-            actionTd.appendTo(trbody);
+            if (specie.isdeleted) {
+                jQuery('<span class="badge text-bg-secondary ms-2"/>').text(lang.l('Deleted')).appendTo(tdName.getElement());
+            }
+
+            if (row.name.local !== '') {
+                jQuery('<div class="small text-body-secondary"/>').html(Species._highlight(row.name.local, term)).appendTo(tdName.getElement());
+            }
+
+            // scientific name
+            const tdScientific = new Td2({value: ''});
+            tdScientific.appendTo(tr);
+
+            if (row.name.scientific === '') {
+                jQuery('<span class="small text-body-tertiary"/>').text('—').appendTo(tdScientific.getElement());
+            } else {
+                jQuery('<i/>').html(Species._highlight(row.name.scientific, term)).appendTo(tdScientific.getElement());
+            }
+
+            // group
+            const tdGroup = new Td2({value: ''});
+            tdGroup.appendTo(tr);
+
+            if (specie.species_group && specie.species_group.name !== '') {
+                // eslint-disable-next-line no-new
+                new SpeciesGroupDisplay(tdGroup.getElement(), specie.species_group);
+            } else {
+                jQuery('<span class="small text-body-tertiary"/>').text(lang.l('No group')).appendTo(tdGroup.getElement());
+            }
+
+            // taxonomy ids
+            const tdTaxonomy = new Td2({value: ''});
+            tdTaxonomy.appendTo(tr);
+            const aphiaId = specie.aphiaid ?? 0;
+            const worms = Species._taxonPill(tdTaxonomy.getElement(), 'WoRMS', aphiaId);
+
+            if (aphiaId > 0) {
+                UtilWormsLink.setDialog(worms, specie.name, aphiaId);
+                worms.attr('title', lang.l('Open on marinespecies.org'));
+            }
+
+            const ott = Species._taxonPill(tdTaxonomy.getElement(), 'OTT', specie.ottid);
+
+            if (specie.ottid > 0) {
+                UtilOttLink.setDialog(ott, specie.name, specie.ottid);
+                ott.attr('title', lang.l('Open on Open Tree of Life'));
+            }
+
+            // id
+            const tdId = new Td2({value: ''});
+            tdId.appendTo(tr);
+            jQuery('<span class="font-monospace small text-body-secondary"/>').text(`#${specie.id}`).appendTo(tdId.getElement());
+
+            // actions
+            const tdAction = new Td2({value: ''});
+            tdAction.appendTo(tr);
+            const actions = jQuery('<div class="d-flex justify-content-end align-items-center gap-1"/>').appendTo(tdAction.getElement());
+
+            const editBtn = jQuery('<button type="button" class="btn btn-sm btn-outline-primary"/>')
+            .attr('title', lang.l('Edit'))
+            .appendTo(actions);
+            jQuery('<i class="fas fa-edit"/>').appendTo(editBtn);
+            editBtn.on('click', (): void => {
+                this._openEdit(specie).then();
+            });
+
             const btnMenu = new ButtonMenu2({icon: IconFa.bars, positionRight: true});
-            btnMenu.appendTo(actionTd);
+            btnMenu.appendTo(actions);
 
             btnMenu.addMenuItem(lang.l('Profile'), (): void => {
                 Nav.load(new SpeciesProfilePage(specie.id)).then();
             }, 'fas fa-chart-bar');
 
-            btnMenu.addMenuItem(Lang.i().l('Edit'), async(): Promise<void> => {
-                this._speciesDialog.resetValues();
-                this._speciesDialog.setTitle(new LangTextV2({text: 'Edit Species'}));
-                this._speciesDialog.setSpecieId(specie.id);
-                this._speciesDialog.setName(specie.name);
-                this._speciesDialog.setOttId(specie.ottid);
-                this._speciesDialog.setAphiaId(specie.aphiaid ?? 0);
-
-                const groups = await SpeciesGroupAPI.getList();
-                if (groups) {
-                    this._speciesDialog.setSpeciesGroupList(groups);
-                }
-
-                this._speciesDialog.setSpeciesGroup(specie.species_groupid);
-                this._speciesDialog.show();
-            }, IconFa.edit);
-
-            btnMenu.addMenuItem(Lang.i().l('Merge'), async(): Promise<void> => {
+            btnMenu.addMenuItem(lang.l('Merge'), async(): Promise<void> => {
                 this._mergeDialog.resetValues();
                 this._mergeDialog.setTitle(new LangTextV2({text: 'Merge Species'}));
 
@@ -281,20 +519,20 @@ export class Species extends BasePage {
 
                 this._mergeDialog.setSourceSpecie(`${specie.id}`);
                 this._mergeDialog.show();
-            }, IconFa.ban);
+            }, 'fas fa-compress-arrows-alt');
 
             btnMenu.addDivider();
 
-            btnMenu.addMenuItem(Lang.i().l('Delete'), (): void => {
+            btnMenu.addMenuItem(lang.l('Delete'), (): void => {
                 DialogConfirm2.confirm(
                     'dcDeleteSpecie',
                     ModalDialogType2.large,
-                    Lang.i().l('Delete Specie'),
-                    Lang.i().l('Are you sure you want to delete the specie?'),
+                    lang.l('Delete Specie'),
+                    lang.l('Are you sure you want to delete the specie?'),
                     async(_, dialog) => {
                         try {
                             if (await SpeciesAPI.delete({id: specie.id})) {
-                                this._toast.fire({icon: 'success', title: Lang.i().l('Specie delete success.')});
+                                this._toast.fire({icon: 'success', title: lang.l('Specie delete success.')});
                             }
                         } catch (message) {
                             this._toast.fire({icon: 'error', title: message});
@@ -313,75 +551,131 @@ export class Species extends BasePage {
             Lang.i().lAll();
         };
 
-        // Filter + sort the in-memory list, then feed pages to TableWrapper.
-        const buildPage = (page: number): SpeciesEntry[] => {
-            const term = searchTerm.toLowerCase();
+        // filter + sort -----------------------------------------------------------------------------------------------
 
-            const filtered = term === ''
-                ? allSpecies.slice()
-                : allSpecies.filter((s) => {
-                    if (s.name.toLowerCase().includes(term)) {
-                        return true;
-                    }
-                    const groupName = (s.species_group?.name ?? '').toLowerCase();
-                    if (groupName.includes(term)) {
-                        return true;
-                    }
-                    if (`${s.ottid}`.includes(term)) {
-                        return true;
-                    }
-                    return `${s.aphiaid ?? 0}`.includes(term);
-                });
+        const sortValue = (row: SpeciesRow, key: SortKey): string | number => {
+            switch (key) {
+                case 'id':
+                    return row.entry.id;
+
+                case 'name':
+                    return row.name.common.toLowerCase();
+
+                case 'scientific':
+                    // rows without a scientific name go last
+                    return row.name.scientific === '' ? '￿' : row.name.scientific.toLowerCase();
+
+                case 'group':
+                    return (row.entry.species_group?.name ?? '').toLowerCase();
+
+                case 'taxonomy':
+                    return row.entry.aphiaid ?? 0;
+            }
+
+            return 0;
+        };
+
+        const matches = (row: SpeciesRow): boolean => {
+            const entry = row.entry;
+
+            if (!filter.showDeleted && entry.isdeleted) {
+                return false;
+            }
+
+            if (filter.groupId !== 0 && entry.species_groupid !== filter.groupId) {
+                return false;
+            }
+
+            if (filter.incompleteOnly && !Species._isIncomplete(entry)) {
+                return false;
+            }
+
+            const term = filter.term.toLowerCase();
+
+            if (term === '') {
+                return true;
+            }
+
+            return [
+                entry.name,
+                row.name.scientific,
+                entry.species_group?.name ?? '',
+                `${entry.id}`,
+                `${entry.ottid}`,
+                `${entry.aphiaid ?? 0}`
+            ].some((value) => value.toLowerCase().includes(term));
+        };
+
+        applyFilter = (): void => {
+            filteredRows = allRows.filter(matches);
 
             const activeKey = (Object.keys(sort) as SortKey[]).find((k) => sort[k] !== SortOrder2.NONE);
 
             if (activeKey) {
-                const order = sort[activeKey];
-                const dir = order === SortOrder2.DESC ? -1 : 1;
-                filtered.sort((a, b) => {
-                    let av: string | number;
-                    let bv: string | number;
+                const dir = sort[activeKey] === SortOrder2.DESC ? -1 : 1;
 
-                    switch (activeKey) {
-                        case 'id':
-                            av = a.id;
-                            bv = b.id;
-                            break;
-                        case 'name':
-                            av = a.name.toLowerCase();
-                            bv = b.name.toLowerCase();
-                            break;
-                        case 'ottid':
-                            av = a.ottid;
-                            bv = b.ottid;
-                            break;
-                        case 'aphiaid':
-                            av = a.aphiaid ?? 0;
-                            bv = b.aphiaid ?? 0;
-                            break;
-                        case 'group':
-                            av = (a.species_group?.name ?? '').toLowerCase();
-                            bv = (b.species_group?.name ?? '').toLowerCase();
-                            break;
+                filteredRows.sort((a, b) => {
+                    const av = sortValue(a, activeKey);
+                    const bv = sortValue(b, activeKey);
+
+                    if (av < bv) {
+                        return -1 * dir;
                     }
 
-                    if (av < bv) {return -1 * dir;}
-                    if (av > bv) {return Number(dir);}
+                    if (av > bv) {
+                        return Number(dir);
+                    }
+
                     return 0;
                 });
             }
 
-            const offset = page * PAGE_SIZE;
-            return filtered.slice(offset, offset + PAGE_SIZE);
+            const visible = allRows.filter((r) => filter.showDeleted || !r.entry.isdeleted).length;
+            emptyInfo.toggleClass('d-none', filteredRows.length > 0);
+            resultInfo.text(`${filteredRows.length} ${lang.l('of')} ${visible} ${lang.l('shown')}`);
+
+            tableWrapper.reset().then();
+        };
+
+        const renderStats = (): void => {
+            stats.empty();
+            const active = allRows.filter((r) => !r.entry.isdeleted).map((r) => r.entry);
+            const total = active.length;
+
+            Species._stat(stats, 'fas fa-fish', active.filter((e) => (e.aphiaid ?? 0) > 0).length, total, 'with WoRMS AphiaID');
+            Species._stat(stats, 'fas fa-tree', active.filter((e) => e.ottid > 0).length, total, 'with OTT ID');
+            Species._stat(stats, 'fas fa-image', active.filter((e) => Boolean(e.image)).length, total, 'with own image');
+
+            const missing = active.filter((e) => Species._isIncomplete(e)).length;
+
+            if (missing > 0) {
+                const hint = jQuery('<button type="button" class="btn btn-sm btn-outline-warning align-self-center"/>').appendTo(stats);
+                jQuery('<i class="fas fa-exclamation-triangle me-1"/>').appendTo(hint);
+                jQuery('<span/>').text(`${missing} ${lang.l('incomplete – show')}`).appendTo(hint);
+                hint.on('click', (): void => {
+                    incompleteSwitch.prop('checked', true).trigger('change');
+                });
+            }
         };
 
         this._onLoadTable = async(): Promise<void> => {
             card.showLoading();
             try {
-                const species = await SpeciesAPI.getList();
-                allSpecies = species ?? [];
-                card.setTitle(`${Lang.i().l('Species')} (${allSpecies.length})`);
-                await tableWrapper.reset();
+                const [species, groups] = await Promise.all([SpeciesAPI.getList(), SpeciesGroupAPI.getList()]);
+
+                allRows = (species ?? []).map((entry) => ({entry, name: UtilSpeciesName.parse(entry.name)}));
+                card.setTitle(`${lang.l('Species')} (${allRows.filter((r) => !r.entry.isdeleted).length})`);
+
+                groupSelect.find('option:not(:first)').remove();
+
+                for (const group of groups ?? []) {
+                    jQuery('<option/>').attr('value', `${group.id}`).text(group.name).appendTo(groupSelect);
+                }
+
+                groupSelect.val(`${filter.groupId}`);
+
+                renderStats();
+                applyFilter?.();
             } finally {
                 card.hideLoading();
                 Lang.i().lAll();
@@ -389,25 +683,45 @@ export class Species extends BasePage {
         };
 
         tableWrapper.setDataSource(
-            async(page) => buildPage(page),
+            async(page) => {
+                const offset = page * Species._PAGE_SIZE;
+                return filteredRows.slice(offset, offset + Species._PAGE_SIZE);
+            },
             renderRow,
             false
         );
 
+        // toolbar events ----------------------------------------------------------------------------------------------
+
         let searchTimer: ReturnType<typeof setTimeout> | null = null;
-        searchInput.getElement().on('keyup', () => {
+        searchInput.getElement().on('input', () => {
             if (searchTimer !== null) {
                 clearTimeout(searchTimer);
             }
 
             searchTimer = setTimeout(() => {
                 const value = searchInput.getValue().trim();
-                if (value === searchTerm) {
-                    return;
+
+                if (value !== filter.term) {
+                    filter.term = value;
+                    applyFilter?.();
                 }
-                searchTerm = value;
-                tableWrapper.reset();
-            }, 300);
+            }, 250);
+        });
+
+        groupSelect.on('change', (): void => {
+            filter.groupId = parseInt(`${groupSelect.val() ?? '0'}`, 10) || 0;
+            applyFilter?.();
+        });
+
+        incompleteSwitch.on('change', (): void => {
+            filter.incompleteOnly = incompleteSwitch.prop('checked') === true;
+            applyFilter?.();
+        });
+
+        deletedSwitch.on('change', (): void => {
+            filter.showDeleted = deletedSwitch.prop('checked') === true;
+            applyFilter?.();
         });
 
         this._onLoadTable();

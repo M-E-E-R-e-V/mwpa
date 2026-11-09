@@ -51,6 +51,17 @@ export class Species extends DBBaseEntityId {
     public species_groupid!: number;
 
     /**
+     * file name of the uploaded species image (under <datadir>/species/),
+     * '' = none → the UI uses the built-in silhouette (UtilSpeciesSilhouette)
+     */
+    @Column({
+        type: 'varchar',
+        length: 255,
+        default: ''
+    })
+    public image!: string;
+
+    /**
      * is deleted
      * mark for entry is deleted (not selectable, only show as history)
      */

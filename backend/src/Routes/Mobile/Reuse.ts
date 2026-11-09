@@ -64,7 +64,17 @@ export class Reuse extends DefaultRoute {
         this._get(
             '/mobile/species/list',
             checkMWPAUserIsLoginACL,
-            async(): Promise<MobileSpeciesListResponse> => toV1(await SpeciesList.getList()),
+            async(): Promise<MobileSpeciesListResponse> => {
+                // keep the mobile wire format unchanged: the app does not know `image`
+                const result = await SpeciesList.getList();
+                result.list = result.list.map((entry) => {
+                    const copy = {...entry};
+                    delete copy.image;
+                    return copy;
+                });
+
+                return toV1(result);
+            },
             {
                 aclRight: RightApi.mobile,
                 description: 'Mobile alias for /json/species/list.',

@@ -126,6 +126,8 @@ export {
     SpeciesMergeRequest,
     SchemaSpeciesDeleteRequest,
     SpeciesDeleteRequest,
+    SchemaSpeciesImageGetRequest,
+    SpeciesImageGetRequest,
 } from './Routes/Main/Species/Species.js';
 export {
     SchemaSpeciesProfileRequest,

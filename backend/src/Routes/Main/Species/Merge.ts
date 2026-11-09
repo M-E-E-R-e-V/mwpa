@@ -3,6 +3,7 @@ import {Vts} from 'vts';
 import {SpeciesMergeRequest} from 'mwpa_schemas';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SpeciesRepository} from '../../../Db/MariaDb/Repositories/SpeciesRepository.js';
+import {Image} from './Image.js';
 
 /**
  * Merge
@@ -43,6 +44,14 @@ export class Merge {
 
         await SightingRepository.getInstance().reassignSpecies(source.id, destination.id);
         await SpeciesRepository.getInstance().remove(source.id);
+
+        // keep the source image when the destination has none, else drop it
+        if (source.image !== '' && destination.image === '') {
+            destination.image = source.image;
+            await SpeciesRepository.getInstance().save(destination);
+        } else {
+            await Image.removeFile(source.image);
+        }
 
         return {
             statusCode: StatusCodes.OK

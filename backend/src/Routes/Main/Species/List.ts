@@ -19,6 +19,7 @@ export class List {
             name: row.name,
             ottid: row.ott_id,
             aphiaid: row.aphia_id,
+            image: row.image,
             isdeleted: row.isdeleted,
             species_groupid: row.species_groupid,
             species_group: {

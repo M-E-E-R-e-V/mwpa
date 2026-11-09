@@ -22,6 +22,13 @@ export class Save {
             };
         }
 
+        if (entry.name.trim() === '') {
+            return {
+                statusCode: StatusCodes.INTERNAL_ERROR,
+                msg: 'Species name is required'
+            };
+        }
+
         let species: SpeciesDB|null = null;
 
         if (entry.id !== 0) {
@@ -32,7 +39,8 @@ export class Save {
             species = new SpeciesDB();
         }
 
-        species.name = entry.name;
+        // no leading/trailing or doubled blanks (they break search + sorting)
+        species.name = entry.name.trim().replace(/\s+/gu, ' ');
         species.ott_id = entry.ottid;
         species.aphia_id = entry.aphiaid ?? 0;
         species.species_groupid = entry.species_groupid;

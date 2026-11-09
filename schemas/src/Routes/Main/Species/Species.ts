@@ -28,6 +28,7 @@ export const SchemaSpeciesEntry = Vts.object({
     species_groupid: Vts.number(),
     species_group: Vts.optional(SchemaSpeciesEntryGroup),
     aphiaid: Vts.optional(Vts.number({description: 'WoRMS aphiaID — marine species identifier (https://www.marinespecies.org). Optional/0 if not yet mapped.'})),
+    image: Vts.optional(Vts.string({description: 'File name of the uploaded species image (served via /json/species/image/:id/:filename). Empty/missing = no own image, the UI falls back to the built-in silhouette.'})),
 }, {
     description: '',
 });
@@ -79,3 +80,19 @@ export const SchemaSpeciesDeleteRequest = Vts.object({
  * Type of schema SpeciesDeleteRequest
  */
 export type SpeciesDeleteRequest = ExtractSchemaResultType<typeof SchemaSpeciesDeleteRequest>;
+
+/**
+ * Schema of SpeciesImageGetRequest
+ * Path params for /json/species/image/:id/:filename
+ */
+export const SchemaSpeciesImageGetRequest = Vts.object({
+    id: Vts.number(),
+    filename: Vts.string(),
+}, {
+    description: 'Path params for /json/species/image/:id/:filename',
+});
+
+/**
+ * Type of schema SpeciesImageGetRequest
+ */
+export type SpeciesImageGetRequest = ExtractSchemaResultType<typeof SchemaSpeciesImageGetRequest>;

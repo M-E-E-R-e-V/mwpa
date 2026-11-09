@@ -5,7 +5,8 @@
  * detailed silhouettes from PhyloPic (phylopic.org, mostly CC BY-SA 3.0; see
  * `images/species/ATTRIBUTION.md`). Each sighting species is matched to the best
  * file by keywords in its name (scientific or common), which is robust across
- * databases where the numeric species ids differ.
+ * databases where the numeric species ids differ. A species image uploaded
+ * in the species dialog takes precedence (see `img(name, px, imageUrl)`).
  */
 export class UtilSpeciesSilhouette {
 
@@ -64,16 +65,27 @@ export class UtilSpeciesSilhouette {
     }
 
     /**
-     * Build an `<img>` tag for a species silhouette (served from
-     * `images/species/<slug>.svg`).
+     * Url of the built-in silhouette for a species name.
+     * @param {string} name species/other name (common + scientific)
+     * @return {string}
+     */
+    public static url(name: string): string {
+        return `images/species/${UtilSpeciesSilhouette._slug(name)}.svg`;
+    }
+
+    /**
+     * Build an `<img>` tag for a species picture: the uploaded image when
+     * `imageUrl` is given, otherwise the built-in silhouette matched by name
+     * (served from `images/species/<slug>.svg`).
      * @param {string} name species/other name (common + scientific)
      * @param {number} px rendered height in px
+     * @param {string|null} [imageUrl] uploaded species image (Species API imageUrl)
      * @return {string} an `<img …>` string
      */
-    public static img(name: string, px: number = 48): string {
-        const slug = UtilSpeciesSilhouette._slug(name);
+    public static img(name: string, px: number = 48, imageUrl: string | null = null): string {
+        const src = imageUrl ?? UtilSpeciesSilhouette.url(name);
 
-        return `<img src="images/species/${slug}.svg" alt="" aria-hidden="true" ` +
+        return `<img src="${src.replace(/"/gu, '&quot;')}" alt="" aria-hidden="true" ` +
             `style="height:${px}px;max-width:100%;display:block;object-fit:contain;"/>`;
     }
 

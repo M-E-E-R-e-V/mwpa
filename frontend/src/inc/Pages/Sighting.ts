@@ -1783,11 +1783,11 @@ export class Sighting extends BasePage {
         const lang = Lang.i();
         const div = jQuery('<div class="sighting-popup" style="min-width:230px;"/>');
 
-        // Species silhouette (own centered row, from images/species/*.svg) + badge.
+        // Species picture (own centered row): uploaded image, else silhouette from images/species/*.svg + badge.
         const specie = entry.species_id ? lookups.species.get(entry.species_id) : undefined;
         const silName = specie?.name ?? entry.other ?? '';
         const silWrap = jQuery('<div style="display:flex;justify-content:center;margin-bottom:4px;"/>').appendTo(div);
-        silWrap[0]?.insertAdjacentHTML('beforeend', UtilSpeciesSilhouette.img(silName, 54));
+        silWrap[0]?.insertAdjacentHTML('beforeend', UtilSpeciesSilhouette.img(silName, 54, SpeciesAPI.imageUrl(specie)));
 
         const head = jQuery('<div class="mb-1" style="text-align:center;"/>').appendTo(div);
         // eslint-disable-next-line no-new

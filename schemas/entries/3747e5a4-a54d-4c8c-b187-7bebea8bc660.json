@@ -124,6 +124,17 @@
             "types": []
           },
           "description": "WoRMS aphiaID — marine species identifier (https://www.marinespecies.org). Optional/0 if not yet mapped."
+        },
+        {
+          "unid": "6b09f458-e6a1-4c2b-a4e4-a5427a02b0b9",
+          "name": "image",
+          "type": {
+            "type": "string",
+            "optional": true,
+            "array": false,
+            "types": []
+          },
+          "description": "File name of the uploaded species image (served via /json/species/image/:id/:filename). Empty/missing = no own image, the UI falls back to the built-in silhouette."
         }
       ]
     },
@@ -212,6 +223,42 @@
           "description": ""
         }
       ]
+    },
+    {
+      "unid": "94b64e0f-82a7-4949-8219-7f0d7999bb25",
+      "name": "SpeciesImageGetRequest",
+      "description": "Path params for /json/species/image/:id/:filename",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 1100,
+        "y": 700
+      },
+      "fields": [
+        {
+          "unid": "0bbbcb5f-5b3a-4e22-821a-99937cbaf268",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "8d2704f4-fa00-4f6e-b874-a20010a94f68",
+          "name": "filename",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
     }
   ],
   "enums": [],
@@ -224,5 +271,152 @@
         "y": 50
       }
     }
-  ]
+  ],
+  "history": {
+    "904eef89-2f36-4a18-956c-1c87538f1f7b": [
+      {
+        "ts": 1794251166469,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "904eef89-2f36-4a18-956c-1c87538f1f7b",
+          "name": "SpeciesEntry",
+          "description": "",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 600,
+            "y": 400
+          },
+          "fields": [
+            {
+              "unid": "683f2b1b-9d35-492c-b77e-88b9a38e5d6c",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "a8e9501f-6657-4080-ab07-397233422f7f",
+              "name": "name",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "cabcc111-a5d7-469e-8e0d-97687a1756ec",
+              "name": "ottid",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Open Tree of Life ID"
+            },
+            {
+              "unid": "e251fc68-d4fe-47cf-bb26-ba550d9c1256",
+              "name": "isdeleted",
+              "type": {
+                "type": "boolean",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "79ec2227-cc73-452d-a2c8-4aaee777e8c3",
+              "name": "species_groupid",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "9bc05fca-da06-4d13-a3c2-fb588e708798",
+              "name": "species_group",
+              "type": {
+                "type": "4632c80a-bd6c-4813-8ba2-a8021bed0605",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "20634bb4-605e-41ba-9796-1c932e7c91d3",
+              "name": "aphiaid",
+              "type": {
+                "type": "number",
+                "optional": true,
+                "array": false,
+                "types": []
+              },
+              "description": "WoRMS aphiaID — marine species identifier (https://www.marinespecies.org). Optional/0 if not yet mapped."
+            }
+          ]
+        }
+      }
+    ],
+    "94b64e0f-82a7-4949-8219-7f0d7999bb25": [
+      {
+        "ts": 1794251172661,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "94b64e0f-82a7-4949-8219-7f0d7999bb25",
+          "name": "SpeciesImageGetRequest",
+          "description": "Path params for /json/species/image/:id/:filename",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1100,
+            "y": 700
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1794251175191,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "94b64e0f-82a7-4949-8219-7f0d7999bb25",
+          "name": "SpeciesImageGetRequest",
+          "description": "Path params for /json/species/image/:id/:filename",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 1100,
+            "y": 700
+          },
+          "fields": [
+            {
+              "unid": "0bbbcb5f-5b3a-4e22-821a-99937cbaf268",
+              "name": "id",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

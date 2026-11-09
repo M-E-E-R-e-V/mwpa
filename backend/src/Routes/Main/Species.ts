@@ -1,10 +1,18 @@
 import {Router} from 'express';
+import multer from 'multer';
 import {DefaultRoute} from '@stefanwerfling/figtree';
-import {DefaultReturn, SchemaDefaultReturn, StatusCodes} from 'figtree-schemas';
+import {
+    DefaultHandlerReturn,
+    DefaultReturn,
+    HandlerResultType,
+    SchemaDefaultReturn,
+    StatusCodes
+} from 'figtree-schemas';
 import {
     SchemaMWPASessionData,
     SchemaSpeciesDeleteRequest,
     SchemaSpeciesEntry,
+    SchemaSpeciesImageGetRequest,
     SchemaSpeciesListResponse,
     SchemaSpeciesMergeRequest,
     SchemaSpeciesProfileRequest,
@@ -20,12 +28,25 @@ import {
 import {Users} from '../../Users/Users.js';
 import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
+import {Lookup} from './Lookup.js';
 import {Delete} from './Species/Delete.js';
+import {Image} from './Species/Image.js';
 import {List} from './Species/List.js';
 import {Merge} from './Species/Merge.js';
 import {Profile} from './Species/Profile.js';
 import {Regression} from './Species/Regression.js';
 import {Save} from './Species/Save.js';
+
+/**
+ * Multipart parser for the species image upload (memory, size-capped).
+ */
+const speciesImageUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: Image.MAX_SIZE,
+        files: 1
+    }
+});
 
 /**
  * Species
@@ -149,6 +170,69 @@ export class Species extends DefaultRoute {
                 responseBodySchema: SchemaDefaultReturn,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._post(
+            '/json/species/image/upload',
+            checkMWPAUserIsLoginACL,
+            async(req, _res, data): Promise<DefaultReturn> => {
+                if (!data.session?.user?.isAdmin) {
+                    return {
+                        statusCode: StatusCodes.FORBIDDEN
+                    };
+                }
+
+                // multer attaches `req.file`; the species id comes as form field.
+                const file = (req as unknown as {file?: {buffer: Buffer;};}).file;
+                const body = (req.body ?? {}) as {id?: string;};
+
+                return Image.save(parseInt(body.id ?? '', 10), file?.buffer);
+            },
+            {
+                description: 'Upload the image of a species (multipart form-data: field "file" = PNG/JPEG/GIF/WebP up to 5 MB, field "id" = species id). Replaces a previous image (admin only).',
+                aclRight: RightSpecies.species_write,
+                responseBodySchema: SchemaDefaultReturn,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit,
+                parser: speciesImageUpload.single('file')
+            }
+        );
+
+        this._post(
+            '/json/species/image/delete',
+            checkMWPAUserIsLoginACL,
+            async(_req, _res, data): Promise<DefaultReturn> => {
+                if (!data.session?.user?.isAdmin) {
+                    return {
+                        statusCode: StatusCodes.FORBIDDEN
+                    };
+                }
+                return Image.remove(data.body);
+            },
+            {
+                description: 'Remove the image of a species — the UI falls back to the built-in silhouette (admin only).',
+                aclRight: RightSpecies.species_write,
+                bodySchema: SchemaSpeciesDeleteRequest,
+                responseBodySchema: SchemaDefaultReturn,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._get(
+            '/json/species/image/:id/:filename',
+            async(req, res): Promise<boolean> => Lookup.checkAnyRight(req, res, [
+                ...Lookup.LOOKUP_RIGHTS,
+                RightSpecies.species_read
+            ]),
+            async(_req, res, data): Promise<DefaultHandlerReturn> => {
+                await Image.serve(data.params!, res);
+                return {type: HandlerResultType.handled};
+            },
+            {
+                description: 'Serve the uploaded image of a species (needs species_read or one of the working-page rights, like the /json/lookup/* routes).',
+                pathSchema: SchemaSpeciesImageGetRequest
             }
         );
 

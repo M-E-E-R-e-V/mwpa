@@ -134,6 +134,82 @@ export class Species {
     }
 
     /**
+     * Url of the uploaded image of a species, or null when it has none
+     * (callers then fall back to the built-in silhouette).
+     * @param {SpeciesEntry} specie
+     * @return {string|null}
+     */
+    public static imageUrl(specie: SpeciesEntry | undefined): string | null {
+        if (!specie?.image) {
+            return null;
+        }
+
+        return `/json/species/image/${specie.id}/${encodeURIComponent(specie.image)}`;
+    }
+
+    /**
+     * Upload (and replace) the image of a species.
+     * @param {number} id species id
+     * @param {File} file PNG/JPEG/GIF/WebP, max. 5 MB
+     * @return {Promise<string|null>} null on success, otherwise the error message
+     */
+    public static async uploadImage(id: number, file: File): Promise<string | null> {
+        const form = new FormData();
+        form.append('id', `${id}`);
+        form.append('file', file);
+
+        const response = await fetch('/json/species/image/upload', {
+            method: 'POST',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: form
+        });
+
+        if (response.status === 401) {
+            throw new UnauthorizedError();
+        }
+
+        let result: {statusCode?: string; msg?: string;} | null = null;
+
+        try {
+            result = await response.json() as {statusCode?: string; msg?: string;};
+        } catch {
+            result = null;
+        }
+
+        if (result?.statusCode === StatusCodes.OK) {
+            return null;
+        }
+
+        if (result?.statusCode === StatusCodes.UNAUTHORIZED) {
+            throw new UnauthorizedError();
+        }
+
+        return result?.msg ?? `HTTP ${response.status}`;
+    }
+
+    /**
+     * Remove the image of a species.
+     * @param {number} id species id
+     * @return {Promise<boolean>}
+     */
+    public static async deleteImage(id: number): Promise<boolean> {
+        const result = await NetFetch.postData('/json/species/image/delete', {id});
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return true;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * merge
      * @param merge
      */

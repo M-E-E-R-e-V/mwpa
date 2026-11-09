@@ -8,6 +8,7 @@ import {MWPAConfig} from '../Config/MWPAConfig.js';
 export class UtilUploadPath {
 
     public static DIRECTORY_SIGHTING = 'sighting';
+    public static DIRECTORY_SPECIES = 'species';
     public static DIRECTORY_MAPCACHE = 'mapcache';
     public static DIRECTORY_OFFICE_REPORT = 'office_report';
 
@@ -49,6 +50,27 @@ export class UtilUploadPath {
             }
 
             return sightingUidDir;
+        }
+
+        return null;
+    }
+
+    /**
+     * Return the directory for uploaded species images (one flat folder,
+     * file names carry the species id).
+     * @return {string|null}
+     */
+    public static async getSpeciesDirectory(): Promise<string|null> {
+        const datadir = await this.getDataDirectory();
+
+        if (datadir) {
+            const speciesDir = Path.join(datadir, this.DIRECTORY_SPECIES);
+
+            if (!await DirHelper.directoryExist(speciesDir)) {
+                await DirHelper.mkdir(speciesDir, true);
+            }
+
+            return speciesDir;
         }
 
         return null;

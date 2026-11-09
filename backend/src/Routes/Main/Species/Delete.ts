@@ -3,6 +3,7 @@ import {Vts} from 'vts';
 import {SpeciesDeleteRequest} from 'mwpa_schemas';
 import {SightingRepository} from '../../../Db/MariaDb/Repositories/SightingRepository.js';
 import {SpeciesRepository} from '../../../Db/MariaDb/Repositories/SpeciesRepository.js';
+import {Image} from './Image.js';
 
 /**
  * Delete
@@ -42,6 +43,7 @@ export class Delete {
         }
 
         await SpeciesRepository.getInstance().remove(species.id);
+        await Image.removeFile(species.image);
 
         return {
             statusCode: StatusCodes.OK
