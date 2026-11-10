@@ -132,7 +132,8 @@ export class List {
                 period_to: filter?.period_to,
                 species_id: filter?.species_id,
                 search: filter?.search
-            }
+            },
+            List._buildOrder(filter) as Record<string, 'ASC' | 'DESC'>
         );
 
         const appIds = keys.filter((k) => !k.isOld).map((k) => k.id);

@@ -142,24 +142,71 @@ export class SightingRepository extends DBRepository<Sighting> {
     }
 
     /**
-     * Date-ordered page of (id, isOld) keys across `sighting` and
-     * `sighting_old` for the "show old data" list view. Merges + paginates in
-     * one UNION so interleaved old/new rows page correctly; the caller
-     * hydrates the ids from each table. Order fixed to the list default
-     * (date desc, tour_start desc, id desc). Period/species/free-text filters
+     * Sort columns of the combined page: list sort key → column alias of
+     * the UNION (both tables have all of them).
+     */
+    public static readonly COMBINED_ORDER_COLUMNS: Record<string, string> = {
+        date: 'dt',
+        id: 'id',
+        tour_id: 'tid',
+        tour_start: 'ts',
+        create_datetime: 'cdt',
+        update_datetime: 'udt'
+    };
+
+    /**
+     * ORDER BY of the combined page from the list sort (keys in priority
+     * order, unknown keys ignored); the list default (date desc, tour_start
+     * desc) when none is given. Ends with id + origin as tie-breaker so
+     * pages are stable.
+     * @param {Record<string, 'ASC'|'DESC'>} order
+     * @return {string}
+     */
+    public static combinedOrderBy(order: Record<string, 'ASC' | 'DESC'>): string {
+        const parts: string[] = [];
+
+        for (const [key, direction] of Object.entries(order)) {
+            const column = SightingRepository.COMBINED_ORDER_COLUMNS[key];
+
+            if (column !== undefined) {
+                parts.push(`u.${column} ${direction === 'ASC' ? 'ASC' : 'DESC'}`);
+            }
+        }
+
+        if (parts.length === 0) {
+            parts.push('u.dt DESC', 'u.ts DESC');
+        }
+
+        if (!parts.some((part) => part.startsWith('u.id '))) {
+            parts.push('u.id DESC');
+        }
+
+        parts.push('u.is_old ASC');
+
+        return parts.join(', ');
+    }
+
+    /**
+     * Page of (id, isOld) keys across `sighting` and `sighting_old` for the
+     * "show old data" list view. Merges + paginates in one UNION so
+     * interleaved old/new rows page correctly; the caller hydrates the ids
+     * from each table. Sorted like the list ({@link combinedOrderBy}).
+     * Period/species/free-text filters
      * apply to both tables; the org scope applies to the app table only
      * (old data has no organisation and is shared history).
      * @param {number} skip
      * @param {number} take
      * @param {number[] | undefined} organizationIds
      * @param {SightingFilterCriteria} filter
+     * @param {Record<string, 'ASC'|'DESC'>} order list sort (see {@link combinedOrderBy})
      * @return {{keys: {id: number; isOld: boolean;}[]; count: number;}}
      */
     public async findCombinedPage(
         skip: number,
         take: number,
         organizationIds: number[] | undefined,
-        filter?: SightingFilterCriteria
+        filter?: SightingFilterCriteria,
+        order: Record<string, 'ASC' | 'DESC'> = {}
     ): Promise<{keys: {id: number; isOld: boolean;}[]; count: number;}> {
         const repository = await this._repository;
         const manager = repository.manager;
@@ -206,10 +253,12 @@ export class SightingRepository extends DBRepository<Sighting> {
             oldParams.push(like, like);
         }
 
-        const inner = 'SELECT s.id AS id, s.date AS dt, s.tour_start AS ts, 0 AS is_old '
+        const columns = (t: string): string => `${t}.id AS id, ${t}.date AS dt, ${t}.tour_start AS ts, ${t}.tour_id AS tid, `
+            + `${t}.create_datetime AS cdt, ${t}.update_datetime AS udt`;
+        const inner = `SELECT ${columns('s')}, 0 AS is_old `
             + `FROM sighting s WHERE ${appWhere.join(' AND ')} `
             + 'UNION ALL '
-            + 'SELECT o.id AS id, o.date AS dt, o.tour_start AS ts, 1 AS is_old '
+            + `SELECT ${columns('o')}, 1 AS is_old `
             + `FROM sighting_old o WHERE ${oldWhere.join(' AND ')}`;
 
         const countRows = await manager.query(
@@ -219,7 +268,7 @@ export class SightingRepository extends DBRepository<Sighting> {
 
         const pageRows = await manager.query(
             `SELECT u.id AS id, u.is_old AS is_old FROM (${inner}) u `
-            + 'ORDER BY u.dt DESC, u.ts DESC, u.id DESC LIMIT ? OFFSET ?',
+            + `ORDER BY ${SightingRepository.combinedOrderBy(order)} LIMIT ? OFFSET ?`,
             [...appParams, ...oldParams, take, skip]
         ) as {id: number; is_old: number;}[];
 
