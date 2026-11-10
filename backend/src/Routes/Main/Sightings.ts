@@ -7,6 +7,8 @@ import {
     SchemaSightingCurrentRegionRequest,
     SchemaSightingCurrentRegionResponse,
     SchemaSightingDeleteRequest,
+    SchemaSightingDetailsRequest,
+    SchemaSightingDetailsResponse,
     SchemaSightingEnvironmentListResponse,
     SchemaSightingFishingVesselListRequest,
     SchemaSightingFishingVesselListResponse,
@@ -18,6 +20,7 @@ import {
     SchemaSightingsFilter,
     SchemaSightingsListResponse,
     SightingCurrentRegionResponse,
+    SightingDetailsResponse,
     SightingEnvironmentListResponse,
     SightingFishingVesselListResponse,
     SightingHistoryResponse,
@@ -29,6 +32,7 @@ import {checkMWPAUserIsLoginACL} from '../AuthCheck.js';
 import {defaultMWPASessionInit} from '../SessionDefault.js';
 import {CurrentRegion} from './Sightings/CurrentRegion.js';
 import {Delete} from './Sightings/Delete.js';
+import {Details} from './Sightings/Details.js';
 import {Environment} from './Sightings/Environment.js';
 import {Excel} from './Sightings/Excel.js';
 import {FishingVesselList} from './Sightings/FishingVesselList.js';
@@ -152,6 +156,24 @@ export class Sightings extends DefaultRoute {
                 aclRight: RightSightings.sightings_write,
                 bodySchema: SchemaSightingSaveRequest,
                 responseBodySchema: SchemaDefaultReturn,
+                sessionSchema: SchemaMWPASessionData,
+                sessionInit: defaultMWPASessionInit,
+            }
+        );
+
+        this._post(
+            '/json/sightings/details',
+            checkMWPAUserIsLoginACL,
+            async(_req, _res, data): Promise<SightingDetailsResponse> => {
+                const userId = data.session?.user?.userid ?? 0;
+                const isAdmin = data.session?.user?.isAdmin ?? false;
+                return Details.getDetails(userId, isAdmin, data.body);
+            },
+            {
+                description: 'Read-only computed data of a sighting (meta, weather, sea, astro, fishing, movement, earthquakes).',
+                aclRight: RightSightings.sightings_read,
+                bodySchema: SchemaSightingDetailsRequest,
+                responseBodySchema: SchemaSightingDetailsResponse,
                 sessionSchema: SchemaMWPASessionData,
                 sessionInit: defaultMWPASessionInit,
             }

@@ -1,10 +1,17 @@
-import {SightingHistoryEntry, SightingHistoryResponse} from 'mwpa_schemas';
+import {
+    SightingDetailsGroup,
+    SightingDetailsItem,
+    SightingDetailsResponse,
+    SightingDetailsSection,
+    SightingHistoryEntry,
+    SightingHistoryResponse
+} from 'mwpa_schemas';
 import {NetFetch} from '../Net/NetFetch';
 import {UnauthorizedError} from './Error/UnauthorizedError';
 import {StatusCodes} from './Status/StatusCodes';
 import {DefaultReturn} from './Types/DefaultReturn';
 
-export type {SightingHistoryEntry};
+export type {SightingDetailsGroup, SightingDetailsItem, SightingDetailsSection, SightingHistoryEntry};
 
 /**
  * SightingsFilter
@@ -205,6 +212,32 @@ export class Sightings {
         }
 
         return false;
+    }
+
+    /**
+     * Read-only computed data of a sighting (meta, weather, sea, …).
+     * @param {number} id
+     * @return {SightingDetailsSection[]}
+     */
+    public static async getDetails(id: number): Promise<SightingDetailsSection[]> {
+        const result = await NetFetch.postData('/json/sightings/details', {id});
+
+        if (result && result.statusCode) {
+            switch (result.statusCode) {
+                case StatusCodes.OK:
+                    return (result as SightingDetailsResponse).sections;
+
+                case StatusCodes.UNAUTHORIZED:
+                    throw new UnauthorizedError();
+
+                default:
+                    if (result.msg) {
+                        throw new Error(result.msg);
+                    }
+            }
+        }
+
+        return [];
     }
 
     /**

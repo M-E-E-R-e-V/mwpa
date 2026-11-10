@@ -277,3 +277,88 @@ export const SchemaSightingHistoryResponse = SchemaDefaultReturn.extend({
  * Type of schema SightingHistoryResponse
  */
 export type SightingHistoryResponse = ExtractSchemaResultType<typeof SchemaSightingHistoryResponse>;
+
+/**
+ * Schema of SightingDetailsRequest
+ * Computed / derived data of one sighting (read-only).
+ */
+export const SchemaSightingDetailsRequest = Vts.object({
+    id: Vts.number({description: 'Sighting id.'}),
+}, {
+    description: 'Computed / derived data of one sighting (read-only).',
+});
+
+/**
+ * Type of schema SightingDetailsRequest
+ */
+export type SightingDetailsRequest = ExtractSchemaResultType<typeof SchemaSightingDetailsRequest>;
+
+/**
+ * Schema of SightingDetailsItem
+ * One value row: English label (translated in the UI), formatted values (one per group column, '' = no value) and unit.
+ */
+export const SchemaSightingDetailsItem = Vts.object({
+    label: Vts.string(),
+    values: Vts.array(Vts.string()),
+    unit: Vts.string(),
+    translate: Vts.boolean({description: 'True when the values are English texts the UI should translate (status words, phases).'}),
+}, {
+    description: 'One value row: English label (translated in the UI), formatted values (one per group column, \'\' = no value) and unit.',
+});
+
+/**
+ * Type of schema SightingDetailsItem
+ */
+export type SightingDetailsItem = ExtractSchemaResultType<typeof SchemaSightingDetailsItem>;
+
+/**
+ * Schema of SightingDetailsGroup
+ * A block of values from one source / service with its status and last update.
+ */
+export const SchemaSightingDetailsGroup = Vts.object({
+    title: Vts.string({description: 'English title, or a data text (vessel name, quake place) when title_raw is true.'}),
+    title_raw: Vts.boolean(),
+    status: Vts.string({description: 'Service status (\'\' = not run yet, \'ok\', \'no_data\', ...).'}),
+    updated: Vts.number({description: 'Unix seconds of the last computation, 0 = unknown.'}),
+    columns: Vts.array(Vts.string({description: 'English column titles when items carry more than one value (e.g. day mean / at hour).'})),
+    items: Vts.array(SchemaSightingDetailsItem),
+}, {
+    description: 'A block of values from one source / service with its status and last update.',
+});
+
+/**
+ * Type of schema SightingDetailsGroup
+ */
+export type SightingDetailsGroup = ExtractSchemaResultType<typeof SchemaSightingDetailsGroup>;
+
+/**
+ * Schema of SightingDetailsSection
+ * One sub tab of the computed data (meta, weather, sea, ...).
+ */
+export const SchemaSightingDetailsSection = Vts.object({
+    key: Vts.string(),
+    title: Vts.string(),
+    groups: Vts.array(SchemaSightingDetailsGroup),
+}, {
+    description: 'One sub tab of the computed data (meta, weather, sea, ...).',
+});
+
+/**
+ * Type of schema SightingDetailsSection
+ */
+export type SightingDetailsSection = ExtractSchemaResultType<typeof SchemaSightingDetailsSection>;
+
+/**
+ * Schema of SightingDetailsResponse
+ * Computed / derived data of a sighting, grouped in sections.
+ */
+export const SchemaSightingDetailsResponse = SchemaDefaultReturn.extend({
+    sections: Vts.array(SchemaSightingDetailsSection),
+}, {
+    description: 'Computed / derived data of a sighting, grouped in sections.',
+});
+
+/**
+ * Type of schema SightingDetailsResponse
+ */
+export type SightingDetailsResponse = ExtractSchemaResultType<typeof SchemaSightingDetailsResponse>;

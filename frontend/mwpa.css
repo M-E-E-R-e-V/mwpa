@@ -905,6 +905,48 @@ body.mwpa-print-mode-profile .popover {
   word-break: break-word;
 }
 
+/* sighting dialog: computed data tab */
+.mwpa-details-nav {
+  gap: .25rem;
+  margin-bottom: .75rem;
+}
+.mwpa-details-nav .nav-link {
+  padding: .25rem .65rem;
+  font-size: .8rem;
+}
+.mwpa-details-nav .nav-link.mwpa-details-empty:not(.active) {
+  color: var(--bs-tertiary-color);
+}
+.mwpa-details-group {
+  margin-bottom: .85rem;
+  border: 1px solid var(--bs-border-color-translucent);
+  border-radius: var(--bs-border-radius);
+  overflow: hidden;
+}
+.mwpa-details-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem .6rem;
+  font-size: .85rem;
+  background: var(--bs-tertiary-bg);
+  border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+.mwpa-details-table {
+  font-size: .82rem;
+}
+.mwpa-details-table th[scope="row"] {
+  width: 45%;
+}
+.mwpa-details-table td,
+.mwpa-details-table th {
+  padding: .28rem .6rem;
+}
+.mwpa-details-table tr:last-child > * {
+  border-bottom: 0;
+}
+
 /* loading overlay of bambooo ModalDialog2 / Card2: AdminLTE 4 no longer styles .overlay */
 .modal-content > .overlay,
 .card > .overlay {

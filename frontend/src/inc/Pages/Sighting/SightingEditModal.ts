@@ -13,6 +13,7 @@ import {GeolocationCoordinates} from '../../Types/GeolocationCoordinates';
 import {UtilDistanceCoast} from '../../Utils/UtilDistanceCoast';
 import {LocationPickerInput} from '../../Widget/LocationPickerInput';
 import {LocationPickerModal} from '../../Widget/LocationPickerModal';
+import {SightingDetailsView} from './SightingDetailsView';
 import {SightingHistoryView} from './SightingHistoryView';
 
 /**
@@ -28,7 +29,9 @@ type SightingEditOption = {
  *
  * "Add new sighting" / "Edit sighting" in three tabs: the essentials
  * (trip, species, times, position), group & behaviour, and more; an
- * existing sighting also has a "History" tab (who changed what when). The tab
+ * existing sighting also has a read-only "Computed" tab (meta data and the
+ * values of the background services) and a "History" tab (who changed
+ * what when). The tab
  * labels count the filled fields, so data on a hidden tab stays visible.
  * Required fields are checked inline before saving (the tab with the first
  * problem opens); the app's plausibility checks show as non-blocking hints.
@@ -106,6 +109,12 @@ export class SightingEditModal extends ModalDialog2 {
     protected _tagInput: JQuery<HTMLInputElement>;
 
     protected _tags: string[] = [];
+
+    protected _details: SightingDetailsView;
+
+    protected _detailsIndex: number;
+
+    protected _detailsTab: JQuery;
 
     protected _history: SightingHistoryView;
 
@@ -239,7 +248,12 @@ export class SightingEditModal extends ModalDialog2 {
         this._controls.set('note', note);
         this._field(more, 'col-12', 'Note', 'note', note);
 
-        // history (existing sightings only) ---------------------------------------------------------------------
+        // computed data + history (existing sightings only) ------------------------------------------------------
+        this._detailsIndex = this._panes.length;
+        const detailsRow = this._pane('Computed');
+        this._detailsTab = this._tabs.children().last();
+        this._details = new SightingDetailsView(jQuery('<div class="col-12"/>').appendTo(detailsRow));
+
         this._historyIndex = this._panes.length;
         const historyRow = this._pane('History');
         this._historyTab = this._tabs.children().last();
@@ -458,6 +472,8 @@ export class SightingEditModal extends ModalDialog2 {
         this._renderTags();
         this._distanceText.text(Lang.i().l('The distance to the coast is calculated when saving.'));
         this._meta.empty();
+        this._details.clear();
+        this._detailsTab.addClass('d-none');
         this._history.clear();
         this._historyTab.addClass('d-none');
         this._showPane(0);
@@ -530,6 +546,7 @@ export class SightingEditModal extends ModalDialog2 {
         }
 
         jQuery('<span/>').text(`#${entry.id}`).appendTo(this._meta);
+        this._detailsTab.removeClass('d-none');
         this._historyTab.removeClass('d-none');
 
         if (entry.tour_id) {
@@ -635,6 +652,10 @@ export class SightingEditModal extends ModalDialog2 {
         this._tabs.find('.nav-link').each((i, el) => {
             jQuery(el).toggleClass('active', i === index).attr('aria-selected', `${i === index}`);
         });
+
+        if (index === this._detailsIndex && this._sightingId !== null) {
+            this._details.load(this._sightingId).then();
+        }
 
         if (index === this._historyIndex && this._sightingId !== null) {
             this._history.load(this._sightingId).then();

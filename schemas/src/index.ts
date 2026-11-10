@@ -311,6 +311,16 @@ export {
     SightingHistoryEntry,
     SchemaSightingHistoryResponse,
     SightingHistoryResponse,
+    SchemaSightingDetailsRequest,
+    SightingDetailsRequest,
+    SchemaSightingDetailsItem,
+    SightingDetailsItem,
+    SchemaSightingDetailsGroup,
+    SightingDetailsGroup,
+    SchemaSightingDetailsSection,
+    SightingDetailsSection,
+    SchemaSightingDetailsResponse,
+    SightingDetailsResponse,
 } from './Routes/Main/Sightings/Sightings.js';
 export {
     SchemaSightingMovementTrackEntry,

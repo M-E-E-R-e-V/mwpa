@@ -1163,6 +1163,241 @@
           "description": ""
         }
       ]
+    },
+    {
+      "unid": "a943c99a-4f24-4d80-9141-3b989558287b",
+      "name": "SightingDetailsRequest",
+      "description": "Computed / derived data of one sighting (read-only).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "873b0937-5e0b-410f-a551-45abc2098329",
+          "name": "id",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Sighting id."
+        }
+      ]
+    },
+    {
+      "unid": "086492e0-4af8-4ee0-a4ff-221b21fe7b0a",
+      "name": "SightingDetailsItem",
+      "description": "One value row: English label (translated in the UI), formatted values (one per group column, '' = no value) and unit.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "f2e7a1fd-d126-47fa-9f23-e823bd77ff1a",
+          "name": "label",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d1f64e3f-a0a7-48db-9d72-112a3fca7874",
+          "name": "values",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "3ca85a64-8f1b-494d-b0a8-6b795aa94d78",
+          "name": "unit",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "2ae190cf-8e60-436b-b3d4-117a1d216c85",
+          "name": "translate",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "True when the values are English texts the UI should translate (status words, phases)."
+        }
+      ]
+    },
+    {
+      "unid": "1cc30f9b-6c80-414f-8b43-c8927bca8b3f",
+      "name": "SightingDetailsGroup",
+      "description": "A block of values from one source / service with its status and last update.",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "88e3734e-9ff4-4c20-abe5-af472f7be33c",
+          "name": "title",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "English title, or a data text (vessel name, quake place) when title_raw is true."
+        },
+        {
+          "unid": "cf10981f-174e-417e-852d-22be6ddb7682",
+          "name": "title_raw",
+          "type": {
+            "type": "boolean",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ec8d2e67-3541-42ef-bf4f-b65d067a9708",
+          "name": "status",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Service status ('' = not run yet, 'ok', 'no_data', ...)."
+        },
+        {
+          "unid": "e500cc33-be90-4483-8840-b861a39eda3b",
+          "name": "updated",
+          "type": {
+            "type": "number",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": "Unix seconds of the last computation, 0 = unknown."
+        },
+        {
+          "unid": "88136354-845b-43ba-a4e0-8ab486d298fe",
+          "name": "columns",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": "English column titles when items carry more than one value (e.g. day mean / at hour)."
+        },
+        {
+          "unid": "19c3c5e1-d197-449a-b7d4-3afa58c3ab99",
+          "name": "items",
+          "type": {
+            "type": "086492e0-4af8-4ee0-a4ff-221b21fe7b0a",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "db74f1e3-b901-4550-881e-2f5339969362",
+      "name": "SightingDetailsSection",
+      "description": "One sub tab of the computed data (meta, weather, sea, ...).",
+      "extend": {
+        "type": "object"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "a38db22c-ffb3-4d86-a7c5-7312707a0f72",
+          "name": "key",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "ed24cdd8-1755-475c-8662-1b8471b8e0f1",
+          "name": "title",
+          "type": {
+            "type": "string",
+            "optional": false,
+            "array": false,
+            "types": []
+          },
+          "description": ""
+        },
+        {
+          "unid": "d9b18ec6-4c65-4d2f-a451-303f04fa4533",
+          "name": "groups",
+          "type": {
+            "type": "1cc30f9b-6c80-414f-8b43-c8927bca8b3f",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
+    },
+    {
+      "unid": "e8e6965d-1aad-4fb4-8f2a-c80ef300ec35",
+      "name": "SightingDetailsResponse",
+      "description": "Computed / derived data of a sighting, grouped in sections.",
+      "extend": {
+        "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+      },
+      "pos": {
+        "x": 0,
+        "y": 0
+      },
+      "fields": [
+        {
+          "unid": "86d421fc-1e2c-4b56-a6f4-8868ede63b68",
+          "name": "sections",
+          "type": {
+            "type": "db74f1e3-b901-4550-881e-2f5339969362",
+            "optional": false,
+            "array": true,
+            "types": []
+          },
+          "description": ""
+        }
+      ]
     }
   ],
   "enums": [],
@@ -5475,6 +5710,545 @@
           "unid": "9cfe7d9a-33aa-4a90-a089-fe1acf2d00fa",
           "name": "SightingHistoryResponse",
           "description": "Change history of a sighting, newest first.",
+          "extend": {
+            "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": []
+        }
+      }
+    ],
+    "a943c99a-4f24-4d80-9141-3b989558287b": [
+      {
+        "ts": 1794268960446,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "a943c99a-4f24-4d80-9141-3b989558287b",
+          "name": "SightingDetailsRequest",
+          "description": "Computed / derived data of one sighting (read-only).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": []
+        }
+      }
+    ],
+    "086492e0-4af8-4ee0-a4ff-221b21fe7b0a": [
+      {
+        "ts": 1794268962193,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "086492e0-4af8-4ee0-a4ff-221b21fe7b0a",
+          "name": "SightingDetailsItem",
+          "description": "One value row: English label (translated in the UI), formatted values (one per group column, '' = no value) and unit.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1794268963895,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "086492e0-4af8-4ee0-a4ff-221b21fe7b0a",
+          "name": "SightingDetailsItem",
+          "description": "One value row: English label (translated in the UI), formatted values (one per group column, '' = no value) and unit.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "f2e7a1fd-d126-47fa-9f23-e823bd77ff1a",
+              "name": "label",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794268965545,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "086492e0-4af8-4ee0-a4ff-221b21fe7b0a",
+          "name": "SightingDetailsItem",
+          "description": "One value row: English label (translated in the UI), formatted values (one per group column, '' = no value) and unit.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "f2e7a1fd-d126-47fa-9f23-e823bd77ff1a",
+              "name": "label",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d1f64e3f-a0a7-48db-9d72-112a3fca7874",
+              "name": "values",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794268967363,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "086492e0-4af8-4ee0-a4ff-221b21fe7b0a",
+          "name": "SightingDetailsItem",
+          "description": "One value row: English label (translated in the UI), formatted values (one per group column, '' = no value) and unit.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "f2e7a1fd-d126-47fa-9f23-e823bd77ff1a",
+              "name": "label",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "d1f64e3f-a0a7-48db-9d72-112a3fca7874",
+              "name": "values",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "3ca85a64-8f1b-494d-b0a8-6b795aa94d78",
+              "name": "unit",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      }
+    ],
+    "1cc30f9b-6c80-414f-8b43-c8927bca8b3f": [
+      {
+        "ts": 1794268969262,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "1cc30f9b-6c80-414f-8b43-c8927bca8b3f",
+          "name": "SightingDetailsGroup",
+          "description": "A block of values from one source / service with its status and last update.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1794268971708,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "1cc30f9b-6c80-414f-8b43-c8927bca8b3f",
+          "name": "SightingDetailsGroup",
+          "description": "A block of values from one source / service with its status and last update.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "88e3734e-9ff4-4c20-abe5-af472f7be33c",
+              "name": "title",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "English title, or a data text (vessel name, quake place) when title_raw is true."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794268973402,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "1cc30f9b-6c80-414f-8b43-c8927bca8b3f",
+          "name": "SightingDetailsGroup",
+          "description": "A block of values from one source / service with its status and last update.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "88e3734e-9ff4-4c20-abe5-af472f7be33c",
+              "name": "title",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "English title, or a data text (vessel name, quake place) when title_raw is true."
+            },
+            {
+              "unid": "cf10981f-174e-417e-852d-22be6ddb7682",
+              "name": "title_raw",
+              "type": {
+                "type": "boolean",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794268975347,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "1cc30f9b-6c80-414f-8b43-c8927bca8b3f",
+          "name": "SightingDetailsGroup",
+          "description": "A block of values from one source / service with its status and last update.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "88e3734e-9ff4-4c20-abe5-af472f7be33c",
+              "name": "title",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "English title, or a data text (vessel name, quake place) when title_raw is true."
+            },
+            {
+              "unid": "cf10981f-174e-417e-852d-22be6ddb7682",
+              "name": "title_raw",
+              "type": {
+                "type": "boolean",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ec8d2e67-3541-42ef-bf4f-b65d067a9708",
+              "name": "status",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Service status ('' = not run yet, 'ok', 'no_data', ...)."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794268977321,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "1cc30f9b-6c80-414f-8b43-c8927bca8b3f",
+          "name": "SightingDetailsGroup",
+          "description": "A block of values from one source / service with its status and last update.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "88e3734e-9ff4-4c20-abe5-af472f7be33c",
+              "name": "title",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "English title, or a data text (vessel name, quake place) when title_raw is true."
+            },
+            {
+              "unid": "cf10981f-174e-417e-852d-22be6ddb7682",
+              "name": "title_raw",
+              "type": {
+                "type": "boolean",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ec8d2e67-3541-42ef-bf4f-b65d067a9708",
+              "name": "status",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Service status ('' = not run yet, 'ok', 'no_data', ...)."
+            },
+            {
+              "unid": "e500cc33-be90-4483-8840-b861a39eda3b",
+              "name": "updated",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Unix seconds of the last computation, 0 = unknown."
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794268979142,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "1cc30f9b-6c80-414f-8b43-c8927bca8b3f",
+          "name": "SightingDetailsGroup",
+          "description": "A block of values from one source / service with its status and last update.",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "88e3734e-9ff4-4c20-abe5-af472f7be33c",
+              "name": "title",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "English title, or a data text (vessel name, quake place) when title_raw is true."
+            },
+            {
+              "unid": "cf10981f-174e-417e-852d-22be6ddb7682",
+              "name": "title_raw",
+              "type": {
+                "type": "boolean",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ec8d2e67-3541-42ef-bf4f-b65d067a9708",
+              "name": "status",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Service status ('' = not run yet, 'ok', 'no_data', ...)."
+            },
+            {
+              "unid": "e500cc33-be90-4483-8840-b861a39eda3b",
+              "name": "updated",
+              "type": {
+                "type": "number",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": "Unix seconds of the last computation, 0 = unknown."
+            },
+            {
+              "unid": "88136354-845b-43ba-a4e0-8ab486d298fe",
+              "name": "columns",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": true,
+                "types": []
+              },
+              "description": "English column titles when items carry more than one value (e.g. day mean / at hour)."
+            }
+          ]
+        }
+      }
+    ],
+    "db74f1e3-b901-4550-881e-2f5339969362": [
+      {
+        "ts": 1794268981027,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "db74f1e3-b901-4550-881e-2f5339969362",
+          "name": "SightingDetailsSection",
+          "description": "One sub tab of the computed data (meta, weather, sea, ...).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": []
+        }
+      },
+      {
+        "ts": 1794268982639,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "db74f1e3-b901-4550-881e-2f5339969362",
+          "name": "SightingDetailsSection",
+          "description": "One sub tab of the computed data (meta, weather, sea, ...).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "a38db22c-ffb3-4d86-a7c5-7312707a0f72",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "ts": 1794268984621,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "db74f1e3-b901-4550-881e-2f5339969362",
+          "name": "SightingDetailsSection",
+          "description": "One sub tab of the computed data (meta, weather, sea, ...).",
+          "extend": {
+            "type": "object"
+          },
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "fields": [
+            {
+              "unid": "a38db22c-ffb3-4d86-a7c5-7312707a0f72",
+              "name": "key",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            },
+            {
+              "unid": "ed24cdd8-1755-475c-8662-1b8471b8e0f1",
+              "name": "title",
+              "type": {
+                "type": "string",
+                "optional": false,
+                "array": false,
+                "types": []
+              },
+              "description": ""
+            }
+          ]
+        }
+      }
+    ],
+    "e8e6965d-1aad-4fb4-8f2a-c80ef300ec35": [
+      {
+        "ts": 1794268986687,
+        "kind": "schema",
+        "snapshot": {
+          "unid": "e8e6965d-1aad-4fb4-8f2a-c80ef300ec35",
+          "name": "SightingDetailsResponse",
+          "description": "Computed / derived data of a sighting, grouped in sections.",
           "extend": {
             "type": "7155c203-9ba0-4f9b-b7c9-0b7356c4e599"
           },
